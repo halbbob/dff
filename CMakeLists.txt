@@ -141,8 +141,9 @@ endif(NOT PYTHON_QT4_QSCI_PATH)
 
 
 
-
-
+# Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
+SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})
+# Install prefix used by Python installer.
 SET(CMAKE_INSTALL_PREFIX ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/)
 
 ## Main purpose of this macro if to copy Python files at install.
@@ -281,14 +282,15 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 if (UNIX)
+# Install binary  launcher, icons, shortcuts.
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff
-  DESTINATION /usr/bin
+  DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/bin
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ressources/dff.png ${CMAKE_CURRENT_BINARY_DIR}/ressources/dff.xpm
-  DESTINATION /usr/share/pixmaps
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.png ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.xpm
+  DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/share/pixmaps
   PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ressources/dff.desktop
-  DESTINATION /usr/share/applications
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.desktop
+  DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/share/applications
   PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 endif(UNIX)
 
