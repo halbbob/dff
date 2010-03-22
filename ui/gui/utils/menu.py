@@ -18,9 +18,8 @@ from PyQt4.QtCore import SIGNAL, SLOT
 
 from api.loader import *
 
-from action import DFF_Action
-
-from ui.gui.utils.utils import DFF_Utils
+from action import Action
+from ui.gui.utils.utils import Utils
 
 class MenuTags():
    def __init__(self, parent, mainWindow, selectItem = None):
@@ -29,19 +28,19 @@ class MenuTags():
        self.mainWindow = mainWindow
        self.selectItem = selectItem	
        self.Load()
-       self.parent.menuModules.connect(self.parent.menuModules, SIGNAL("aboutToShow()"), self.refreshQMenuModules)
+       self.parent.menu["Modules"].connect(self.parent.menu["Modules"], SIGNAL("aboutToShow()"), self.refreshQMenuModules)
  
    def Load(self):   
        self.listMenuAction = []
-       setags = DFF_Utils.getSetTags()
+       setags = Utils.getSetTags()
        for tags in setags:
           if not tags == "builtins":
-            self.listMenuAction.append(self.parent.menuModules.addMenu(MenuModules(self.parent, self.mainWindow, tags, self.selectItem)))
+            self.listMenuAction.append(self.parent.menu["Modules"].addMenu(MenuModules(self.parent, self.mainWindow, tags, self.selectItem)))
         
    def refreshQMenuModules(self):
-        setags = DFF_Utils.getSetTags()
+        setags = Utils.getSetTags()
 	for menu in self.listMenuAction:
-	   self.parent.menuModules.removeAction(menu)
+	   self.parent.menu["Modules"].removeAction(menu)
 	self.Load()
    
 class MenuModules(QMenu):
@@ -60,8 +59,9 @@ class MenuModules(QMenu):
 	     m = modules[mod]
 	     try :
 	       if m.tags == self.tags:
-                 actions.append(DFF_Action(self, self.__mainWindow, mod, self.tags))
-             except AttributeError:
+                 actions.append(Action(self, self.__mainWindow, mod, self.tags))
+             except AttributeError, e:
+		print e
 		pass
         for i in range(0,  len(actions)) :
             if actions[i].hasOneArg :

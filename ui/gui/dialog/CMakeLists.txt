@@ -10,20 +10,11 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Jeremy Mounier <jmo@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-
-set(ide_srcs
-  editor.py
-  dockide.py
-  ide.py
+set(ui_dialog_srcs
   __init__.py
-  generatecode.py
-  messagebox.py
-  actions.py
-  idewizard.py
-  idewizardpages.py
+  dialog.py
 )
 
-install_file(ide ${ide_srcs})
-
+install_file(ui_dialog ${ui_dialog_srcs})

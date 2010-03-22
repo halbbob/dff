@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["gui", "gui_rc",  "dff", "widget"]
+__all__ = ["gui", "gui_rc",  "dff", "widget", "dialog"]

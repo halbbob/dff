@@ -16,9 +16,9 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from DFF_Ide import DFF_Ide
+from dockide import DockIde
 
-class ideActions():
+class IdeActions():
     def __init__(self, mainwindow, ide = None):
         self.mainwindow = mainwindow
         self.ide = ide
@@ -104,20 +104,24 @@ class ideActions():
         self.redoact.setEnabled(False)
 
     # CALLBACKS
-
     def newScript(self):
         if not self.ide:
-            self.ide = DFF_Ide(self.mainwindow, self)
-            self.mainwindow.dockWidget["IDE"] = self.ide
-            self.mainwindow.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.ide)
-        self.ide.ide.newactBack()
+            self.dockide = DockIde(self.mainwindow, self)
+            self.mainwindow.dockWidget["IDE"] = self.dockide
+            self.mainwindow.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.dockide)
+        self.dockide.ide.newactBack()
         
     def openScript(self):
-        if not self.ide:
-            self.ide = DFF_Ide(self.mainwindow, self)
-            self.mainwindow.dockWidget["IDE"] = self.ide
-            self.mainwindow.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.ide)
-        self.ide.ide.openactBack()
+#          if not self.dockide:
+        try:
+	  self.dockide
+          pass
+        except AttributeError:
+            self.dockide = DockIde(self.mainwindow, self)
+            self.mainwindow.dockWidget["IDE"] = self.dockide
+            self.mainwindow.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.dockide)
+
+        self.dockide.ide.openactBack()
 
 
     def setMenu(self):
@@ -140,3 +144,4 @@ class ideActions():
         self.menu.addAction(self.redoact)
 
         
+

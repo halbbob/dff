@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["DFF_Ide", "Ide"  ]
+__all__ = ["dockide", "ide", "actions", "editor", "generatecode", "idewizardpages", "idewizard", "messagebox"]

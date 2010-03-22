@@ -23,7 +23,7 @@ from api.loader import *
 from api.exceptions.libexceptions import *
 from api.env import *
 
-event_type = ["refresh_tree", "add_str", "add_qwidget"]
+event_type = ["add_qwidget"]
 
 class WorkQueue():
 	class __WorkQueue():
@@ -74,9 +74,7 @@ sched = WorkQueue()
 def voidcall(node):
 	pass
 
-sched.set_callback("refresh_tree", voidcall)
 sched.set_callback("add_widget", voidcall)
-sched.set_callback("add_str", voidcall)
 
 thread = threading.Thread(target = sched.launch)
 thread.setDaemon(True)

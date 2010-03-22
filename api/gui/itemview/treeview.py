@@ -17,7 +17,7 @@ from PyQt4.QtGui import QAbstractItemView, QApplication, QCursor, QFileDialog, Q
 from PyQt4.QtCore import QModelIndex,  Qt, SIGNAL
 
 from ui.gui.utils.menu import MenuModules, MenuTags
-from ui.gui.utils.utils import DFF_Utils
+from ui.gui.utils.utils import Utils
 
 class TreeView(QTreeView):
     # TAKE :        None
@@ -172,10 +172,11 @@ class TreeView(QTreeView):
         self.submenuOpenIn = self.submenuFile.addMenu("Open in")
         self.submenuOpenIn.addAction(QApplication.translate("MainWindow", "List Files", None, QApplication.UnicodeUTF8),  self.parent().addList, "mainWindow")
         self.submenuFile.addSeparator()
-        self.submenuFile.addAction(QIcon(":shell.png"), QApplication.translate("MainWindow", "Shell", None, QApplication.UnicodeUTF8),  self.__mainWindow.addShell)
-        self.submenuFile.addAction(QIcon(":interpreter.png"), QApplication.translate("MainWindow", "Interpreter", None, QApplication.UnicodeUTF8),  self.__mainWindow.addInterpreter)
+        #self.submenuFile.addAction(QIcon(":shell.png"), "Shell",  self.__mainWindow.addSingleDock("Shell"))
+        #self.submenuFile.addAction(QIcon(":interpreter.png"), QApplication.translate("MainWindow", "Interpreter", None, QApplication.UnicodeUTF8),  self.__mainWindow.addInterpreter)
         self.submenuFile.addSeparator()
-        self.menuModules = self.submenuFile.addMenu(QIcon(":exec.png"), QApplication.translate("ListView", "Open With", None, QApplication.UnicodeUTF8))
+        self.menu = {}
+        self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"), QApplication.translate("ListView", "Open With", None, QApplication.UnicodeUTF8))
         self.menuTags = MenuTags(self, self.__mainWindow, self.getCurrentNode)	
 #        self.submenuFile.addSeparator()
 #        self.submenuFile.addAction(QIcon(":extract.png"), QApplication.translate("MainWindow", "Extract", None, QApplication.UnicodeUTF8),  self.extractFolder, "mainWindow")
@@ -187,19 +188,19 @@ class TreeView(QTreeView):
     ## CALLBACK SUBMENU ##
     #################
     def extractFolder(self):
-        if self.__mainWindow.DFF_CONFIG.extractFolder == "" :
+        if self.__mainWindow.config.extractFolder == "" :
             sDirName = QFileDialog.getExistingDirectory(self, QApplication.translate("MainWindow", "Choose Your Directory For Extraction", None, QApplication.UnicodeUTF8),  "/home",  QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
             if (sDirName) :
-                self.__mainWindow.DFF_CONFIG.extractFolder = sDirName
+                self.__mainWindow.config.extractFolder = sDirName
             else :
                 return
         tmp = [self.getCurrentNode()]
-        DFF_Utils().execExtract(tmp, self.__mainWindow.DFF_CONFIG.extractFolder)
+        Utils().execExtract(tmp, self.__mainWindow.config.extractFolder)
     
     def propertyFolder(self):
-        if not self.__mainWindow.QPropertyDialog.isVisible():
+        if not self.__mainWindow.PropertyDialog.isVisible():
             listNode = [self.getCurrentNode()]
-            self.__mainWindow.QPropertyDialog.fillInfo(self.getCurrentItem().parentItem.node, listNode)
-            iReturn = self.__mainWindow.QPropertyDialog.exec_()
+            self.__mainWindow.PropertyDialog.fillInfo(self.getCurrentItem().parentItem.node, listNode)
+            iReturn = self.__mainWindow.PropertyDialog.exec_()
         else:
             QMessageBox.critical(self, "Erreur", u"This box is already open.")

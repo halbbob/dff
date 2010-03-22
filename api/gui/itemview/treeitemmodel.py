@@ -19,7 +19,7 @@ from PyQt4.QtCore import QAbstractItemModel, QModelIndex, Qt, QVariant, QSize
 from api.vfs import *
 from api.gui.itemview.rootitemmodel import RootItemModel
 
-from ui.gui.utils.utils import DFF_Utils
+from ui.gui.utils.utils import Utils
 
 class TreeItemModel(QAbstractItemModel):
     # TAKE :        headers : StringList ( For header Column )
@@ -172,7 +172,7 @@ class TreeItemModel(QAbstractItemModel):
         
     def indexWithNode(self, node):
         theItem = self.rootItemVFS
-        list = DFF_Utils.getPath(node).split('/')
+        list = Utils.getPath(node).split('/')
         for j in range(0, len(list)):
             for i in range(0,  theItem.childCount()) :
                 if theItem.child(i):

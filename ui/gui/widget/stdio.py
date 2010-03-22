@@ -59,27 +59,27 @@ class IO(QDockWidget):
         self.setWindowTitle(QApplication.translate("Log", "Log", None, QApplication.UnicodeUTF8))
  
    def addAction(self):
-        self.__action = QAction(self)
-        self.__action.setCheckable(True)
-        self.__action.setChecked(True)
-        self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(QApplication.translate("MainWindow", "Log", None, QApplication.UnicodeUTF8))
-        self.__mainWindow.menuWindow.addAction(self.__action)
-        self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
+        self.action = QAction(self)
+        self.action.setCheckable(True)
+        self.action.setChecked(True)
+        self.action.setObjectName("actionCoreInformations")
+        self.action.setText(QApplication.translate("MainWindow", "Log", None, QApplication.UnicodeUTF8))
+#        self.__mainWindow.menu["Window"].addAction(self.__action)
+        self.connect(self.action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
      
    def changeVisibleInformations(self):
         if not self.isVisible() :
             self.setVisible(True)
-            self.__action.setChecked(True)
+            self.action.setChecked(True)
         else :
             self.setVisible(False)
-            self.__action.setChecked(False)
+            self.action.setChecked(False)
 
    def visibilityChanged(self,  bool):
         if not self.isVisible() :
-            self.__action.setChecked(False)
+            self.action.setChecked(False)
         else :
-            self.__action.setChecked(True)
+            self.action.setChecked(True)
 
    def initIO(self):
         self.iowidget = QWidget(self)        

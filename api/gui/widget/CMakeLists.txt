@@ -19,6 +19,8 @@ set(apiguiwidget_srcs
   applymoduletable.py
   nodelist.py
   nodetree.py
+  textedit.py
+  dockwidget.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

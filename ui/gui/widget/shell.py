@@ -387,7 +387,6 @@ class Shell(MDockWidget):
         self.__action.setChecked(True)
         self.__action.setObjectName("actionCoreInformations")
         self.__action.setText(QApplication.translate("MainWindow", "Shell", None, QApplication.UnicodeUTF8))
-        mainWindow.menuWindow.addAction(self.__action)
         self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
     
     def changeVisibleInformations(self):
@@ -397,8 +396,6 @@ class Shell(MDockWidget):
         else :
             self.setVisible(False)
             self.__action.setChecked(False)
-
-
 
 #    self.setWindowTitle(n)
 #    self.setWidget(widget)

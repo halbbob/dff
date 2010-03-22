@@ -19,7 +19,7 @@ from PyQt4.QtCore import QSize
 from api.vfs import *
 from api.gui.dialog.uiproperty import UiProperty
 
-from ui.gui.utils.utils import DFF_Utils
+from ui.gui.utils.utils import Utils
 
 # QDialog about one file or one directory
 class Property(QDialog,  UiProperty):
@@ -77,24 +77,24 @@ class Property(QDialog,  UiProperty):
         
         if nbrItem == 1 :
             if oneNode.is_file :
-                self.valueSize.setText(str(DFF_Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ), dump size : "+ str(oneNode.attr.size))
+                self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ), dump size : "+ str(oneNode.attr.size))
             else :
-                self.valueSize.setText(str(DFF_Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ) ")
+                self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ) ")
             if types == 1 :
                 # One Directory
-                self.valueType.setText(QApplication.translate("DFF_PropertyDialog", "Folder", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(QApplication.translate("PropertyDialog", "Folder", None, QApplication.UnicodeUTF8))
             if types == 2 :
                 # One Files
-                self.valueType.setText(QApplication.translate("DFF_PropertyDialog", "File", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(QApplication.translate("PropertyDialog", "File", None, QApplication.UnicodeUTF8))
             self.addAttr(oneNode)
         else :
-            self.valueSize.setText(str(info['item']) +QApplication.translate("DFF_PropertyDialog", " items, totalling ", None,QApplication.UnicodeUTF8) + str(DFF_Utils.formatSize(info['size'])))
+            self.valueSize.setText(str(info['item']) +QApplication.translate("PropertyDialog", " items, totalling ", None,QApplication.UnicodeUTF8) + str(Utils.formatSize(info['size'])))
             if types == 1 :
-                self.valueType.setText(QApplication.translate("DFF_PropertyDialog", "Folders", None,QApplication.UnicodeUTF8))
+                self.valueType.setText(QApplication.translate("PropertyDialog", "Folders", None,QApplication.UnicodeUTF8))
             if types == 2 :
-                self.valueType.setText(QApplication.translate("DFF_PropertyDialog", "Files", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(QApplication.translate("PropertyDialog", "Files", None, QApplication.UnicodeUTF8))
             if types == 0 :
-                self.valueType.setText(QApplication.translate("DFF_PropertyDialog", "---", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(QApplication.translate("PropertyDialog", "---", None, QApplication.UnicodeUTF8))
         
         self.vboxlayout.addWidget(self.buttonClose)
         qsize = self.vboxlayout.minimumSize()

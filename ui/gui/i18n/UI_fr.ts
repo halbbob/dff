@@ -4,22 +4,22 @@
 <context>
     <name>ConfigureDFF</name>
     <message>
-        <location filename="_configureDFF.py" line="79"/>
+        <location filename="_configure.py" line="79"/>
         <source>Configure</source>
         <translation>Préférences</translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="80"/>
+        <location filename="_configure.py" line="80"/>
         <source>Language :</source>
         <translation>Langue :</translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="81"/>
+        <location filename="_configure.py" line="81"/>
         <source>Extract Folder :</source>
         <translation>Dossier d&apos;extraction :</translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="82"/>
+        <location filename="_configure.py" line="82"/>
         <source>Browser</source>
         <translation>Parcourir </translation>
     </message>

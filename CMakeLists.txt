@@ -159,11 +159,9 @@ macro(install_file target_name)
 	)
     endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file})
     IF (INSTALL)
-      add_custom_target("install.${target_name}.${file}" ALL)
+      add_custom_target("${target_name}.${file}" ALL)
       FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file} DESTINATION
-	  ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel}
-	)
+      install(FILES ${file} DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel})
     ENDIF (INSTALL)
   endforeach(file ${ARGN}) 
 endmacro(install_file target_name)

@@ -14,11 +14,11 @@
 
 
 set(configuration_srcs
-  Config.py
   __init__.py
-  configureDFF.py
-  Translator.py
-  _configureDFF.py
+  conf.py
+  translator.py
+  configure.py
+  _configure.py
 )
 
 install_file(configuration ${configuration_srcs})

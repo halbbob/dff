@@ -2,14 +2,14 @@
 <!DOCTYPE TS><TS version="1.1" language="en">
 <defaultcodec></defaultcodec>
 <context>
-    <name>ConfigureDFF</name>
+    <name>Configure</name>
     <message>
-        <location filename="configureDFF.py" line="29"/>
+        <location filename="configure.py" line="29"/>
         <source>French</source>
         <translation>French</translation>
     </message>
     <message>
-        <location filename="configureDFF.py" line="28"/>
+        <location filename="configure.py" line="28"/>
         <source>English</source>
         <translation>English</translation>
     </message>
@@ -22,7 +22,7 @@
         <translation>Add a file</translation>
     </message>
     <message>
-        <location filename="configureDFF.py" line="40"/>
+        <location filename="configure.py" line="40"/>
         <source>Choose Your Directory For Extraction</source>
         <translation>Choose a Folder</translation>
     </message>

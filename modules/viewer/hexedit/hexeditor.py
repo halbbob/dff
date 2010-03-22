@@ -20,7 +20,7 @@ from api.module.module import *
 
 from PyQt4.QtCore import QSize, SIGNAL
 from PyQt4.QtGui import QWidget, QVBoxLayout, QIcon, QMessageBox
-from ui.gui.utils.utils import DFF_Utils
+from ui.gui.utils.utils import Utils
 
 from Heditor import Heditor
 

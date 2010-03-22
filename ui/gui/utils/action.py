@@ -15,21 +15,21 @@
 
 from PyQt4.QtGui import QAction
 from PyQt4.QtCore import SIGNAL
-from utils import DFF_Utils
+from utils import Utils
 
-class DFF_Action(QAction):
+class Action(QAction):
     def __init__(self, parent, mainWindow, text, type):
-        super(DFF_Action, self).__init__(mainWindow)
+        super(Action, self).__init__(mainWindow)
         self.__mainWindow = mainWindow
         self.type = type
         self.parent = parent
         # if true return name of arg
-        self.hasOneArg = DFF_Utils.hasOneNodeArg(text, type)
+        self.hasOneArg = Utils.hasOneNodeArg(text, type)
         if text <> 0 :
             self.setText(str(text))
         self.connect(self, SIGNAL("triggered()"), self.sendSignal)
-        self.connect(self, SIGNAL("launchScript"), self.__mainWindow.openApplyModule)
-        self.connect(self, SIGNAL("execModule"), DFF_Utils.execModule)
+        self.connect(self, SIGNAL("launchScript"), self.__mainWindow.ApplyModule.openApplyModule)
+        self.connect(self, SIGNAL("execModule"), Utils.execModule)
     
     def sendSignal(self):
         if self.hasOneArg and self.parent.callbackSelected :

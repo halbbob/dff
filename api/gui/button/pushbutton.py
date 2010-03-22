@@ -26,13 +26,13 @@ class PushButton(QPushButton):
         self.browseVFS = browseVFS
         self.node = node
         self.setObjectName("Button" + arg_name)
-        self.setText(QApplication.translate("DFF_BrowserButton", "Browse", None, QApplication.UnicodeUTF8))
+        self.setText(QApplication.translate("BrowserButton", "Browse", None, QApplication.UnicodeUTF8))
         self.setFixedSize(QSize(80,  28))
         self.connect(self,  SIGNAL("clicked()"), self.clickOnMe)
         
     def clickOnMe(self):
         if self.browseVFS == 0 :
-            sFileName = QFileDialog.getOpenFileName(self, QApplication.translate("DFF_BrowserButton", "Add Dump", None, QApplication.UnicodeUTF8),  "/home")
+            sFileName = QFileDialog.getOpenFileName(self, QApplication.translate("BrowserButton", "Add Dump", None, QApplication.UnicodeUTF8),  "/home")
             if (sFileName) :
                 self.targetResult.addPathAndSelect(sFileName)
         else :

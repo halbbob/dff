@@ -21,8 +21,7 @@ from api.loader import *
 from api.env import *
 from api.taskmanager.taskmanager import *
 
-from ui.gui.utils.utils import DFF_Utils
-from ui.gui.wrapper.connectorCallback import *
+from ui.gui.utils.utils import Utils
 
 class Info(QDockWidget):
     def __init__(self, mainWindow):
@@ -43,21 +42,21 @@ class Info(QDockWidget):
         self.setWindowTitle(QApplication.translate("Info", "Info", None, QApplication.UnicodeUTF8))
     
     def addAction(self):
-        self.__action = QAction(self)
-        self.__action.setCheckable(True)
-        self.__action.setChecked(True)
-        self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(QApplication.translate("MainWindow", "Info", None, QApplication.UnicodeUTF8))
-        self.__mainWindow.menuWindow.addAction(self.__action)
-        self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
+        self.action = QAction(self)
+        self.action.setCheckable(True)
+        self.action.setChecked(True)
+        self.action.setObjectName("actionCoreInformations")
+        self.action.setText(QApplication.translate("MainWindow", "Info", None, QApplication.UnicodeUTF8))
+#        self.__mainWindow.menu["Window"].addAction(self.__action)
+        self.connect(self.action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
      
     def changeVisibleInformations(self):
         if not self.isVisible() :
             self.setVisible(True)
-            self.__action.setChecked(True)
+            self.action.setChecked(True)
         else :
             self.setVisible(False)
-            self.__action.setChecked(False)
+            self.action.setChecked(False)
         
     def g_display(self):
         self.Info = QWidget(self)
@@ -79,9 +78,9 @@ class Info(QDockWidget):
 
     def visibilityChanged(self,  bool):
         if not self.isVisible() :
-            self.__action.setChecked(False)
+            self.action.setChecked(False)
         else :
-            self.__action.setChecked(True)
+            self.action.setChecked(True)
 
     def Load(self):
         self.LoadInfoProcess()
@@ -247,7 +246,7 @@ class Info(QDockWidget):
         self.procChildItemDic = dict()
 
     def procClicked(self, item, column):
-	dial = procMB(self, item.text(0))
+	dial = procMB(self, self.__mainWindow, item.text(0))
 	dial.exec_()
 
     def LoadInfoProcess(self):
@@ -270,9 +269,8 @@ class Info(QDockWidget):
          
             
 class procMB(QMessageBox):
-  def __init__(self, parent,  pid):
+  def __init__(self, parent, mainWindow, pid):
    QMessageBox.__init__(self, parent)
-   self.cb = ConnectorCallback() 
    self.tm = TaskManager()
    self.pid = pid
    self.env = env.env()
@@ -285,5 +283,5 @@ class procMB(QMessageBox):
 	        res += name + ": " + val
         except AttributeError:
               pass
-        self.cb.emit(SIGNAL("strResultView"), proc)
+        mainWindow.emit(SIGNAL("strResultView"), proc)
    self.setText(res)

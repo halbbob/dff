@@ -33,7 +33,7 @@ from api.gui.button.pushbutton import PushButton
 from api.gui.dialog.uiapplymodule import UiApplyModule 
 from api.gui.widget.applymoduletable import ApplyModuleTable
 
-from ui.gui.utils.utils import DFF_Utils
+from ui.gui.utils.utils import Utils
 
 
 
@@ -198,7 +198,7 @@ class ApplyModule(QDialog,  UiApplyModule):
             self.argumentsContainer = QWidget(self)
 
         iterator = 0
-        args = DFF_Utils.getArgs(nameModule)
+        args = Utils.getArgs(nameModule)
         vars_db = self.env.vars_db
         for arg in args:
             label = QLabel(arg.name + " ( "+ str(arg.type) + " ) " + ":", self.argumentsContainer)
@@ -210,8 +210,8 @@ class ApplyModule(QDialog,  UiApplyModule):
                 
                 for i in range(0, len(list)) :
                     value.addPath(list[i])
-                button = PushButton(self.argumentsContainer, value, arg.name, self.__mainWindow.QSelectNodes , self.__mainWindow.dockNodeTree.treeItemModel.rootItemVFS.node)
-                currentItem = self.__mainWindow.dockNodeTree.treeView.getCurrentItem()
+                button = PushButton(self.argumentsContainer, value, arg.name, self.__mainWindow.SelectNodes , self.__mainWindow.widget["NodeTree"].treeItemModel.rootItemVFS.node)
+                currentItem = self.__mainWindow.widget["NodeTree"].treeView.getCurrentItem()
                 value.addPath(currentItem.node)
                 
                 if self.__nodesSelected  :
@@ -277,13 +277,13 @@ class ApplyModule(QDialog,  UiApplyModule):
         return str(item.text())
 
     # get Arguments
-    def getDFFArguments(self):
+    def getArguments(self):
         self.arg = self.env.libenv.argument("gui_input")
         self.arg.thisown = 0
         for i in self.valueArgs :
             if i.type == "node" :
                 self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
-        #        print DFF_Utils.getPath(self.valueArgs[i].currentNode())
+        #        print Utils.getPath(self.valueArgs[i].currentNode())
             else :
                 value = str(self.valueArgs[i].currentText())
                 if i.type == "path" :
@@ -304,3 +304,17 @@ class ApplyModule(QDialog,  UiApplyModule):
         modules = self.currentModuleName()
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
         return self.arg
+
+    def openApplyModule(self,  nameModule = None, typeModule = None, nodesSelected = None):
+        if(self.isVisible()):
+            QMessageBox.critical(self, "Erreur", u"This box is already open")
+        else:
+            self.initAllInformations(nameModule, typeModule,  nodesSelected)
+            iReturn = self.exec_()
+        if iReturn :
+            type = self.currentType()
+            script = self.currentModuleName()
+            arg = self.getArguments()
+        self.deleteAllArguments()
+    
+

@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["Config", "Translator"]
+__all__ = ["_configure", "configure", "conf", "translator"]

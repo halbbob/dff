@@ -2,24 +2,24 @@
 <!DOCTYPE TS><TS version="1.1" language="en">
 <defaultcodec></defaultcodec>
 <context>
-    <name>ConfigureDFF</name>
+    <name>Configure</name>
     <message>
-        <location filename="_configureDFF.py" line="79"/>
+        <location filename="_configure.py" line="79"/>
         <source>Configure</source>
         <translation>Configure</translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="80"/>
+        <location filename="_configure.py" line="80"/>
         <source>Language :</source>
         <translation>Language :</translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="81"/>
+        <location filename="_configure.py" line="81"/>
         <source>Extract Folder :</source>
         <translation>Extract Folder :</translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="82"/>
+        <location filename="_configure.py" line="82"/>
         <source>Browser</source>
         <translation>Browser</translation>
     </message>

@@ -20,7 +20,7 @@ from api.env import *
 from api.taskmanager.taskmanager import *
 from api.type import *
 
-class DFF_Utils():
+class Utils():
     def __init__(self):
         pass
 
@@ -70,7 +70,7 @@ class DFF_Utils():
                 return str(arg.get_string())
             elif arg.type == "node": 
                 node = arg.get_node()
-                return DFF_Utils.getPath(node)
+                return Utils.getPath(node)
             elif arg.type == "bool" :
                 return str(arg.get_bool())
             elif arg.type == "path" :
@@ -92,7 +92,7 @@ class DFF_Utils():
     
     @staticmethod
     def hasOneNodeArg(module, type):
-        args = DFF_Utils.getArgs(module)
+        args = Utils.getArgs(module)
         if not args :
             return None
         if len(args) == 1 :

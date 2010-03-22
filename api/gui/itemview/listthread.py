@@ -19,7 +19,7 @@ from PyQt4.QtGui import QApplication, QIcon, QStandardItemModel, QStandardItem
 from PyQt4.Qt import *
 
 from api.gui.itemview.nodeitem import NodeItem
-from ui.gui.utils.utils import DFF_Utils
+from ui.gui.utils.utils import Utils
 
 
 class ListThread(QThread):
@@ -78,7 +78,7 @@ class ListThread(QThread):
             if itemVFS.is_file == 0 :
                 items[1].setText(QApplication.translate("ListModel", "", None, QApplication.UnicodeUTF8))
             else :
-                items[1].setText(DFF_Utils.formatSize(itemVFS.attr.size))
+                items[1].setText(Utils.formatSize(itemVFS.attr.size))
             items.append(QStandardItem(""))
             items.append(QStandardItem(""))
             items.append(QStandardItem(""))

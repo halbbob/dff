@@ -13,7 +13,7 @@
 #  Francois Percot <percot@gmail.com>
 # 
 
-from PyQt4.QtCore import QSize, SIGNAL, pyqtSignature
+from PyQt4.QtCore import QSize, SIGNAL, pyqtSignature, QEvent
 from PyQt4.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QIcon, QComboBox, QPushButton, QSortFilterProxyModel
 from PyQt4.Qt import *
 
@@ -23,9 +23,9 @@ from api.gui.itemview.thumbsitemmodel import ThumbsItemModel
 from api.gui.itemview.thumbsview import ThumbsView
 from api.gui.dialog.extractor import Extractor
 from api.gui.box.nodecombobox import NodeComboBox
+from api.vfs.libvfs import VFS 
 
 from ui.gui.utils.menu import MenuTags
-from ui.gui.wrapper.connectorCallback import ConnectorCallback
 
 import os
 
@@ -46,7 +46,8 @@ class NodeList(QWidget):
         self.name = ""
         self.__mainWindow = mainWindow
         self.__parent = parent
-    
+	self.vfs = VFS.Get()   
+ 
         # Specific
         self.currentIndexDir = None
         self.currentNodeDir = None
@@ -136,12 +137,22 @@ class NodeList(QWidget):
         self.connect(self.thumButton, SIGNAL("clicked()"),  self.thumbActivated)
 
         self.connect(self.comboBoxPath, SIGNAL("currentIndexChanged(const QString & )"),  self.comboBoxPathChanged)
-        self.connect(ConnectorCallback.instance, SIGNAL("reload"), self.reload,  Qt.BlockingQueuedConnection)        
+	self.vfs.set_callback("refresh_tree", self.refreshNode)
         self.connect(dockBrowser.treeView, SIGNAL("changeDirectory"), self.loadFolder)
-        self.connect(dockBrowser.treeView, SIGNAL("reloadNodeView"), self.reload)
+        self.connect(dockBrowser.treeView, SIGNAL("reloadNodeView"), self.refreshNode)
         dockBrowser.treeView.connect(self, SIGNAL("setIndexAndExpand"), dockBrowser.treeView.setIndexAndExpand)
         dockBrowser.treeView.connect(self, SIGNAL("setIndex"), dockBrowser.treeView.setCurrentIndexForChild)
-        
+ 
+    def refreshNode(self, node):
+	userEvent = QEvent(1000)
+	self.__mainWindow.app.postEvent(self, userEvent)
+  
+    def event(self, e):
+	if e.type() == 1000:
+            self.loadFolder(self.currentNodeDir, self.currentIndexDir, 1)
+	    return True
+ 	return False
+       
     def moveToTop(self):
         if self.currentIndexDir <> None :
             index = self.__browsers.treeItemModel.indexWithNode(self.currentNodeDir)
@@ -195,7 +206,6 @@ class NodeList(QWidget):
             if view.getModel().currentNodeDir is not None and view.getModel().currentNodeDir.this == self.currentNodeDir.this :
                 return
             self.loadFolder(self.currentNodeDir, self.currentIndexDir, 1)
-  
     # Specific type views
     def loadFolder(self,  node, indexFolder = None,  force = None):
         if node is None :
@@ -230,9 +240,6 @@ class NodeList(QWidget):
         view = self.viewVisible()
         return view.getListCurrentNode()
     
-    def reload(self):
-        self.loadFolder(self.currentNodeDir, self.currentIndexDir, 1)
-    
     def refreshIndexBrowser(self):
         self.emit(SIGNAL("setIndex"), self, self.currentIndexDir)
         
@@ -244,7 +251,7 @@ class NodeList(QWidget):
         return self.ListView
 
     def changeDirectoryBrowser(self, node):
-        dockNodeTree = self.__mainWindow.dockNodeTree
+        dockNodeTree = self.__mainWindow.widget["NodeTree"]
         currentIndex = dockNodeTree.treeView.selectionModel().currentIndex()
         if currentIndex is None :
             return
@@ -266,7 +273,8 @@ class NodeList(QWidget):
         self.connect(self.extractor, SIGNAL("filled"), self.launchExtract)
 	self.submenuFile = QMenu()
         self.submenuFile.addAction(QIcon(":exec.png"),  "Open", self.openDefault, "Listview")
-        self.menuModules = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
+        self.menu = {}
+        self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
         self.menuTags = MenuTags(self, self.__mainWindow, self.getListCurrentNode)
         self.submenuFile.addSeparator()
         self.submenuFile.addAction(QIcon(":hexedit.png"), QApplication.translate("ListView", "Hexeditor", None, QApplication.UnicodeUTF8), self.launchHexedit, "Listview")
@@ -319,10 +327,10 @@ class NodeList(QWidget):
             self.taskmanager.add("hexedit", arg, ["thread", "gui"])
 
     def propertyNodes(self):
-        if not self.__mainWindow.QPropertyDialog.isVisible():
-            self.__mainWindow.QPropertyDialog.fillInfo(self.currentNodeDir, self.getListCurrentNode())
-            iReturn = self.__mainWindow.QPropertyDialog.exec_()
-            self.__mainWindow.QPropertyDialog.removeAttr()
+        if not self.__mainWindow.PropertyDialog.isVisible():
+            self.__mainWindow.PropertyDialog.fillInfo(self.currentNodeDir, self.getListCurrentNode())
+            iReturn = self.__mainWindow.PropertyDialog.exec_()
+            self.__mainWindow.PropertyDialog.removeAttr()
         else:
             QMessageBox.critical(self, "Erreur", u"This box is already open")
 

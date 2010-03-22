@@ -20,14 +20,14 @@ add_subdirectory(ide)
 add_subdirectory(utils)
 add_subdirectory(vfs)
 add_subdirectory(widget)
-add_subdirectory(wrapper)
+add_subdirectory(dialog)
 
 set(gui_srcs
   __init__.py
-  _mainWindow.py
+  _mainwindow.py
   gui.py
   gui_rc.py
-  mainWindow.py
+  mainwindow.py
 )
 
 install_file(gui ${gui_srcs})

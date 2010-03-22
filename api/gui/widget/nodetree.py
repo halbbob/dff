@@ -14,7 +14,7 @@
 # 
 
 from PyQt4.QtGui import QApplication, QDockWidget, QHBoxLayout, QWidget
-from PyQt4.QtCore import QModelIndex, QReadWriteLock, QSize, Qt, SIGNAL
+from PyQt4.QtCore import QModelIndex, QReadWriteLock, QSize, Qt, SIGNAL, QEvent
 
 from api.taskmanager import *
 from api.vfs.libvfs import *
@@ -22,7 +22,6 @@ from api.gui.itemview.treeitemmodel import TreeItemModel
 from api.gui.itemview.treeview import TreeView
 
 from ui.gui.vfs.docknodelist import DockNodeList
-from ui.gui.wrapper.connectorCallback import ConnectorCallback
 
 class NodeTree():
     class __NodeTree(QWidget):
@@ -37,25 +36,17 @@ class NodeTree():
             self.childSelected = None
             self.childSelectedLock = QReadWriteLock()
         
-            self.configure()
+            self.setObjectName("Browser")
+            self.resize(300, 300)
             self.g_display()
             self.initCallback()
         
-        def configure(self):
-            self.setObjectName("Browser")
-            self.resize(300, 300)
-            
         def g_display(self):
             self.layout = QHBoxLayout(self)
             
-            # Browser 
-            tmp = ["Virtual File System"]
-            self.treeItemModel = TreeItemModel(tmp)
+            self.treeItemModel = TreeItemModel(["Virtual File System"])
             self.treeView = TreeView(self, self.__mainWindow, self.treeItemModel)
-
             self.layout.addWidget(self.treeView)
-            
-            # Set Model and Resize
             self.treeView.setModel(self.treeItemModel)
             
             self.treeItemModel.addRootVFS()
@@ -66,18 +57,23 @@ class NodeTree():
             
         def initCallback(self):
             self.connect(self, SIGNAL("refreshNodeView"), self.refreshNodeView) 
-            self.sched.set_callback("refresh_tree", self.refreshNode)
 	    self.vfs.set_callback("refresh_tree", self.refreshNode)       
  
         def refreshNode(self, node):
-            index = self.treeView.currentIndex()
-            isExpanded = self.treeView.isExpanded(index)
-            item = self.treeItemModel.getItemWithPath(node.absolute())
-            self.treeItemModel.fillAllDirectory(self.treeItemModel.rootItemVFS)
-            self.treeItemModel.reset()
-            self.emit(SIGNAL("refreshNodeView"), index, isExpanded)
-            self.emit(SIGNAL("reloadNodeView"))
-            
+            userEvent = QEvent(1000)
+	    self.__mainWindow.app.postEvent(self, userEvent)
+           
+	def event(self, e):
+	   if e.type() == 1000:
+	     index = self.treeView.currentIndex()
+             isExpanded = self.treeView.isExpanded(index)
+             self.treeItemModel.fillAllDirectory(self.treeItemModel.rootItemVFS)
+             self.treeItemModel.reset()
+             self.emit(SIGNAL("refreshNodeView"), index, isExpanded)
+             self.emit(SIGNAL("reloadNodeView"))
+	     return True
+	   return False
+ 
         def refreshNodeView(self, index, isExpanded):
             self.treeView.expandAllIndex(index)
             self.treeView.setCurrentIndex(index)
@@ -96,11 +92,15 @@ class NodeTree():
         
         def addList(self):
             dockList = DockNodeList(self.__mainWindow, self, len(self.__listFiles))
+	    #en faite ca va creer une  dockwidget automatiquement ici
+	    #car une dock peut etre une widget oue une dock widget ds une dock a differencier des dock
+	    #de depart ca sera plus claire 
+	    self.__mainWindow.dockWidget["list"] = dockList
             self.__listFiles.append(dockList)
             self.__mainWindow.addNewDockWidgetTab(Qt.RightDockWidgetArea, dockList)
             dockList.initContents(self.treeView.getCurrentItem().node, self.treeView.currentIndex())
             return dockList
-    
+   
     instance = None
     
     def __init__(self,  mainWindow = None):

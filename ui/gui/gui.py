@@ -18,8 +18,8 @@ import sys
 from PyQt4.QtGui import QApplication, QSplashScreen, QPixmap
 from PyQt4.QtCore import Qt
 
-from mainWindow import DFF_MainWindow
-from configuration.Translator import DFF_Translator
+from mainwindow import MainWindow
+from configuration.translator import Translator
 from api.loader.loader import loader
 
 # import Resource QT
@@ -28,7 +28,7 @@ import gui_rc
 class gui():
     def __init__(self):
         """Launch GUI"""
-        #translator = DFF_Translator()
+        #translator = Translator()
         self.app = QApplication(sys.argv)
         #app.installTranslator(translator)
         pixmap = QPixmap(":splash.png")
@@ -39,7 +39,7 @@ class gui():
         self.splash.show()
         self.loader = loader()
         self.loader.do_load(modPath, self.splash.showMessage)
-        mainWindow = DFF_MainWindow(self.app)
+        mainWindow = MainWindow(self.app)
         mainWindow.show()
 
         self.splash.finish(mainWindow)

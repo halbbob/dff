@@ -21,10 +21,8 @@ from api.gui.itemview.listview import ListView
 from api.gui.itemview.listmodel import ListModel
 from api.gui.widget.nodelist import NodeList
 
-from ui.gui.utils.utils import DFF_Utils
 from ui.gui.utils.menu import MenuTags, MenuModules
 
-from ui.gui.wrapper.connectorCallback import ConnectorCallback
 
 import os
 
@@ -48,21 +46,20 @@ class DockNodeList(QDockWidget):
         self.setWindowTitle(QApplication.translate("Files", "Files", None, QApplication.UnicodeUTF8))
     
     def addAction(self, mainWindow, nbr):
-        self.__action = QAction(self)
-        self.__action.setCheckable(True)
-        self.__action.setChecked(True)
-        self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(QApplication.translate("MainWindow", "List Files", None, QApplication.UnicodeUTF8) + str(nbr))
-        mainWindow.menuWindowMenuList.addAction(self.__action)
-        self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
+        self.action = QAction(self)
+        self.action.setCheckable(True)
+        self.action.setChecked(True)
+        self.action.setObjectName("actionCoreInformations")
+        self.action.setText(QApplication.translate("MainWindow", "List Files", None, QApplication.UnicodeUTF8) + str(nbr))
+        self.connect(self.action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
     
     def changeVisibleInformations(self):
         if not self.isVisible() :
             self.setVisible(True)
-            self.__action.setChecked(True)
+            self.action.setChecked(True)
         else :
             self.setVisible(False)
-            self.__action.setChecked(False)
+            self.action.setChecked(False)
             
     def g_display(self, mainWindow, dockBrowser):
         self.widget = NodeList(self, mainWindow, dockBrowser)
@@ -80,4 +77,5 @@ class DockNodeList(QDockWidget):
         if bool :
             self.widget.setChildSelected()
         
+
 

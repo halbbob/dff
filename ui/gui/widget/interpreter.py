@@ -349,7 +349,6 @@ class Interpreter(MDockWidget):
         self.__action.setChecked(True)
         self.__action.setObjectName("actionCoreInformations")
         self.__action.setText(QApplication.translate("MainWindow", "DFF interpreter", None, QApplication.UnicodeUTF8))
-        mainWindow.menuWindow.addAction(self.__action)
         self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
     
     def changeVisibleInformations(self):

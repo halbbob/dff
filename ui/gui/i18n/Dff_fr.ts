@@ -14,48 +14,48 @@
     </message>
 </context>
 <context>
-    <name>ConfigureDFF</name>
+    <name>Configure</name>
     <message>
-        <location filename="_configureDFF.py" line="67"/>
+        <location filename="_configure.py" line="67"/>
         <source>Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="68"/>
+        <location filename="_configure.py" line="68"/>
         <source>Language :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="69"/>
+        <location filename="_configure.py" line="69"/>
         <source>Extract Folder :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_configureDFF.py" line="70"/>
+        <location filename="_configure.py" line="70"/>
         <source>Browser</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DFF_ConfigureDFF</name>
+    <name>_Configure</name>
     <message>
-        <location filename="configureDFF.py" line="29"/>
+        <location filename="configure.py" line="29"/>
         <source>French</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="configureDFF.py" line="28"/>
+        <location filename="configure.py" line="28"/>
         <source>English</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="configureDFF.py" line="40"/>
+        <location filename="configure.py" line="40"/>
         <source>Choose Your Directory For Extraction</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>DFF_InfoVFS</name>
+    <name>InfoVFS</name>
     <message>
         <location filename="InfoVFS.py" line="28"/>
         <source>Core Informations</source>
@@ -118,7 +118,7 @@
     </message>
 </context>
 <context>
-    <name>DFF_PropertyDialog</name>
+    <name>PropertyDialog</name>
     <message>
         <location filename="propertyDialog.py" line="71"/>
         <source>Folder</source>
