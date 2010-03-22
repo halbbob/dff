@@ -24,7 +24,6 @@ add_subdirectory(dialog)
 
 set(gui_srcs
   __init__.py
-  _mainwindow.py
   gui.py
   gui_rc.py
   mainwindow.py
