@@ -53,12 +53,11 @@ class STATISTICS(Script):
 
 
 class statistics(Module):
-  def __init__(self):
-    """Show statistics of filetype for a file or a directory, use cwd by default
-ex: statistics
+  """Show statistics of filetype used for a file or a directory
 ex: statistics /mydump/"""
+  def __init__(self):
     Module.__init__(self, "statistics", STATISTICS)
-    self.conf.add('parent', 'node')
+    self.conf.add('parent', 'node', False, "Directory or file to get filetype from")
     self.tags = "information"
 
 

@@ -185,10 +185,10 @@ class SMS(Script):
       return i 
 
 class smsdecode(Module):
-  def __init__(self):
-    """ A sms decoder
+  """ A sms decoder.
 ex: smsdecode /myfile.sms"""
+  def __init__(self):
     Module.__init__(self, "smsdecode", SMS)
-    self.conf.add("file", "node")
-    self.conf.add("header", "bool")
+    self.conf.add("file", "node", False, "SMS file.")
+    self.conf.add("header", "bool", True, "Display SMS header detailed informations.")
     self.tags = "mobile"

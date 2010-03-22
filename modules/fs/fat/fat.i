@@ -51,9 +51,10 @@ namespace std
 %{
 from api.module.module import *
 class FAT(Module):
+  """This module create the tree contained in a fat file system, for normal and deleted files."""
   def __init__(self):
     Module.__init__(self, 'fat', Fat)
-    self.conf.add("parent", "node")
+    self.conf.add("parent", "node", False, "Node containing a FAT file system")
     self.conf.add_const("mime-type", "x86 boot sector")
     self.tags = "file system"
 %}

@@ -161,7 +161,6 @@ class carvingProcess(QWidget, DEventHandler):
 class PyCarver(QWidget, fso):
     def __init__(self):
         fso.__init__(self)
-        QWidget.__init__(self)
         self.name = "carver"
         self.res = results(self.name)
         self.carver = Carver()
@@ -184,6 +183,7 @@ class PyCarver(QWidget, fso):
 
 
     def g_display(self):
+        QWidget.__init__(self)
         self.draw()
         
 
@@ -302,7 +302,9 @@ class PyCarver(QWidget, fso):
 
 
 class interface(Module):
+  """Search for header and footer of a selected mime-type in a node and create the corresponding file.
+     You can use this modules for finding deleted data or data in slack space or in an unknown file system."""
   def __init__(self):
     Module.__init__(self, 'carver', PyCarver)
-    self.conf.add("ifile", "node")
+    self.conf.add("ifile", "node", False, "Node to search data in")
     self.tags = "search"

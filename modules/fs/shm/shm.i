@@ -39,10 +39,14 @@ namespace std
 %{
 from api.module.module import *
 class SHM(Module):
+  """SHM create a copy of the parent file to a new node named filename.\
+It permit to have access to file with write permission without doing any modification in any other files.\n\
+SHM create files stored in RAM so don't use it for huge files.\n\
+SHM is also used by other modules (zip, touch, ...) to create file with content in the VFS in fast way.\n"""
   def __init__(self):
     Module.__init__(self, 'shm', shm)
-    self.conf.add("filename", "string")
-    self.conf.add("parent", "node")
+    self.conf.add("filename", "string", False, "File name of the created file.")
+    self.conf.add("parent", "node", False, "File to copy.")
     self.tags = "shared memory"
 %}
 

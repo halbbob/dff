@@ -32,8 +32,8 @@ class INFO(Script):
     dlist = conf.descr_l
     res = ""
     for i in dlist:
-     if len(i.info):
-       res += "\n\t" + i.type + "\t" + i.name  +  "(" + i.info  + ")"
+     if len(i.description):
+       res += "\n\t" + i.type + "\t" + i.name  +  " (" + i.description  + ")"
      else:
        res += "\n\t" + i.type + "\t" + i.name
     for type, name, val, _from in self.env.get_val_list(conf.val_l):
@@ -65,10 +65,10 @@ class INFO(Script):
   def start(self, args):
     self.modl = self.loader.modules
     self.info = ""
-    try :
-      mname = args.get_string('modules')	
+    mname = args.get_string('modules')	
+    if mname != '':
       self.getmodinfo(mname)
-    except envError, e:
+    else:	
       for mname in self.modl:
 	 self.getmodinfo(mname)
 
@@ -78,4 +78,4 @@ class info(Module):
   def __init__(self):
     Module.__init__(self, "info", INFO)
     self.tags = "builtins"
-    self.conf.add("modules", "string", True) 
+    self.conf.add("modules", "string", True, "Display only info on the selected module") 

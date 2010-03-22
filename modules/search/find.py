@@ -68,11 +68,11 @@ class FIND(Script):
 
 
 class find(Module):
-  def __init__(self):
-    """Search file on the vfs, * wildcard accepted
+  """Search file on the vfs, * wildcard accepted
 ex: find *.sms"""
+  def __init__(self):
     Module.__init__(self, "find", FIND)
-    self.conf.add("pattern", "string")
+    self.conf.add("pattern", "string", False, "Search pattern." )
     self.tags = "search"
 
 

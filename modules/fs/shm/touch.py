@@ -64,8 +64,9 @@ class TOUCH(Script):
    return getattr(self.__instance, attr)
 
 class touch(Module):
+  """Create an empty file with write permissions through SHM."""
   def __init__(self):
     Module.__init__(self, "touch", TOUCH)
     self.tags = "shared memory"
-    self.conf.add("filename", "string")
+    self.conf.add("filename", "string", False, "Path/Name of file to create")
 

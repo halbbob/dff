@@ -37,6 +37,8 @@ class Module(object):
     try :
       if issubclass(self.cl, fso):
         self.conf = self.env.libenv.config(name)
+        if self.__doc__:
+	   self.conf.description = self.__doc__
         self.getflags()
     except TypeError:
       pass      

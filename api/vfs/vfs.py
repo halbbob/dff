@@ -98,8 +98,5 @@ class vfs():
                 info['size'] = info['size'] + i.attr.size
         return info
 
-    def link(self, node,  dest):
-       VFS.Link(node, dest)
-    
-    def link(self, node, name, dest):
-       Link(node, name, dest) 
+    def link(self, node, dest):
+       Link(node, dest)

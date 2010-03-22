@@ -29,12 +29,12 @@ class FILEINFO(Script):
     node = args.get_node("file")
     buff += "File " + node.path + "/" + node.name
     if not node.next.empty():
-      buff += " is linked to\n" + str(node.next.size()) + " files\n" 
+      buff += " is linked to\n" + str(node.next.size()) + " files\n"
     elif node.is_file == 1:
-      buff += " as data content\n"
+      buff += " as data content\n"
       buff += "Size:" + str(node.attr.size) + " \n"
-    elif not node.next.empty() and node.is_dir: 
-      buff += " as data content and is linked to " + (node.next.size()) + " files\n"        
+    elif not node.next.empty() and node.is_dir:
+      buff += " as data content and is linked to " + (node.next.size()) + " files\n" 
       buff += "Size:" + str(node.attr.size) + " \n"
     self.ft.filetype(node)
     map =  node.attr.smap
@@ -55,7 +55,8 @@ class FILEINFO(Script):
     self.res.add_const("result", buff)
 
 class fileinfo(Module):
+  """Display file attribute informations. (size, MAC time, ...)"""
   def __init__(self):
     Module.__init__(self, "fileinfo",  FILEINFO)
-    self.conf.add("file", "node")
+    self.conf.add("file", "node", False, "File where info is searched.")
     self.tags = "information"

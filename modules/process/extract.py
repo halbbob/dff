@@ -123,9 +123,10 @@ class EXTRACT(Script):
       return "extract: Can't create file " + syspath + "\n"
 
 class extract(Module):
+  """Extract file in your operating system file system."""
   def __init__(self):
     Module.__init__(self, "extract", EXTRACT)
-    self.conf.add("files", "lnode")
-    self.conf.add("syspath", "path")
-    self.conf.add("recursive", "bool", True)
+    self.conf.add("files", "lnode", False, "Files or directories list to extract.")
+    self.conf.add("syspath", "path", False, "Local file system path where to extract files.") 
+    self.conf.add("recursive", "bool", True, "Extract recursivly each files in all in sub-directories.")
     self.tags = "process"

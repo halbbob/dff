@@ -46,7 +46,7 @@ exemple: process decodesms *.sms
 find all .sms file and execute decode_sms on each"""
   def __init__(self):
    Module.__init__(self, "batch", BATCH)
-   self.conf.add("modules", "string")
+   self.conf.add("modules", "string", False, "Module to apply.")
 #only module with one node as arg
-   self.conf.add("pattern", "string")
+   self.conf.add("pattern", "string", False, "Pattern to search file on which the module will apply.")
    self.tags = "process"

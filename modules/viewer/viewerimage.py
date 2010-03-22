@@ -158,7 +158,6 @@ class ImageView(QWidget, Script):
     self.vfs = vfs.vfs()
     self.ft = FILETYPE()
     self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
-    self.loadedImage = LoadedImage()
     self.sceneWidth = 0
     #self.sorter = SortImages()
 
@@ -264,6 +263,7 @@ class ImageView(QWidget, Script):
 
   def g_display(self):
     QWidget.__init__(self, None)
+    self.loadedImage = LoadedImage()
     self.factor = 1
     self.vbox = QVBoxLayout()
     self.setLayout(self.vbox)
@@ -310,9 +310,10 @@ class ImageView(QWidget, Script):
 
 
 class viewerimage(Module):
+  """Display content of graphic file"""
   def __init__(self):
     Module.__init__(self, "viewerimage", ImageView)
-    self.conf.add("file", "node")
+    self.conf.add("file", "node", False, "File to display")
     self.conf.add_const("mime-type", "JPEG")
     self.conf.add_const("mime-type", "GIF")
     self.conf.add_const("mime-type", "PNG")

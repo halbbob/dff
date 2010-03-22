@@ -27,6 +27,7 @@ class SHOW_CWD(Script):
     print cwd.path + "/" + cwd.name
 
 class show_cwd(Module):
+  """Display current working directory"""
   def __init__(self):
     Module.__init__(self, "show_cwd", SHOW_CWD)
     self.tags = "builtins"

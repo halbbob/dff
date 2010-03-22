@@ -42,5 +42,5 @@ class post_process(Module):
   """Process a command on each new file created on the vfs"""
   def __init__(self):
     Module.__init__(self, "post_process", POST_PROCESS)
-    self.conf.add("modules", "string")
+    self.conf.add("modules", "string", False, "Module to add to the post processing list")
     self.tags = "process"

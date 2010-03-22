@@ -50,17 +50,17 @@ class SHOW_DB(Script):
 
   def start(self, args):
     res = "Variable DB\n"
-    try :
-      key = args.get_string('key')
+    key = args.get_string('key')
+    if key != "":
       res += self.get_dbinfo(key)
-    except envError, e:
+    else:
      for i in self.env.vars_db:
 	res += self.get_dbinfo(i)
     print res
 
 class show_db(Module):
+  """Show DFF Data-Base from a key-centric view"""
   def __init__(self):
-    """Show DFF Data-Base from a key-centric view"""
     Module.__init__(self, "show_db", SHOW_DB)
     self.tags = "builtins"
-    self.conf.add("key", "string", True)
+    self.conf.add("key", "string", True, "Display only this key value")

@@ -35,6 +35,7 @@ class JOBS(Script):
 
 
 class jobs(Module):
+  """Display launched processus"""
   def __init__(self):
    Module.__init__(self, "jobs", JOBS)
    self.tags = "builtins"

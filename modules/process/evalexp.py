@@ -31,9 +31,11 @@ class EVAL(Script):
       self.res.add_const("result", buff)
  
 class evalexp(Module):
+  """Calculate a mathematical expression
+Ex: evalexp 2+2"""
   def __init__(self):
     Module.__init__(self, "eval", EVAL)
-    self.conf.add("expression", "string")
-    self.conf.add("hex", "bool")
+    self.conf.add("expression", "string", False, "expression")
+    self.conf.add("hex", "bool", True, "Display results as an hexadecimal value")
     self.tags = "process"
 

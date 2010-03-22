@@ -43,8 +43,9 @@ class FG(Script):
 	  pass
 
 class fg(Module):
+  """Switch to a process in background"""
   def __init__(self):
    Module.__init__(self, "fg", FG)
-   self.conf.add("pid", "int")
+   self.conf.add("pid", "int", False, "Process id (use jobs to list process id)")
    self.tags = "builtins"
    self.flags = ["console"]

@@ -47,10 +47,10 @@ class UNZIP(Script):
       attr.thisown = 0
 
 class unzip(Module):
-  """unzip...
-ex: unxor file"""
+  """Decompress zip file and create their content in virtual memory through module SHM.
+This version of unzip store all data in RAM so don't decompress huge file."""
   def __init__(self):
     Module.__init__(self, "unzip", UNZIP)
-    self.conf.add('file', 'node')
+    self.conf.add('file', 'node', False, "File to decompress.")
     self.conf.add_const('mime-type', 'Zip')
     self.tags = "archive"

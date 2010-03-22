@@ -27,9 +27,10 @@ from api.vfs.libvfs import *
 from api.exceptions.libexceptions import *
 
 class streamstrings(Module):
+  """Permit to get only the strings in a file"""
   def __init__(self):
     Module.__init__(self, "streamstrings", streamfs)
-    self.conf.add("parent", "node")
+    self.conf.add("parent", "node", False, "Node to search strings in.")
     self.tags = "shared memory"
     self.flags  = [""]
 
@@ -43,14 +44,9 @@ class streamfs(fso):
     setattr(self, "vwrite", self.vwrite) 
     setattr(self, "vseek", self.vseek) 
     setattr(self, "vclose", self.vclose)
-    setattr(self, "__getstate__", self.__getstate__)
     self.res = results(self.name)
-
-  def __getstate__(self):
-    print "STREAMSTRING GETSTATE ! "
  
   def start(self, args):
-    raise vfsError("streamstrings read parent" + error)
     parent = args.get_node('parent')
     attr  = attrib()
     attr.thisown = 0 

@@ -51,8 +51,9 @@ class Open(Script):
       print  "No module register type " + self.node.attr.string["type"]
     print  "applying module " + mod + " on " + node.path + "/" + node.name
 
-class open(Module):
+class open(Module): 
+  """Automatically apply module in background on a file. The module is determined by the file type."""
   def __init__(self):
    Module.__init__(self, "open", Open)
-   self.conf.add("file", "node")
+   self.conf.add("file", "node", False, "File to open")
    self.tags = "builtins"

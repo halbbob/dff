@@ -64,11 +64,11 @@ class CAT(QTextEdit, Script):
      return self.buff
 
 class cat(Module):
-  def __init__(self):
-    """Show file content
+  """Show text file content
 ex:cat /myfile.txt"""
+  def __init__(self):
     Module.__init__(self, "cat", CAT)
-    self.conf.add("file", "node")
+    self.conf.add("file", "node", False, "File to display content")
     self.conf.add_const("mime-type", "HTML")
     self.conf.add_const("mime-type", "ASCII")
     self.conf.add_const("mime-type", "XML")

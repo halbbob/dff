@@ -27,7 +27,8 @@ class LOAD(Script):
     self.loader.do_load(path.path)	
 
 class load(Module):
+  """Load an external module"""
   def __init__(self):
    Module.__init__(self, "load", LOAD)
-   self.conf.add("file", "path")
+   self.conf.add("file", "path", False, "Local path to the module")
    self.tags = "builtins"

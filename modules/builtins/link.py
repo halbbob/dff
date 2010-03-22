@@ -27,21 +27,14 @@ class LINK(Script):
     if not node:
       self.res.add_const("error", "Can't find file")
       return	
-    try :
-      rename = args.get_string("rename")
-    except envError:
-       pass
-    if rename:
-       self.vfs.link(node, rename, dest)
-    else:
-       self.vfs.link(node, dest) 
+    self.vfs.link(node, dest) 
     self.res.add_const("result",  "linked " + dest.path + "/" + node.name + " created")
 
 
 class link(Module):
   def __init__(self):
+   """Create a link to a file"""
    Module.__init__(self, "link", LINK)
-   self.conf.add("file", "node")
-   self.conf.add("dest", "node")
-   self.conf.add("rename", "string", 1)
+   self.conf.add("file", "node", False, "File to link to")
+   self.conf.add("dest", "node", False, "File pointing to the link")
    self.tags = "builtins"

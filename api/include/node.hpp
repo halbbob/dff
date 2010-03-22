@@ -56,11 +56,9 @@ class Link : public Node
 {
 public:
   Link(Node *, Node *);
-  Link(Node *, string, Node *);
+  ~Link();	
   Node*			node;
-  string 		name;
   list<class Node*>     next;
-  ~Link();
 };
 
 

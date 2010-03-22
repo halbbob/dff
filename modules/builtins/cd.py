@@ -34,7 +34,8 @@ class CD(Script):
 
 
 class cd(Module):
+  """Change current directory"""
   def __init__(self):
    Module.__init__(self, "cd", CD)
-   self.conf.add("dir", "node")
+   self.conf.add("dir", "node", False, "Directory to go in")
    self.tags = "builtins"

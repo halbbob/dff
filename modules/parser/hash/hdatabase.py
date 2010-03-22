@@ -133,12 +133,10 @@ class HDATABASE(Script):
         self.readFileRecord()
 
 class hdatabase(Module):
+    """Compare files hash in NSRL databases and tag it."""
     def __init__(self):
-        """
-        Compare files hash in NSRL databases and tag it
-        """
         Module.__init__(self, "hdatabase", HDATABASE)
-        self.conf.add("conf", "string")
-        self.conf.add("pattern", "string")
+        self.conf.add("conf", "string", False, "Configuration file for hash database.")
+        self.conf.add("pattern", "string", False, "Pattern to search for.")
         self.tags = "hash"
 

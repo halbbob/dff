@@ -34,7 +34,8 @@ class HISTORY(Script):
        pass	
 
 class history(Module):
+  """Display an history of all launched command"""
   def __init__(self):
    Module.__init__(self, "history", HISTORY)
-   self.conf.add("clear", "bool", True)
+   self.conf.add("clear", "bool", True, "Clear the history if true")
    self.tags = "builtins"

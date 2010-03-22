@@ -74,10 +74,10 @@ class LS(Script):
     return buff
 
 class ls(Module):
+  """List file and directory"""
   def __init__(self):
-   """List file and directory"""
    Module.__init__(self, "ls", LS)
-   self.conf.add("node", "node", True)
-   self.conf.add("long", "bool", True)
-   self.conf.add("recursive", "bool", True)
+   self.conf.add("node", "node", True, "Directory to list")
+   self.conf.add("long", "bool", True, "Display size of files")
+   self.conf.add("recursive", "bool", True, "Recurse in sub-directory")
    self.tags = "builtins"

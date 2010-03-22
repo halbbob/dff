@@ -59,6 +59,6 @@ class unxor(Module):
 ex: unxor /myfile key"""
   def __init__(self):
     Module.__init__(self, "unxor", UNXOR)
-    self.conf.add("file", "node")  
-    self.conf.add("key", "string")
+    self.conf.add("file", "node", False, "Encrypted file.")  
+    self.conf.add("key", "string", False, "Password.")
     self.tags = "crypto"

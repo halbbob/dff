@@ -35,6 +35,6 @@ class pipe_exec(Module):
 ex: exec_pipe /file.txt less"""
   def __init__(self):
    Module.__init__(self, "pipe_exec", PIPE_EXEC)
-   self.conf.add("file", "node")
-   self.conf.add("command", "string")
+   self.conf.add("file", "node", False, "File to pipe.")
+   self.conf.add("command", "string", False, "External command line to execute")
    self.tags = "process"	

@@ -41,9 +41,10 @@ namespace std
 %{
 from api.module.module import *
 class LOCAL(Module):
+  """Add file from your operating system to the VFS"""
   def __init__(self):
     Module.__init__(self, 'local', local)
-    self.conf.add("parent", "node", True)
-    self.conf.add("path", "path")
+    self.conf.add("parent", "node", True, "The file will be added as son of this node or as the root node by default.")
+    self.conf.add("path", "path", False, "Path to the file or directory on your operating system.")
     self.tags = "file system"
 %}

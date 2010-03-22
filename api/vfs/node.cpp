@@ -74,15 +74,6 @@ void Node::addchild(Node* path)
 Link::Link(Node *n, Node* p)
 {
   node = n;
-  name = node->name;
-  parent = p;
-  p->addchild(n);
-}
-
-Link::Link(Node *n, string nname, Node *p)
-{
-  node = n;
-  name = nname;
   parent = p;
   p->addchild(n);
 }

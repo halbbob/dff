@@ -72,12 +72,12 @@ class HASH(Script):
             self.res.add_const("result", res)
  
 class hash(Module):
-  def __init__(self):
-    """Hash a file and add the results in the file attribute
+  """Hash a file and add the results in the file attribute.
 ex: hash /myfile"""
+  def __init__(self):
     Module.__init__(self, "hash", HASH)
-    self.conf.add("file", "node")
-    self.conf.add("algorithm", "string", True)
+    self.conf.add("file", "node", False, "file to hash.")
+    self.conf.add("algorithm", "string", True, "Choose the hash algorithm")
     self.conf.add_const("algorithm",  "md5")
     self.conf.add_const("algorithm",  "sha1")
     self.conf.add_const("algorithm",  "sha224")
