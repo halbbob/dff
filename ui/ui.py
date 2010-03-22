@@ -13,7 +13,6 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-
 import sys
 import os
 import getopt
@@ -52,10 +51,13 @@ class usage():
    PROGRAM_USAGE = """DFF\nDigital Forensic Framework\n
 Usage: """ + sys.argv[0] + """ [options]
 Options:
+  -v      --version                  display current version
   -g      --graphical                launch graphical interface
   -t      --test=NAME	             start a specific test
   -h,     --help                     display this help message
 """
+   VERSION = "0.5"
+
    def __init__(self, argv):
      self.argv = argv
      self.graphical = 0
@@ -65,7 +67,7 @@ Options:
    def main(self):
     """Check command line argument"""
     try:
-        opts, args = getopt.getopt(self.argv, "gdht:", [ "graphical",  "debug", "help", "test="])
+        opts, args = getopt.getopt(self.argv, "vgdht:", [ "version", "graphical",  "debug", "help", "test="])
     except getopt.GetoptError:
         self.usage()
     for opt, arg in opts:
@@ -75,9 +77,13 @@ Options:
             self.graphical = 1
         elif opt in ("-t", "--test"):
             self.test = arg
+        elif opt in ("-v", "--version"):
+          print "dff version " + self.VERSION
+          sys.exit(1)
     return
 
    def usage(self):
     """Show usage"""
     print self.PROGRAM_USAGE
     sys.exit(2)
+
