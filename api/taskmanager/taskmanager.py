@@ -34,13 +34,14 @@ class TaskManager:
       proc = Processus(task, self.npid, args, exec_flags)
       self.lprocessus.append(proc)
       self.npid += 1
-      try :
-        if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
-          print "This script is gui only"
-	  self.lprocessus.remove(proc)
-	  return 
-      except AttributeError:
-	  pass
+      if not "thread" in exec_flags:
+        try :
+          if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
+            print "This script is gui only"
+	    self.lprocessus.remove(proc)
+	    return proc
+        except AttributeError:
+	    pass
       sched.enqueue(proc)
       return proc
   __instance = None
