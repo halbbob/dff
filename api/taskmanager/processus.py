@@ -18,6 +18,7 @@ from api.vfs.libvfs import *
 from api.taskmanager.scheduler import *
 from api.type.libtype import *
 from api.vfs import *
+import threading
 
 class Processus(Script):
   def __init__(self, mod, pid, args, exec_flags):
@@ -29,6 +30,7 @@ class Processus(Script):
     self.pid =  pid 
     self.args = args
     self.stream = Queue()
+    self.event = threading.Event() 
 
   def launch(self):
     self.state = "exec"
@@ -47,7 +49,17 @@ class Processus(Script):
     except :
 	 error = sys.exc_info()
          self.error(error)
-    self.error()	
+    self.error()
+    self.event.set()
+    if not "thread" in self.exec_flags:
+	self.result()
+
+  def result(self):
+     try :
+       for type, name, val in self.env.get_val_map(self.res.val_m):
+	     print name + ":" +"\n"  + val
+     except AttributeError:
+       pass
 
   def error(self, trace = None):
     if trace:

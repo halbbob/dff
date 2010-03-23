@@ -17,10 +17,10 @@
 import sys,string, os, traceback, types, completion, signal
 import  line_to_arguments
 from cmd import *
-#from api.vfs import *
-#from api.taskmanager.taskmanager import TaskManager 
 from api.manager.manager import ApiManager
+from api.taskmanager.taskmanager import *
 
+import threading
 from ui.console.complete_raw_input import complete_raw_input
 from ui.history import history
 
@@ -29,7 +29,7 @@ INTRO = "\nWelcome to the Digital Forensic Framework\n"
 IDENTCHARS = string.ascii_letters + string.digits + '\ _='
 
 class console(Cmd):
-    def __init__(self, completekey='tab', stdin=None, stdout=None):
+    def __init__(self, completekey='tab', stdin=None, stdout=None, sigstp=True):
         Cmd.__init__(self, completekey, stdin, stdout)
         self.history = history()
         self.api = ApiManager()
@@ -45,16 +45,17 @@ class console(Cmd):
 	self.completekey = '\t'
 	self.comp_raw = complete_raw_input(self)
         self.completion = completion.Completion(self.comp_raw)
-	if os.name == 'posix':
+	self.proc = None
+	if os.name == 'posix' and sigstp:
   	  signal.signal(signal.SIGTSTP, self.bg)
 
     def bg(self, signum, trace):
-	if self.taskmanager.current_proc:
-	   proc = self.taskmanager.current_proc	
+	if self.proc:
+	   proc = self.proc	
+	   proc.event.set()
   	   proc.exec_flags += ["thread"]
 	   print "\n\n[" + str(proc.pid) + "]" + " background " + proc.name
-	   self.taskmanager.current_proc = None 
-        self.cmdloop()                      	
+	   return None
 
     def precmd(self, line):
         return line
@@ -69,7 +70,7 @@ class console(Cmd):
     def postloop(self):
         print "Exiting..."
 
-    def onecmd(self, line):
+    def onecmd(self, line, wait=False):
         try:
 	    if line == 'exit' or line == 'quit':
 	      return 'stop'
@@ -82,7 +83,14 @@ class console(Cmd):
                     for cmd, args in exc.iteritems():
                        if cmd != None:
 		          self.history.add(line.strip())
-    		          self.taskmanager.add(cmd, args,exec_type)
+    		          self.proc = self.taskmanager.add(cmd, args,exec_type)
+			  if self.proc:
+			    if wait:
+				self.proc.event.wait()	
+			    else:
+			      while not self.proc.event.isSet():
+				self.comp_raw.get_char(1)
+			  self.proc = None
             else:
                 return self.emptyline()
         except:

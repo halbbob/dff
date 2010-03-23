@@ -48,22 +48,33 @@ class complete_raw_input():
          width = twidth
        return width
 
-     def get_char(self):
+     def get_char(self, timeout = 0):
+       ch = '' 
        fd = sys.stdin.fileno()
        if os.isatty(fd):
          oldterm = termios.tcgetattr(fd)
          term = termios.tcgetattr(fd)
          term[3] = term[3] & ~termios.ICANON & ~termios.ECHO
-         term[6] [termios.VMIN] = 1
-         term[6] [termios.VTIME] = 0
+	 if not timeout:
+           term[6] [termios.VMIN] = 1
+           term[6] [termios.VTIME] = timeout
+	 else:
+           term[6] [termios.VMIN] = 0 
+           term[6] [termios.VTIME] = timeout
          try :
            termios.tcsetattr(fd, termios.TCSANOW, term)
            termios.tcsendbreak(fd, 0)
-	   ch = os.read(fd, 7) 
+	   try :
+	     ch = os.read(fd, 7) 
+	   except OSError:
+	     pass
          finally :	
 	   termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
-       else: 	
-           ch = os.read(fd, 7)
+       else: 
+	  try :	
+             ch = os.read(fd, 7)
+	  except OSError:
+		pass
        if len(ch) == 1:
          if ch in string.printable:
            return ch
@@ -163,6 +174,17 @@ class complete_raw_input():
   
    def __getattr__(self, attr):
 	return getattr(self.__instance, attr)
+
+   def wait(self, timeout = None):
+    c = None 
+    self.line = ""
+    self.cursor = 0
+    c = self.get_char()			  
+    if c == 'z':
+	print "BACKGROUNDING THIS FUCKING SHELL !!!!" 
+	return "signal get"
+    return  "loop"
+
 
    def raw_input(self):
     c = None 

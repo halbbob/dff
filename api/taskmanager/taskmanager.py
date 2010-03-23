@@ -28,35 +28,21 @@ class TaskManager:
       self.lprocessus = []
       self.npid = 0
       self.env = env.env() 
-      self.current_proc = None
 
     def add(self, cmd, args, exec_flags):
       task = self.loader.modules[cmd] 
       proc = Processus(task, self.npid, args, exec_flags)
       self.lprocessus.append(proc)
       self.npid += 1
-      if "thread" in exec_flags:
-        sched.enqueue(proc)
-      else:
-	try :
-           if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
-             print "This script is gui only"
-	     self.lprocessus.remove(proc)
-	     return 
-	except AttributeError:
-	      pass
-	thread = threading.Thread(target = proc.launch)
-	self.current_proc = proc
-        thread.start()
-	while (thread.isAlive()):
+      try :
+        if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
+          print "This script is gui only"
+	  self.lprocessus.remove(proc)
+	  return 
+      except AttributeError:
 	  pass
-	self.current_proc = None
-       	try :
-          for type, name, val in self.env.get_val_map(proc.res.val_m):
-	        print name + ":" +"\n"  + val
-        except AttributeError:
-          pass
-#        return proc.res
+      sched.enqueue(proc)
+      return proc
   __instance = None
 
   def __init__(self):

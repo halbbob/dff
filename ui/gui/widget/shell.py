@@ -25,7 +25,7 @@ from api.taskmanager.taskmanager import *
 class ShellView(QTextEdit, console):
     def __init__(self, parent=None, log=''):
         QTextEdit.__init__(self, parent)
-        console.__init__(self)
+        console.__init__(self, sigstp=False)
 	self.completion = completion.Completion(self)
 	taskmanager = TaskManager()
         self.vfs = vfs.vfs()
@@ -128,7 +128,7 @@ class ShellView(QTextEdit, console):
             print e
         line = '\n'.join(self.lines)
 	line = self.precmd(line)
-	stop = self.onecmd(line)
+	stop = self.onecmd(line, True)
         stop = self.postcmd(stop, line)
 	self.cwd = self.vfs.getcwd()
 	self.ps1 = self.cwd.path + "/" + self.cwd.name + " > "
@@ -205,12 +205,12 @@ class ShellView(QTextEdit, console):
         text  = e.text()
         key   = e.key()
 	try:	
-	  if self.taskmanager.current_proc:
+	  if self.proc:
 	    if key == Qt.Key_Z and ord(str(text[0])) == 26:
-	   	proc = self.taskmanager.current_proc	
+	   	proc = self.proc
+	   	proc.event.set()	
   	   	proc.exec_flags += ["thread"]
 	   	self.write("\n[" + str(proc.pid) + "]" + " background " + proc.name + "\n")
-	   	self.taskmanager.current_proc = None 
 		e.ignore()
 		self.lines = []
         	self.__clearLine()
@@ -255,7 +255,8 @@ class ShellView(QTextEdit, console):
         elif key == Qt.Key_Left:
             if self.point : 
                 self.moveCursor(QTextCursor.Left)
-                self.point -= 1 
+                self.point -= 1
+ 
         elif key == Qt.Key_Right:
             if self.point < self.line.length():
                 self.moveCursor(QTextCursor.Right)
