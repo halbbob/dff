@@ -39,6 +39,7 @@ class TaskManager:
           if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
             print "This script is gui only"
 	    self.lprocessus.remove(proc)
+	    proc.event.set()
 	    return proc
         except AttributeError:
 	    pass
