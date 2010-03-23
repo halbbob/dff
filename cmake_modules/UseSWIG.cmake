@@ -111,6 +111,11 @@ MACRO(SWIG_ADD_SOURCE_TO_MODULE name outfiles infile)
     swig_extra_generated_files
     "${swig_outdir}"
     "${infile}")
+  # If swig module name contains uppercase letters, macro above will generates
+  # bad extra files, resulting in swig generation at each 'make'.
+  # This Regexp fixes it.
+  STRING(REGEX REPLACE "(.*/).*\\.py" "\\1${name}.py"
+  	 swig_extra_generated_files ${swig_extra_generated_files})
   SET(swig_generated_file_fullname
     "${swig_generated_file_fullname}/${swig_source_file_name_we}")
   # add the language into the name of the file (i.e. TCL_wrap)
