@@ -41,7 +41,7 @@ class Utils():
 	
     @staticmethod
     def formatSize(size):
-        lsize = [" KB", " MB", " GB"]
+        lsize = [" KB", " MB", " GB", "TB", "PB", "EB"]
         if size < 1024 :
             return str(size) + " bytes"
         
@@ -51,7 +51,7 @@ class Utils():
                 return str(tmp_size) + lsize[i]
             else:
                 size = tmp_size
-
+	return str(tmp_size) + lsize[i]
     @staticmethod
     def getPath(node):
         if not node :
