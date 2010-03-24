@@ -18,6 +18,7 @@
 
 vtime::vtime()
 {
+   year = month = day = hour = minute = second = usecond = 0; 
 }
 
 vtime::~vtime()
