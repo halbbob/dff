@@ -111,7 +111,6 @@ int VFile::write(char *buff, unsigned int size)
    try 
    {
      n = fsobj->vwrite(fd, buff, size);
-     node->attr->size += n;
      return (n);
    }
    catch (vfsError e)
