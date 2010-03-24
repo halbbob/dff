@@ -271,6 +271,7 @@ class Info(QDockWidget):
 class procMB(QMessageBox):
   def __init__(self, parent, mainWindow, pid):
    QMessageBox.__init__(self, parent)
+   self.setWindowTitle("Results")
    self.tm = TaskManager()
    self.pid = pid
    self.env = env.env()
@@ -278,10 +279,11 @@ class procMB(QMessageBox):
    for proc in self.tm.lprocessus:
      if str(proc.pid) == self.pid:
 	try :
-	  res += "\nResult:\n"
           for type, name, val in self.env.get_val_map(proc.res.val_m):
-	        res += name + ": " + val
+	        res += name + ": " + val + "\n"
         except AttributeError:
               pass
         mainWindow.emit(SIGNAL("strResultView"), proc)
+   if res == "":
+      res = "No result"		
    self.setText(res)
