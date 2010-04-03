@@ -146,7 +146,11 @@ int local::vopen(Handle* handle)
   struct stat 	stbuff;
  
    
+#if defined(__FreeBSD__)
+  if ((n = open((handle->name).c_str(), O_RDONLY)) == -1)
+#elif defined(__linux__)
   if ((n = open((handle->name).c_str(), O_RDONLY | O_LARGEFILE)) == -1)
+#endif
     throw vfsError("local::open error can't open file");
   if (stat((handle->name).c_str(), &stbuff) == -1)
     throw vfsError("local::open error can't stat");
@@ -216,7 +220,11 @@ dff_ui64 local::vseek(int fd, dff_ui64 offset, int whence)
    whence = SEEK_CUR;
  else if (whence == 2)
    whence = SEEK_END;
+#if defined(__FreeBSD__)
+ n = lseek(fd, offset, whence);
+#elif defined(__linux__)
  n = lseek64(fd, offset, whence);
+#endif
  if (n == -1)
    {
      throw vfsError("local::vseek can't seek error " + string(strerror(errno)));

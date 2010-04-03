@@ -26,7 +26,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#if defined( __linux__)
 #include <linux/fs.h>
+#elif defined( __FreeBSD__) || defined(__APPLE__)
+#include <sys/disk.h>
+#endif
 
 class u_attrib : public attrib
 {

@@ -66,11 +66,21 @@ u_attrib::u_attrib(struct stat  *st, char *path)
 
   if (S_ISBLK(st->st_mode))
     {
+#if defined(__FreeBSD__) || defined(__APPLE__)
+      if ((fd = open(path, O_RDONLY)) == -1)
+#elif defined(__linux__)
       if ((fd = open(path, O_RDONLY | O_LARGEFILE)) == -1)
+#endif
 	;
       else
 	{
+#if defined(__linux__)
 	  if (ioctl(fd, BLKGETSIZE, &numsectors) < 0)
+#elif defined(__FreeBSD__)
+	  if (ioctl(fd, DIOCGMEDIASIZE, &numsectors) < 0)
+#elif defined(__APPLE__)
+	  if (ioctl(fd, DKIOCGETBLOCKCOUNT, &numsectors) < 0)
+#endif
 	    ;
 	  else
 	      size = (dff_ui64)numsectors * 512;
