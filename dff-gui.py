@@ -1,4 +1,4 @@
-#!/usr/bin/python -i
+#!${PYTHON_BIN_PATH}/python -i
 # DFF -- An Open Source Digital Forensics Framework
 # Copyright (C) 2009-2010 ArxSys
 # This program is free software, distributed under the terms of

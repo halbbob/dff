@@ -93,10 +93,12 @@ ENDIF(WIN32)
 ## Python check
 
 execute_process ( COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process ( COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process ( COMMAND python -c "from distutils.sysconfig import get_python_version; print get_python_version()" OUTPUT_VARIABLE PYTHON_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 if (UNIX)
   execute_process ( COMMAND  python -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"LIBDIR\"] + \"/\" + get_config_vars()[\"LDLIBRARY\"]" OUTPUT_VARIABLE PYTHON_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
   execute_process ( COMMAND  python -c "from distutils.sysconfig import get_python_inc; print get_python_inc()" OUTPUT_VARIABLE PYTHON_INCLUDE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process ( COMMAND  python -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"BINDIR\"]" OUTPUT_VARIABLE PYTHON_BIN_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(NOT PYTHON_LIBRARIES)
     message(SEND_ERROR "No Python library found ; please install Python package, at least version 2.5.")
   else(NOT PYTHON_LIBRARIES)
@@ -112,6 +114,8 @@ else (UNIX)
   find_package(PythonInterp)
 # FIXME for windows validate presence of Python.h in PYTHON_INCLUDE_PATH
 endif(UNIX)
+
+message(STATUS "Python in: ${PYTHON_BIN_PATH}")
 
 ## Python-magic check for Unix only
 if(UNIX)
@@ -175,11 +179,15 @@ endmacro(install_lib)
 #### Deploying package file and DFF startup files
 set(dff_scripts
   __init__.py
-  dff.py
-  dff-gui.py
+#  dff.py
+#  dff-gui.py
 )
 
 install_file(dff_launch ${dff_scripts})
+
+# Override deployment of launcher to add proper Python binary prefix
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dff.py ${CMAKE_CURRENT_BINARY_DIR}/dff.py)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dff-gui.py ${CMAKE_CURRENT_BINARY_DIR}/dff-gui.py)
 
 # Create launcher. Replace CMake variables in it, used after install.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_CURRENT_BINARY_DIR}/dff)
