@@ -69,7 +69,7 @@ public:
 
   EXPORT	unsigned int	count(char *needle, unsigned int len, char wildcard, dff_ui64 start=0, dff_ui64 window=(dff_ui64)-1);
 
-  EXPORT int		fileno();
+  EXPORT int		dfileno();
   EXPORT dff_ui64 	tell();
 };
 

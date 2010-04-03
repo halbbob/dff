@@ -191,7 +191,7 @@ long long  VFile::seek(int offset, int whence)
  
 }
 
-int  VFile::fileno()
+int  VFile::dfileno()
 {
   return (fd);
 }
