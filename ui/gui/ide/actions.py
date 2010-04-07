@@ -35,10 +35,16 @@ class IdeActions():
         self.initMainCallBacks()
 
         self.disableActions()
+        self.mainwindow.menubar.addAction(self.menu.menuAction())
+        self.mainwindow.addToolBar(Qt.TopToolBarArea, self.maintoolbar)
 
     def init(self):
         self.mainActs = []
         self.ideActs = []
+
+    def initMainCallBacks(self):
+        self.newact.connect(self.newact,  SIGNAL("triggered()"), self.newScript)
+        self.openact.connect(self.openact,  SIGNAL("triggered()"), self.openScript)
 
     def initMainActions(self):
         self.maintoolbar = QToolBar()
@@ -49,6 +55,10 @@ class IdeActions():
         self.openact = QAction(QIcon(":script-open.png"),  "Open Script",  self.maintoolbar)
         self.mainActs.append(self.openact)
 
+    def initMainToolbar(self):
+        self.maintoolbar.addAction(self.newact)
+        self.maintoolbar.addAction(self.openact)
+ 
     def initIdeActions(self):
         self.idetoolbar = QToolBar()
 
@@ -66,11 +76,7 @@ class IdeActions():
         
         self.redoact = QAction(QIcon(":redo.png"),  "Redo",  self.idetoolbar)
         self.ideActs.append(self.redoact)
-
-    def initMainToolbar(self):
-        self.maintoolbar.addAction(self.newact)
-        self.maintoolbar.addAction(self.openact)
-    
+   
     def initIdeToolbar(self):
         self.idetoolbar.addAction(self.saveact)
         self.idetoolbar.addAction(self.saveasact)
@@ -78,10 +84,6 @@ class IdeActions():
         self.idetoolbar.addAction(self.undoact)
         self.idetoolbar.addAction(self.redoact)
 
-
-    def initMainCallBacks(self):
-        self.newact.connect(self.newact,  SIGNAL("triggered()"), self.newScript)
-        self.openact.connect(self.openact,  SIGNAL("triggered()"), self.openScript)
 
     def enableActions(self):
         self.newact.setEnabled(True)
@@ -127,7 +129,7 @@ class IdeActions():
     def setMenu(self):
         self.menu = QMenu(self.mainwindow.menubar)
         self.menu.setObjectName("menuIde")
-        self.menu.setTitle(QApplication.translate("MainWindow", "Ide", None, QApplication.UnicodeUTF8))
+        self.menu.setTitle(QApplication.translate("MainWindow", "IDE", None, QApplication.UnicodeUTF8))
 
         self.menu.addAction(self.newact)
         self.menu.addAction(self.openact)

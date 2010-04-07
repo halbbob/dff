@@ -14,7 +14,7 @@
 # 
 
 from PyQt4.QtCore import QSize, SIGNAL, pyqtSignature, QEvent
-from PyQt4.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QIcon, QComboBox, QPushButton, QSortFilterProxyModel
+from PyQt4.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QIcon, QComboBox, QPushButton, QSortFilterProxyModel, QLayout
 from PyQt4.Qt import *
 
 from api.gui.itemview.listview import ListView
@@ -22,6 +22,7 @@ from api.gui.itemview.listmodel import ListModel
 from api.gui.itemview.thumbsitemmodel import ThumbsItemModel
 from api.gui.itemview.thumbsview import ThumbsView
 from api.gui.dialog.extractor import Extractor
+from api.gui.widget.propertytable import PropertyTable
 from api.gui.box.nodecombobox import NodeComboBox
 from api.vfs.libvfs import VFS 
 
@@ -63,9 +64,18 @@ class NodeList(QWidget):
     def g_display(self):
         self.setMinimumSize(QSize(400, 300))
         self.createSubMenu()
-        self.vlayout = QVBoxLayout(self)
+        self.hbaselayout = QHBoxLayout(self)
+        self.vlayout = QVBoxLayout()
         self.hlayout = QHBoxLayout()
+
         self.vlayout.addLayout(self.hlayout)
+
+	self.propertyTable = PropertyTable(self)
+        self.propertyTable.setVisible(False)
+        self.propertyTable.setMinimumSize(QSize(150, 300))
+	self.hbaselayout.addWidget(self.propertyTable)
+
+        self.hbaselayout.addLayout(self.vlayout)
 
         self.initListView()
         self.initThumbsView()
@@ -99,7 +109,12 @@ class NodeList(QWidget):
         self.connect(self.thumSize, SIGNAL("currentIndexChanged(QString)"), self.sizeChanged)
         self.hlayout.addWidget(self.thumSize)
 
+        self.checkboxAttribute = QCheckBox("Show Attributes")
+        self.checkboxAttribute.setCheckState(False)
+        self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged) 
+        self.hlayout.addWidget(self.checkboxAttribute)
 
+        self.checkboxAttribute.setEnabled(False)
         self.thumButton.setEnabled(True)
         self.thumSize.setEnabled(False)
         self.listButton.setEnabled(False)
@@ -108,7 +123,8 @@ class NodeList(QWidget):
         self.comboBoxPath.setMinimumSize(QSize(251,32))
         self.comboBoxPath.setMaximumSize(QSize(16777215,32))
         self.hlayout.addWidget(self.comboBoxPath)
-        
+       
+ 
     def initListView(self):    
         self.ListView = ListView(self, self.__mainWindow)
 	self.ListModel = ListModel(self)
@@ -142,7 +158,7 @@ class NodeList(QWidget):
         self.connect(dockBrowser.treeView, SIGNAL("reloadNodeView"), self.refreshNode)
         dockBrowser.treeView.connect(self, SIGNAL("setIndexAndExpand"), dockBrowser.treeView.setIndexAndExpand)
         dockBrowser.treeView.connect(self, SIGNAL("setIndex"), dockBrowser.treeView.setCurrentIndexForChild)
- 
+
     def refreshNode(self, node):
 	userEvent = QEvent(1000)
 	self.__mainWindow.app.postEvent(self, userEvent)
@@ -187,11 +203,26 @@ class NodeList(QWidget):
         self.reloadChangedView()
 
         #Desactivate thumb buttons
+        self.propertyTable.setVisible(False)
         self.thumButton.setEnabled(True)
         self.thumSize.setEnabled(False)
         self.listButton.setEnabled(False)
 
+    def checkboxAttributeChanged(self, state):
+        if state:
+          if self.ThumbsView.isVisible():
+	     self.propertyTable.setVisible(True)
+        else:
+          self.propertyTable.setVisible(False)	
+
     def thumbActivated(self):
+#XXX if button checked
+       
+        self.checkboxAttribute.setEnabled(True)
+        if self.checkboxAttribute.isChecked():
+          self.propertyTable.setVisible(True)
+	else :
+          self.propertyTable.setVisible(False)
         self.ListView.setVisible(False)
         self.ThumbsView.setVisible(True)
         self.reloadChangedView()
@@ -228,10 +259,11 @@ class NodeList(QWidget):
             self.emit(SIGNAL("setIndexAndExpand"), self, self.currentIndexDir)
     
     def setChildSelected(self):
+	#"get tree directory name"
         if str(self.__browsers.getChild()) <> str(self) :
             index = self.__browsers.treeItemModel.indexWithNode(self.currentNodeDir)
             self.emit(SIGNAL("setIndexAndExpand"), self, index)
-
+#
     def getListCurrentItems(self):
         view = self.viewVisible()
         return view.getListCurrentItems()

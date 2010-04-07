@@ -21,6 +21,7 @@ set(apiguiwidget_srcs
   nodetree.py
   textedit.py
   dockwidget.py
+  propertytable.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

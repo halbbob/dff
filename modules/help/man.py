@@ -76,7 +76,6 @@ class MAN(QWidget, Script):
                                 else:
                                     self.fres += ", " + fval
                 self.fres += "\n"
-
         else:
             self.fres = "no entry for module: " + self.module
 

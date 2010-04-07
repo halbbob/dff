@@ -81,10 +81,19 @@ class ThumbsView(QListView):
         
         if e.button() == Qt.LeftButton :
             self.setCurrentIndex(indexClicked)
-            
+	    #XXX add for menu detailed property       
+
+            item = self.__model.item(indexClicked.row(),indexClicked.column())
+	    self.__parent.propertyTable.fill(item.node)
+ 
         if e.button() == Qt.RightButton:
             if not self.isSelected(indexClicked) :
                 self.setCurrentIndex(indexClicked)
+
+		#XXX add for menu detailed property
+            item = self.__model.item(indexClicked.row(),indexClicked.column())
+	    self.__parent.propertyTable.fill(item.node)
+
             self.submenuFile.popup(QCursor.pos())
             self.submenuFile.show()
             return

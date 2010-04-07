@@ -39,8 +39,8 @@ from ui.gui.configuration.translator import Translator
 from ui.gui.ide.ide import Ide
 from ui.gui.ide.actions import IdeActions
 from ui.gui.widget.info import Info
-from ui.gui.widget.shell import Shell
-from ui.gui.widget.interpreter import Interpreter
+from ui.gui.widget.shell import ShellActions
+from ui.gui.widget.interpreter import InterpreterActions
 from ui.gui.widget.stdio import IO
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
@@ -61,26 +61,34 @@ class MainWindow(QMainWindow):
 	self.initCallback()
         self.initDockWidgets()
 
-        self.menuList = [
-	     ["File", [ ["New_Dump", "Add Dump", self.dialog.addDumps, ":add.png", "Add Dump"],
-		        ["Exit", "Exit", None,  ":exit.png", "Exit"] ], ],
-	     ["Modules", [ ["Load", "Load", self.dialog.loadDriver ] ], ],
-	     ["About",   [ ["About", "?", self.dialog.about ] ],  ],
-	  ] 
+	#menu
+	self.menuList = [ [ "File", [ "New_Dump", "Exit" ] ], 
+			  [ "Modules", [ "Load" ] ],
+		#	  [ "About", [ "About" ] ],
+			] 
 
-        self.actionList = [ 
+	#icon 
+        self.toolbarList = [
+             ["New_Dump"],
+	     ["ApplyModule", "List_Files"]
+	]
+
+        self.actionList = [
+	     ["New_Dump", "Add Dump", self.dialog.addDumps, ":add.png", "Add Dump"],
+	     ["Exit", "Exit", None,  ":exit.png", "Exit"], 
+	     ["Load", "Load", self.dialog.loadDriver, None, None ],
+      	     ["About", "?", self.dialog.about, None, None ],
 	     ["ApplyModule", "ApplyModule", self.ApplyModule.openApplyModule, ":exec.png", "Open With"],
-	     ["Shell", "Shell",  self.addShell, ":shell.png", "Open Shell"],
-             ["Interpreter", "Interpreter", self.addInterpreter, ":interpreter.png", "Open Interpreter"],
 	     ["List_Files", "List Files", self.widget["NodeTree"].addList, ":list.png", "Open List"]
 	  ] 
 
-        self.toolbarList = [
-             ["New_Dump"],
-	     ["ApplyModule", "Shell", "Interpreter", "List_Files"]
-	]
-
         self.setupUi()
+        self.ideActions = IdeActions(self)
+	self.shellActions = ShellActions(self)				
+	self.interpreterActions =InterpreterActions(self)				
+
+	self.addMenu(*["About", ["About"]])
+
         self.readSettings()
        
     def initCallback(self):
@@ -118,9 +126,6 @@ class MainWindow(QMainWindow):
 	   widget.emit(SIGNAL("puttext"), res)
            self.addDockWidgets(widget)
 
-    def addShell(self):
-       self.addSingleDock("Shell", Shell)
-      
     def addInterpreter(self):
        self.addSingleDock("Interpreter", Interpreter)	
  
@@ -176,15 +181,11 @@ class MainWindow(QMainWindow):
 
         self.addDockWidget(dockArea, dockWidget)
     
-    def addResultatDockWidget(self, dockWidget):
-        if self.widget["NodeTree"] is None :
-            self.widget["NodeTree"] = dockWidget
- 
     def addToolBars(self, toolbar):
         """ Init Toolbar"""
         for action in toolbar:
            self.toolBarMain.addAction(self.action[action])
-        self.toolBarMain.addSeparator()
+        #self.toolBarMain.addSeparator()
 
     def addMenu(self, name, actionList = None):
         self.menu[name] = QMenu(self.menubar)
@@ -192,9 +193,7 @@ class MainWindow(QMainWindow):
         self.menu[name].setTitle(name)
         if actionList:
           for action in actionList:
-            self.addAction(*action)
-            self.menu[name].addAction(self.action[action[0]])
-#if suivant si non pas mettre de separator si pas d autre action
+            self.menu[name].addAction(self.action[action])
             self.menu[name].addSeparator()
             self.menubar.addAction(self.menu[name].menuAction())
 
@@ -226,8 +225,6 @@ class MainWindow(QMainWindow):
         self.actionTools.setCheckable(True)
         self.actionTools.setChecked(True)
         self.actionTools.setObjectName("actionTools")
-        self.ideActions = IdeActions(self, None)
-        self.menubar.addAction(self.ideActions.menu.menuAction())
     
     def setupFont(self):
         font = QtGui.QFont()
@@ -256,8 +253,8 @@ class MainWindow(QMainWindow):
         self.setDockNestingEnabled(True)
         self.setDockOptions(QtGui.QMainWindow.AllowNestedDocks|QtGui.QMainWindow.AllowTabbedDocks|QtGui.QMainWindow.AnimatedDocks)
         self.setUnifiedTitleAndToolBarOnMac(False)
-	self.setupMenu(self.menuList)    
         self.setupAction(self.actionList)
+	self.setupMenu(self.menuList)    
  
         self.MenuTags = MenuTags(self, self)
         QtCore.QObject.connect(self.action["Exit"],QtCore.SIGNAL("triggered()"),self.close)
@@ -270,7 +267,6 @@ class MainWindow(QMainWindow):
         self.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBarMain)
         for toolbar in self.toolbarList:
 	   self.addToolBars(toolbar)
-        self.addToolBar(Qt.TopToolBarArea, self.ideActions.maintoolbar)
  
     def closeEvent(self, e):
         settings = QSettings("ArxSys", "DFF-0.5")

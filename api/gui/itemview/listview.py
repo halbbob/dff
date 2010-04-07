@@ -99,11 +99,20 @@ class ListView(QTableView):
         
         if e.button() == Qt.LeftButton:
             self.setCurrentIndex(indexClicked)
+		#XXX add for menu detailed property
+            indexModel = self.__filtermodel.mapToSource(indexClicked)
+            item = self.__model.item(indexModel.row(),  0)
+	    self.__parent.propertyTable.fill(item.node)
             return
         
         if e.button() == Qt.RightButton:
             if not self.isSelected(indexClicked) :
                 self.setCurrentIndex(indexClicked)
+		#XXX add for menu detailed property
+            indexModel = self.__filtermodel.mapToSource(indexClicked)
+            item = self.__model.item(indexModel.row(),  0)
+	    self.__parent.propertyTable.fill(item.node)
+
             self.submenuFile.popup(QCursor.pos())
             self.submenuFile.show()
         return

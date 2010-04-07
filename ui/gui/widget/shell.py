@@ -400,3 +400,15 @@ class Shell(MDockWidget):
 
 #    self.setWindowTitle(n)
 #    self.setWidget(widget)
+
+class ShellActions():
+  def __init__(self, mainwindow):
+     self.mainwindow = mainwindow
+     self.mainwindow.addAction(*["Shell", "Shell",  self.create, ":shell.png", "Open Shell"])
+     self.mainwindow.addToolBars(["Shell"])	
+
+  def create(self):
+     self.mainwindow.addSingleDock("Shell", Shell)
+
+
+

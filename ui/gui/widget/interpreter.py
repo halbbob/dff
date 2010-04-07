@@ -358,3 +358,12 @@ class Interpreter(MDockWidget):
         else :
             self.setVisible(False)
             self.__action.setChecked(False)
+
+class InterpreterActions():
+  def __init__(self, mainwindow):
+    self.mainwindow = mainwindow
+    self.mainwindow.addAction(*["Interpreter", "Interpreter", self.create, ":interpreter.png", "Open Interpreter"])
+    self.mainwindow.addToolBars(["Interpreter"])			
+
+  def create(self):
+    self.mainwindow.addSingleDock("Interpreter", Interpreter)	
