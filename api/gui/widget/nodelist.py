@@ -154,7 +154,7 @@ class NodeList(QWidget):
 
         self.connect(self.comboBoxPath, SIGNAL("currentIndexChanged(const QString & )"),  self.comboBoxPathChanged)
 	self.vfs.set_callback("refresh_tree", self.refreshNode)
-        self.connect(dockBrowser.treeView, SIGNAL("changeDirectory"), self.loadFolder)
+        self.connect(dockBrowser.treeView, SIGNAL("changeDirectory"), self.showFolder)
         self.connect(dockBrowser.treeView, SIGNAL("reloadNodeView"), self.refreshNode)
         dockBrowser.treeView.connect(self, SIGNAL("setIndexAndExpand"), dockBrowser.treeView.setIndexAndExpand)
         dockBrowser.treeView.connect(self, SIGNAL("setIndex"), dockBrowser.treeView.setCurrentIndexForChild)
@@ -165,7 +165,7 @@ class NodeList(QWidget):
   
     def event(self, e):
 	if e.type() == 1000:
-            self.loadFolder(self.currentNodeDir, self.currentIndexDir, 1)
+            self.showFolder(self.currentNodeDir, self.currentIndexDir, 1)
 	    return True
  	return False
        
@@ -185,7 +185,7 @@ class NodeList(QWidget):
         if node.this == self.currentNodeDir.this :
             return
         index = self.comboBoxPath.getBrowserIndex(str(text))
-        self.loadFolder(node, index)
+        self.showFolder(node, index)
         self.emit(SIGNAL("setIndex"), self, self.currentIndexDir)
   
 #    def comboBoxModeChanged(self, index):
@@ -217,7 +217,6 @@ class NodeList(QWidget):
 
     def thumbActivated(self):
 #XXX if button checked
-       
         self.checkboxAttribute.setEnabled(True)
         if self.checkboxAttribute.isChecked():
           self.propertyTable.setVisible(True)
@@ -236,9 +235,10 @@ class NodeList(QWidget):
             view = self.viewVisible()
             if view.getModel().currentNodeDir is not None and view.getModel().currentNodeDir.this == self.currentNodeDir.this :
                 return
-            self.loadFolder(self.currentNodeDir, self.currentIndexDir, 1)
+            self.showFolder(self.currentNodeDir, self.currentIndexDir, 1)
     # Specific type views
-    def loadFolder(self,  node, indexFolder = None,  force = None):
+
+    def showFolder(self,  node, indexFolder = None,  force = None):
         if node is None :
             return
         if self.currentNodeDir is not None :
@@ -252,9 +252,9 @@ class NodeList(QWidget):
         self.comboBoxPath.addPathAndSelect(node, indexFolder)
         
         if self.ThumbsView.isVisible() :
-            self.ThumbsView.loadFolder(node, force)
+            self.ThumbsView.showFolder(node, force)
         if self.ListView.isVisible() or force == 2:
-            self.ListView.loadFolder(node)
+            self.ListView.showFolder(node)
         if force == 2 :
             self.emit(SIGNAL("setIndexAndExpand"), self, self.currentIndexDir)
     
@@ -295,7 +295,7 @@ class NodeList(QWidget):
         #            
         index = dockNodeTree.treeItemModel.index(newcurrent.childNumber(),  0,  currentIndex)
         self.emit(SIGNAL("setIndexAndExpand"), self, index)
-        #    #self.loadFolder(node, index)
+        #    #self.showFolder(node, index)
 
     ###############
     ## CONTEXT  MENU ##
