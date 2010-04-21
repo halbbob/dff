@@ -46,6 +46,7 @@ public:
   map<string, string >   				smap; 
   map<string, vtime* > 					time; 
   map<string, unsigned int >  				imap; 
+  bool 						     deleted;
   dff_ui64	 					size; 
   Handle*						handle;	
 };

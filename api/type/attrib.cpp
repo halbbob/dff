@@ -43,6 +43,7 @@ attrib::attrib()
 {
   size = 0;
   handle = 0;
+  deleted = 0;
 };
 
 attrib::~attrib() 

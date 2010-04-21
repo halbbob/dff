@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["widget", "itemview","dialog", "box", "button"]
+__all__ = ["widget", "itemview","dialog", "box", "button", "model"]

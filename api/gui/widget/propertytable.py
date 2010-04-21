@@ -42,9 +42,7 @@ class PropertyTable(QTableWidget):
       hHeader.setSortIndicator(1, 1)
       hHeader.setSortIndicatorShown(True)
 
-      vHeader = self.verticalHeader()
-      vHeader = QHeaderView(0x2, self)
-      self.setVerticalHeader(vHeader)
+      vHeader = self.verticalHeader().hide()
 
       self.sortByColumn(1) 
       self.setSortingEnabled(True)
