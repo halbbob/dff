@@ -22,6 +22,7 @@ add_subdirectory (module)
 add_subdirectory (type)
 add_subdirectory (vfs)
 add_subdirectory (search)
+add_subdirectory (variant)
 # python only
 add_subdirectory (taskmanager)
 add_subdirectory (manager)

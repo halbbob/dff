@@ -28,23 +28,29 @@
 #include "export.hpp"
 #include "vfile.hpp"
 #include "fso.hpp"
+#include "decoder.hpp"
 
 using namespace std;
 
-class Node 
+class Node
 {
-  public:
+private:
+  uint64_t		offset;
+
+public:
   list<class Node*>     next;
-  Node*			parent;	
-  attrib*		attr;	
-  class fso*		fsobj;	
+  Node*			parent;
+  attrib*		attr;
+  class fso*		fsobj;
+  class mfso*		mfsobj;
+  Decoder		*decoder;
   unsigned int		same;
   string		name;
   string 		path;
-  bool			is_file; 
-  bool			is_root; 
-  string		absolute(void);	
-  bool                  has_child();  
+  bool			is_file;
+  bool			is_root;
+  string		absolute(void);
+  bool                  has_child();
   bool                  empty_child();
   EXPORT class VFile*	open(void);
   Node();
@@ -52,14 +58,14 @@ class Node
   void  		addchild(Node* path);
 };
 
-class Link : public Node
-{
-public:
-  Link(Node *, Node *);
-  ~Link();	
-  Node*			node;
-  list<class Node*>     next;
-};
+// class Link : public Node
+// {
+// public:
+//   Link(Node *, Node *);
+//   ~Link();	
+//   Node*			node;
+//   list<class Node*>     next;
+// };
 
 
 #endif

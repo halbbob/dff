@@ -34,7 +34,7 @@ using namespace std;
 typedef PyObject* (*CBGETFUNC) (void *);
 typedef void (*CBSETFUNC) (void *, PyObject*);
 
-class fso 
+class fso
 {
 //private:
 public:
@@ -45,7 +45,7 @@ public:
   argument*		arg;
   results*		res;
   string 		name;
-  string		stateinfo; 
+  string		stateinfo;
   list<Node*>		nl;
 
   EXPORT 		fso();
