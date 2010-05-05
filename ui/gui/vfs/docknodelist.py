@@ -39,11 +39,11 @@ class DockNodeList(QDockWidget):
         self.addAction(mainWindow,  nbr)
         self.g_display(mainWindow, dockBrowser)
         self.initCallback()
-        self.setObjectName("LISTFILES " + str(nbr))
+        self.setObjectName("NodeBrowserDock " + str(nbr))
 
     def configure(self):
         self.setAllowedAreas(Qt.AllDockWidgetAreas)
-        self.setWindowTitle(QApplication.translate("Files", "Files", None, QApplication.UnicodeUTF8))
+        self.setWindowTitle(QApplication.translate("NodeBrowserDock", "NodeBrowserDock", None, QApplication.UnicodeUTF8))
     
     def addAction(self, mainWindow, nbr):
         self.action = QAction(self)
@@ -62,20 +62,20 @@ class DockNodeList(QDockWidget):
             self.action.setChecked(False)
             
     def g_display(self, mainWindow, dockBrowser):
-        self.widget = NodeList(self, mainWindow, dockBrowser)
-        self.setWidget(self.widget)
+        self.listwidget = NodeList(self, mainWindow, dockBrowser)
+        self.setWidget(self.listwidget)
     
     def initCallback(self):
         self.connect(self, SIGNAL("visibilityChanged(bool)"), self.changedVisibility)
     
     def initContents(self, node, index):
-        self.widget.loadFolder(node, index, 2)
+        self.listwidget.showFolder(node, index, 2)
     
     def changedVisibility(self, bool):
         if not self.isVisible() and not bool :
 	     pass
         if bool :
-            self.widget.setChildSelected()
+            self.listwidget.setChildSelected()
         
 
 

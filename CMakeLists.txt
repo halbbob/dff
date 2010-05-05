@@ -35,7 +35,7 @@ if(UNIX)
     message(STATUS "Will use -g for debugging -- no")
   else(ENABLE_DEBUG)
 #change flag here
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2) 
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g) 
     message(STATUS "Will use -g for debugging -- yes")
   endif(ENABLE_DEBUG)
 endif(UNIX)
@@ -120,6 +120,26 @@ else (UNIX)
 endif(UNIX)
 
 message(STATUS "Python in: ${PYTHON_BIN_PATH}")
+
+
+#XXX SIP TEST 
+FIND_PACKAGE(PythonInterp REQUIRED)
+FIND_PACKAGE(PythonLibrary REQUIRED)
+FIND_PACKAGE(SIP REQUIRED)
+FIND_PACKAGE(PyQt4 REQUIRED)
+INCLUDE(PythonMacros)
+INCLUDE(SIPMacros)
+separate_arguments(PYQT4_SIP_FLAGS)
+SET(SIP_INCLUDES ${PYQT4_SIP_DIR})
+SET(SIP_CONCAT_PARTS 1)
+SET(SIP_EXTRA_OPTIONS ${PYQT4_SIP_FLAGS})
+IF (NOT MSVC)
+  ADD_DEFINITIONS(-fPIC)
+ENDIF ()
+FIND_PACKAGE(Qt4 REQUIRED)
+INCLUDE(${QT_USE_FILE})
+
+#XXX SIP TEST
 
 ## Python-magic check for Unix only
 if(UNIX)

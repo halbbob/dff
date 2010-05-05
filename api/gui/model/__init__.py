@@ -13,17 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-# compiled
-add_subdirectory (dialog)
-add_subdirectory (widget)
-add_subdirectory (itemview)
-add_subdirectory (box)
-add_subdirectory (button)
-add_subdirectory (model)
-
-#### Deploying python __init__ script
-set(apigui_srcs
-  __init__.py
-)
-
-install_file(apigui ${apigui_srcs})
+__all__ = ["vfsitemmodel"]
