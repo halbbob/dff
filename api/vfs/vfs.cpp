@@ -52,8 +52,8 @@ set<Node *>* VFS::GetTree(void)
 
 Node* VFS::GetNode(string path, Node* where)
 {
-  list<Node *>			next;
-  list<Node *>::iterator i;
+  vector<Node *>next = where->next;
+  vector<Node *>::iterator i = next.begin();
 
   if (path == "..")
     return (where->parent());
@@ -205,27 +205,27 @@ string  VFS::sanitaze(string name, Node* parent)
 //    string tmp;
 //    string::iterator i = name.begin();
 
-//    for (; i != name.end(); ++i)
-//    {
-//       if (*i >= ' ' && *i <= '~')
-//         tmp += *i;
-//       else
-//         tmp += '\?';
-//    }
-//    name = tmp;
-//    list<Node *>next = parent->next;
-//    list<Node*>::iterator n = next.begin();
-//    for (; n != next.end(); ++n)
-//    {
-//      if (name == (*n)->name)
-//      {
-//        (*n)->same++;
-//        char num[11] = {0}; 
-//        sprintf(num, "%d", (*n)->same);
-//        name += "." + string(num);
-//      }
-//    }
-//   return (name);
+   for (; i != name.end(); ++i)
+   {
+      if (*i >= ' ' && *i <= '~')
+        tmp += *i;
+      else
+        tmp += '\?';
+   }
+   name = tmp;
+   vector<Node *>next = parent->next;
+   vector<Node*>::iterator n = next.begin();
+   for (; n != next.end(); ++n)
+   {
+     if (name == (*n)->name)
+     {
+       (*n)->same++;
+       char num[11] = {0}; 
+       sprintf(num, "%d", (*n)->same);
+       name += "." + string(num);
+     }
+   }
+  return (name);
 }
 
 Node* VFS::CreateNodeDir(fso* fsobj, Node* parent, string name, attrib *attr, bool refresh)

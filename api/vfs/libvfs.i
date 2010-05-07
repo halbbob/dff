@@ -52,6 +52,7 @@
 %include "std_list.i"
 %include "std_set.i"
 %include "std_map.i"
+%include "std_vector.i"
 %include "std_except.i"
 %include "windows.i"
 %include "stdint.i"
@@ -171,6 +172,7 @@
     return ;
   }
 
+
  static PyObject* __CBgetstate__(void* data)
  {
     PyObject *func, *result = NULL;
@@ -197,6 +199,7 @@
 
 namespace std
 {
+  %template(VecNode)     vector<Node*>;
   %template(ListNode)     list<Node*>;
   %template(SetNode)      set<Node *>;
   %template(Listui64) list<dff_ui64>;
@@ -211,6 +214,25 @@ namespace std
   {
     self->SetCallBack(PythonCallBack, (void* ) pyfunc, type);
     Py_INCREF(pyfunc);
+  }
+
+//XXX 64bits !
+  PyObject* getNodeFromPointer(unsigned int pnode)
+  {
+    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+    PyObject* obj = SWIG_NewPointerObj((void *)pnode, SWIGTYPE_p_Node, 0);
+    SWIG_PYTHON_THREAD_END_BLOCK;
+    return obj;
+  }
+
+  unsigned int getNodePointer(PyObject *obj)
+  {
+    unsigned int ptr;
+
+    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+    SWIG_ConvertPtr(obj, ((void**)&ptr), SWIGTYPE_p_Node, SWIG_POINTER_EXCEPTION);
+    SWIG_PYTHON_THREAD_END_BLOCK;
+    return ptr;
   }
 };
 
@@ -242,4 +264,5 @@ def __iter__(self):
   for node in self.next:  
      yield node
 %}
+
 };
