@@ -19,7 +19,7 @@ add_subdirectory (widget)
 add_subdirectory (itemview)
 add_subdirectory (box)
 add_subdirectory (button)
-add_subdirectory (model)
+#add_subdirectory (model)
 
 #### Deploying python __init__ script
 set(apigui_srcs

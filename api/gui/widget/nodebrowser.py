@@ -18,7 +18,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from api.vfs import *
-
+from api.vfs.libvfs import VFS
 
 from api.gui.widget.propertytable import PropertyTable
 from api.gui.model.vfsitemmodel import  VFSItemModel
@@ -37,17 +37,20 @@ class NodeViewEvent():
   def __init__(self, parent = None):
    self.enterInDirectory = None 
    self.parent = parent
+   self.VFS = VFS.Get()
 
   def mouseReleaseEvent(self, e):
      index = self.indexAt(e.pos())
+     index = self.model().mapToSource(index)
      if index.isValid():
-       node = index.internalPointer()
+       node = self.VFS.getNodeFromPointer(index.internalId())
        self.emit(SIGNAL("nodeClicked"), e.button(), node)
 
   def mouseDoubleClickEvent(self, e):
      index = self.indexAt(e.pos())
+     index = self.model().mapToSource(index)
      if index.isValid():
-       node = index.internalPointer()
+       node = self.VFS.getNodeFromPointer(index.internalId())
        self.emit(SIGNAL("nodeDoubleClicked"), e.button(), node) 
 
   def setEnterInDirectory(self, flag):
@@ -86,6 +89,10 @@ class NodeTableView(QTableView, NodeViewEvent):
       NodeViewEvent.__init__(self, parent)
       self.setShowGrid(False)
       self.setEnterInDirectory(True)
+      self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+      self.setSelectionBehavior(QAbstractItemView.SelectRows)
+	#self.horizontalHeader().setStretchLastSection(True)
+	#self.verticalHeader().hide()
 #changer les font et pas afficher colone de gauche?
 
 class SimpleNodeBrowser(QWidget):
@@ -110,10 +117,12 @@ class SimpleNodeBrowser(QWidget):
 
 class VFSItemProxyModel(QSortFilterProxyModel, VFSItemModel):
   def __init__(self, parent):
-    VFSItemModel.__init__(self, parent)
     QSortFilterProxyModel.__init__(self, parent)
+    VFSItemModel.__init__(self, parent)
     self.parent = parent
-
+#    self.rootItem = self..rootItem
+    #self.vfs = VFS.Get()
+ 
   #def mapFromSource(self, index):
      #print "map from source"
      
@@ -133,8 +142,9 @@ class VFSItemProxyModel(QSortFilterProxyModel, VFSItemModel):
        #print index.internalPointer()
      #return QModelIndex()
 
-  #def setSourceModel(self, model):
-     #self.model = model
+  def setSourceModel(self, model):
+     self.model = model
+     self.rootItem = self.model.rootItem
 
   #def sourceModel(self):
      #return self.model
@@ -147,6 +157,7 @@ class NodeBrowser(QWidget):
     self.name = "nodebrowser"
     self.setObjectName(self.name)
     self.vfs = vfs.vfs()
+    self.VFS = VFS.Get()
     self.parent = parent
     self.button = {}
 #
@@ -176,15 +187,14 @@ class NodeBrowser(QWidget):
     #re threader ? + regeneration des icones a chaque fois ! remettre le cache + autre system ?
     #self.model.setThumbnails(True)
 
+#    self.tableView = NodeTreeView(self)
     self.tableView = NodeTableView(self)
-    #self.tableView.setModel(self.model)
-    self.tableProxyModel = QSortFilterProxyModel(self)
-    self.tableProxyModel.setSourceModel(self.model)
-
-    self.model.setDirPath(self.vfs.getnode('/'))
-    self.tableView.setModel(self.tableProxyModel)
+    
+    self.proxyModel = QSortFilterProxyModel(self)
+    self.proxyModel.setSourceModel(self.model)
+    self.tableView.setModel(self.proxyModel)
     self.tableView.setSortingEnabled(True)
-    #self.tableView.setSortingEnabled(True)
+
 #XXX rajouter un bouton sort case sensitive
 #self.tableView.sortCaseSensitive() 
     self.vlayout.addWidget(self.tableView)
@@ -194,12 +204,7 @@ class NodeBrowser(QWidget):
     #self.vlayout.addWidget(self.treeView)
 
     self.thumbsView = NodeThumbsView(self)
-    #self.thumbsProxyModel = VFSItemProxyModel(self)
-    #self.thumbsProxyModel.setSourceModel(self.model)
-    #self.thumbsView.setModel(self.thumbsProxyModel)    
-#    self.thumbsView.setSortingEnabled(True)
-    
-    self.thumbsView.setModel(self.model)
+    self.thumbsView.setModel(self.proxyModel)    
     self.vlayout.addWidget(self.thumbsView)
 
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
@@ -232,11 +237,10 @@ class NodeBrowser(QWidget):
     #self.treeButton.setEnabled(False)
     self.button["table"].setEnabled(False)
        
-
 #mettre ds un autre layout avec une text box Filter:
     self.filterEdit = QLineEdit(self)
     self.hlayout.addWidget(self.filterEdit)
-    self.connect(self.filterEdit, SIGNAL("textChanged(QString)"), self.tableProxyModel.setFilterWildcard)
+    self.connect(self.filterEdit, SIGNAL("textChanged(QString)"), self.proxyModel.setFilterWildcard)
 
 
     #self.comboBoxPath = NodeComboBox(self)
@@ -247,11 +251,17 @@ class NodeBrowser(QWidget):
     #self.initCallback()
     self.tableActivated()
 
-  def currentModel(self):
+  def currentProxyModel(self):
      if self.thumbsView.isVisible():
        return self.thumbsView.model()
      elif self.tableView.isVisible():
        return self.tableView.model()
+
+  def currentModel(self):
+     if self.thumbsView.isVisible():
+       return self.thumbsView.model().sourceModel()
+     elif self.tableView.isVisible():
+       return self.tableView.model().sourceModel()
  
   def currentView(self):
      if self.thumbsView.isVisible():
@@ -260,17 +270,19 @@ class NodeBrowser(QWidget):
        return self.tableView
   #currentSelectedNodes
   def currentNodes(self):
-     indexList = self.currentView().selectedIndexes()
+     indexList = self.currentView().selectionModel().selectedIndexes()
      nodeList = []
      for index in indexList:
        if index.isValid():
-         nodeList.append(index.internalPointer())
+	 index = self.currentProxyModel().mapToSource(index)
+         nodeList.append(self.VFS.getNodeFromPointer(index.internalId()))
      return nodeList
 
   def currentNode(self):
-     index = self.currentView().currentIndex()
+     index = self.currentView().selectionModel().currentIndex()
      if index.isValid():
-         return index.internalPointer()
+	 index = self.currentProxyModel().mapToSource(index)
+         return self.VFS.getNodeFromPointer(index.internalId())
 
   def nodeClicked(self, mouseButton, node):
      if mouseButton == Qt.LeftButton:
@@ -283,7 +295,6 @@ class NodeBrowser(QWidget):
   def nodeDoubleClicked(self, mouseButton, node):
      if self.currentView().enterInDirectory:
        if len(node.next):
-#XXX
 	 self.currentModel().setDirPath(node) 
        else:	
 	 self.openDefault(node)
