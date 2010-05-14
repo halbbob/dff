@@ -13,12 +13,14 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
-from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize
+from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize, QThread
 from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache
 
 import re
 from api.magic.filetype import *
 from api.vfs import libvfs
+
+from Queue import *
 
 HNAME = 0
 HSIZE = 1
@@ -30,6 +32,79 @@ HMODULE = 5
 pixmapCache = QPixmapCache()
 pixmapCache.setCacheLimit(61440)
 
+class ImageThumbnails(QThread):
+#mettre le cache ici ? 
+  def __init__(self, *args):
+    QThread.__init__(self)
+    self.ft = FILETYPE()
+    self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+    self.thumbQueue = Queue()
+
+  def enqueue(self, parent, index, node):
+    self.thumbQueue.put((parent, index, node))
+    #thumblist.insert((item, node))
+
+  def clear(self):
+     pass
+     #vide la queue -> a utiliser quand on change de repertoire ou quand l'icone queue est desactiver...	
+  def getThumb(self, node):
+     buff = ""
+     if node.attr.size > 6:
+       file = node.open()
+       head = file.find("\xff\xd8\xff", 3, "", 3)
+       if head > 0 and head < node.attr.size:
+         foot = file.find("\xff\xd9", 2, "", int(head))
+         if foot > 0 and foot < node.attr.size:
+           file.seek(head)
+           buff = file.read(foot + 2 - head)
+       file.close()
+     return buff
+
+  def run(self):
+     count = 0
+     while True:
+       (parent, index, node) = self.thumbQueue.get()
+       if node.attr.size != 0: 
+         map = node.attr.smap
+         try:
+           ftype = node.attr.smap["type"] 
+         except IndexError:
+           self.ft.filetype(node)
+           ftype = node.attr.smap["type"]
+         res = self.reg_viewer.match(ftype)
+         if res != None:
+           type = ftype[:ftype.find(" ")]
+           buff = ""
+           tags = None
+           if type in ["JPEG", "JPG", "jpg", "JPEG"]:
+              try:
+                buff = self.getThumb(node)
+              except:
+                buff = ""
+#use  QIODevice ? faster ? / bufferise -> read big image could cause probleme even more it's size is not good and it's not an image ? 
+           if len(buff) == 0:
+             f = node.open()
+             f.seek(0, 0)
+             buff = f.read()
+             f.close()
+           img = QImage()
+           if img.loadFromData(buff, type):
+             img = img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
+             parent.emit(SIGNAL('dataImage'), index, node, img)
+#XXX fix me must update only the icon if possible
+# 50 is the number to create before asking for an updadte
+#tought about that two or more widget use this singleton model
+#tought also about that we change directory and the current queue must be empty (but not for the item of the second viewer...) 
+             count += 1
+             if (not count % 50) or self.thumbQueue.empty():
+	       #print "sending signal laout"
+	       count = 0
+	       #parent.emit(SIGNAL('layoutChanged()')) 
+	
+
+imageThumbnailsThread = ImageThumbnails()
+imageThumbnailsThread.start()
+
 class VFSItemModel(QAbstractItemModel):
   def __init__(self, parent = None):
     QAbstractItemModel.__init__(self, parent)	
@@ -37,9 +112,7 @@ class VFSItemModel(QAbstractItemModel):
     self.map = {}
     self.imagesthumbnails = None
     self.VFS.set_callback("refresh_tree", self.refresh)
-    self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
-    self.ft = FILETYPE()
-#global pour etre reutiliser a chaque model et pas rebouffer de la ram a chaque fois ? 
+    self.connect(self, SIGNAL("dataImage"), self.setDataThumbnails)
 
   def refresh(self, node):
     self.emit(SIGNAL("layoutChanged()")) 
@@ -103,6 +176,12 @@ class VFSItemModel(QAbstractItemModel):
       if section == HMODULE:
         return QVariant('Module')
 
+  def setDataThumbnails(self, index, node, image):
+     pixmap = QPixmap().fromImage(image)
+     pixmapCache.insert(node.absolute(), pixmap)
+     #self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),index,index) 
+     #self.emit(SIGNAL("layoutChanged()")) 
+
   def data(self, index, role):
     if not index.isValid():
       return QVariant()
@@ -138,11 +217,9 @@ class VFSItemModel(QAbstractItemModel):
             if pixmapCache.find(node.absolute()):
               pixmap =  pixmapCache.find(node.absolute())
               return QVariant(QIcon(pixmap))
-            else:	
-              pixmap = self.createThumbnails(node)
-              if pixmap:
-                pixmapCache.insert(node.absolute(), pixmap)
-                return QVariant(QIcon(pixmap))
+            else:
+	      imageThumbnailsThread.enqueue(self, index, node)
+	      #XXX possibilite de renvoyer une icon de fichier entrain d etre loader 	    	
           return QVariant(QIcon(":folder_empty_128.png"))
         else:
           if node.attr.size != 0: 
@@ -153,51 +230,6 @@ class VFSItemModel(QAbstractItemModel):
 
   def setImagesThumbnails(self, flag):
      self.imagesthumbnails = flag
-
-  def getThumb(self, node):
-     buff = ""
-     if node.attr.size > 6:
-       file = node.open()
-       head = file.find("\xff\xd8\xff", 3, "", 3)
-       if head > 0 and head < node.attr.size:
-         foot = file.find("\xff\xd9", 2, "", int(head))
-         if foot > 0 and foot < node.attr.size:
-           file.seek(head)
-           buff = file.read(foot + 2 - head)
-       file.close()
-     return buff
-
-  def createThumbnails(self, node):
-     if node.attr.size != 0: 
-       map = node.attr.smap
-       try:
-         ftype = node.attr.smap["type"] 
-       except IndexError:
-         self.ft.filetype(node)
-         ftype = node.attr.smap["type"]
-       res = self.reg_viewer.match(ftype)
-       if res != None:
-         type = ftype[:ftype.find(" ")]
-         buff = ""
-         tags = None
-         if type in ["JPEG", "JPG", "jpg", "JPEG"]:
-           try:
-              buff = self.getThumb(node)
-           except:
-              buff = ""
-#use  QIODevice ? faster ? / bufferise -> read big image could cause probleme even more it's size is not good and it's not an image ? 
-         if len(buff) == 0:
-           f = node.open()
-           f.seek(0, 0)
-           buff = f.read()
-           f.close()
-         img = QImage()
-         if img.loadFromData(buff, type):
-           img = img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
-           pixmap = QPixmap()
-           pixmap = pixmap.fromImage(img) 
-           return pixmap
-       return None  
  
   def columnCount(self, parent = QModelIndex()):
      return 6 
