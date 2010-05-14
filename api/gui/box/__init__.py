@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["__init__", "boolcombobox", "checkbox", "nodecombobox", "stringcombobox"]
+__all__ = ["__init__", "boolcombobox", "checkbox", "nodecombobox", "stringcombobox", "nodefilterbox.py", "nodeviewbox.py"]

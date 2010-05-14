@@ -17,11 +17,12 @@
 set(apiguiwidget_srcs
   __init__.py
   applymoduletable.py
-  nodelist.py
-  nodetree.py
-  textedit.py
   dockwidget.py
+  nodebrowser.py
+  nodeview.py
   propertytable.py
+  textedit.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})
+

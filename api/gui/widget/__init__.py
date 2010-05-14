@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["applymoduletable", "nodelist", "nodetree", "textedit", "dockwidget", "propertytable"]
+__all__ = ["applymoduletable", "nodebrowser", "nodeview", "textedit", "dockwidget", "propertytable"]

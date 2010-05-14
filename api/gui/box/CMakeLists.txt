@@ -19,8 +19,11 @@ set(box_srcs
   boolcombobox.py
   checkbox.py
   nodecombobox.py
+  nodefilterbox.py
+  nodeviewbox.py
   stringcombobox.py
 )
 
 install_file(box ${box_srcs})
+
 
