@@ -44,7 +44,7 @@ class LocalTests(DffUnittest):
         self.ui.cmd('local --path ' + self.testFile + ' --parent /')
         
         # validate output from framework
-        self.assertEqual(sys.stdout.getvalue(), 'result:\nno problem\n')
+        self.assertFalse(sys.stdout.getvalue())
         self.assertFalse(sys.stderr.getvalue())
 
 
@@ -84,15 +84,17 @@ class LocalTests(DffUnittest):
 
         self.ui.cmd('local --path ' + testDirectory + ' --parent /')
 
-        expectedItems = str(self._itemsCount(os.getcwd()))
         # Expected output after local execution
-        expectedStdout = 'nodes created:\n' + expectedItems + '\nresult:\nno problem\n'
-
-        # validate output from framework
-        self.assertEqual(sys.stdout.getvalue(), expectedStdout)
+# TODO Amount of loaded items is now in 'info -> local'
+#        expectedItems = str(self._itemsCount(os.getcwd()))
+#        expectedStdout = 'nodes created:\n' + expectedItems + '\nresult:\nno problem\n'
+#        self.assertEqual(sys.stdout.getvalue(), expectedStdout)
         # In case of assertion failure above, hidden files exist in directory
         # loaded by this test
-        self.assertFalse(sys.stderr.getvalue(), '')
+
+        # validate output from framework
+        self.assertFalse(sys.stdout.getvalue())
+        self.assertFalse(sys.stderr.getvalue())
         
     def test04_ReadFile(self):
         """ #04 Read 128 byte in previously loaded file
