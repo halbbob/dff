@@ -26,9 +26,8 @@ from api.type import *
 from api.vfs.libvfs import *
 from api.taskmanager import scheduler 
 
-from api.gui.dialog.selectnodes import SelectNodes
 from api.gui.dialog.applymodule import ApplyModule
-from api.gui.widget.nodetree import NodeTree
+#from api.gui.widget.nodetree import NodeTree
 from api.gui.widget.textedit import TextEdit
 from api.gui.widget.dockwidget import DockWidget 
 from api.gui.dialog.property import Property
@@ -46,6 +45,9 @@ from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
 
+#XXX
+from api.gui.widget.nodebrowser import NodeBrowser
+
 class MainWindow(QMainWindow):
     def __init__(self,  app):
         super(MainWindow,  self).__init__()
@@ -55,7 +57,7 @@ class MainWindow(QMainWindow):
 
         self.ApplyModule = ApplyModule(self)
         self.PropertyDialog = Property(self)
-        self.SelectNodes = SelectNodes(self)
+        #self.SelectNodes = SelectNodes(self)
         self.dialog = Dialog(self)
 	
 	self.initCallback()
@@ -79,7 +81,7 @@ class MainWindow(QMainWindow):
 	     ["Load", "Load", self.dialog.loadDriver, None, None ],
       	     ["About", "?", self.dialog.about, None, None ],
 	     ["ApplyModule", "ApplyModule", self.ApplyModule.openApplyModule, ":exec.png", "Open With"],
-	     ["List_Files", "List Files", self.widget["NodeTree"].addList, ":list.png", "Open List"]
+	     ["List_Files", "List Files", self.addBrowser, ":list.png", "Open List"]
 	  ] 
 
         self.setupUi()
@@ -89,8 +91,19 @@ class MainWindow(QMainWindow):
 
 	self.addMenu(*["About", ["About"]])
 
+	self.nodeBrowser = NodeBrowser(self)
+        dockwidget = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
+        dockwidget.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.dockWidget["NodeBrowser"] = dockwidget
+        self.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.dockWidget["NodeBrowser"])
+        self.connect(dockwidget, SIGNAL("resizeEvent"), self.nodeBrowser.resize)
+        self.addDockWidget(Qt.RightDockWidgetArea, dockwidget)
+
         self.readSettings()
-       
+   
+    def addBrowser(self):
+        self.addDockWidgets(NodeBrowser(self)) 
+ 
     def initCallback(self):
         self.sched.set_callback("add_qwidget", self.qwidgetResult)
         self.connect(self, SIGNAL("qwidgetResultView"), self.qwidgetResultView)
@@ -162,17 +175,12 @@ class MainWindow(QMainWindow):
         self.widget = {}
       
         self.addDock("IO", IO)
-        self.addDock("Info", Info) 
- 
-        self.widget["NodeTree"] = NodeTree(self).instance
-        self.setCentralWidget(self.widget["NodeTree"])
-        dock = self.widget["NodeTree"].addList()
-        self.widget["NodeTree"].setChild(dock.widget)
+        self.addDock("Info", Info)
+        #self.setCentralWidget(NodeBrowser(self))
  
     def addNewDockWidgetTab(self, dockArea, dockWidget):
         if dockWidget is None :
             return
-#XXX api/gui/widget/nodetree -> rajoute la dockwidget rightdock \ ["list"] a modifier
         for dock in self.dockWidget.itervalues():
            if self.dockWidgetArea(dock) == dockArea:
              self.addDockWidget(dockArea, dockWidget)
@@ -264,6 +272,7 @@ class MainWindow(QMainWindow):
  
         self.toolBarMain = QtGui.QToolBar(self)
         self.toolBarMain.setWindowTitle("toolBar")
+        self.toolBarMain.setObjectName("toolBar")
         self.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBarMain)
         for toolbar in self.toolbarList:
 	   self.addToolBars(toolbar)

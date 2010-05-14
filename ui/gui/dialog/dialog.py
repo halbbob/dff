@@ -19,7 +19,6 @@ class Dialog():
         for name in sFileName:
             arg = self.env.libenv.argument("gui_input")
             arg.thisown = 0
-            arg.add_node("parent",  self.parent.widget["NodeTree"].treeItemModel.rootItem.node)
 	    arg.add_path("path", str(name))
 	    exec_type = ["thread", "gui"]
             self.taskmanager.add("local", arg, exec_type)

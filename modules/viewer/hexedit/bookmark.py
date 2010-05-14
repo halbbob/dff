@@ -40,6 +40,7 @@ class bookmark(QWidget):
 
     def initFunctions(self):
         self.booktool = QToolBar()
+        self.booktool.setObjectName("Hexedit bookmark toolbar")
 
         self.add = QAction(QIcon(":bookmark_add.png"),  "Add bookmark",  self.booktool)
         self.booktool.addAction(self.add)

@@ -20,6 +20,9 @@ from PyQt4.QtGui import *
 from api.vfs import *
 from api.vfs.libvfs import VFS
 
+from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
+from api.gui.box.nodefilterbox import NodeFilterBox
+from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.widget.propertytable import PropertyTable
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.dialog.extractor import Extractor
@@ -31,69 +34,21 @@ from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.env import *
 
-import sip
-
-class NodeViewEvent():
+class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
-   self.enterInDirectory = None 
-   self.parent = parent
-   self.VFS = VFS.Get()
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()  
 
-  def mouseReleaseEvent(self, e):
-     index = self.indexAt(e.pos())
-     index = self.model().mapToSource(index)
+  def filterAcceptsRow(self, row, parent):
+     index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
-       self.emit(SIGNAL("nodeClicked"), e.button(), node)
+       if not node.empty_child():
+	 return True
+     return False	
 
-  def mouseDoubleClickEvent(self, e):
-     index = self.indexAt(e.pos())
-     index = self.model().mapToSource(index)
-     if index.isValid():
-       node = self.VFS.getNodeFromPointer(index.internalId())
-       self.emit(SIGNAL("nodeDoubleClicked"), e.button(), node) 
-
-  def setEnterInDirectory(self, flag):
-     self.enterInDirectory = flag  
- 
-class NodeThumbsView(QListView, NodeViewEvent):
-  def __init__(self, parent):
-     QListView.__init__(self, parent)
-     NodeViewEvent.__init__(self, parent)
-     width = 64
-     height = 64
-     self.setIconSize(width,  height)       
-     self.setFlow(QListView.LeftToRight)
-     self.setLayoutMode(QListView.SinglePass)
-     self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-     self.setSelectionBehavior(QAbstractItemView.SelectRows)
-     self.setViewMode(QListView.IconMode)
-     self.setUniformItemSizes(False)
-     self.setMovement(QListView.Static)
-     self.setSelectionRectVisible(True)
-     self.setResizeMode(QListView.Adjust)
-     self.setEnterInDirectory(True)
- 
-  def setIconSize(self, width, height):
-    QListView.setIconSize(self, QSize(width, height))
-    self.setGridSize(QSize(width + 10, height + 20)) 
-
-class NodeTreeView(QTreeView, NodeViewEvent):
-  def __init__(self, parent):
-     QTreeView.__init__(self, parent)
-     NodeViewEvent.__init__(self, parent) 
-
-class NodeTableView(QTableView, NodeViewEvent):
-   def __init__(self, parent):
-      QTableView.__init__(self, parent)
-      NodeViewEvent.__init__(self, parent)
-      self.setShowGrid(False)
-      self.setEnterInDirectory(True)
-      self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-      self.setSelectionBehavior(QAbstractItemView.SelectRows)
-	#self.horizontalHeader().setStretchLastSection(True)
-	#self.verticalHeader().hide()
-#changer les font et pas afficher colone de gauche?
+  def columnCount(self, parent = QModelIndex()):
+     return 1
 
 class SimpleNodeBrowser(QWidget):
   def __init__(self, parent, view = NodeThumbsView):
@@ -105,7 +60,7 @@ class SimpleNodeBrowser(QWidget):
     self.vfs = vfs.vfs()
 
     self.model = VFSItemModel(self)
-    self.model.setDirPath(self.vfs.getnode('/'))
+    self.model.setRootPath(self.vfs.getnode('/'))
     self.model.setThumbnails(True)
 
     self.view = view(self)
@@ -115,141 +70,86 @@ class SimpleNodeBrowser(QWidget):
     self.box.addWidget(self.view, 0,0)
     self.setLayout(self.box)
 
-class VFSItemProxyModel(QSortFilterProxyModel, VFSItemModel):
-  def __init__(self, parent):
-    QSortFilterProxyModel.__init__(self, parent)
-    VFSItemModel.__init__(self, parent)
-    self.parent = parent
-#    self.rootItem = self..rootItem
-    #self.vfs = VFS.Get()
- 
-  #def mapFromSource(self, index):
-     #print "map from source"
-     
-     #return QModelIndex()
-
-  #def mapSelectionFromSource(self, itemSelection):
-     #print "map selection from source"
-     #return QItemSelection()
-
-  #def mapSelectionToSource(self, itemSelection):
-     #print "map selection to source"
-     #return QItemSelection()
-
-  #def mapToSource(self, index):
-     #print "map to source"
-     #if index.isValid():
-       #print index.internalPointer()
-     #return QModelIndex()
-
-  def setSourceModel(self, model):
-     self.model = model
-     self.rootItem = self.model.rootItem
-
-  #def sourceModel(self):
-     #return self.model
-
 class NodeBrowser(QWidget):
   def __init__(self, parent):
     QWidget.__init__(self, parent)
-    self.type = "filebrowser"
-    self.icon = None
     self.name = "nodebrowser"
+    self.type = "filebrowser"
     self.setObjectName(self.name)
+
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
-    self.parent = parent
-    self.button = {}
-#
     self.ft = FILETYPE()
     self.env = env.env()	
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
 
-    self.setMinimumSize(QSize(400, 300))
-#gestion du click droit 
+    self.parent = parent
+    self.icon = None
+
     self.createSubMenu()
-    self.hbaselayout = QHBoxLayout(self)
-    self.vlayout = QVBoxLayout()
-    self.hlayout = QHBoxLayout()
-    self.vlayout.addLayout(self.hlayout)
+    self.createLayout()
+    self.addModel("/")
+    self.addProxyModel()
+    self.addNodeLinkTreeView()
+    self.addNodeView()
+    self.addOptionsView()
 
-    self.propertyTable = PropertyTable(self)
-    self.propertyTable.setVisible(False)
-    self.propertyTable.setMinimumSize(QSize(150, 300))
-    self.hbaselayout.addWidget(self.propertyTable)
+  def createLayout(self):
+    self.baseLayout = QVBoxLayout(self)
+    self.browserLayout = QSplitter(self)
+    self.baseLayout.insertWidget(0, self.browserLayout)
+    self.baseLayout.setStretchFactor(self.browserLayout, 1)
+ 
+  def addOptionsView(self):
+    self.nodeViewBox = NodeViewBox(self)
+    self.nodeFilterBox = NodeFilterBox(self)
+    self.baseLayout.insertWidget(0, self.nodeFilterBox)
+    self.baseLayout.insertWidget(0, self.nodeViewBox)
 
-    self.hbaselayout.addLayout(self.vlayout)
+  def addModel(self, path):
     self.model = VFSItemModel(self)
-    self.model.setDirPath(self.vfs.getnode('/'))
+    self.model.setRootPath(self.vfs.getnode(path))
 
+  def addProxyModel(self):
+    self.proxyModel = QSortFilterProxyModel(self)
+    self.proxyModel.setSourceModel(self.model)
+
+  def addNodeLinkTreeView(self):
+    self.treeModel = VFSItemModel(self)
+    self.treeModel.setRootPath(self.vfs.getnode("/"))
+    #self.treeModel.setShowRoot(True)
+    self.treeProxyModel = NodeTreeProxyModel()
+    self.treeProxyModel.setSourceModel(self.treeModel)
+    self.treeView = NodeLinkTreeView(self)
+    self.treeView.setModel(self.treeProxyModel)
+   # self.treeView.setSortingEnabled(True)
+    self.browserLayout.addWidget(self.treeView)
+    #self.connect(self.treeView, SIGNAL("nodeClicked"), self.nodeClicked)
+    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
+
+  def addNodeView(self):
+    self.nodeView = QStackedLayout(self.browserLayout)
+    self.addTableView()
+    self.addThumbsView()
+
+  def addTableView(self): 
+    self.tableView = NodeTableView(self)
+    self.tableView.setModel(self.proxyModel)
+    self.tableView.setSortingEnabled(True)
+    self.nodeView.addWidget(self.tableView)
+    self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
+    self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
     #re threader ? + regeneration des icones a chaque fois ! remettre le cache + autre system ?
     #self.model.setThumbnails(True)
 
-#    self.tableView = NodeTreeView(self)
-    self.tableView = NodeTableView(self)
-    
-    self.proxyModel = QSortFilterProxyModel(self)
-    self.proxyModel.setSourceModel(self.model)
-    self.tableView.setModel(self.proxyModel)
-    self.tableView.setSortingEnabled(True)
-
-#XXX rajouter un bouton sort case sensitive
-#self.tableView.sortCaseSensitive() 
-    self.vlayout.addWidget(self.tableView)
-
-    #self.treeView = NodeTreeView(self)
-    #self.treeView.setModel(self.model)
-    #self.vlayout.addWidget(self.treeView)
-
+  def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
     self.thumbsView.setModel(self.proxyModel)    
-    self.vlayout.addWidget(self.thumbsView)
-
-    self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
+    self.nodeView.addWidget(self.thumbsView)
     self.connect(self.thumbsView, SIGNAL("nodeClicked"), self.nodeClicked)
-    self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
     self.connect(self.thumbsView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
-
-
-    self.createButton("top", self.moveToTop, ":previous.png")
-    self.createButton("table", self.tableActivated,  ":list.png")
-    self.createButton("thumb", self.thumbActivated, ":image.png")
-
-    self.thumSize = QComboBox()
-    self.thumSize.setMaximumWidth(100)
-    self.thumSize.addItem("Small")
-    self.thumSize.addItem("Medium")
-    self.thumSize.addItem("Large")
-    self.connect(self.thumSize, SIGNAL("currentIndexChanged(QString)"), self.sizeChanged)
-    self.hlayout.addWidget(self.thumSize)
-
-    self.checkboxAttribute = QCheckBox("Show Attributes")
-    self.checkboxAttribute.setCheckState(False)
-    self.checkboxAttribute.setEnabled(False)
-    self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged) 
-    self.hlayout.addWidget(self.checkboxAttribute)
-
-    self.checkboxAttribute.setEnabled(False)
-    self.button["thumb"].setEnabled(True)
-    self.thumSize.setEnabled(False)
-    #self.treeButton.setEnabled(False)
-    self.button["table"].setEnabled(False)
-       
-#mettre ds un autre layout avec une text box Filter:
-    self.filterEdit = QLineEdit(self)
-    self.hlayout.addWidget(self.filterEdit)
-    self.connect(self.filterEdit, SIGNAL("textChanged(QString)"), self.proxyModel.setFilterWildcard)
-
-
-    #self.comboBoxPath = NodeComboBox(self)
-    #self.comboBoxPath.setMinimumSize(QSize(251,32))
-    #self.comboBoxPath.setMaximumSize(QSize(16777215,32))
-    #self.hlayout.addWidget(self.comboBoxPath)
- 
-    #self.initCallback()
-    self.tableActivated()
 
   def currentProxyModel(self):
      if self.thumbsView.isVisible():
@@ -268,6 +168,7 @@ class NodeBrowser(QWidget):
        return self.thumbsView
      elif self.tableView.isVisible():
        return self.tableView
+
   #currentSelectedNodes
   def currentNodes(self):
      indexList = self.currentView().selectionModel().selectedIndexes()
@@ -284,77 +185,35 @@ class NodeBrowser(QWidget):
 	 index = self.currentProxyModel().mapToSource(index)
          return self.VFS.getNodeFromPointer(index.internalId())
 
-  def nodeClicked(self, mouseButton, node):
+  def nodeClicked(self, mouseButton, node, index = None):
      if mouseButton == Qt.LeftButton:
-         if self.propertyTable.isVisible():
-            self.propertyTable.fill(node)
+         if self.nodeViewBox.propertyTable.isVisible():
+            self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
        self.submenuFile.popup(QCursor.pos())
        self.submenuFile.show()       
 
-  def nodeDoubleClicked(self, mouseButton, node):
+  def nodeTreeDoubleClicked(self, mouseButton, node, index = None):
      if self.currentView().enterInDirectory:
-       if len(node.next):
-	 self.currentModel().setDirPath(node) 
+       if not node.empty_child():
+	 self.currentModel().setRootPath(node) 
+
+  def nodeDoubleClicked(self, mouseButton, node, index = None):
+     if self.currentView().enterInDirectory:
+       if not node.empty_child():
+	 self.currentModel().setRootPath(node) 
        else:	
 	 self.openDefault(node)
      else:  
          self.openDefault(node)
 
-
-  def createButton(self, name, func, iconName, iconSize = 32):
-     self.button[name] = QPushButton(self)
-     self.button[name].setFixedSize(QSize(iconSize, iconSize))
-     self.button[name].setFlat(True)
-     self.button[name].setIcon(QIcon(iconName))
-     self.button[name].setIconSize(QSize(iconSize, iconSize))
-     self.hlayout.addWidget(self.button[name])
-     self.connect(self.button[name], SIGNAL("clicked()"), func)
- 
-  #def initCallback(self):
-     #self.connect(self.comboBoxPath, SIGNAL("currentIndexChanged(const QString & )"),  self.comboBoxPathChanged)
-       
-  def moveToTop(self):
-     parent =  self.model.rootItem.parent
-     self.model.setDirPath(parent)
-     
-  def tableActivated(self):
-     self.tableView.setVisible(True)
-     self.thumbsView.setVisible(False)
-#    self.treeView.setVisible(False)
-     #self.reloadChangedView()
-##
-     self.checkboxAttribute.setEnabled(False)
-     self.propertyTable.setVisible(False)
-     self.button["thumb"].setEnabled(True)
-     self.thumSize.setEnabled(False)
-     self.button["table"].setEnabled(False)
-     #self.topButton.setEnabled(False)
-  
-  def thumbActivated(self):
-#XXX if button checked
-     self.checkboxAttribute.setEnabled(True)
-     if self.checkboxAttribute.isChecked():
-       self.propertyTable.setVisible(True)
-     else :
-        self.propertyTable.setVisible(False)
-     #self.treeView.setVisible(False)
-     self.tableView.setVisible(False)
-     self.thumbsView.setVisible(True)
-#     self.reloadChangedView()
-#
-     self.button["thumb"].setEnabled(False)
-     self.thumSize.setEnabled(True)
-     #self.treeButton.setEnabled(True)
-     self.button["table"].setEnabled(True)
-     #self.topButton.setEnabled(True)
-
-  def checkboxAttributeChanged(self, state):
-     if state:
-       if self.thumbsView.isVisible():
-         self.propertyTable.setVisible(True)
-     else:
-        self.propertyTable.setVisible(False)	
+  def sizeChanged(self, string):
+     if string == "Small":
+       self.thumbsView.setIconSize(64, 64)
+     elif string == "Medium":
+       self.thumbsView.setIconSize(96, 96)
+     elif string == "Large":
+       self.thumbsView.setIconSize(128, 128)
 
   def openDefault(self, node = None):
      if not node:
@@ -413,7 +272,6 @@ class NodeBrowser(QWidget):
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())
 
-
   def launchExtract(self):
      res = self.extractor.getArgs()
      arg = self.env.libenv.argument("gui_input")
@@ -426,13 +284,4 @@ class NodeBrowser(QWidget):
      arg.add_lnode("files", lnodes)
      arg.add_bool("recursive", int(res["recurse"]))
      self.taskmanager.add("extract", arg, ["thread", "gui"])
-
-  def sizeChanged(self, string):
-     if string == "Small":
-       self.thumbsView.setIconSize(64, 64)
-     elif string == "Medium":
-       self.thumbsView.setIconSize(96, 96)
-     elif string == "Large":
-       self.thumbsView.setIconSize(128, 128)
-
 

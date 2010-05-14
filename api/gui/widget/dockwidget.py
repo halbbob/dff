@@ -6,6 +6,7 @@ class DockWidget(QDockWidget):
     QDockWidget.__init__(self, mainWindow)
     self.init(widget, name)
     self.show()
+    self.setObjectName(name)
 
   def init(self, widget, name):
     self.setAllowedAreas(Qt.AllDockWidgetAreas)

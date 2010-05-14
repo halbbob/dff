@@ -44,8 +44,12 @@ class VFSItemModel(QAbstractItemModel):
       self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
       self.ft = FILETYPE()
 
-  def setDirPath(self, node):
-    self.__map = {} #? 
+  def setRootPath(self, node, item):
+    self.emit(SIGNAL("rootPathChanged()"), item)
+    self.rootItem = node
+    self.reset()  
+
+  def setRootPath(self, node):
     self.rootItem = node
     self.reset()  
  
@@ -193,13 +197,6 @@ class VFSItemModel(QAbstractItemModel):
      else:
        parentItem = self.rootItem 
      childItem = parentItem.next[row]
-
-     #try :
-       #childItem, row = self.map[childItem.absolute()]
-     #except KeyError:
-       #self.map[childItem.absolute()] = (childItem, row)
-
-     #ptr = self.VFS.getNodePointer(childItem)
      index = self.createIndex(row, column, int(childItem.this))
      return index
 
@@ -208,16 +205,16 @@ class VFSItemModel(QAbstractItemModel):
        return QModelIndex()
      childItem = self.VFS.getNodeFromPointer(index.internalId())
      parentItem = childItem.parent
-     
+    
+#use this = this? 
      if parentItem.absolute() == self.rootItem.absolute():
        return QModelIndex()
+     #XXX faster ? 
      n = 0
      for node in parentItem.parent.next:
         if parentItem.absolute() == node.absolute():
 	  break
 	n += 1
-#     parentItem, n = self.map[parentItem.absolute()]
-     #ptr = self.VFS.getNodePointer(parentItem)
      index = self.createIndex(n , 0, int(parentItem.this))
      return index
 
@@ -228,5 +225,3 @@ class VFSItemModel(QAbstractItemModel):
     else:
         self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
   	return not self.parentItem.empty_child()
-
-

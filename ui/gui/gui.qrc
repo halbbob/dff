@@ -1,5 +1,7 @@
 <RCC>
 <qresource>
+    <file alias="filefind.png">icons/filefind.png</file>
+
     <file alias="folder_128.png">icons/filesystem/folder_128.png</file>
     <file alias="folder_documents_128.png">icons/filesystem/folder_documents_128.png</file>
     <file alias="folder_empty_128.png">icons/filesystem/folder_empty_128.png</file>

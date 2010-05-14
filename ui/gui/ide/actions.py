@@ -48,6 +48,7 @@ class IdeActions():
 
     def initMainActions(self):
         self.maintoolbar = QToolBar()
+        self.maintoolbar.setObjectName('ide action toolbar')
 
         self.newact = QAction(QIcon(":script-new.png"),  "New Script",  self.maintoolbar)
         self.mainActs.append(self.newact)

@@ -198,6 +198,7 @@ class selection():
 
     def createToolBar(self):
         self.toolbar = QToolBar()
+	self.toolbar.setObjectName("hexedit selection toolbar")
 
         self.copy = QAction(QIcon(":bookmark_add.png"),  "Copy selection",  self.toolbar)
         self.toolbar.addAction(self.copy)
