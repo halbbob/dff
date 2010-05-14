@@ -29,12 +29,13 @@ class NodeViewBox(QGroupBox):
     self.gridLayout.setAlignment(Qt.AlignLeft)
     self.addPropertyTable()
     self.createButton("top", self.moveToTop, ":previous.png")
-    self.createButton("table", self.tableActivated,  ":list.png")
-    self.createButton("thumb", self.thumbActivated, ":image.png")
+    self.createButton("table", self.tableActivated,  ":view_detailed.png")
+    self.createButton("thumb", self.thumbActivated, ":view_icon.png")
+    self.createButton("leftTree", self.leftTreeActivated, ":view_choose.png")
+    self.createButton("imagethumb", self.imagethumbActivated, ":image.png")
     self.createButton("search", self.searchActivated, ":filefind.png")
     self.createThumbSize()
     self.createCheckBoxAttribute()
-    self.createCheckBoxLeftTree()
     self.tableActivated()
     self.setLayout(self.gridLayout)
 
@@ -76,20 +77,6 @@ class NodeViewBox(QGroupBox):
     self.gridLayout.addWidget(self.checkboxAttribute)
     self.button["table"].setEnabled(False)
 
-  def createCheckBoxLeftTree(self):
-    self.checkboxLeftTree = QCheckBox("Show tree", self)     
-    self.checkboxLeftTree.setCheckState(True)
-    self.checkboxLeftTree.setEnabled(True)
-    self.checkboxLeftTree.setTristate(False)
-    self.connect(self.checkboxLeftTree, SIGNAL("stateChanged(int)"), self.checkboxLeftTreeChanged)
-    self.gridLayout.addWidget(self.checkboxLeftTree)
-  
-  def checkboxLeftTreeChanged(self, state):
-    if state == 0:
-        self.parent.treeView.setVisible(False)
-    else:
-        self.parent.treeView.setVisible(True)
- 
   def checkboxAttributeChanged(self, state):
      if state:
        if self.parent.thumbsView.isVisible():
@@ -100,11 +87,25 @@ class NodeViewBox(QGroupBox):
   def moveToTop(self):
      parent =  self.parent.model.rootItem.parent
      self.parent.model.setRootPath(parent)
-     
+ 
+  def imagethumbActivated(self):
+     if self.parent.model.imagesThumbnails():
+       self.parent.model.setImagesThumbnails(False)
+       self.parent.model.reset()
+     else:
+      self.parent.model.setImagesThumbnails(True)
+      self.parent.model.reset()
+     pass
+ 
+  def leftTreeActivated(self):
+     if self.parent.treeView.isVisible():
+       self.parent.treeView.setVisible(False)
+     else:
+       self.parent.treeView.setVisible(True)
+ 
   def tableActivated(self):
      self.parent.tableView.setVisible(True)
      self.parent.thumbsView.setVisible(False)
-     #self.reloadChangedView()
      self.checkboxAttribute.setEnabled(False)
      self.propertyTable.setVisible(False)
      self.button["thumb"].setEnabled(True)
@@ -119,7 +120,6 @@ class NodeViewBox(QGroupBox):
         self.propertyTable.setVisible(False)
      self.parent.tableView.setVisible(False)
      self.parent.thumbsView.setVisible(True)
-#     self.reloadChangedView()
      self.button["thumb"].setEnabled(False)
      self.thumbSize.setEnabled(True)
      self.button["table"].setEnabled(True)

@@ -121,14 +121,11 @@ class NodeBrowser(QWidget):
   def addNodeLinkTreeView(self):
     self.treeModel = VFSItemModel(self)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
-    #self.treeModel.setShowRoot(True)
     self.treeProxyModel = NodeTreeProxyModel()
     self.treeProxyModel.setSourceModel(self.treeModel)
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
-   # self.treeView.setSortingEnabled(True)
     self.browserLayout.addWidget(self.treeView)
-    #self.connect(self.treeView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
 
   def addNodeView(self):
@@ -143,7 +140,7 @@ class NodeBrowser(QWidget):
     self.nodeView.addWidget(self.tableView)
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
-    #self.model.setThumbnails(True)
+    #self.model.setImagesThumbnails(True)
 
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)

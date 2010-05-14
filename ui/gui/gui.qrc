@@ -2,6 +2,10 @@
 <qresource>
     <file alias="filefind.png">icons/filefind.png</file>
 
+    <file alias="view_icon.png">icons/actions/view_icon.png</file>
+    <file alias="view_choose.png">icons/actions/view_choose.png</file>
+    <file alias="view_detailed.png">icons/actions/view_detailed.png</file>
+    <file alias="view_tree.png">icons/actions/view_tree.png</file>
     <file alias="folder_128.png">icons/filesystem/folder_128.png</file>
     <file alias="folder_documents_128.png">icons/filesystem/folder_documents_128.png</file>
     <file alias="folder_empty_128.png">icons/filesystem/folder_empty_128.png</file>

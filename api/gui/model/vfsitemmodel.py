@@ -32,14 +32,17 @@ class VFSItemModel(QAbstractItemModel):
     QAbstractItemModel.__init__(self, parent)	
     self.VFS = libvfs.VFS.Get()
     self.map = {}
-    self.thumbnails = None
+    self.imagesthumbnails = None
     self.VFS.set_callback("refresh_tree", self.refresh)
   
   def refresh(self, node):
     self.emit(SIGNAL("layoutChanged()")) 
 
-  def setThumbnails(self, flag):
-     self.thumbnails = flag
+  def imagesThumbnails(self):
+     return self.imagesthumbnails
+
+  def setImagesThumbnails(self, flag):
+     self.imagesthumbnails = flag
      if flag:
       self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
       self.ft = FILETYPE()
@@ -129,7 +132,7 @@ class VFSItemModel(QAbstractItemModel):
     if role == Qt.DecorationRole:
       if column == HNAME:
         if node.next.empty():
-          if self.thumbnails:
+          if self.imagesthumbnails:
             icon = self.createThumbnails(node)
             if icon:
               return QVariant(QIcon(icon))

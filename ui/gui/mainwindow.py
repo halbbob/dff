@@ -76,7 +76,7 @@ class MainWindow(QMainWindow):
 	     ["Load", "Load", self.dialog.loadDriver, None, None ],
       	     ["About", "?", self.dialog.about, None, None ],
 	     ["ApplyModule", "ApplyModule", self.ApplyModule.openApplyModule, ":exec.png", "Open With"],
-	     ["List_Files", "List Files", self.addBrowser, ":list.png", "Open List"]
+	     ["List_Files", "List Files", self.addBrowser, ":view_detailed.png", "Open List"]
 	  ] 
 
         self.setupUi()
