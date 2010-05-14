@@ -22,7 +22,6 @@ add_subdirectory (process)
 add_subdirectory (search)
 add_subdirectory (viewer)
 add_subdirectory (help)
-add_subdirectory (test)
 
 set(module_srcs
   __init__.py
