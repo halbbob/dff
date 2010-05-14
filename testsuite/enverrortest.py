@@ -33,9 +33,23 @@ class EnvTests(DffUnittest):
 
     testFile = "/etc/passwd"
 
+    def test01_ValueError(self):
+        """ #01 ValueError raise when loading a non-existent path
+        """
+        badPath = '/non/existent'
+        
+        self._hook_streams(sys.__stdout__.fileno(), sys.__stderr__.fileno())
+        self.ui.cmd('local --path ' + badPath)
+        driverStdout, driverStderr = self._restore_streams()
 
-    def test01_GoodEnv(self):
-        """ #01 Get three existing value from environement module
+        expectedStdout = 'Value error: local path < ' + badPath + ' > doesn\'t exist\n'
+        self.assertFalse(driverStdout)
+        self.assertEqual(sys.stdout.getvalue(), expectedStdout)
+        self.assertFalse(driverStderr)
+        self.assertFalse(sys.stderr.getvalue())
+
+    def test02_GoodEnv(self):
+        """ #02 Get three existing value from environement module
         """
         
         self._hook_streams(sys.__stdout__.fileno(), sys.__stderr__.fileno())
@@ -59,8 +73,8 @@ class EnvTests(DffUnittest):
         self.assertFalse(sys.stderr.getvalue())
 
 
-    def test02_BadEnv(self):
-        """ #02 Error getting a non-existent value from environement module
+    def test03_BadEnv(self):
+        """ #03 Error getting a non-existent value from environement module
         """
 
         # Obtain environement object by processus name
@@ -75,10 +89,13 @@ class EnvTests(DffUnittest):
         self.assertRaises(IndexError, lambda: env.val_m['bad'])
         self.assertRaises(IndexError, lambda: self.tm.env.vars_db['bad'])
 # FIXME unable to test env.get_bool('bad') because it segfault
+
+
         
 suite = unittest.TestSuite()
-suite.addTest(EnvTests('test01_GoodEnv'))
-suite.addTest(EnvTests('test02_BadEnv'))
+suite.addTest(EnvTests('test01_ValueError'))
+suite.addTest(EnvTests('test02_GoodEnv'))
+suite.addTest(EnvTests('test03_BadEnv'))
 res = unittest.TextTestRunner(verbosity=2).run(suite)
 
 if (len(res.errors) or len(res.failures)):
