@@ -169,9 +169,8 @@ class NodeBrowser(QWidget):
      elif self.tableView.isVisible():
        return self.tableView
 
-  #currentSelectedNodes
   def currentNodes(self):
-     indexList = self.currentView().selectionModel().selectedIndexes()
+     indexList = self.currentView().selectionModel().selectedRows()
      nodeList = []
      for index in indexList:
        if index.isValid():
@@ -216,8 +215,8 @@ class NodeBrowser(QWidget):
        self.thumbsView.setIconSize(128, 128)
 
   def openDefault(self, node = None):
+     print 'in open default:'
      if not node:
-       print "open default without node"
        node = self.currentNode()
        if not node:
 	 return
@@ -249,7 +248,6 @@ class NodeBrowser(QWidget):
      self.submenuFile.addAction(QIcon(":hexedit.png"), "Hexeditor", self.launchHexedit, "Hexedit")
      self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
      self.submenuFile.addSeparator()
-								#self -> signal receivver #signal
      self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
 
   def launchHexedit(self):
@@ -261,13 +259,11 @@ class NodeBrowser(QWidget):
         self.taskmanager.add("hexedit", arg, ["thread", "gui"])
 
   def launchProperty(self):
-     #if not self.parent.PropertyDialog.isVisible():
+       #XXX	
        #self.parent.PropertyDialog.fillInfo(self.currentNodeDir, self.getListCurrentNode())
        #iReturn = self.parent.PropertyDialog.exec_()
        #self.parent.PropertyDialog.removeAttr()
-     #else:
-       #QMessageBox.critical(self, "Erreur", u"This box is already open")
-     pass
+       pass
  
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())
