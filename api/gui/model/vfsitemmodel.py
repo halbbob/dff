@@ -27,6 +27,9 @@ HCHANGED = 3
 HMODIFIED = 4
 HMODULE = 5
 
+pixmapCache = QPixmapCache()
+pixmapCache.setCacheLimit(61440)
+
 class VFSItemModel(QAbstractItemModel):
   def __init__(self, parent = None):
     QAbstractItemModel.__init__(self, parent)	
@@ -36,8 +39,7 @@ class VFSItemModel(QAbstractItemModel):
     self.VFS.set_callback("refresh_tree", self.refresh)
     self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.ft = FILETYPE()
-    self.pixmapCache = QPixmapCache()
-    self.pixmapCache.setCacheLimit(61440)
+#global pour etre reutiliser a chaque model et pas rebouffer de la ram a chaque fois ? 
 
   def refresh(self, node):
     self.emit(SIGNAL("layoutChanged()")) 
@@ -133,13 +135,13 @@ class VFSItemModel(QAbstractItemModel):
 	#cache icon folder_*.png
         if node.next.empty():
           if self.imagesthumbnails:
-            if self.pixmapCache.find(node.absolute()):
-              pixmap =  self.pixmapCache.find(node.absolute())
+            if pixmapCache.find(node.absolute()):
+              pixmap =  pixmapCache.find(node.absolute())
               return QVariant(QIcon(pixmap))
             else:	
               pixmap = self.createThumbnails(node)
               if pixmap:
-                self.pixmapCache.insert(node.absolute(), pixmap)
+                pixmapCache.insert(node.absolute(), pixmap)
                 return QVariant(QIcon(pixmap))
           return QVariant(QIcon(":folder_empty_128.png"))
         else:
@@ -217,11 +219,9 @@ class VFSItemModel(QAbstractItemModel):
        return QModelIndex()
      childItem = self.VFS.getNodeFromPointer(index.internalId())
      parentItem = childItem.parent
-    
-#use this = this? 
+#use this = this? #XXX faster ? 
      if parentItem.absolute() == self.rootItem.absolute():
        return QModelIndex()
-     #XXX faster ? 
      n = 0
      for node in parentItem.parent.next:
         if parentItem.absolute() == node.absolute():
