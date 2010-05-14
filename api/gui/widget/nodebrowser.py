@@ -19,20 +19,21 @@ from PyQt4.QtGui import *
 
 from api.vfs import *
 from api.vfs.libvfs import VFS
-
-from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
-from api.gui.box.nodefilterbox import NodeFilterBox
-from api.gui.box.nodeviewbox import NodeViewBox
-from api.gui.widget.propertytable import PropertyTable
-from api.gui.model.vfsitemmodel import  VFSItemModel
-from api.gui.dialog.extractor import Extractor
-from ui.gui.utils.menu import MenuTags
-
-#try non threader ?
 from api.magic.filetype import *
 from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.env import *
+
+from api.gui.box.nodefilterbox import NodeFilterBox
+from api.gui.box.nodeviewbox import NodeViewBox
+from api.gui.dialog.property import Property
+from api.gui.dialog.applymodule import ApplyModule
+from api.gui.dialog.extractor import Extractor
+from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
+from api.gui.widget.propertytable import PropertyTable
+from api.gui.model.vfsitemmodel import  VFSItemModel
+
+from ui.gui.utils.menu import MenuTags
 
 class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
@@ -84,6 +85,7 @@ class NodeBrowser(QWidget):
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
+    self.propertyDialog = Property(self)
 
     self.parent = parent
     self.icon = None
@@ -141,7 +143,6 @@ class NodeBrowser(QWidget):
     self.nodeView.addWidget(self.tableView)
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
-    #re threader ? + regeneration des icones a chaque fois ! remettre le cache + autre system ?
     #self.model.setThumbnails(True)
 
   def addThumbsView(self):
@@ -215,7 +216,6 @@ class NodeBrowser(QWidget):
        self.thumbsView.setIconSize(128, 128)
 
   def openDefault(self, node = None):
-     print 'in open default:'
      if not node:
        node = self.currentNode()
        if not node:
@@ -258,12 +258,14 @@ class NodeBrowser(QWidget):
         arg.add_node("file", node)
         self.taskmanager.add("hexedit", arg, ["thread", "gui"])
 
-  def launchProperty(self):
-       #XXX	
-       #self.parent.PropertyDialog.fillInfo(self.currentNodeDir, self.getListCurrentNode())
-       #iReturn = self.parent.PropertyDialog.exec_()
-       #self.parent.PropertyDialog.removeAttr()
-       pass
+  def launchProperty(self, node = None):
+       if not node:
+         node = self.currentNode()
+         if not node:
+           return
+       self.propertyDialog.fillInfo(node, node.parent.next)
+       self.propertyDialog.exec_()
+       self.propertyDialog.removeAttr()
  
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())

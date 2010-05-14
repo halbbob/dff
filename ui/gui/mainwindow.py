@@ -26,11 +26,11 @@ from api.type import *
 from api.vfs.libvfs import *
 from api.taskmanager import scheduler 
 
-from api.gui.dialog.applymodule import ApplyModule
-#from api.gui.widget.nodetree import NodeTree
 from api.gui.widget.textedit import TextEdit
 from api.gui.widget.dockwidget import DockWidget 
 from api.gui.dialog.property import Property
+from api.gui.widget.nodebrowser import NodeBrowser
+from api.gui.dialog.applymodule import ApplyModule
 
 from ui.gui.configuration.configure import ConfigureDialog
 from ui.gui.configuration.conf import Conf
@@ -45,9 +45,6 @@ from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
 
-#XXX
-from api.gui.widget.nodebrowser import NodeBrowser
-
 class MainWindow(QMainWindow):
     def __init__(self,  app):
         super(MainWindow,  self).__init__()
@@ -56,8 +53,6 @@ class MainWindow(QMainWindow):
         self.vfs = VFS.Get()
 
         self.ApplyModule = ApplyModule(self)
-        self.PropertyDialog = Property(self)
-        #self.SelectNodes = SelectNodes(self)
         self.dialog = Dialog(self)
 	
 	self.initCallback()
