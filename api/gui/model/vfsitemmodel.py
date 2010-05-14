@@ -34,18 +34,16 @@ class VFSItemModel(QAbstractItemModel):
     self.map = {}
     self.imagesthumbnails = None
     self.VFS.set_callback("refresh_tree", self.refresh)
-  
+    self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+    self.ft = FILETYPE()
+    self.pixmapCache = QPixmapCache()
+    self.pixmapCache.setCacheLimit(61440)
+
   def refresh(self, node):
     self.emit(SIGNAL("layoutChanged()")) 
 
   def imagesThumbnails(self):
      return self.imagesthumbnails
-
-  def setImagesThumbnails(self, flag):
-     self.imagesthumbnails = flag
-     if flag:
-      self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
-      self.ft = FILETYPE()
 
   def setRootPath(self, node, item):
     self.emit(SIGNAL("rootPathChanged()"), item)
@@ -131,11 +129,18 @@ class VFSItemModel(QAbstractItemModel):
           return  QVariant(QColor(Qt.red))
     if role == Qt.DecorationRole:
       if column == HNAME:
+        #use this beside node.absolute() ? faster ? 
+	#cache icon folder_*.png
         if node.next.empty():
           if self.imagesthumbnails:
-            icon = self.createThumbnails(node)
-            if icon:
-              return QVariant(QIcon(icon))
+            if self.pixmapCache.find(node.absolute()):
+              pixmap =  self.pixmapCache.find(node.absolute())
+              return QVariant(QIcon(pixmap))
+            else:	
+              pixmap = self.createThumbnails(node)
+              if pixmap:
+                self.pixmapCache.insert(node.absolute(), pixmap)
+                return QVariant(QIcon(pixmap))
           return QVariant(QIcon(":folder_empty_128.png"))
         else:
           if node.attr.size != 0: 
@@ -143,6 +148,9 @@ class VFSItemModel(QAbstractItemModel):
           else:
 	    return QVariant(QIcon(":folder_128.png"))
     return QVariant() 
+
+  def setImagesThumbnails(self, flag):
+     self.imagesthumbnails = flag
 
   def getThumb(self, node):
      buff = ""
@@ -175,6 +183,7 @@ class VFSItemModel(QAbstractItemModel):
               buff = self.getThumb(node)
            except:
               buff = ""
+#use  QIODevice ? faster ? / bufferise -> read big image could cause probleme even more it's size is not good and it's not an image ? 
          if len(buff) == 0:
            f = node.open()
            f.seek(0, 0)
