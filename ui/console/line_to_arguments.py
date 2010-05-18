@@ -72,7 +72,7 @@ class Line_to_arguments():
         res = 0
 
         if value == None:
-            value = self.vfs.getcwd().path + "/" + self.vfs.getcwd().name
+            #value = self.vfs.getcwd().path + "/" + self.vfs.getcwd().name
             node = self.vfs.getnode(value)
         else:
 	    value = value.replace("\ ", " ")

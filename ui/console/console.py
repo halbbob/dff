@@ -61,7 +61,7 @@ class console(Cmd):
         return line
 
     def postcmd(self, stop, line):
-        self.prompt = "dff " + self.vfs.getcwd().path + "/" + self.vfs.getcwd().name + " > "
+        #self.prompt = "dff " + self.vfs.getcwd().path + "/" + self.vfs.getcwd().name + " > "
         return stop
 
     def preloop(self):
@@ -82,11 +82,12 @@ class console(Cmd):
 		      exec_type += ["thread"]
                     for cmd, args in exc.iteritems():
                        if cmd != None:
-		          self.history.add(line.strip())
+    		          self.history.add(line.strip())
     		          self.proc = self.taskmanager.add(cmd, args,exec_type)
+                          print cmd, args
 			  if self.proc:
 			    if wait:
-				self.proc.event.wait()	
+				self.proc.event.wait()
 			    else:
 			      while not self.proc.event.isSet():
 				self.comp_raw.get_char(1)
@@ -107,7 +108,6 @@ class console(Cmd):
             print e.__class__, ":", e
 
     def cmdloop(self, intro=None):
-        print "FKDLFJDKJFKDJFK"
         self.preloop()
         if self.intro:
           print self.intro
