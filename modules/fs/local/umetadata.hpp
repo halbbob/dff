@@ -14,38 +14,23 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __LOG_HPP__
-#define __LOG_HPP__
+#ifndef __ATTRIBUTES_HPP__
+#define __ATTRIBUTES_HPP__
 
-#include "common.hpp"
+//#include "variant.hpp"
+#include "decoder.hpp"
+#include "node.hpp"
 
-#include <stdio.h>
-#include <stdarg.h>
-
-// define type of logged information
-#define DEBUG "[DEBUG] "
-#define WARNING "[WARNING] "
-#define MY_ERROR "[ERROR] "
-#define INFO "[INFO] "
-#define NONE ""
-
-//define type of the output file
-#define LOCAL (char)0
-#define VIRTUAL (char)1
-
-class Log
+class UMetadata: public Metadata
 {
- private:
-  VFile	*vfile;
-  string lfile;
-  int	fd;
-  char	active;
- public:
-  Log();
-  Log(char a);
-  Log(string output_file, char filetype);
-  ~Log();
-  int	log(char *fmt, ...);
+private:
+  std::string			basePath;
+public:
+  UMetadata();
+  ~UMetadata();
+  void				setBasePath(std::string bp);
+  virtual class FileMapping*	getFileMapping(class Node* node){}
+  virtual class Attributes*	getAttributes(class Node* node);
 };
 
 #endif

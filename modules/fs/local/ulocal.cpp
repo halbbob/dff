@@ -26,63 +26,61 @@
 #include <sstream>
 #include <errno.h>
 
-void local::iterdir(Node* dir)
+void local::iterdir(std::string dir, Node *parent)
 {
-    struct stat		stbuff; 
-    struct dirent*	dp;
-    DIR*		dfd;
-    list<Node* >	ldir;
-
-    unsigned long long total = 0;
-    ldir.push_back(dir);
-    while (!ldir.empty()) 
+  struct stat		stbuff; 
+  struct dirent*	dp;
+  DIR*			dfd;
+  Node*			tmp;
+  uint64_t		total;
+  string		upath;
+  uint64_t		id;
+  
+  if ((dfd = opendir(dir.c_str())))
     {
-      Node* cnode = ldir.front();
-      ldir.pop_front();
-
-      string cpath = cnode->attr->handle->name; 
-
-      if ((dfd = opendir(cpath.c_str())))
-      {
-        while ((dp = readdir(dfd)))
-        {
-          Node*		tmp; 
-  	  u_attrib*   	attr;
-
-          if (!strcmp(dp->d_name, ".")  || !strcmp(dp->d_name, ".."))
-	     continue; 
-          string upath =  string(cpath + string("/") + string(dp->d_name));
-          if (lstat(upath.c_str(), &stbuff) != -1)
-          {
-            attr = new u_attrib(&stbuff);
- 	    attr->handle = new Handle(upath);
-	    lpath.push_back(upath); //XXX added for seriz
-            if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-            {
-	      tmp = CreateNodeDir(cnode, dp->d_name, attr);
-	      ldir.push_back(tmp);
-              total++;
-            }
-            else
-            {
-	      tmp = CreateNodeFile(cnode, dp->d_name, attr);
-              total++;
-            }
-          }
-        }
-        closedir(dfd);
-      }
+      while (dp = readdir(dfd))
+	{
+	  if (!strcmp(dp->d_name, ".")  || !strcmp(dp->d_name, ".."))
+	    continue; 
+	  upath = dir + "/" + dp->d_name;
+	  if (lstat(upath.c_str(), &stbuff) != -1)
+	    {
+	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
+		{
+		  tmp = new Node(dp->d_name, parent, id);
+		  tmp->setFsobj(this);
+		  tmp->setDecoder(this->attrib);
+		  total++;
+		  this->iterdir(upath, tmp);
+		}
+	      else
+		{
+		  tmp = new Node(dp->d_name, parent, id);
+		  tmp->setFsobj(this);
+		  tmp->setDecoder(this->attrib);
+		  total++;
+		}
+	    }
+	}
+      closedir(dfd);
     }
-    res->add_const("nodes created", total);
+  //res->add_const("nodes created", total);
 }
 
-local::local()
+local::local(): mfso("")
 {
-  res = new results("local");
-  this->name = "local";
+  this->attrib = new UMetadata();
+  //res = new results("local");
+  //this->name = "local";
 }
 
-void local::start(argument* ar)
+local::~local()
+{
+}
+
+
+
+void local::start(argument* arg)
 {
   u_attrib*	attr;
   string 	path;
@@ -90,69 +88,61 @@ void local::start(argument* ar)
   struct stat 	stbuff;
   Node*		root;
   Node*		parent;
-  
-  arg = ar; 
-
+  uint64_t	id;
+ 
   nfd = 0;
-  
   try 
-  {
-    arg->get("parent", &parent);
-  }
+    {
+      arg->get("parent", &(this->parent));
+    }
   catch (envError e)
-  {
-    parent = VFS::Get().GetNode("/");
-  }
+    {
+      this->parent = VFS::Get().GetNode("/");
+    }
   try 
-  { 
-    arg->get("path", &tpath);
-  }
+    { 
+      arg->get("path", &tpath);
+    }
   catch (envError e)
-  {
-    res->add_const("error", "conf " + e.error);
-    return ;
-  }
+    {
+      //res->add_const("error", "conf " + e.error);
+      return ;
+    }
   if ((tpath->path.rfind('/') + 1) == tpath->path.length())
     tpath->path.resize(tpath->path.rfind('/'));
   path = tpath->path.substr(tpath->path.rfind("/") + 1);
+  this->basePath = tpath->path.substr(0, tpath->path.rfind('/'));
   if (stat(tpath->path.c_str(), &stbuff) == -1)
   {
-    res->add_const("error", "stat: " + std::string(strerror(errno)));    	
+    //res->add_const("error", "stat: " + std::string(strerror(errno)));    	
     return ;
   }
-  attr = new u_attrib(&stbuff, (char *)tpath->path.c_str());
-  string handle;
-  handle += tpath->path;
-  attr->handle = new Handle(handle);
-  lpath.push_back(tpath->path); //add for seriz
+  this->attrib->setBasePath(this->basePath);
+  this->root = new Node(path, NULL, id);
+  this->root->setFsobj(this);
+  this->root->setDecoder(this->attrib);
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-  {
-
-    root = CreateNodeDir(parent, path, attr);
-    iterdir(root);
-  }
-  else 
-  {
-    root = CreateNodeFile(parent, path, attr);
-  }
-  res->add_const("result", std::string("no problem")); 
-
+    this->iterdir(tpath->path, this->root);
+  this->parent->addChild(this->root);
   return ;
 }
 
-int local::vopen(Handle* handle)
+int local::vopen(Node *node)
 {
   int n;
   struct stat 	stbuff;
- 
-   
-#if defined(__FreeBSD__) || defined(__APPLE__)
-  if ((n = open((handle->name).c_str(), O_RDONLY)) == -1)
+  std::string	file;
+
+  std::cout << "OPEN LOCAL" << std::endl;
+  file = this->basePath + "/" + node->getPath() + node->getName();
+  std::cout << file << std::endl;
+#if defined(__FreeBSD__)
+  if ((n = open(file.c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)
-  if ((n = open((handle->name).c_str(), O_RDONLY | O_LARGEFILE)) == -1)
+    if ((n = open(file.c_str(), O_RDONLY | O_LARGEFILE)) == -1)
 #endif
-    throw vfsError("local::open error can't open file");
-  if (stat((handle->name).c_str(), &stbuff) == -1)
+      throw vfsError("local::open error can't open file");
+  if (stat(file.c_str(), &stbuff) == -1)
     throw vfsError("local::open error can't stat");
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
     throw vfsError("local::open error can't open directory");
@@ -236,32 +226,3 @@ unsigned int local::status(void)
 {
   return (nfd);
 }
-
-/*
-extern "C" 
-{
-  fso* create(void)
-  {
-    return (new local());
-  }
-    
-  void destroy(fso *p)
-  {
-    delete p;
-  }
-
-  class proxy 
-  {
-    public :
-    proxy()
-    {
-     CModule* cmod = new CModule("local", create);
-     cmod->conf->add("path", "path");
-//     cmod->conf->add("parent", "node", 1); //mettre a true, tous le mondel le met a /
-     cmod->conf->add("parent", "node"); //mettre a true, tous le mondel le met a /
-     cmod->conf->add_const("mime-type", std::string("data"));
-     cmod->tags = "fs";
-    }
-  };
-  proxy p;
-}*/

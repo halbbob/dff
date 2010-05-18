@@ -102,7 +102,7 @@ public:
   Variant(uint64_t ll);
   //  Variant(bool b);
   Variant(vtime *vt);
-  Variant(Node *node);
+  Variant(class Node *node);
   Variant(std::list<class Variant*> l);
   Variant(std::map<std::string, class Variant*> m);
   Variant(void *user);
@@ -240,7 +240,7 @@ public:
 	}
       case uint8_t(typeId::Node):
       {
-	  Node **n = static_cast<Node**>(res);
+	  class Node **n = static_cast<Node**>(res);
           switch (this->_type)
 	    {
 	    case typeId::Node:

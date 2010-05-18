@@ -107,6 +107,7 @@ class console(Cmd):
             print e.__class__, ":", e
 
     def cmdloop(self, intro=None):
+        print "FKDLFJDKJFKDJFK"
         self.preloop()
         if self.intro:
           print self.intro

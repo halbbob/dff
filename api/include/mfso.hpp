@@ -19,72 +19,85 @@
 
 #include "decoder.hpp"
 #include "node.hpp"
-
+#include "results.hpp"
+#include "vfile.hpp"
 //Cache manager for attributes and list of allocated blocks for files
-class Cache
-{
-public:
-  Cache();
-  ~Cache();
-};
+// class Cache
+// {
+// public:
+//   Cache();
+//   ~Cache();
+// };
 
 
-class FdManager
-{
-public:
-  FdManager();
-  ~FdManager();
-};
+// class FdManager
+// {
+// public:
+//   FdManager();
+//   ~FdManager();
+// };
 
 
-class mfso
+// class IO
+// {
+//   virtual int 		vopen(Node *n) = 0;
+//   virtual int 		vread(int fd, void *buff, unsigned int size) = 0;
+//   virtual int 		vclose(int fd) = 0;
+//   virtual dff_ui64 	vseek(int fd, dff_ui64 offset, int whence) = 0;
+//   virtual int 		vwrite(int fd, void *buff, unsigned int size) { return 0; } = 0;
+//   virtual unsigned int	status(void) = 0;
+//   virtual void		start(argument* ar);
+// };
+
+class mfso//: //public fso
 {
 private:
-  VFile					*vfile;
-  std::list<Node*>			nl;
-  std::map<std::string, Decoder *>	decoders;
+  results					*res;
+  std::string					name;
+  class VFile					*__vfile;
+  //std::list<class Node*>			nodeList;
+  //std::map<std::string, class Decoder *>	decoders;
 
   // list of children is used to manage a bottom-up view. It gives the ability
   // to ask children file corresponding a block
   // It also gives the ability to destroy children when "this" needs to be deleted
-  std::list<class mfso*>		*children;
+  std::list<class mfso*>			*__children;
 
   // parent is used for having a up to bottom view. It gives the ability
   // to ask parent.
   // it is also useful to tell its parent that the current mfso is going to
   // be destroyed
-  class mfso				*parent;
+  class mfso					*__parent;
 
   //fdmanager
 
 protected:
-  bool					registerDecoder(std::string name, Decoder&);
-  bool					unregisterDecoder(std::string name);
+  //  std::string				name;
+  class Node					*root;
+//   bool					registerDecoder(std::string name, Decoder&);
+//   bool					unregisterDecoder(std::string name);
+//   virtual	uint64_t		getStartOffset() = 0;
+//   virtual	uint64_t		getEndOffset() = 0;
+//  EXPORT class Node			*createNode(class Node *parent, Decoder *decoder, uint64_t offset);
 
 public:
-  EXPORT mfso();
+  //  EXPORT mfso();
+  EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
 
-  virtual void				start(argument* args) = 0;
-  virtual list<uint64_t>		getFileBlocks() = 0;
-  virtual uint64_t			getNextBlock() = 0;
-  virtual uint64_t			getBlockSize() = 0;
-  virtual bool				isRelevant() = 0;
+  EXPORT virtual void		start(argument* args) = 0;
+  EXPORT virtual int32_t 	vopen(class Node *n);
+  EXPORT virtual int32_t 	vread(int fd, void *buff, unsigned int size);
+  EXPORT virtual int32_t 	vwrite(int fd, void *buff, unsigned int size);
+  EXPORT virtual int32_t 	vclose(int fd);
+  EXPORT virtual uint64_t	vseek(int fd, dff_ui64 offset, int whence);
+  EXPORT virtual uint32_t	status(void);
 
-  bool		isBusy();
-  unsigned int	status(void);
+//   bool			isBusy();
 
-  std::map<std::string, Decoder *>	getAvailableDecoders();
+//   std::map<std::string, Decoder *>	getAvailableDecoders();
 
-  virtual	uint64_t		getStartOffset() = 0;
-  virtual	uint64_t		getEndOffset() = 0;
-
-  EXPORT	int			vopen();
-  EXPORT	int			vread();
-  EXPORT	uint64_t		vseek();
-  EXPORT	int			vclose();
-  EXPORT	int			vwrite();
-  Node					*allocateNode(Node *parent);
-}
+//   Node					*allocateNode(Node *parent);
+};
 
 #endif

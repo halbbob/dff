@@ -35,7 +35,7 @@ class Module(object):
     except TypeError:
 	pass
     try :
-      if issubclass(self.cl, fso):
+      if issubclass(self.cl, mfso):
         self.conf = self.env.libenv.config(name)
         if self.__doc__:
 	   self.conf.description = self.__doc__
@@ -73,7 +73,7 @@ class Module(object):
     except TypeError:
 	pass
     try :
-      if issubclass(self.cl, fso):
+      if issubclass(self.cl, mfso):
         try :
           fs = self.cl()
           return fs

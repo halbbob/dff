@@ -37,20 +37,19 @@ class LS(Script):
        self.ls(self.node)
 
   def recurse(self, cur_node):
-     if not cur_node.empty_child():
-	 self.ls(cur_node)
-     #next = cur_node.next()
-     next = cur_node.next
-     for next_node in next:
-       if not next_node.empty_child():
-         self.recurse(next_node)
+    if cur_node.hasChildren():
+      self.ls(cur_node)
+    next = cur_node.getChildren()
+    for next_node in next:
+      if next_node.hasChildren():
+        self.recurse(next_node)
 
   def ls(self, node):
      buff = ""
-     #next = node.next()
-     next = node.next
+     next = node.getChildren()
      for n in next:
-        print self.display_node(n)
+       print self.display_node(n)
+       #self.display_node(n)
 
   def display_node(self, node):
     if self.long:
@@ -59,17 +58,17 @@ class LS(Script):
       return self.display_node_simple(node)
 
   def display_node_long(self, node):
-    buff = node.path + '/' + node.name
-    if not node.empty_child():
+    buff = node.getPath() + node.getName()
+    if not node.hasChildren():
       buff += "/" 
-    if node.is_file:
-      buff += '\t' + str(node.attr.size)
+    #if node.is_file:
+    #  buff += '\t' + str(node.attr.size)
     return buff
 
   def display_node_simple(self, node):
     buff = ''	
-    buff = node.name
-    if not node.empty_child():
+    buff = node.getName()
+    if node.hasChildren():
      buff += "/"
     return buff
 

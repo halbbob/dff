@@ -23,20 +23,16 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 
 
 set(fat_srcs
+  fatfs.cpp
+  bootsector.cpp
   fat.cpp
-  misc.cpp
-  fat_metadata.cpp
-  fat_forensics.cpp
-  fat_entries.cpp
-  fat_io.cpp
-  log.cpp
-  filehandler.cpp
-  fdmanager.cpp
+  entries.cpp
+  fsinfo.cpp
 )
 
 
-SET_SOURCE_FILES_PROPERTIES(fat.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(FAT python fat.i ${fat_srcs})
+SET_SOURCE_FILES_PROPERTIES(fatfs.i PROPERTIES CPLUSPLUS ON)
+SWIG_ADD_MODULE(FAT python fatfs.i ${fat_srcs})
 SWIG_LINK_LIBRARIES(FAT ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
@@ -47,7 +43,7 @@ set_target_properties (${SWIG_MODULE_FAT_REAL_NAME} PROPERTIES
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
 set(fat_files
-  FAT.py
+  FATFS.py
 )
 
 install_lib(${SWIG_MODULE_FAT_REAL_NAME})

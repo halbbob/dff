@@ -25,18 +25,20 @@ if (UNIX)
   set(local_srcs
     ulocal.cpp
     utype.cpp
+    umetadata.cpp
     )
 else (UNIX)
   set(local_srcs
     wlocal.cpp
     wtype.cpp
+    wmetadata.cpp
     )
 else (UNIX)
 endif(UNIX)
 
 SET_SOURCE_FILES_PROPERTIES(local.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(LOCAL python local.i ${local_srcs})
-SWIG_LINK_LIBRARIES(LOCAL ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv)
+SWIG_LINK_LIBRARIES(LOCAL ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv _libvariant)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_LOCAL_REAL_NAME} PROPERTIES

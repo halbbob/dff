@@ -16,13 +16,26 @@
 
 #include "vfile.hpp"
 
+VFile::VFile(uint32_t fd, class mfso *mfsobj, class Node *node) 
+{
+  this->s = new Search();
+  this->fd = fd;
+  this->mfsobj = mfsobj;
+  this->node = node;
+};
+
+VFile::~VFile()
+{
+  delete this->s;
+}
+
 int VFile::read(void *buff, unsigned int size)
 {  
   int n;
 
   try 
   {
-    n = node->fsobj->vread(fd, buff, size);
+    n = this->mfsobj->vread(fd, buff, size);
     return (n);
   }
   catch (vfsError e)
@@ -35,12 +48,12 @@ pdata* VFile::read(void)
 {
   int n;
   pdata* data = new pdata;
-  data->buff = malloc(node->attr->size);
-  data->len = node->attr->size;
+  //data->buff = malloc(node->attr->size);
+  //data->len = node->attr->size;
   try 
   {
-    n = node->fsobj->vread(fd, (void*)data->buff, node->attr->size);
-    data->len = n;	
+    //n = this->mfsobj->vread(fd, (void*)data->buff, node->attr->size);
+    //data->len = n;	
     return (data);
   }
   catch (vfsError e)
@@ -61,7 +74,7 @@ pdata* VFile::read(unsigned int size)
   memset(data->buff, 0, size);
   try 
   { 
-    n = node->fsobj->vread(fd, (void*)data->buff, size);
+    n = this->mfsobj->vread(fd, (void*)data->buff, size);
     data->len = n;
     return (data);
   }
@@ -77,7 +90,7 @@ int VFile::close(void)
 {
   try 
   {
-    node->fsobj->vclose(fd);
+    this->mfsobj->vclose(fd);
   }
   catch (vfsError e)
   {
@@ -91,39 +104,37 @@ int VFile::write(string buff)
 {
   int n;
    
-  fso *fsobj = node->fsobj;
-   try 
+  try 
+    {
+      n = this->mfsobj->vwrite(fd, (void *)buff.c_str(), buff.size());
+      return (n);
+    }
+  catch (vfsError e)
    {
-     n = fsobj->vwrite(fd, (void *)buff.c_str(), buff.size());
-     return (n);
-   }
-   catch (vfsError e)
-   {
-      throw vfsError("VFile::write(string) throw\n" + e.error);
+     throw vfsError("VFile::write(string) throw\n" + e.error);
    }
 }
 
 int VFile::write(char *buff, unsigned int size)
 {
   int n;
-  fso *fsobj = node->fsobj;
-
-   try 
-   {
-     n = fsobj->vwrite(fd, buff, size);
-     return (n);
-   }
-   catch (vfsError e)
-   {
+  
+  try 
+    {
+      n = this->mfsobj->vwrite(fd, buff, size);
+      return (n);
+    }
+  catch (vfsError e)
+    {
       throw vfsError("VFile::write(buff, size) throw\n" + e.error);
-   }
+    }
 }
 
 dff_ui64 VFile::seek(dff_ui64 offset)
 {
   try
   {
-    return (node->fsobj->vseek(fd, offset, 0));
+    return (this->mfsobj->vseek(fd, offset, 0));
   }
   catch (vfsError e)
   {
@@ -143,47 +154,47 @@ dff_ui64  VFile::seek(dff_ui64 offset, char *cwhence)
   else if (whence == string("END"))
     wh = 2;
   else
-  {
-     throw vfsError("VFile::vseek(dff_ui64, char *) error whence not defined ( SET, CUR, END )");
-  }
+    {
+      throw vfsError("VFile::vseek(dff_ui64, char *) error whence not defined ( SET, CUR, END )");
+    }
   try
-  { 
-   return (node->fsobj->vseek(fd, offset, wh));
-  }
+    { 
+      return (this->mfsobj->vseek(fd, offset, wh));
+    }
   catch (vfsError e)
-  {
-    throw vfsError("VFile::seek(dff_ui64, char*) throw\n" + e.error);
-  }
+    {
+      throw vfsError("VFile::seek(dff_ui64, char*) throw\n" + e.error);
+    }
 }
 
 dff_ui64  VFile::seek(dff_ui64 offset, int whence)
 {
   if (whence > 2)
-  {
-     throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
-     return 0;
-  }
+    {
+      throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
+      return 0;
+    }
   try
-  {
-    return (node->fsobj->vseek(fd, offset, whence));
-  }
+    {
+      return (this->mfsobj->vseek(fd, offset, whence));
+    }
   catch (vfsError e)
-  {
-    throw vfsError("VFile::seek(dff_ui64, whence) throw\n" + e.error);
-  }
+    {
+      throw vfsError("VFile::seek(dff_ui64, whence) throw\n" + e.error);
+    }
 }
 
 long long  VFile::seek(int offset, int whence)
 {
   if (whence > 2)
-  {
-     throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
-     return 0;
-  }
+    {
+      throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
+      return 0;
+    }
   try
-  {
-    return (node->fsobj->vseek(fd, (long long)offset, whence));
-  }
+    {
+      return (this->mfsobj->vseek(fd, (long long)offset, whence));
+    }
   catch (vfsError e)
   {
     throw vfsError("Vfile::seek(int offset, int whence) throw\n" + e.error);
@@ -199,13 +210,13 @@ int  VFile::dfileno()
 dff_ui64 VFile::tell()
 {  
   try
-  {
-    return (node->fsobj->vseek(fd, 0, 1));
-  }
+    {
+      return (this->mfsobj->vseek(fd, 0, 1));
+    }
   catch (vfsError e)
-  {
-    throw vfsError("VFile::tell() throw\n" + e.error);
-  }
+    {
+      throw vfsError("VFile::tell() throw\n" + e.error);
+    }
 }
 
 list<dff_ui64>	*VFile::search(char *needle, unsigned int len, char wildcard, dff_ui64 start, dff_ui64 window, unsigned int count)

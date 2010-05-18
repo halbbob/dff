@@ -5,67 +5,67 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __NODE_HH__
-#define __NODE_HH__
+#ifndef __NODE_HPP__
+#define __NODE_HPP__
 
 #include <string>
 #include <map>
 #include <iostream>
 #include <sys/types.h>
-#include <sys/stat.h>
-//#include <unistd.h>
-#include "type.hpp"
-#include "attrib.hpp"
+//#include "type.hpp"
+//#include "attrib.hpp"
 #include "export.hpp"
 #include "vfile.hpp"
-#include "fso.hpp"
+#include "mfso.hpp"
 #include "decoder.hpp"
-
-using namespace std;
+#include "variant.hpp"
 
 class Node
 {
 private:
-  uint64_t		offset;
+  uint64_t			offset;
+
+  class mfso*			mfsobj;
+  class fso*			fsobj;
+  class Metadata*		meta;
+
+  std::string			name;
+
+  class Node*			parent;
+  std::list<class Node *>	children;
+  uint32_t			childCount;
+  //attrib*			attr;
+  //unsigned int		same;
+  //bool			is_file;
+  //bool			is_root;
 
 public:
-  list<class Node*>     next;
-  Node*			parent;
-  attrib*		attr;
-  class fso*		fsobj;
-  class mfso*		mfsobj;
-  Decoder		*decoder;
-  unsigned int		same;
-  string		name;
-  string 		path;
-  bool			is_file;
-  bool			is_root;
-  string		absolute(void);
-  bool                  has_child();
-  bool                  empty_child();
-  EXPORT class VFile*	open(void);
-  Node();
-  ~Node();
-  void  		addchild(Node* path);
+  EXPORT Node(std::string name, class Node* parent = NULL, uint64_t offset = 0, Metadata* meta=NULL);
+  EXPORT ~Node();
+  EXPORT class Attributes*	getAttributes();
+  EXPORT std::string		getName();
+  EXPORT std::string		getPath();
+  EXPORT Node*			getParent();
+  EXPORT uint32_t		getChildCount();
+  EXPORT std::list<class Node*>	getChildren();
+  EXPORT uint64_t		getOffset();
+  EXPORT void			setFsobj(mfso* obj);
+  EXPORT bool			setParent(Node* parent);
+  EXPORT bool			setDecoder(Metadata* decoder);
+  //EXPORT string		absolute(void);
+  EXPORT bool			hasChildren();
+  EXPORT bool			addChild(class Node* child);
+  //EXPORT bool           empty_child();
+  EXPORT class VFile*		open(void);
 };
-
-// class Link : public Node
-// {
-// public:
-//   Link(Node *, Node *);
-//   ~Link();	
-//   Node*			node;
-//   list<class Node*>     next;
-// };
-
 
 #endif

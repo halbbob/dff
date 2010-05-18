@@ -24,11 +24,9 @@
 #include "type.hpp"
 #include "export.hpp"
 #include "search.hpp"
+#include "mfso.hpp"
 
 using namespace std;
-
-class Node;
-
 
 #define BUFFSIZE 1024*1024*10
 
@@ -43,12 +41,14 @@ class VFile
 {
 private:
   Search	*s;
+  class mfso	*mfsobj;
+  uint32_t	fd;	
 
 public:
-  int		fd;	
   class 	Node*  		node;
 
-  VFile() {s = new Search(); };
+  VFile(uint32_t fd, class mfso *mfsobj, class Node *node);
+  ~VFile();
   EXPORT	int 		close(void);
 
   pdata*		read(void);

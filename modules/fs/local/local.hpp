@@ -20,6 +20,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <list>
+#include <vector>
 #include "type.hpp"
 #include "vfs.hpp"
 #include "conf.hpp"
@@ -28,30 +29,35 @@
 #else
 #include "wtype.hpp"
 #endif
+#include "mfso.hpp"
+#include "umetadata.hpp"
 
 using namespace std;
 
-class local : public fso
+class local : public mfso
 {
 private:
-  unsigned int		nfd;
-  int			vread_error(int fd, void *buff, unsigned int size);
+  unsigned int			nfd;
+  std::string			basePath;
+  int				vread_error(int fd, void *buff, unsigned int size);
+  Node				*parent;
+  UMetadata			*attrib;
+
 public:
 #ifndef WIN32
   list<string>		lpath;
-  void			iterdir(Node* dir);
+  void			iterdir(std::string path, Node* parent);
 #else
   void 			frec(char *, Node *rfv);
-#endif 
-			local();
-			~local(){ };
-
-  virtual int 		vopen(Handle* handle);
-  virtual int 		vread(int fd, void *buff, unsigned int size);
-  virtual int 		vclose(int fd);
-  virtual dff_ui64 	vseek(int fd, dff_ui64 offset, int whence);
-  virtual int 		vwrite(int fd, void *buff, unsigned int size) { return 0; };
-  virtual unsigned int	status(void);
+#endif
+  local();
+  ~local();
+  int 		vopen(Node *n);
+  int 		vread(int fd, void *buff, unsigned int size);
+  int 		vclose(int fd);
+  dff_ui64 	vseek(int fd, dff_ui64 offset, int whence);
+  int 		vwrite(int fd, void *buff, unsigned int size) { return 0; };
+  unsigned int	status(void);
   virtual void		start(argument* ar);
 };
-#endif 
+#endif

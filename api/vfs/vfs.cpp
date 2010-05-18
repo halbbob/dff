@@ -18,16 +18,17 @@
 
 VFS::VFS()
 {
-  root = new Node;
-  root->name = "";
-  root->path = "";
-  root->is_root = 1; 
-  root->is_file = 0;
-  root->attr = new attrib();
-  root->parent = root;
-  root->fsobj = 0;
+  root = new Node("/");
+  root->setParent(root);
+  //root->name = "";
+  //root->path = "";
+  //root->is_root = 1; 
+  //root->is_file = 0;
+  //root->attr = new attrib();
+  //root->parent = root;
+  //root->fsobj = 0;
   cwd = root;
-  Tree.insert(root);
+  //Tree.insert(root);
 }
 
 VFS::~VFS()
@@ -52,17 +53,23 @@ set<Node *>* VFS::GetTree(void)
 
 Node* VFS::GetNode(string path, Node* where)
 {
-  list<Node *>next = where->next;
-  list<Node *>::iterator i = next.begin();
+  list<Node *>			next;
+  list<Node *>::iterator i;
 
   if (path == "..")
-    return (where->parent);	
-  for (; i != next.end(); i++)
-  {
-     if ((*i)->name == path)
-        return (*i); 
-  }
-  return (0);
+    return (where->getParent());
+  if (where->hasChildren())
+    {
+      next = where->getChildren();
+      for (i = next.begin(); i != next.end(); i++)
+	{
+	  if ((*i)->getName() == path)
+	    return (*i); 
+	}
+      return (0);
+    }
+  else
+    return (0);
 }
 
 Node* VFS::GetNode(string path)
@@ -83,7 +90,7 @@ Node* VFS::GetNode(string path)
      else
      { 
        lpath = rpath;
-       rpath = "";	
+       rpath = "";
      }
      tmp = GetNode(lpath, tmp);
   }  while (tmp && rpath.size());
@@ -91,116 +98,181 @@ Node* VFS::GetNode(string path)
 }
 
 
+// Node* VFS::GetNode(string path, Node* where)
+// {
+//   list<Node *>next;
+//   list<Node *>::iterator i;
+  
+//   std::cout << path << " " << where->getName() << std::endl;
+//   if (path == "..")
+//     return (where->getParent());
+//   if (where->hasChildren())
+//     {
+//       for (i = next.begin(); i != next.end(); i++)
+// 	{
+// 	  if ((*i)->getName() == path)
+// 	    return (*i); 
+// 	}
+//     }
+//   else
+//     return where;
+// }
+
+// Node* VFS::GetNode(string path)
+// {
+//   uint32_t	pos1;
+//   uint32_t	pos2;
+//   uint32_t	iter = 0;
+
+//   if (path == "/")
+//     return root;
+//   while (((pos1 = path.find("/..")) != std::string::npos) && (iter != 10))
+//     {
+//       if (pos1 == 0)
+// 	{
+// 	  std::cout << path << " " << pos1 << " " << pos2 << std::endl;
+// 	  return NULL;
+// 	}
+//       pos2 = path.rfind("/", pos1 - 1);
+//       std::cout << path << " " << pos1 << " " << pos2 << std::endl;
+//       if ((pos2 != std::string::npos) && (pos2 != 1))
+// 	path = path.erase(pos2, pos1+3-pos2);
+//       iter++;
+//     }
+//   std::cout << path << std::endl;
+//   path = path.substr(path.find('/') + 1);
+//   string lpath;
+//   string rpath = path;
+//   Node* tmp = root;
+  
+// //   do
+// //   {
+// //     if (rpath.find('/') != -1)	
+// //       {
+// // 	lpath = rpath.substr(0, rpath.find('/'));
+// // 	rpath = rpath.substr(rpath.find('/') + 1); 
+// //       }
+// //     else
+// //       { 
+// // 	lpath = rpath;
+// // 	rpath = "";	
+// //       }
+// //     tmp = GetNode(lpath, tmp);
+// //   }  while (tmp && rpath.size());
+//   return (tmp);
+// }
+
+
 void VFS::addNode(Node *n)
 {
-  n->parent->addchild(n);
-  Tree.insert(n);
-  list<CallBack* >::iterator cb = cbl.begin();
-  for (; cb != cbl.end(); cb++)
-  {
-      (*cb)->cbfunc((*cb)->cbdata, n);
-  }
+//   n->parent->addchild(n);
+//   Tree.insert(n);
+//   list<CallBack* >::iterator cb = cbl.begin();
+//   for (; cb != cbl.end(); cb++)
+//   {
+//       (*cb)->cbfunc((*cb)->cbdata, n);
+//   }
 }
 
 unsigned int VFS::AddNodes(list<Node*>  nl)
 {
-  unsigned int num = 0;
-  list<Node* >::iterator n = nl.begin();
+//   unsigned int num = 0;
+//   list<Node* >::iterator n = nl.begin();
 
-  if (!nl.size())
-    return 0;
-  for(;n  != nl.end(); n++)
-  {
-     (*n)->parent->addchild((*n));
-     Tree.insert((*n));
-     num++;
-     list<CallBack* >::iterator cb_pp = cbl_pp.begin();
-     for (; cb_pp != cbl_pp.end(); cb_pp++)
-     {
-      (*cb_pp)->cbfunc((*cb_pp)->cbdata, *n);
-    }
-  }
-  list<CallBack* >::iterator cb = cbl.begin();
-  for (; cb != cbl.end(); cb++)
-  {
-    (*cb)->cbfunc((*cb)->cbdata, (*nl.begin()));
-  }
-  return (num);
+//   if (!nl.size())
+//     return 0;
+//   for(;n  != nl.end(); n++)
+//   {
+//      (*n)->parent->addchild((*n));
+//      Tree.insert((*n));
+//      num++;
+//      list<CallBack* >::iterator cb_pp = cbl_pp.begin();
+//      for (; cb_pp != cbl_pp.end(); cb_pp++)
+//      {
+//       (*cb_pp)->cbfunc((*cb_pp)->cbdata, *n);
+//     }
+//   }
+//   list<CallBack* >::iterator cb = cbl.begin();
+//   for (; cb != cbl.end(); cb++)
+//   {
+//     (*cb)->cbfunc((*cb)->cbdata, (*nl.begin()));
+//   }
+//   return (num);
   
 }
 
 string  VFS::sanitaze(string name, Node* parent)
 {
-   string tmp;
-   string::iterator i = name.begin();
+//    string tmp;
+//    string::iterator i = name.begin();
 
-   for (; i != name.end(); ++i)
-   {
-      if (*i >= ' ' && *i <= '~')
-        tmp += *i;
-      else
-        tmp += '\?';
-   }
-   name = tmp;
-   list<Node *>next = parent->next;
-   list<Node*>::iterator n = next.begin();
-   for (; n != next.end(); ++n)
-   {
-     if (name == (*n)->name)
-     {
-       (*n)->same++;
-       char num[11] = {0}; 
-       sprintf(num, "%d", (*n)->same);
-       name += "." + string(num);
-     }
-   }
-  return (name);
+//    for (; i != name.end(); ++i)
+//    {
+//       if (*i >= ' ' && *i <= '~')
+//         tmp += *i;
+//       else
+//         tmp += '\?';
+//    }
+//    name = tmp;
+//    list<Node *>next = parent->next;
+//    list<Node*>::iterator n = next.begin();
+//    for (; n != next.end(); ++n)
+//    {
+//      if (name == (*n)->name)
+//      {
+//        (*n)->same++;
+//        char num[11] = {0}; 
+//        sprintf(num, "%d", (*n)->same);
+//        name += "." + string(num);
+//      }
+//    }
+//   return (name);
 }
 
 Node* VFS::CreateNodeDir(fso* fsobj, Node* parent, string name, attrib *attr, bool refresh)
 {
-  Node *vp = new Node;
+//   Node *vp = new Node;
 
-  if (parent->name.size() == 0)
-    vp->path = "";
-  else
-    vp->path += parent->path + "/" + parent->name;
-  vp->fsobj = fsobj; 
-  vp->name = name;
-  vp->attr = attr;
-  vp->parent = parent;
-  vp->is_file = 0;
-  vp->attr->size = 0;
-  if (refresh == true)
-    addNode(vp);
+//   if (parent->name.size() == 0)
+//     vp->path = "";
+//   else
+//     vp->path += parent->path + "/" + parent->name;
+//   vp->fsobj = fsobj; 
+//   vp->name = name;
+//   vp->attr = attr;
+//   vp->parent = parent;
+//   vp->is_file = 0;
+//   vp->attr->size = 0;
+//   if (refresh == true)
+//     addNode(vp);
 
-  return (vp);
+//   return (vp);
 }
 
 Node* VFS::CreateNodeFile(fso* fsobj,  Node* parent, string name, attrib *attr, bool refresh)
 {
-  Node *vp = new Node;
+//   Node *vp = new Node;
 
-  if (parent->name.size() == 0)
-    vp->path = "";
-  else
-    vp->path += parent->path + "/" + parent->name;
-  vp->fsobj = fsobj;
-  vp->name = name;
-  vp->attr = attr;
-  vp->parent = parent;
-  vp->is_file = 1;
-  if (refresh == true)
-   addNode(vp);
+//   if (parent->name.size() == 0)
+//     vp->path = "";
+//   else
+//     vp->path += parent->path + "/" + parent->name;
+//   vp->fsobj = fsobj;
+//   vp->name = name;
+//   vp->attr = attr;
+//   vp->parent = parent;
+//   vp->is_file = 1;
+//   if (refresh == true)
+//    addNode(vp);
 
-  return (vp);
+//   return (vp);
 }
 
 void	VFS::SetCallBack(CBFUNC func, void* data, string type)
 {
-  if (type == "refresh_tree")
-    cbl.push_back(new CallBack(func, data));
-  else if (type == "post_process")
-    cbl_pp.push_back(new CallBack(func, data));
+//   if (type == "refresh_tree")
+//     cbl.push_back(new CallBack(func, data));
+//   else if (type == "post_process")
+//     cbl_pp.push_back(new CallBack(func, data));
 }
 

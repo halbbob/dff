@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -14,23 +14,30 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __FILEHANDLER_HPP__
-#define __FILEHANDLER_HPP__
+#ifndef __FATFS_HPP__
+#define __FATFS_HPP__
 
-#include "common.hpp"
-#include "fat_struct.h"
-#include "fdmanager.hpp"
-#include "log.hpp"
+#include "bootsector.hpp"
+#include "fat.hpp"
+#include "mfso.hpp"
+#include "node.hpp"
+#include "fsinfo.hpp"
 
-class FileHandler
+class Fatfs : public mfso
 {
+private:
+  Node*			parent;
+  Node*			root;
+  bootSector*		bootsector;
+  FileAllocationTable*	fat;
+  
 public:
-  vector<FileInfo*>	handler;
-  unsigned long long    inc;
-  FileHandler();
-  ~FileHandler();
-  unsigned long long	add(FileInfo* fi);
-  FileInfo*		get(unsigned long long handle);
+  Fatfs();
+  ~Fatfs();
+
+  virtual void		start(argument *arg);
+  void			setContext(argument* arg);
+  void			process(fsinfo* );
 };
 
 #endif

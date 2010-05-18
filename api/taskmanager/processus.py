@@ -30,13 +30,13 @@ class Processus(Script):
     self.pid =  pid 
     self.args = args
     self.stream = Queue()
-    self.event = threading.Event() 
+    self.event = threading.Event()
 
   def launch(self):
     self.state = "exec"
     try :
       self.start(self.args)
-      try :	
+      try :
         if "gui" in self.exec_flags:
           if "gui" in self.mod.flags:
              for func in sched.event_func["add_qwidget"]:

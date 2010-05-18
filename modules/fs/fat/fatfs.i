@@ -11,10 +11,10 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-%module  FAT 
+%module  FATFS
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
@@ -22,38 +22,22 @@
 %include "std_vector.i"
 %include "windows.i"
 %import "../../../api/vfs/libvfs.i"
-//%import "../../../api/exceptions/libexceptions.i"
+%import "../../../api/exceptions/libexceptions.i"
 
 %{
-//#include "../../../api/include/exceptions.hpp"
-
-#include "fdmanager.hpp"
-#include "common.hpp"
-#include "fat_struct.h"
-#include "log.hpp"
-#include "filehandler.hpp"
-#include "fat.hpp"
+#include "../../../api/include/exceptions.hpp"
+#include "fatfs.hpp"
 %}
-%include "fdmanager.hpp"
-%include "common.hpp"
-%include "log.hpp"
-%include "filehandler.hpp"
-%include "fat.hpp"
 
-namespace std
-{
-  %template(VecFI) vector<FileInfo*>;
-  %template(VecUI) vector<unsigned int>;
-  %template(VecFDI) vector<FDInfo* >;  
-};
+%include "fatfs.hpp"
 
 %pythoncode
 %{
 from api.module.module import *
-class FAT(Module):
+class FATFS(Module):
   """This module create the tree contained in a fat file system, for normal and deleted files."""
   def __init__(self):
-    Module.__init__(self, 'fat', Fat)
+    Module.__init__(self, 'fatfs', Fatfs)
     self.conf.add("parent", "node", False, "Node containing a FAT file system")
     self.conf.add_const("mime-type", "x86 boot sector")
     self.tags = "file system"

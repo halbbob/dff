@@ -21,6 +21,7 @@
 %include "std_map.i"
 %include "windows.i"
 %import "../../../api/vfs/libvfs.i"
+//%import "../../../api/variant/libvariant.i"
 %{
 #include "../include/export.hpp"
 #include "local.hpp"

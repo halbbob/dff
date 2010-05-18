@@ -11,73 +11,157 @@
  * and IRC channels for your use.
  * 
  * Author(s):
+ *  Frederic Baguelin <fba@digital-forensic.org>
  *  Solal J. <sja@digital-forensic.org>
  */
 
 #include "node.hpp"
 
-Node::Node()
+Node::Node(std::string name, class Node *parent, uint64_t offset, Metadata* meta)
 {
-  is_root = 0;
-  is_file = 0;
-  same = 0;
+  this->name = name;
+  this->parent = parent;
+  this->offset = offset;
+  this->meta = meta;
+  this->childCount = 0;
+  if (this->parent != NULL)
+    this->parent->addChild(this);
 }
+
 
 Node::~Node()
 {
+  if (!this->children.empty())
+    this->children.clear();
 }
 
-string Node::absolute(void)
+std::list<class Node*>	Node::getChildren()
 {
-  string abs = path + "/" + name;
-
-  return abs;
+  return this->children;
 }
 
 
-VFile* Node::open(void)
+bool		Node::setParent(Node *parent)
 {
-  int fd;
-  VFile *temp;
-  try 
-  {
-    if ((is_file) && ((fd = fsobj->vopen(attr->handle)) >= 0))
+  bool		ret;
+
+  ret = false;
+  if (parent != NULL)
     {
-      temp = new VFile;
-      temp->fd = fd;
-      temp->node = this;
-      
-      return (temp);	
+      ret = true;
+      this->parent = parent;
     }
-    throw vfsError("Can't Open file"); 
-  }
+  else
+    ;//XXX throw() NodeException;
+}
+
+uint64_t	Node::getOffset()
+{
+  return this->offset;
+}
+
+bool		Node::setDecoder(Metadata *meta)
+{
+  bool		ret;
+
+  ret = false;
+  if (meta != NULL)
+    {
+      this->meta = meta;
+      ret = true;
+    }
+  else
+    this->meta = NULL;
+  return ret;
+}
+
+Attributes*	Node::getAttributes()
+{
+//   try
+//     {
+  if (this->meta != NULL)
+    return this->meta->getAttributes(this);
+  else
+    return NULL;
+//     }
+//   catch()
+//     {
+      
+//     }
+}
+
+
+uint32_t	Node::getChildCount()
+{
+  return this->childCount;
+}
+
+
+Node*		Node::getParent()
+{
+  return this->parent;
+}
+
+
+VFile*		Node::open(void)
+{
+  int32_t	fd;
+  VFile		*temp;
+
+  try
+    {
+      if ((fd = this->mfsobj->vopen(this)) >= 0)
+	{
+	  temp = new VFile(fd, this->mfsobj, this);
+	  return (temp);
+	}
+      throw vfsError("Can't Open file");
+    }
   catch (vfsError e)
-  {
-    throw vfsError("Node::open(void) throw\n" + e.error);
-  }
-}
-bool Node::has_child(void)
-{
-  return (!next.empty());
+    {
+      throw vfsError("MfsoNode::open(void) throw\n" + e.error);
+    }
 }
 
-bool Node::empty_child(void)
+void	Node::setFsobj(mfso *obj)
 {
-  return next.empty();
+  this->mfsobj = obj;
 }
 
-void Node::addchild(Node* path)
+
+std::string	Node::getName()
 {
-  next.push_back(path);
+  return this->name;
 }
 
-Link::Link(Node *n, Node* p)
+
+std::string	Node::getPath()
 {
-  node = n;
-  parent = p;
-  p->addchild(n);
+  std::string path;
+  Node	*tmp;
+  
+  tmp = this->parent;
+  while (tmp != NULL)
+    {
+      path = tmp->getName() + "/" + path;
+      tmp = tmp->parent;
+    }
+  return path;
 }
 
-Link::~Link()
+
+bool            Node::hasChildren()
 {
+  if (this->childCount > 0)
+    return true;
+  else
+    return false;
 }
+
+
+bool		Node::addChild(class Node *child)
+{
+  this->children.push_back(child);
+  this->childCount++;
+}
+

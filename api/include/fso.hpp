@@ -57,8 +57,8 @@ public:
   CBGETFUNC             getcbfunc;
 
 
-  EXPORT  class Node* 	CreateNodeDir(Node* parent, string name, class attrib* attr, bool refresh = false);
-  EXPORT  Node* 	CreateNodeFile(Node* parent, string name, attrib* attr, bool refresh = false);
+  EXPORT  class Node* 	CreateNodeDir(class Node* parent, string name, class attrib* attr, bool refresh = false);
+  EXPORT  class Node* 	CreateNodeFile(class Node* parent, string name, attrib* attr, bool refresh = false);
   unsigned int 		AddNodes(void);
   void                  SetCallBack(CBGETFUNC func, void* data);
   virtual void		start(argument* args) = 0;
