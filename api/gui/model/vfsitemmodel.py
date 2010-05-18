@@ -18,7 +18,7 @@ from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCac
 
 import re
 from api.magic.filetype import *
-from api.vfs import libvfs
+from api.vfs import libvfs, iodevice
 
 from Queue import *
 
@@ -32,21 +32,31 @@ HMODULE = 5
 pixmapCache = QPixmapCache()
 pixmapCache.setCacheLimit(61440)
 
-class ImageThumbnails(QThread):
-#mettre le cache ici ? 
-  def __init__(self, *args):
-    QThread.__init__(self)
-    self.ft = FILETYPE()
-    self.reg_viewer = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
-    self.thumbQueue = Queue()
+class ImageThumb():
+  def __init__(self):
+    pass
 
-  def enqueue(self, parent, index, node):
-    self.thumbQueue.put((parent, index, node))
-    #thumblist.insert((item, node))
+  def getImage(self, type, node, index):  
+    buff = ""
+    tags = None
+    img = QImage() 
+    if type in ["JPEG", "JPG", "jpg", "JPEG"]:
+      try:
+        buff = self.getThumb(node)
+        load = img.loadFromData(buff, type)
+      except VFSError: 
+        buff = ""
+    if not len(buff):
+      f = node.open()
+      buff = f.read()
+      f.close()
+      load = img.loadFromData(buff)
+    if load:
+      img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
+      return img
+    else:
+      return None
 
-  def clear(self):
-     pass
-     #vide la queue -> a utiliser quand on change de repertoire ou quand l'icone queue est desactiver...	
   def getThumb(self, node):
      buff = ""
      if node.attr.size > 6:
@@ -60,59 +70,67 @@ class ImageThumbnails(QThread):
        file.close()
      return buff
 
+class TypeWorker(QThread):
+  def __init__(self, *args):
+    QThread.__init__(self)
+    self.ft = FILETYPE()
+    self.typeQueue = Queue()
+    self.regImage = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+
+  def enqueue(self, parent, index, node):
+    self.typeQueue.put((parent, index, node))
+
+  def clearQueue(self):
+     #self.typeQueue.all_tasks_done()
+     #print self.typeQueue.empty()
+     pass
+
+  def isImage(self, type):
+      return  self.regImage.match(type)
+
   def run(self):
      count = 0
      while True:
-       (parent, index, node) = self.thumbQueue.get()
-       if node.attr.size != 0: 
+       (parent, index, node) = self.typeQueue.get()
+       if node.attr.size: 
          map = node.attr.smap
-         try:
-           ftype = node.attr.smap["type"] 
-         except IndexError:
-           self.ft.filetype(node)
-           ftype = node.attr.smap["type"]
-         res = self.reg_viewer.match(ftype)
-         if res != None:
+         self.ft.filetype(node)
+         ftype = node.attr.smap["type"]
+         if parent.imagesthumbnails and self.isImage(ftype):
            type = ftype[:ftype.find(" ")]
-           buff = ""
-           tags = None
-           if type in ["JPEG", "JPG", "jpg", "JPEG"]:
-              try:
-                buff = self.getThumb(node)
-              except:
-                buff = ""
-#use  QIODevice ? faster ? / bufferise -> read big image could cause probleme even more it's size is not good and it's not an image ? 
-           if len(buff) == 0:
-             f = node.open()
-             f.seek(0, 0)
-             buff = f.read()
-             f.close()
-           img = QImage()
-           if img.loadFromData(buff, type):
-             img = img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
+           thumb = ImageThumb()
+           img = thumb.getImage(type, node, index)
+           if img:  
              parent.emit(SIGNAL('dataImage'), index, node, img)
-#XXX fix me must update only the icon if possible
-# 50 is the number to create before asking for an updadte
-#tought about that two or more widget use this singleton model
-#tought also about that we change directory and the current queue must be empty (but not for the item of the second viewer...) 
-             count += 1
-             if (not count % 50) or self.thumbQueue.empty():
-	       #print "sending signal laout"
-	       count = 0
-	       #parent.emit(SIGNAL('layoutChanged()')) 
-	
+           else :
+             node.attr.smap["type"] = "broken"
+	     #must specify the type
+         parent.emit(SIGNAL('dataType'), index, node) 
+       self.typeQueue.task_done()
 
-imageThumbnailsThread = ImageThumbnails()
-imageThumbnailsThread.start()
+typeWorker = TypeWorker()
+typeWorker.start()
 
 class VFSItemModel(QAbstractItemModel):
-  def __init__(self, parent = None):
-    QAbstractItemModel.__init__(self, parent)	
+  def __init__(self, __parent = None):
+    QAbstractItemModel.__init__(self, __parent)	
+    self.__parent = __parent
     self.VFS = libvfs.VFS.Get()
     self.map = {}
     self.imagesthumbnails = None
     self.VFS.set_callback("refresh_tree", self.refresh)
-    self.connect(self, SIGNAL("dataImage"), self.setDataThumbnails)
+    self.connect(self, SIGNAL("dataImage"), self.setDataImage)
+    self.connect(self, SIGNAL("dataType"), self.setDataType)
+    self.fetchedItems = 0 
+    self.thumbQueued = {}
+
+  def setDataType(self, index, node, type = None):
+     self.__parent.currentView().viewport().update()
+
+  def setDataImage(self, index, node, image):
+     pixmap = QPixmap().fromImage(image)
+     pixmapCache.insert(node.absolute(), pixmap)
+     self.__parent.currentView().viewport().update()
 
   def refresh(self, node):
     self.emit(SIGNAL("layoutChanged()")) 
@@ -123,34 +141,41 @@ class VFSItemModel(QAbstractItemModel):
   def setRootPath(self, node, item):
     self.emit(SIGNAL("rootPathChanged()"), item)
     self.rootItem = node
+    self.rootChildCount = len(node.next)
+    #self.fetchedItems = 0
     self.reset()  
 
   def setRootPath(self, node):
     self.rootItem = node
+    self.rootChildCount = len(node.next)
+    #self.fetchedItems = 0
+#   typeWorker.clearQueue()
+    self.thumbQeued = {}
     self.reset()  
- 
-  #def canFetchMore(self, index):
-    #if self.fm[index] < index.internalPointer().next.size():
-      #return True
-    #else:
-      #return False
-
+# 
+  #def canFetchMore(self, parent):
+    #if self.fetchedItems < self.rootChildCount:
+        #print "can fetchmore"
+        #return True
+    #print "can't fetchmore"
+    #return False
+#
   #def qMin(self, x, y):
     #if x < y:
       #return x
     #else:
       #return y
-    #return x
-
-  #def fetchMore(self, index):
-    #remainder = index.internalPointer().next.size() - self.fm[index]
-    #itemsToFetch = self.qMin(100, remainder)
-    
-    #self.beginInsertRows(QModelIndex(), self.fm[index], self.fm[index] + itemsToFetch)
-    #self.fm[index] += itemsToFetch
-    
-    #self.endInsertRows()
-    #self.emit(SIGNAL("numberPopulated"), itemsToFetch)
+#
+  #def fetchMore(self, parent):
+     #print parent
+     #remainder = self.rootChildCount - self.fetchedItems
+     #itemsToFetch = self.qMin(100, remainder)
+     #print "item fetched" + str(self.fetchedItems)
+     #print "item to fetch " + str(itemsToFetch)
+     #self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + itemsToFetch)
+     #self.fetchedItems += itemsToFetch
+     #self.endInsertRows()
+     #self.numberPopulated(itemsToFetch)
       
   def rowCount(self, parent):
     if not parent.isValid():
@@ -175,12 +200,6 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant('Modified time')
       if section == HMODULE:
         return QVariant('Module')
-
-  def setDataThumbnails(self, index, node, image):
-     pixmap = QPixmap().fromImage(image)
-     pixmapCache.insert(node.absolute(), pixmap)
-     #self.emit(SIGNAL("dataChanged(QModelIndex, QModelIndex)"),index,index) 
-     #self.emit(SIGNAL("layoutChanged()")) 
 
   def data(self, index, role):
     if not index.isValid():
@@ -210,16 +229,34 @@ class VFSItemModel(QAbstractItemModel):
           return  QVariant(QColor(Qt.red))
     if role == Qt.DecorationRole:
       if column == HNAME:
-        #use this beside node.absolute() ? faster ? 
-	#cache icon folder_*.png
         if node.next.empty():
-          if self.imagesthumbnails:
+          if not node.attr.size:
+            return QVariant(QIcon(":folder_empty_128.png"))
+          try :
+            ftype = node.attr.smap["type"]
+          except IndexError:
+              try: 
+                self.thumbQueued[str(node.absolute())]
+              except KeyError :
+                self.thumbQueued[str(node.absolute())] = (node, index)
+    	        typeWorker.enqueue(self, index, node)
+              return QVariant(QIcon(":file_temporary.png"))
+          if ftype == "broken":
+	     #transparent broken icon (too slow !)	
+             #pixmap = QPixmap(":image.png")
+             #print pixmap
+             #broken = QPixmap(":file_broken.png")
+             #mask = broken.createHeuristicMask()  
+             #pixmap.setMask(mask)
+             #return QVariant(QIcon(pixmap))
+	     return QVariant(QIcon(":file_broken.png")) 
+	  if self.imagesthumbnails: #gettype
             if pixmapCache.find(node.absolute()):
               pixmap =  pixmapCache.find(node.absolute())
               return QVariant(QIcon(pixmap))
-            else:
-	      imageThumbnailsThread.enqueue(self, index, node)
-	      #XXX possibilite de renvoyer une icon de fichier entrain d etre loader 	    	
+            elif typeWorker.isImage(ftype):
+  	      typeWorker.enqueue(self, index, node)
+              return QVariant(QIcon(":file_temporary.png"))
           return QVariant(QIcon(":folder_empty_128.png"))
         else:
           if node.attr.size != 0: 

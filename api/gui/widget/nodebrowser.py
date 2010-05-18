@@ -144,7 +144,7 @@ class NodeBrowser(QWidget):
 
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
-    self.thumbsView.setModel(self.proxyModel)    
+    self.thumbsView.setModel(self.proxyModel) 
     self.nodeView.addWidget(self.thumbsView)
     self.connect(self.thumbsView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.thumbsView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)

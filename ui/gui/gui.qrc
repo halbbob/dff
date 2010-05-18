@@ -1,7 +1,10 @@
 <RCC>
 <qresource>
     <file alias="filefind.png">icons/filefind.png</file>
+ 
 
+    <file alias="file_broken.png">icons/mime/file_broken.png</file>
+    <file alias="file_temporary.png">icons/filesystem/file_temporary_128.png</file>
     <file alias="view_icon.png">icons/actions/view_icon.png</file>
     <file alias="view_choose.png">icons/actions/view_choose.png</file>
     <file alias="view_detailed.png">icons/actions/view_detailed.png</file>
