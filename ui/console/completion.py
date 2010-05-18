@@ -78,12 +78,12 @@ class Completion():
                "matched": 0}
 
         path = self.cur_str
-	
         if path == "" or path[0] != "/":
-            if self.vfs.getcwd().path == "" and self.vfs.getcwd().name == "":
-                rpath = "/"
-            else:
-                rpath =  self.vfs.getcwd().path + "/" + self.vfs.getcwd().name + "/" 
+            path = "/" + path
+            #if self.vfs.getcwd().path == "" and self.vfs.getcwd().name == "":
+            #    rpath = "/"
+            #else:
+            #    rpath =  #self.vfs.getcwd().path + "/" + self.vfs.getcwd().name + "/" 
 
 	if path == "/":
 	  path = "//"
@@ -98,44 +98,41 @@ class Completion():
             node = self.vfs.getnode(rpath)
         except OSError, e:
             out["matches"].append("")
-
         supplied = supplied.replace("\ ", " ")
         out["supplied"] = supplied
         if node:
-            if node.empty_child():
+            if not node.hasChildren():
                 if self.cur_str == "/":
                     out["matches"].append("")
                 else:
                     out["matches"].append("/")
                 out["matched"] += 1
             else:
-                #list = node.next()
-                list = node.next
-                #for i in range(node.next.size()):
-                #    print node.next[i].name
-            #completion on a path
+                list = node.getChildren()
                 if supplied == "":
-                    for i in  list:
-                        if not i.empty_child():
-                            if len(i.name + "/") > out["length"]:
-                                out["length"] = len(i.name + "/")
-                            out["matches"].append(i.name + "/")
+                    for i in list:
+                        name = i.getName()
+                        if i.hasChildren():
+                            if len(name + "/") > out["length"]:
+                                out["length"] = len(name + "/")
+                            out["matches"].append(name + "/")
                         else:
-                            if len(i.name) > out["length"]:
-                                out["length"] = len(i.name)
-                            out["matches"].append(i.name)
+                            if len(name) > out["length"]:
+                                out["length"] = len(name)
+                            out["matches"].append(name)
                         out["matched"] += 1
                 else:
                     for i in list:
-                        if i.name.startswith(supplied) == True:
-                            if not i.empty_child():
-                                if len(i.name + "/") > out["length"]:
-                                    out["length"] = len(i.name + "/")
-                                out["matches"].append(i.name + "/")
+                        name = i.getName()
+                        if name.startswith(supplied) == True:
+                            if i.hasChildren():
+                                if len(name + "/") > out["length"]:
+                                    out["length"] = len(name + "/")
+                                out["matches"].append(name + "/")
                             else:
-                                if len(i.name) > out["length"]:
-                                    out["length"] = len(i.name)
-                                out["matches"].append(i.name)
+                                if len(name) > out["length"]:
+                                    out["length"] = len(name)
+                                out["matches"].append(name)
                             out["matched"] += 1
         return out
         
