@@ -10,7 +10,7 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Francois Percot <percot@gmail.com>
+#  Solal Jacob <sja@arxsys.fr>
 # 
 
 import os
