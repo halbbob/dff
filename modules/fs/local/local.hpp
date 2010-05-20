@@ -30,34 +30,33 @@
 #include "wtype.hpp"
 #endif
 #include "mfso.hpp"
-#include "umetadata.hpp"
+#include "ulocalnode.hpp"
 
 using namespace std;
 
 class local : public mfso
 {
 private:
-  unsigned int			nfd;
-  std::string			basePath;
-  int				vread_error(int fd, void *buff, unsigned int size);
-  Node				*parent;
-  UMetadata			*attrib;
+  unsigned int	nfd;
+  std::string	basePath;
+  int		vread_error(int fd, void *buff, unsigned int size);
+  Node		*parent;
 
 public:
 #ifndef WIN32
-  list<string>		lpath;
-  void			iterdir(std::string path, Node* parent);
+  list<string>	lpath;
+  void		iterdir(std::string path, Node* parent);
 #else
-  void 			frec(char *, Node *rfv);
+  void 		frec(char *, Node *rfv);
 #endif
   local();
   ~local();
-  int 		vopen(Node *n);
-  int 		vread(int fd, void *buff, unsigned int size);
-  int 		vclose(int fd);
-  dff_ui64 	vseek(int fd, dff_ui64 offset, int whence);
-  int 		vwrite(int fd, void *buff, unsigned int size) { return 0; };
-  unsigned int	status(void);
-  virtual void		start(argument* ar);
+  int32_t	vopen(Node *n);
+  int32_t 	vread(int fd, void *buff, unsigned int size);
+  int32_t 	vclose(int fd);
+  uint64_t 	vseek(int fd, dff_ui64 offset, int whence);
+  int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
+  uint32_t	status(void);
+  virtual void	start(argument* ar);
 };
 #endif

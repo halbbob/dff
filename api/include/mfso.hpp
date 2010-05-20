@@ -93,6 +93,10 @@ public:
   EXPORT virtual uint64_t	vseek(int fd, dff_ui64 offset, int whence);
   EXPORT virtual uint32_t	status(void);
 
+  // EXPORT virtual void	pause();
+  // EXPORT virtual void	resume();
+  // EXPORT virtual void	kill();
+  
 //   bool			isBusy();
 
 //   std::map<std::string, Decoder *>	getAvailableDecoders();

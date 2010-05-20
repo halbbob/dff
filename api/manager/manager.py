@@ -22,6 +22,7 @@ from api.vfs import vfs, libvfs
 from api.type import OS
 from dircache import listdir
 from api.loader import loader
+from api.variant import libvariant
 from api.taskmanager.taskmanager import TaskManager
  
 class ApiManager():

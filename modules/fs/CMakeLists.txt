@@ -15,13 +15,13 @@
 
 
 add_subdirectory (local)
-add_subdirectory (fat)
-add_subdirectory (carver)
-add_subdirectory (shm)
+#add_subdirectory (fat)
+#add_subdirectory (carver)
+#add_subdirectory (shm)
 #if(HAVE_FUSE)
 #  add_subdirectory (fuse)
 #endif(HAVE_FUSE)
-add_subdirectory (partition)
+#add_subdirectory (partition)
 
 set(fs_srcs
   __init__.py

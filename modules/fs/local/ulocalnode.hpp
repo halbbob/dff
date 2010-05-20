@@ -18,19 +18,18 @@
 #define __ATTRIBUTES_HPP__
 
 //#include "variant.hpp"
-#include "decoder.hpp"
 #include "node.hpp"
 
-class UMetadata: public Metadata
+class ULocalNode: public Node
 {
 private:
-  std::string			basePath;
+  std::string*			basePath;
 public:
-  UMetadata();
-  ~UMetadata();
-  void				setBasePath(std::string bp);
-  virtual class FileMapping*	getFileMapping(class Node* node){}
-  virtual class Attributes*	getAttributes(class Node* node);
+  ULocalNode(std::string name, Node* parent, mfso* fsobj);
+  ~ULocalNode();
+  void			setBasePath(std::string* bp);
+  class FileMapping*	getFileMapping(){}
+  class Attributes*	getAttributes();
 };
 
 #endif

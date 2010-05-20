@@ -17,29 +17,29 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "umetadata.hpp"
+#include "ulocalnode.hpp"
 #include "utype.hpp"
 
-UMetadata::UMetadata()
+ULocalNode::ULocalNode(std::string Name, Node* parent, mfso* fsobj): Node(Name, parent, fsobj)
 {
 }
 
-UMetadata::~UMetadata()
+ULocalNode::~ULocalNode()
 {
 }
 
-void	UMetadata::setBasePath(std::string bp)
+void		ULocalNode::setBasePath(std::string* bp)
 {
   this->basePath = bp;
 }
 
-Attributes*	UMetadata::getAttributes(class Node *node)
+Attributes*	ULocalNode::getAttributes()
 {
   std::string	file;
   struct stat 	st;
   Attributes	*attr;
 
-  file = this->basePath + "/" + node->getPath() + node->getName();
+  file = *(this->basePath) + "/" + this->getPath() + this->name;
   if (lstat(file.c_str(), &st) != -1)
     {
       attr = new Attributes();

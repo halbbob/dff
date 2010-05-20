@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <sys/types.h>
 //#include "type.hpp"
@@ -26,46 +27,98 @@
 #include "export.hpp"
 #include "vfile.hpp"
 #include "mfso.hpp"
-#include "decoder.hpp"
 #include "variant.hpp"
+#include "vtime.hpp"
+
+typedef struct
+{
+  class Node*   from;
+  uint64_t      start;
+  uint64_t      end;
+}               chunck;
+
+
+class FileMapping
+{
+private:
+  uint64_t              current;
+  std::vector<chunck *> chuncks;
+public:
+  FileMapping();
+  ~FileMapping();
+  chunck*               getNextChunck();
+  chunck*               getPrevChunck();
+  std::vector<chunck *> getChuncks();
+  void                  push(class Node* from, uint64_t start, uint64_t end);
+};
+
+
+class Attributes
+{
+private:
+  std::map<std::string, class Variant*> *attrs;
+public:
+  Attributes();
+  ~Attributes();
+  void                                  push(std::string key, class Variant *value);
+  std::list<std::string>                getKeys();
+  Variant*                              getValue(std::string key);
+  std::map<std::string, class Variant*> *get();   
+};
+
 
 class Node
 {
 private:
-  uint64_t			offset;
+  //internal node id, use by cache for file mapping ?
+  uint64_t                      id;
+  //uint64_t                    offset;
 
-  class mfso*			mfsobj;
-  class fso*			fsobj;
-  class Metadata*		meta;
+  //class fso*                  fsobj;
+  //class Metadata*             meta;
 
-  std::string			name;
+  //XXX parent could be a list of Node. Ex: Raid reconstruction based on two nodes which
+  //    are aggregated to only one Node
+  class Node*                   parent;
+  std::list<class Node *>       children;
+  uint32_t                      childCount;
+  //attrib*                     attr;
+  //unsigned int                same;
+  //bool                        is_file;
+  //bool                        is_root;
 
-  class Node*			parent;
-  std::list<class Node *>	children;
-  uint32_t			childCount;
-  //attrib*			attr;
-  //unsigned int		same;
-  //bool			is_file;
-  //bool			is_root;
+protected:
+  std::string                   name;
+  class mfso*                 mfsobj;  
 
 public:
-  EXPORT Node(std::string name, class Node* parent = NULL, uint64_t offset = 0, Metadata* meta=NULL);
-  EXPORT ~Node();
-  EXPORT class Attributes*	getAttributes();
-  EXPORT std::string		getName();
-  EXPORT std::string		getPath();
-  EXPORT Node*			getParent();
-  EXPORT uint32_t		getChildCount();
-  EXPORT std::list<class Node*>	getChildren();
-  EXPORT uint64_t		getOffset();
-  EXPORT void			setFsobj(mfso* obj);
-  EXPORT bool			setParent(Node* parent);
-  EXPORT bool			setDecoder(Metadata* decoder);
-  //EXPORT string		absolute(void);
-  EXPORT bool			hasChildren();
-  EXPORT bool			addChild(class Node* child);
-  //EXPORT bool           empty_child();
-  EXPORT class VFile*		open(void);
+  //EXPORT Node(std::string name, class Node* parent = NULL, uint64_t offset = 0, Metadata* meta=NULL);
+  EXPORT Node(std::string name, Node* parent=NULL, mfso* fsobj=NULL);
+  EXPORT virtual ~Node();
+
+  EXPORT virtual FileMapping*   getFileMapping();
+  EXPORT virtual Attributes*    getAttributes();
+  //EXPORT virtual FileMapping* getSlackSpace();
+  EXPORT std::string            getName();
+  EXPORT std::string            getPath();
+  //EXPORT vtime*			getTimes();
+  EXPORT virtual vtime*		getModifiedTime();
+  EXPORT virtual vtime*		getAccessedTime();
+  EXPORT virtual vtime*		getCreatedTime();
+  EXPORT virtual vtime*		getDeletedTime();
+
+  EXPORT Node*                  getParent();
+  EXPORT uint32_t               getChildCount();
+  EXPORT std::list<class Node*> getChildren();
+  // EXPORT uint64_t               getOffset();
+  EXPORT void                   setFsobj(mfso* obj);
+  EXPORT bool                   setParent(Node* parent);
+  //EXPORT bool                 setDecoder(Metadata* decoder);
+  //EXPORT string               absolute(void);
+  EXPORT bool                   hasChildren();
+  EXPORT bool                   addChild(class Node* child);
+  //EXPORT bool                 empty_child();
+  EXPORT class VFile*           open(void);
 };
 
 #endif

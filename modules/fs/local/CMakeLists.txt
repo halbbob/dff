@@ -25,7 +25,7 @@ if (UNIX)
   set(local_srcs
     ulocal.cpp
     utype.cpp
-    umetadata.cpp
+    ulocalnode.cpp
     )
 else (UNIX)
   set(local_srcs

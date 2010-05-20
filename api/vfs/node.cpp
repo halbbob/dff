@@ -17,17 +17,123 @@
 
 #include "node.hpp"
 
-Node::Node(std::string name, class Node *parent, uint64_t offset, Metadata* meta)
+// Node::Node(std::string name, class Node *parent, uint64_t offset, Metadata* meta)
+// {
+//   this->name = name;
+//   this->parent = parent;
+//   this->offset = offset;
+//   this->meta = meta;
+//   this->childCount = 0;
+//   if (this->parent != NULL)
+//     this->parent->addChild(this);
+// }
+
+FileMapping::FileMapping()
 {
-  this->name = name;
-  this->parent = parent;
-  this->offset = offset;
-  this->meta = meta;
-  this->childCount = 0;
-  if (this->parent != NULL)
-    this->parent->addChild(this);
 }
 
+FileMapping::~FileMapping()
+{
+}
+
+chunck*			FileMapping::getNextChunck()
+{
+}
+
+chunck*			FileMapping::getPrevChunck()
+{
+}
+
+std::vector<chunck *>	FileMapping::getChuncks()
+{
+}
+
+void			FileMapping::push(class Node* from, uint64_t start, uint64_t end)
+{
+}
+
+Attributes::Attributes()
+{
+  this->attrs = new std::map<std::string, class Variant*>;
+}
+
+Attributes::~Attributes()
+{
+  delete this->attrs;
+}
+
+void					Attributes::push(std::string key, class Variant *value)
+{
+  if (value != NULL)
+    this->attrs->insert(pair<std::string, class Variant*>(key, value));
+}
+
+std::list<std::string>			Attributes::getKeys()
+{
+  std::list<std::string>		keys;
+  std::map<std::string, class Variant*>::iterator it;
+
+  for (it = this->attrs->begin(); it != this->attrs->end(); it++)
+    keys.push_back(it->first);
+  return keys;
+}
+
+Variant*				Attributes::getValue(std::string key)
+{
+  std::map<std::string, class Variant*>::iterator it;
+
+  it = this->attrs->find(key);
+  if (it != this->attrs->end())
+    return (it->second);
+  else
+    return NULL;
+}
+
+std::map<std::string, class Variant*>*	Attributes::get()
+{
+  return this->attrs;
+}
+
+
+Node::Node(std::string name, Node* parent, mfso* fsobj)
+{
+  this->mfsobj = fsobj;
+  this->parent = parent;
+  if (this->parent != NULL)
+    this->parent->addChild(this);
+  this->name = name;
+}
+
+
+FileMapping*   Node::getFileMapping()
+{
+}
+
+Attributes*    Node::getAttributes()
+{
+  std::cout << "Node getattributes :(" << std::endl;
+}
+
+
+// vtime*		Node::getTimes()
+// {
+// }
+
+vtime*		Node::getModifiedTime()
+{
+}
+
+vtime*		Node::getAccessedTime()
+{
+}
+
+vtime*		Node::getCreatedTime()
+{
+}
+
+vtime*		Node::getDeletedTime()
+{
+}
 
 Node::~Node()
 {
@@ -55,41 +161,25 @@ bool		Node::setParent(Node *parent)
     ;//XXX throw() NodeException;
 }
 
-uint64_t	Node::getOffset()
-{
-  return this->offset;
-}
+// uint64_t	Node::getOffset()
+// {
+//   return this->offset;
+// }
 
-bool		Node::setDecoder(Metadata *meta)
-{
-  bool		ret;
+// bool		Node::setDecoder(Metadata *meta)
+// {
+//   bool		ret;
 
-  ret = false;
-  if (meta != NULL)
-    {
-      this->meta = meta;
-      ret = true;
-    }
-  else
-    this->meta = NULL;
-  return ret;
-}
-
-Attributes*	Node::getAttributes()
-{
-//   try
+//   ret = false;
+//   if (meta != NULL)
 //     {
-  if (this->meta != NULL)
-    return this->meta->getAttributes(this);
-  else
-    return NULL;
+//       this->meta = meta;
+//       ret = true;
 //     }
-//   catch()
-//     {
-      
-//     }
-}
-
+//   else
+//     this->meta = NULL;
+//   return ret;
+// }
 
 uint32_t	Node::getChildCount()
 {

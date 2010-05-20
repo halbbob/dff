@@ -31,7 +31,7 @@ void local::iterdir(std::string dir, Node *parent)
   struct stat		stbuff; 
   struct dirent*	dp;
   DIR*			dfd;
-  Node*			tmp;
+  ULocalNode*		tmp;
   uint64_t		total;
   string		upath;
   uint64_t		id;
@@ -47,17 +47,15 @@ void local::iterdir(std::string dir, Node *parent)
 	    {
 	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
 		{
-		  tmp = new Node(dp->d_name, parent, id);
-		  tmp->setFsobj(this);
-		  tmp->setDecoder(this->attrib);
+		  tmp = new ULocalNode(dp->d_name, parent, this);
+		  tmp->setBasePath(&this->basePath);
 		  total++;
 		  this->iterdir(upath, tmp);
 		}
 	      else
 		{
-		  tmp = new Node(dp->d_name, parent, id);
-		  tmp->setFsobj(this);
-		  tmp->setDecoder(this->attrib);
+		  tmp = new ULocalNode(dp->d_name, parent, this);
+		  tmp->setBasePath(&this->basePath);
 		  total++;
 		}
 	    }
@@ -69,9 +67,6 @@ void local::iterdir(std::string dir, Node *parent)
 
 local::local(): mfso("")
 {
-  this->attrib = new UMetadata();
-  //res = new results("local");
-  //this->name = "local";
 }
 
 local::~local()
@@ -117,10 +112,9 @@ void local::start(argument* arg)
     //res->add_const("error", "stat: " + std::string(strerror(errno)));    	
     return ;
   }
-  this->attrib->setBasePath(this->basePath);
-  this->root = new Node(path, NULL, id);
-  this->root->setFsobj(this);
-  this->root->setDecoder(this->attrib);
+  //this->attrib->setBasePath(this->basePath);
+  this->root = new Node(path, NULL, this);
+  //this->root->setDecoder(this->attrib);
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
     this->iterdir(tpath->path, this->root);
   this->parent->addChild(this->root);
@@ -133,9 +127,7 @@ int local::vopen(Node *node)
   struct stat 	stbuff;
   std::string	file;
 
-  std::cout << "OPEN LOCAL" << std::endl;
   file = this->basePath + "/" + node->getPath() + node->getName();
-  std::cout << file << std::endl;
 #if defined(__FreeBSD__)
   if ((n = open(file.c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)
@@ -200,7 +192,7 @@ int local::vclose(int fd)
   return (0);
 }
 
-dff_ui64 local::vseek(int fd, dff_ui64 offset, int whence)
+uint64_t local::vseek(int fd, dff_ui64 offset, int whence)
 {
  dff_ui64  n = 0;
 

@@ -20,7 +20,7 @@
 
 %feature("director") fso;
 %feature("director") mfso;
-%feature("director") Metadata;
+%feature("director") Node;
 
 %feature("director:except") fso 
 {
@@ -128,10 +128,9 @@ typedef unsigned long long dff_ui64;
   #include "vfs.hpp"
   #include "node.hpp"
   #include "fso.hpp"
-  #include "decoder.hpp"
   #include "mfso.hpp"
   #include "vfile.hpp"
-
+  //  #include "../include/variant.hpp"
 
   static void PythonCallBack(void *data, Node* pnode)
   {
@@ -172,9 +171,9 @@ typedef unsigned long long dff_ui64;
 %include "../include/vfs.hpp"
 %include "../include/node.hpp"
 %include "../include/fso.hpp"
-%include "../include/decoder.hpp"
 %include "../include/mfso.hpp"
 %include "../include/vfile.hpp"
+ //%include "../include/variant.hpp"
 
 namespace std
 {
