@@ -26,14 +26,14 @@ set(fat_srcs
   fatfs.cpp
   bootsector.cpp
   fat.cpp
-  entries.cpp
-  fsinfo.cpp
+#  entries.cpp
+#  fsinfo.cpp
 )
 
 
 SET_SOURCE_FILES_PROPERTIES(fatfs.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(FAT python fatfs.i ${fat_srcs})
-SWIG_LINK_LIBRARIES(FAT ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv)
+SWIG_ADD_MODULE(FATFS python fatfs.i ${fat_srcs})
+SWIG_LINK_LIBRARIES(FATFS ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_FAT_REAL_NAME} PROPERTIES
@@ -46,5 +46,5 @@ set(fat_files
   FATFS.py
 )
 
-install_lib(${SWIG_MODULE_FAT_REAL_NAME})
+install_lib(${SWIG_MODULE_FATFS_REAL_NAME})
 install_file(fat ${fat_files})

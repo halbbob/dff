@@ -17,7 +17,6 @@
 #ifndef __MFSO_HPP__
 #define __MFSO_HPP__
 
-#include "decoder.hpp"
 #include "node.hpp"
 #include "results.hpp"
 #include "vfile.hpp"
@@ -49,6 +48,30 @@
 //   virtual void		start(argument* ar);
 // };
 
+typedef struct
+{
+  FileMapping*	fm;
+  uint64_t	offset;
+}		fdinfo;
+
+class FdManager
+{
+private:
+  uint32_t		allocated;
+  std::vector<fdinfo*>	fds;
+public:
+  FdManager();
+  ~FdManager();
+  fdinfo*	get(uint32_t fd);
+  void		remove(uint32_t fd);
+  int32_t	push(fdinfo* fi);
+};
+
+
+//Provide algorithm for certain kind of reader:
+// - compression
+// - crypto
+// - ...
 class mfso//: //public fso
 {
 private:

@@ -18,12 +18,16 @@
 
 void		Fatfs::process()
 {
+  Node	*tmp;
   try
     {
       //this->ctx = new fsinfo;
       this->root = new Node("Fat File System");
-      this->bootsector = new bootSector(this->ctx);
-      this->fat = new FileAllocationTable(this->ctx);
+      //this->bootsector->process(this->parent);
+      tmp = new bootSectorNode("$bootsector", this, this->root, this->parent, 0x0);
+      tmp = new bootSectorNode("$bootsector1", this, this->root, this->parent, 0x200);
+      std::cout << "adding two nodes" << std::endl;
+      //this->fat->process(this->bootsector);
       this->parent->addChild(this->root);
       //this->bootsector = new bootSector();
     }
@@ -65,10 +69,11 @@ void		Fatfs::start(argument* arg)
 
 Fatfs::~Fatfs()
 {
-  delete this->ctx;
+  //delete this->ctx;
 }
 
 Fatfs::Fatfs(): mfso("Fat File System")
 {
-  this->ctx = new FatContext(this);
+  this->bootsector = new bootSector();
+  this->fat = new FileAllocationTable();
 }

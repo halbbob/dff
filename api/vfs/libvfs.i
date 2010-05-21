@@ -30,6 +30,15 @@
     }
 }
 
+%feature("director:except") Node
+{
+    if ($error != NULL)
+    {
+      throw Swig::DirectorMethodException();
+    }
+}
+
+
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
@@ -37,9 +46,10 @@
 %include "std_except.i"
 %include "windows.i"
 %include "stdint.i"
-
 %import "../exceptions/libexceptions.i"
+
 %catches(vfsError) Node::open(void);
+
 %catches(vfsError) VFile::read(void);
 %catches(vfsError) VFile::read(unsigned int size);
 %catches(vfsError) VFile::read(void *buff, unsigned int size);
@@ -49,54 +59,56 @@
 %catches(vfsError) VFile::seek(dff_ui64 offset,char *chwence);
 %catches(vfsError) VFile::seek(dff_ui64 offset);
 %catches(vfsError) VFile::tell(void);
-%catches(envError) fso::start(argument* args); fso::vopen(Handle *handle); Node::open(void);
-%catches(vfsError) fso::start(argument* args); fso::vopen(Handle *handle); Node::open(void);
-%catches(vfsError) fso::vopen(Handle *handle);
 
-%feature("director") fso::__getstate__;
+/* %catches(envError) fso::start(argument* args); fso::vopen(Handle *handle); Node::open(void); */
+/* %catches(vfsError) fso::start(argument* args); fso::vopen(Handle *handle); Node::open(void); */
+/* %catches(vfsError) fso::vopen(Handle *handle); */
 
-%exception start
-{
-   try
-   {
-       SWIG_PYTHON_THREAD_BEGIN_ALLOW;
-       $action 
-       SWIG_PYTHON_THREAD_END_ALLOW;
-   }
-   catch (Swig::DirectorException e) 
-   {
-     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-     SWIG_fail; 
-     SWIG_PYTHON_THREAD_END_BLOCK;
-   }
-}
+/* %feature("director") fso::__getstate__; */
 
-%exception open 
-{
-    try 
-    { 
-  //    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-   //   SWIG_PYTHON_THREAD_BEGIN_ALLOW;
-      $action 
-       //SWIG_PYTHON_THREAD_END_ALLOW;
-    //  SWIG_PYTHON_THREAD_END_BLOCK;
-    }
-    catch (Swig::DirectorException e) 
-    {
-        SWIG_fail;
-    }
-    catch (vfsError &e)
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      SWIG_Python_Raise(SWIG_NewPointerObj((new vfsError(static_cast< const vfsError& >(e))),SWIGTYPE_p_vfsError, SWIG_POINTER_OWN), "vfsError", SWIGTYPE_p_vfsError); 
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      SWIG_fail;
-    }
-    catch (const std::exception &e)
-    {
-     SWIG_exception(SWIG_RuntimeError, e.what());
-    }
-}
+/* %exception start */
+/* { */
+/*    try */
+/*    { */
+/*        SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
+/*        $action  */
+/*        SWIG_PYTHON_THREAD_END_ALLOW; */
+/*    } */
+/*    catch (Swig::DirectorException e)  */
+/*    { */
+/*      SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+/*      SWIG_fail;  */
+/*      SWIG_PYTHON_THREAD_END_BLOCK; */
+/*    } */
+/* } */
+
+/* %exception open */
+/* { */
+/*   printf("in it\n"); */
+/*     try */
+/*     { */
+/*   //    SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+/*    //   SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
+/*       $action */
+/*        //SWIG_PYTHON_THREAD_END_ALLOW; */
+/*     //  SWIG_PYTHON_THREAD_END_BLOCK; */
+/*     } */
+/*     catch (Swig::DirectorException e) */
+/*     { */
+/*         SWIG_fail; */
+/*     } */
+/*     catch (vfsError &e) */
+/*     { */
+/*       SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+/*       SWIG_Python_Raise(SWIG_NewPointerObj((new vfsError(static_cast< const vfsError& >(e))),SWIGTYPE_p_vfsError, SWIG_POINTER_OWN), "vfsError", SWIGTYPE_p_vfsError); */
+/*       SWIG_PYTHON_THREAD_END_BLOCK; */
+/*       SWIG_fail; */
+/*     } */
+/*     catch (const std::exception &e) */
+/*     { */
+/*      SWIG_exception(SWIG_RuntimeError, e.what()); */
+/*     } */
+/* } */
 
 
 typedef unsigned long long dff_ui64; 
@@ -124,6 +136,7 @@ typedef unsigned long long dff_ui64;
 }
 
 %{
+  #include "exceptions.hpp"
   #include "export.hpp"
   #include "vfs.hpp"
   #include "node.hpp"
@@ -168,6 +181,7 @@ typedef unsigned long long dff_ui64;
 %}
 
 %include "../include/export.hpp"
+%include "../include/exceptions.hpp"
 %include "../include/vfs.hpp"
 %include "../include/node.hpp"
 %include "../include/fso.hpp"

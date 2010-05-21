@@ -19,9 +19,8 @@
 
 #include "node.hpp"
 #include "vfile.hpp"
-#include "decoder.hpp"
 
-class FileAllocationTable: public Metadata
+class FileAllocationTable
 {
 private:
   uint8_t		type;
@@ -46,8 +45,8 @@ public:
   uint32_t		getFreeClusterCount(uint8_t which=0);
   std::list<uint32_t>	getAllocatedClusters(uint8_t which=0);
   uint32_t		getAllocatedClusterCount(uint8_t which=0);
-  virtual class FileMapping*	getFileMapping(class Node* node){};
-  virtual class Attributes*	getAttributes(class Node* node){};
+  // virtual class FileMapping*	getFileMapping(class Node* node){};
+  // virtual class Attributes*	getAttributes(class Node* node){};
 };
 
 #endif

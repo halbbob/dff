@@ -34,7 +34,7 @@ typedef struct
 {
   class Node*   from;
   uint64_t      start;
-  uint64_t      end;
+  uint64_t      size;
 }               chunck;
 
 
@@ -43,13 +43,18 @@ class FileMapping
 private:
   uint64_t              current;
   std::vector<chunck *> chuncks;
+  std::vector<uint64_t> offsets;
 public:
   FileMapping();
   ~FileMapping();
   chunck*               getNextChunck();
   chunck*               getPrevChunck();
+  chunck*		getFirstChunck();
+  chunck*		getLastChunck();
+  chunck*		getChunck(uint64_t pos);
+  chunck*		getChunckFromOffset(uint64_t offset);
   std::vector<chunck *> getChuncks();
-  void                  push(class Node* from, uint64_t start, uint64_t end);
+  void                  push(class Node* from, uint64_t start, uint64_t size);
 };
 
 
@@ -97,6 +102,9 @@ public:
   EXPORT virtual ~Node();
 
   EXPORT virtual FileMapping*   getFileMapping();
+  // May become the following method in case of lots of small chunck !!!
+  // ability to provide a defined range
+  //EXPORT virtual FileMapping*   getFileMapping(uint64_t offset=0, uint64_t range=0);
   EXPORT virtual Attributes*    getAttributes();
   //EXPORT virtual FileMapping* getSlackSpace();
   EXPORT std::string            getName();

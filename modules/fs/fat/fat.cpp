@@ -14,7 +14,7 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#include "fatreader.hpp"
+#include "fat.hpp"
 
 FileAllocationTable::FileAllocationTable()
 {
@@ -92,22 +92,6 @@ list<uint32_t>	FileAllocationTable::getClusterChain(uint32_t start, uint8_t whic
 {
   if (which > this->total)
     throw(vfsError(std::string("Fat module: Requested fat number for reading is too high")));
-  else
-    ;
-}
-
-bool		FileAllocationTable::isRelevant(Node* n)
-{
-  if (n == this->parent)
-    ;
-  else
-    ;
-}
-
-Variant*	FileAllocationTable::getAttributes(Node* n)
-{
-  if (n == this->parent)
-    ;
   else
     ;
 }

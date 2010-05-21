@@ -21,7 +21,7 @@
 #include "fat.hpp"
 #include "mfso.hpp"
 #include "node.hpp"
-#include "fsinfo.hpp"
+//#include "fsinfo.hpp"
 
 class Fatfs : public mfso
 {
@@ -37,7 +37,7 @@ public:
 
   virtual void		start(argument *arg);
   void			setContext(argument* arg);
-  void			process(fsinfo* );
+  void			process();
 };
 
 #endif

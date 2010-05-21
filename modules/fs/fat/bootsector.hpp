@@ -19,8 +19,6 @@
 
 #include "node.hpp"
 #include "vfile.hpp"
-#include "decoder.hpp"
-#include "fsinfo.hpp"
 
 typedef struct
 {
@@ -71,11 +69,11 @@ typedef struct
 
 } bootsector;
 
+
 class bootSector//: public Metadata
 {
 private:
   Node*		parent;
-  bootsector*	bs;
   void		bootsectorToCtx();
   bool		checkBootSectorFields();
   bool		DetermineFatType();
@@ -83,10 +81,21 @@ private:
 public:
   bootSector();
   ~bootSector();
-  void		process();
-  //void	process(Node* input);
+  void	process();
 //   virtual class FileMapping*	getFileMapping(class Node* node);
 //   virtual class Attributes*	getAttributes(class Node* node);
+};
+
+class bootSectorNode: public Node
+{
+private:
+  uint64_t	offset;
+  Node*		origin;
+public:
+  bootSectorNode(std::string name, mfso* fsobj, Node* parent, Node* readon, uint64_t offset);
+  ~bootSectorNode();
+  class FileMapping*	getFileMapping();
+  class Attributes*	getAttributes();
 };
 
 #endif
