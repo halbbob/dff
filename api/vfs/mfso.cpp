@@ -18,29 +18,38 @@
 
 FdManager::FdManager()
 {
-  this->vector.assign(16384, 0);
+  this->fds.assign(16384, (fdinfo*)0);
+  this->allocated = 0;
 }
 
 FdManager::~FdManager()
 {
 }
 
-fdinfo*		FdManager::get(uint32_t fd)
+fdinfo*		FdManager::get(int32_t fd)
 {
   fdinfo*	fi;
 
+  std::cout << "getting info from fd " << fd << std::endl;
   if (fd > this->fds.size())
     throw("Provided fd is too high");
   else
     {
       fi = this->fds[fd];
       if (fi != 0)
+	{
+	  std::cout << "fd found" << std::endl;
+	  return fi;
+	}
+      else
+	throw("Fd not allocated");
+      //;return NULL;
     }
 }
 
-uint32_t	FdManager::push(fdinfo* fi)
+int32_t	FdManager::push(fdinfo* fi)
 {
-  uint32_t	i;
+  int32_t	i;
   bool		empty;
 
   empty = false;
@@ -49,19 +58,25 @@ uint32_t	FdManager::push(fdinfo* fi)
   else
     {
       i = 0;
-      while ((i != this->fds.size()) && !empty)
+      while ((i < this->fds.size()) && !empty)
 	{
-	  if (this->fds[i] != 0)
+	  if (this->fds[i] == 0)
 	    empty = true;
 	  else
 	    i++;
 	}
-      this->allocated++;
-      return i;
+      if (empty && i < this->fds.size())
+	{
+	  this->allocated++;
+	  this->fds[i] = fi;
+	  return i;
+	}
+      else
+	throw("Allocation failed");
     }
 }
 
-void		FdManager::remove(uint32_t fd)
+void		FdManager::remove(int32_t fd)
 {
   fdinfo*	fi;
   
@@ -83,6 +98,7 @@ mfso::mfso(std::string name)
 {
   this->name = name;
   this->res = new results(name);
+  this->fdmanager = new FdManager();
   //this->root = new Node(NULL, name, 0);
 }
 
@@ -107,6 +123,7 @@ int32_t 	mfso::vopen(Node *node)
 {
   FileMapping	*fm;
   fdinfo*	fi;
+  int32_t	fd;
 
   if (node != NULL)
     {
@@ -134,11 +151,40 @@ int32_t 	mfso::vopen(Node *node)
   return -1;
 }
 
-int32_t 	mfso::vread(int fd, void *buff, unsigned int size)
+int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
 {
+  fdinfo*	fi;
+  FileMapping*	fm;
+  VFile*	vfile;
+  chunck*	current;
+  uint64_t relativeoffset;
+
+  try
+    {
+      fi = this->fdmanager->get(fd);
+      fm = fi->fm;
+      current = fm->getChunckFromOffset(fi->offset);
+      if (current->origin != NULL)
+	{
+	  //Check if already in the cache
+	  //vfile = current->from->open();
+	  //vfile->seek(fi->offset);
+	  //vfile->read();
+	  relativeoffset = fi->offset - current->offset;
+	  std::cout << "current offset (" << fi->offset << ") of the node is at offset " << current->originoffset + relativeoffset << " in node " << current->origin->getPath() + current->origin->getName() << std::endl;
+	  return 2;
+	}
+      else
+	return -1;//throw("Provided internal node for reading is not allocated");
+    }
+  catch(...)
+    {
+      std::cout << "problem while reading node" << std::endl;
+      return 0;
+    }
 }
 
-int32_t 	mfso::vwrite(int fd, void *buff, unsigned int size)
+int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 {
 }
 

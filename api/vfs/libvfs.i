@@ -22,6 +22,7 @@
 %feature("director") mfso;
 %feature("director") Node;
 
+
 %feature("director:except") fso 
 {
     if ($error != NULL) 
@@ -31,6 +32,14 @@
 }
 
 %feature("director:except") Node
+{
+    if ($error != NULL)
+    {
+      throw Swig::DirectorMethodException();
+    }
+}
+
+%feature("director:except") mfso
 {
     if ($error != NULL)
     {
@@ -216,9 +225,19 @@ namespace std
  } 
 };
 
+//%pythoncode
+//%{
+//def init(self, *args):
+//   print "custom Node ctor"
+//   self.__originalinit__(self, *args)
+
+//Node.__originalinit__ = Node.__init__
+//Node.__init__ = init
+//%}
 
 %extend Node
 {
+
 %pythoncode
 %{
 def __iter__(self):

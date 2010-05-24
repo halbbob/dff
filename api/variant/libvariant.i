@@ -31,7 +31,7 @@
 //#include "vtime.hpp"
 #include "attrib.hpp"
 #include "variant.hpp"
-#include "node.hpp"
+//#include "node.hpp"
 %}
 
 %include "../include/export.hpp"
@@ -39,7 +39,7 @@
 //%include "../include/vtime.hpp"
 %include "../include/attrib.hpp"
 %include "../include/variant.hpp"
-%include "../include/node.hpp"
+//%include "../include/node.hpp"
 %import "../type/libtype.i"
 
 %template(__getValueChar) Variant::getValue<char>;
@@ -50,7 +50,7 @@
 %template(__getValueInt64) Variant::getValue<int64_t>;
 %template(__getValueUInt64) Variant::getValue<uint64_t>;
 %template(__getValueCArray) Variant::getValue<char *>;
-%template(__getValueNode) Variant::getValue<Node*>;
+//%template(__getValueNode) Variant::getValue<Node*>;
 %template(__getValueVTime) Variant::getValue<vtime*>;
 
 namespace std
@@ -76,7 +76,7 @@ namespace std
                       typeId.UInt64: "_Variant__getValueUInt64",
                       typeId.String: "_Variant__getValueString",
                       typeId.CArray: "_Variant__getValueCArray",
-                      typeId.Node: "_Variant__getValueNode",
+//                      typeId.Node: "_Variant__getValueNode",
                       typeId.VTime: "_Variant__getValueVTime",
 		      typeId.List: "_Variant__getValueList",
   		      typeId.Map: "_Variant__getValueMap"}

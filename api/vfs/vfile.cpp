@@ -66,7 +66,7 @@ pdata* VFile::read(void)
 
 pdata* VFile::read(unsigned int size)
 {
-  int n;
+  int32_t n;
   pdata* data = new pdata;
   data->buff = malloc(size); 
   data->len = size;
@@ -74,8 +74,10 @@ pdata* VFile::read(unsigned int size)
   memset(data->buff, 0, size);
   try 
   { 
-    n = this->mfsobj->vread(fd, (void*)data->buff, size);
-    data->len = n;
+    std::cout << "vfile reading size of " << size << std::endl;
+    n = this->mfsobj->vread(fd, data->buff, size);
+    std::cout << "OK KO KO OK " << std::endl;
+    data->len = 2;
     return (data);
   }
   catch (vfsError e)

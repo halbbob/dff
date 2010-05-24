@@ -35,9 +35,9 @@ void		ULocalNode::setBasePath(std::string* bp)
 
 Attributes*	ULocalNode::getAttributes()
 {
+  Attributes*	attr;
   std::string	file;
   struct stat 	st;
-  Attributes	*attr;
 
   file = *(this->basePath) + "/" + this->getPath() + this->name;
   if (lstat(file.c_str(), &st) != -1)

@@ -32,9 +32,10 @@
 
 typedef struct
 {
-  class Node*   from;
-  uint64_t      start;
+  uint64_t      offset;
   uint64_t      size;
+  class Node*   origin;
+  uint64_t	originoffset;
 }               chunck;
 
 
@@ -43,10 +44,10 @@ class FileMapping
 private:
   uint64_t              current;
   std::vector<chunck *> chuncks;
-  std::vector<uint64_t> offsets;
 public:
   FileMapping();
   ~FileMapping();
+  uint64_t		getChunckCount();
   chunck*               getNextChunck();
   chunck*               getPrevChunck();
   chunck*		getFirstChunck();
@@ -54,7 +55,7 @@ public:
   chunck*		getChunck(uint64_t pos);
   chunck*		getChunckFromOffset(uint64_t offset);
   std::vector<chunck *> getChuncks();
-  void                  push(class Node* from, uint64_t start, uint64_t size);
+  void			push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
 };
 
 
@@ -106,14 +107,15 @@ public:
   // ability to provide a defined range
   //EXPORT virtual FileMapping*   getFileMapping(uint64_t offset=0, uint64_t range=0);
   EXPORT virtual Attributes*    getAttributes();
+
   //EXPORT virtual FileMapping* getSlackSpace();
   EXPORT std::string            getName();
   EXPORT std::string            getPath();
   //EXPORT vtime*			getTimes();
-  EXPORT virtual vtime*		getModifiedTime();
-  EXPORT virtual vtime*		getAccessedTime();
-  EXPORT virtual vtime*		getCreatedTime();
-  EXPORT virtual vtime*		getDeletedTime();
+//   EXPORT virtual vtime*		getModifiedTime();
+//   EXPORT virtual vtime*		getAccessedTime();
+//   EXPORT virtual vtime*		getCreatedTime();
+//   EXPORT virtual vtime*		getDeletedTime();
 
   EXPORT Node*                  getParent();
   EXPORT uint32_t               getChildCount();

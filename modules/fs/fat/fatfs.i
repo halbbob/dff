@@ -25,7 +25,7 @@
 %import "../../../api/exceptions/libexceptions.i"
 
 %{
-#include "../../../api/include/exceptions.hpp"
+//#include "../../../api/include/exceptions.hpp"
 #include "fatfs.hpp"
 %}
 

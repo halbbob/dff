@@ -30,11 +30,17 @@
 
 FileMapping::FileMapping()
 {
+  std::cout << "init file mapping" << std::endl;
   this->current = 0;
 }
 
 FileMapping::~FileMapping()
 {
+}
+
+uint64_t		FileMapping::getChunckCount()
+{
+  return this->chuncks.size();
 }
 
 chunck*			FileMapping::getChunck(uint64_t pos)
@@ -99,41 +105,47 @@ chunck*			FileMapping::getChunckFromOffset(uint64_t offset)
   uint32_t		i;
   uint32_t		size;
   bool			found;
+  uint64_t		maxoffset;
 
   i = 0;
-  size = this->offsets.size();
+  size = this->chuncks.size();
   found = false;
-  while (i < size && !found)
+  std::cout << "get chunck containing offset " << offset << std::endl;
+  while ((i < size) && !found)
     {
-      if (offset < this->offsets[i])
+      maxoffset = this->chuncks[i]->offset + this->chuncks[i]->size;
+      std::cout << "  current chunck start at " << this->chuncks[i]->offset << " ends at" << maxoffset << std::endl;
+      if ((offset >= this->chuncks[i]->offset) && (offset <= maxoffset))
 	found = true;
       else
 	i++;
     }
-  if (i < this->chuncks.size())
-    return this->chuncks[i];
+  if (found)
+    {
+      std::cout << "chunck number " << i << std::endl;
+      return this->chuncks[i];
+    }
   else
-    return NULL;
+    throw("not found");
 }
 
-void			FileMapping::push(class Node* from, uint64_t start, uint64_t size)
+//XXX Do some sanity checks:
+// origin != NULL
+// originoffset < origin.size
+// originoffset + size < origin.size
+void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
   chunck	*c;
-  uint64_t	offset;
   
-  //XXX Do some sanity checks:
-  // from != NULL
-  // offset < from.size
-  // offset + size < from.size
-  c->from = from;
-  c->start = start;
+  std::cout << "file mapping pushing info" << std::endl;
+  c = new chunck;
+  std::cout << "filemapping pushing " << offset << " " << size << " " << originoffset << std::endl;
+  c->offset = offset;
   c->size = size;
+  c->origin = origin;
+  c->originoffset = originoffset;
   this->chuncks.push_back(c);
-  if (this->offsets.size() == 0)
-    offset = 0;
-  else
-    offset = this->offsets.back();
-  this->offsets.push_back(offset + size);
+  std::cout << "file mapping info pushed correctly" << std::endl;
 }
 
 Attributes::Attributes()
@@ -205,25 +217,25 @@ Attributes*    Node::getAttributes()
 // {
 // }
 
-vtime*		Node::getModifiedTime()
-{
-  return NULL;
-}
+// vtime*		Node::getModifiedTime()
+// {
+//   return NULL;
+// }
 
-vtime*		Node::getAccessedTime()
-{
-  return NULL;
-}
+// vtime*		Node::getAccessedTime()
+// {
+//   return NULL;
+// }
 
-vtime*		Node::getCreatedTime()
-{
-  return NULL;
-}
+// vtime*		Node::getCreatedTime()
+// {
+//   return NULL;
+// }
 
-vtime*		Node::getDeletedTime()
-{
-  return NULL;
-}
+// vtime*		Node::getDeletedTime()
+// {
+//   return NULL;
+// }
 
 Node::~Node()
 {

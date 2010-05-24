@@ -12,8 +12,6 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
-from api.env import *
-from api.env.libenv import *
 from api.type.libtype import *
 from api.module import *
 from api.vfs.libvfs import *

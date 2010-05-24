@@ -50,9 +50,9 @@
 
 typedef struct
 {
-  FileMapping*	fm;
-  uint64_t	offset;
-}		fdinfo;
+  class FileMapping*	fm;
+  uint64_t		offset;
+}			fdinfo;
 
 class FdManager
 {
@@ -62,8 +62,8 @@ private:
 public:
   FdManager();
   ~FdManager();
-  fdinfo*	get(uint32_t fd);
-  void		remove(uint32_t fd);
+  fdinfo*	get(int32_t fd);
+  void		remove(int32_t fd);
   int32_t	push(fdinfo* fi);
 };
 
@@ -75,6 +75,7 @@ public:
 class mfso//: //public fso
 {
 private:
+  FdManager*					fdmanager;
   results					*res;
   std::string					name;
   class VFile					*__vfile;
@@ -110,10 +111,10 @@ public:
 
   EXPORT virtual void		start(argument* args) = 0;
   EXPORT virtual int32_t 	vopen(class Node *n);
-  EXPORT virtual int32_t 	vread(int fd, void *buff, unsigned int size);
-  EXPORT virtual int32_t 	vwrite(int fd, void *buff, unsigned int size);
-  EXPORT virtual int32_t 	vclose(int fd);
-  EXPORT virtual uint64_t	vseek(int fd, dff_ui64 offset, int whence);
+  EXPORT virtual int32_t 	vread(int32_t fd, void *buff, uint32_t size);
+  EXPORT virtual int32_t 	vwrite(int32_t fd, void *buff, unsigned int size);
+  EXPORT virtual int32_t 	vclose(int32_t fd);
+  EXPORT virtual uint64_t	vseek(int32_t fd, dff_ui64 offset, int whence);
   EXPORT virtual uint32_t	status(void);
 
   // EXPORT virtual void	pause();

@@ -175,7 +175,10 @@ FileMapping*	bootSectorNode::getFileMapping()
 
   fm = new FileMapping();
 
-  fm->push(this->origin, this->offset, 0x200);
+  fm->push(0, 0x200, this->origin, this->offset);
+  fm->push(0x200, 0x200, this->origin, 0x4000);
+  fm->push(0x400, 0x200, this->origin, 0x1000);
+  //std::cout << "bootsector node return mapping" << std::endl;
   return fm;
 }
 
