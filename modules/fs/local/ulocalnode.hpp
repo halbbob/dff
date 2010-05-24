@@ -25,7 +25,7 @@ class ULocalNode: public Node
 private:
   std::string*			basePath;
 public:
-  ULocalNode(std::string name, Node* parent, mfso* fsobj);
+  ULocalNode(std::string name, uint64_t size, Node* parent, mfso* fsobj);
   ~ULocalNode();
   void			setBasePath(std::string* bp);
   virtual class FileMapping*	getFileMapping(){}

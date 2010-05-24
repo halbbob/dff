@@ -16,7 +16,7 @@
 
 #include "vfile.hpp"
 
-VFile::VFile(uint32_t fd, class mfso *mfsobj, class Node *node) 
+VFile::VFile(int32_t fd, class mfso *mfsobj, class Node *node) 
 {
   this->s = new Search();
   this->fd = fd;
@@ -64,7 +64,7 @@ pdata* VFile::read(void)
   }
 }
 
-pdata* VFile::read(unsigned int size)
+pdata* VFile::read(uint32_t size)
 {
   int32_t n;
   pdata* data = new pdata;
@@ -75,8 +75,8 @@ pdata* VFile::read(unsigned int size)
   try 
   { 
     std::cout << "vfile reading size of " << size << std::endl;
-    n = this->mfsobj->vread(fd, data->buff, size);
-    std::cout << "OK KO KO OK " << std::endl;
+    n = this->mfsobj->vread(this->fd, data->buff, size);
+    std::cout << "returned read size " << n << std::endl;
     data->len = 2;
     return (data);
   }

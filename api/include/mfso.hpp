@@ -50,6 +50,7 @@
 
 typedef struct
 {
+  Node*			node;
   class FileMapping*	fm;
   uint64_t		offset;
 }			fdinfo;
@@ -93,7 +94,7 @@ private:
   // be destroyed
   class mfso					*__parent;
 
-  //fdmanager
+  int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
 
 protected:
   //  std::string				name;
@@ -112,9 +113,9 @@ public:
   EXPORT virtual void		start(argument* args) = 0;
   EXPORT virtual int32_t 	vopen(class Node *n);
   EXPORT virtual int32_t 	vread(int32_t fd, void *buff, uint32_t size);
-  EXPORT virtual int32_t 	vwrite(int32_t fd, void *buff, unsigned int size);
+  EXPORT virtual int32_t 	vwrite(int32_t fd, void *buff, uint32_t size);
   EXPORT virtual int32_t 	vclose(int32_t fd);
-  EXPORT virtual uint64_t	vseek(int32_t fd, dff_ui64 offset, int whence);
+  EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence);
   EXPORT virtual uint32_t	status(void);
 
   // EXPORT virtual void	pause();

@@ -28,31 +28,32 @@ from api.vfs.libvfs import *
 from string import ascii_letters
 
 class MfsoTestNode(Node):
-    def __init__(self, letter, mfso, parent, offset):
-        Node.__init__(self, letter, parent, mfso)
+    def __init__(self, letter, mfso, origin, start):
+        Node.__init__(self, letter, 10, origin, mfso)
         self.thisown = False
-        self.parent = parent
-        self.offset = offset
+        self.origin = origin
+        self.start = start
+        self.size = 10
         setattr(self, "getAttributes", self.getAttributes)
         setattr(self, "getFileMapping", self.getFileMapping)
+
     
     def getFileMapping(self):
         fm = FileMapping()
         fm.thisown = False
-        fm.push(0, 2, self.parent, 0)
-        #for i in xrange(0, 5):
-        #    print "ok"
-        #    fm.push(0, 2, self.parent, offset + i * 52)
+        voffset = 0
+        for i in xrange(0, 5):
+            fm.push(voffset, 2, self.origin, self.start + i * 52)
+            voffset += 2
         return fm
 
     def getAttributes(self):
         print "Python node attributes requested"
         attr = Attributes()
         attr.thisown = False
-        size = Variant(10)
-        size.thisown = False
-        attr.push("size", size)
-        attr.thisown = False
+        sizeattr = Variant(self.size)
+        sizeattr.thisown = False
+        attr.push("size", sizeattr)
         return attr
 
 

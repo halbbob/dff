@@ -127,55 +127,89 @@ int32_t 	mfso::vopen(Node *node)
 
   if (node != NULL)
     {
-      fm = node->getFileMapping();
-      if (fm != NULL)
+      try
 	{
+	  //Check if mapping of the node is already in the cache
+	  fm = fi->node->getFileMapping();
 	  fi = new fdinfo;
 	  fi->offset = 0;
+	  fi->node = node;
 	  fi->fm = fm;
-	  try
-	    {
-	      fd = this->fdmanager->push(fi);
-	      return fd;
-	    }
-	  catch(...)
-	    {
-	      return -1;
-	    }
+	  fd = this->fdmanager->push(fi);
+	  return fd;
 	}
-      else
-	;
+      catch(...)
+	{
+	  return -1;
+	}
     }
   else
     throw("Node null");
   return -1;
 }
 
+int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
+{
+  VFile*	vfile;
+  chunck*	current;
+  uint64_t	relativeoffset;
+  uint32_t	currentread;
+  uint32_t	totalread;
+  bool		eof;
+
+  try
+    {
+      eof = false;
+      totalread = 0;
+      current = fi->fm->getChunckFromOffset(fi->offset);
+      while ((totalread != size) && !EOF)
+	{
+	  if ((current->offset + current->size) < fi->offset)
+	    current = fi->fm->getChunckFromOffset(fi->offset);
+	  if (current->origin != NULL)
+	    {
+	      relativeoffset = fi->offset - current->offset;
+	      vfile = current->origin->open();
+	      vfile->seek(relativeoffset);
+	      currentread += vfile->read(((uint8_t*)buff)+totalread, size - totalread);
+	      fi->offset += currentread;
+	      totalread += currentread;
+	      std::cout << "offset " << fi->offset << " of " << fi->node->getPath() << fi->node->getName() 
+			<< " is at offset " << current->originoffset + relativeoffset << " in node " 
+			<< current->origin->getPath() + current->origin->getName() << std::endl;
+	    }
+	  else
+	    eof = true;
+	}
+    }
+  catch(...)
+    {
+      std::cout << "error with FileMapping" << std::endl;
+      return -1;
+    }
+}
+
 int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
 {
   fdinfo*	fi;
-  FileMapping*	fm;
-  VFile*	vfile;
-  chunck*	current;
-  uint64_t relativeoffset;
+  uint64_t	realsize;
+  int32_t	bytesread;
 
   try
     {
       fi = this->fdmanager->get(fd);
-      fm = fi->fm;
-      current = fm->getChunckFromOffset(fi->offset);
-      if (current->origin != NULL)
+      if ((fi->node != NULL) && (fi->fm != NULL))
 	{
-	  //Check if already in the cache
-	  //vfile = current->from->open();
-	  //vfile->seek(fi->offset);
-	  //vfile->read();
-	  relativeoffset = fi->offset - current->offset;
-	  std::cout << "current offset (" << fi->offset << ") of the node is at offset " << current->originoffset + relativeoffset << " in node " << current->origin->getPath() + current->origin->getName() << std::endl;
-	  return 2;
+	  //Warn if fi->node->getSize() != fm->getSize() ?
+	  if (size > (fi->fm->getSize() - fi->offset))
+	    realsize = fi->fm->getSize() - fi->offset;
+	  else
+	    realsize = size;
+	  bytesread = this->readFromMapping(fi, buff, realsize);
+	  return bytesread;
 	}
       else
-	return -1;//throw("Provided internal node for reading is not allocated");
+	return 0;
     }
   catch(...)
     {

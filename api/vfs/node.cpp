@@ -30,8 +30,8 @@
 
 FileMapping::FileMapping()
 {
-  std::cout << "init file mapping" << std::endl;
   this->current = 0;
+  this->size = 0;
 }
 
 FileMapping::~FileMapping()
@@ -110,11 +110,9 @@ chunck*			FileMapping::getChunckFromOffset(uint64_t offset)
   i = 0;
   size = this->chuncks.size();
   found = false;
-  std::cout << "get chunck containing offset " << offset << std::endl;
   while ((i < size) && !found)
     {
       maxoffset = this->chuncks[i]->offset + this->chuncks[i]->size;
-      std::cout << "  current chunck start at " << this->chuncks[i]->offset << " ends at" << maxoffset << std::endl;
       if ((offset >= this->chuncks[i]->offset) && (offset <= maxoffset))
 	found = true;
       else
@@ -122,7 +120,6 @@ chunck*			FileMapping::getChunckFromOffset(uint64_t offset)
     }
   if (found)
     {
-      std::cout << "chunck number " << i << std::endl;
       return this->chuncks[i];
     }
   else
@@ -137,15 +134,18 @@ void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uin
 {
   chunck	*c;
   
-  std::cout << "file mapping pushing info" << std::endl;
   c = new chunck;
-  std::cout << "filemapping pushing " << offset << " " << size << " " << originoffset << std::endl;
   c->offset = offset;
   c->size = size;
+  this->size += size;
   c->origin = origin;
   c->originoffset = originoffset;
   this->chuncks.push_back(c);
-  std::cout << "file mapping info pushed correctly" << std::endl;
+}
+
+uint64_t	FileMapping::getSize()
+{
+  return this->size;
 }
 
 Attributes::Attributes()
@@ -191,10 +191,11 @@ std::map<std::string, class Variant*>*	Attributes::get()
 }
 
 
-Node::Node(std::string name, Node* parent, mfso* fsobj)
+Node::Node(std::string name, uint64_t size, Node* parent, mfso* fsobj)
 {
   this->childCount = 0;
   this->mfsobj = fsobj;
+  this->size = size;
   this->parent = parent;
   if (this->parent != NULL)
     this->parent->addChild(this);
@@ -212,6 +213,15 @@ Attributes*    Node::getAttributes()
   return NULL;
 }
 
+uint64_t	Node::getSize()
+{
+  return this->size;
+}
+
+void		Node::setSize(uint64_t size)
+{
+  this->size = size;
+}
 
 // vtime*		Node::getTimes()
 // {

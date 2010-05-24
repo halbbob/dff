@@ -44,9 +44,11 @@ class FileMapping
 private:
   uint64_t              current;
   std::vector<chunck *> chuncks;
+  uint64_t		size;
 public:
   FileMapping();
   ~FileMapping();
+  uint64_t		getSize();
   uint64_t		getChunckCount();
   chunck*               getNextChunck();
   chunck*               getPrevChunck();
@@ -85,21 +87,21 @@ private:
 
   //XXX parent could be a list of Node. Ex: Raid reconstruction based on two nodes which
   //    are aggregated to only one Node
-  class Node*                   parent;
   std::list<class Node *>       children;
   uint32_t                      childCount;
+
+  std::string			name;
+  uint64_t			size;
+  class Node*                   parent;
+  class mfso*			mfsobj;
   //attrib*                     attr;
   //unsigned int                same;
   //bool                        is_file;
   //bool                        is_root;
 
-protected:
-  std::string                   name;
-  class mfso*                 mfsobj;  
-
 public:
   //EXPORT Node(std::string name, class Node* parent = NULL, uint64_t offset = 0, Metadata* meta=NULL);
-  EXPORT Node(std::string name, Node* parent=NULL, mfso* fsobj=NULL);
+  EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, mfso* fsobj=NULL);
   EXPORT virtual ~Node();
 
   EXPORT virtual FileMapping*   getFileMapping();
@@ -107,7 +109,8 @@ public:
   // ability to provide a defined range
   //EXPORT virtual FileMapping*   getFileMapping(uint64_t offset=0, uint64_t range=0);
   EXPORT virtual Attributes*    getAttributes();
-
+  EXPORT virtual uint64_t	getSize();
+  EXPORT void			setSize(uint64_t size);
   //EXPORT virtual FileMapping* getSlackSpace();
   EXPORT std::string            getName();
   EXPORT std::string            getPath();

@@ -47,14 +47,14 @@ void local::iterdir(std::string dir, Node *parent)
 	    {
 	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
 		{
-		  tmp = new ULocalNode(dp->d_name, parent, this);
+		  tmp = new ULocalNode(dp->d_name, 0, parent, this);
 		  tmp->setBasePath(&this->basePath);
 		  total++;
 		  this->iterdir(upath, tmp);
 		}
 	      else
 		{
-		  tmp = new ULocalNode(dp->d_name, parent, this);
+		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this);
 		  tmp->setBasePath(&this->basePath);
 		  total++;
 		}
@@ -113,10 +113,12 @@ void local::start(argument* arg)
     return ;
   }
   //this->attrib->setBasePath(this->basePath);
-  this->root = new Node(path, NULL, this);
+  this->root = new Node(path, 0, NULL, this);
   //this->root->setDecoder(this->attrib);
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
     this->iterdir(tpath->path, this->root);
+  else
+    this->root->setSize(stbuff.st_size);
   this->parent->addChild(this->root);
   return ;
 }

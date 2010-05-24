@@ -20,7 +20,7 @@
 #include "ulocalnode.hpp"
 #include "utype.hpp"
 
-ULocalNode::ULocalNode(std::string Name, Node* parent, mfso* fsobj): Node(Name, parent, fsobj)
+ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, mfso* fsobj): Node(Name, size, parent, fsobj)
 {
 }
 
@@ -39,7 +39,7 @@ Attributes*	ULocalNode::getAttributes()
   std::string	file;
   struct stat 	st;
 
-  file = *(this->basePath) + "/" + this->getPath() + this->name;
+  file = *(this->basePath) + "/" + this->getPath() + this->getName();
   if (lstat(file.c_str(), &st) != -1)
     {
       attr = new Attributes();

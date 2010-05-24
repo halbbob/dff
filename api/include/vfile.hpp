@@ -42,17 +42,17 @@ class VFile
 private:
   Search	*s;
   class mfso	*mfsobj;
-  uint32_t	fd;	
+  int32_t	fd;	
 
 public:
   class 	Node*  		node;
 
-  VFile(uint32_t fd, class mfso *mfsobj, class Node *node);
+  VFile(int32_t fd, class mfso *mfsobj, class Node *node);
   ~VFile();
   EXPORT	int 		close(void);
 
   pdata*		read(void);
-  pdata*		read(unsigned int size);
+  pdata*		read(uint32_t size);
   EXPORT	int 		read(void *buff, unsigned int size);
   EXPORT	dff_ui64 	seek(dff_ui64 offset, char *whence);
   EXPORT	dff_ui64 	seek(dff_ui64 offset, int whence);
