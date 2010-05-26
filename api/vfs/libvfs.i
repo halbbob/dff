@@ -22,6 +22,7 @@
 %feature("director") mfso;
 %feature("director") Node;
 
+%newobject Node::open();
 
 /* %feature("director:except") fso  */
 /* { */
@@ -201,6 +202,7 @@ namespace std
   %template(SetNode)      set<Node *>;
   %template(Listui64) list<dff_ui64>;
 };
+
 %newobject VFile::read;
 %newobject VFile::argument;
 

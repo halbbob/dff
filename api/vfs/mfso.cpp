@@ -130,8 +130,8 @@ int32_t 	mfso::vopen(Node *node)
       try
 	{
 	  //Check if mapping of the node is already in the cache
-	  fm = fi->node->getFileMapping();
 	  fi = new fdinfo;
+	  fm = node->getFileMapping();
 	  fi->offset = 0;
 	  fi->node = node;
 	  fi->fm = fm;

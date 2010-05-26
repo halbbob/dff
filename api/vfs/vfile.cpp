@@ -26,6 +26,7 @@ VFile::VFile(int32_t fd, class mfso *mfsobj, class Node *node)
 
 VFile::~VFile()
 {
+  std::cout << "deleting vfile" << std::endl;
   delete this->s;
 }
 
