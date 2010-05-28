@@ -43,12 +43,12 @@ class MfsoTestNode(Node):
         fm.thisown = False
         voffset = 0
         for i in xrange(0, 5):
-            fm.push(voffset, 2, self.origin, self.start + i * 52)
+            fm.push(voffset, 2, self.origin, self.start + i * 52 * 2)
             voffset += 2
         return fm
 
     def getAttributes(self):
-        print "Python node attributes requested"
+        #print "Python node attributes requested"
         attr = Attributes()
         attr.thisown = False
         sizeattr = Variant(self.size)
@@ -68,7 +68,7 @@ class MfsoTest(mfso):
         i = 0
         for letter in ascii_letters:
             MfsoTestNode(letter, self, self.parent, i)
-            i+=1
+            i+=2
 
     def start(self, args):
         self.parent = args.get_node("parent")

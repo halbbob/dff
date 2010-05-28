@@ -50,10 +50,10 @@
 
 typedef struct
 {
-  Node*			node;
-  class FileMapping*	fm;
-  uint64_t		offset;
-}			fdinfo;
+  class FileMapping*		fm;
+  Node*				node;
+  uint64_t			offset;
+}				fdinfo;
 
 class FdManager
 {
@@ -76,6 +76,7 @@ public:
 class mfso//: //public fso
 {
 private:
+  std::map<Node*, class VFile*>			origins;
   FdManager*					fdmanager;
   results					*res;
   std::string					name;
@@ -87,7 +88,7 @@ private:
   // to ask children file corresponding a block
   // It also gives the ability to destroy children when "this" needs to be deleted
   std::list<class mfso*>			*__children;
-
+  class VFile*					getVFileFromNode(Node* n);
   // parent is used for having a up to bottom view. It gives the ability
   // to ask parent.
   // it is also useful to tell its parent that the current mfso is going to
@@ -117,7 +118,7 @@ public:
   EXPORT virtual int32_t 	vclose(int32_t fd);
   EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence);
   EXPORT virtual uint32_t	status(void);
-
+  EXPORT virtual uint64_t	vtell(int32_t fd);
   // EXPORT virtual void	pause();
   // EXPORT virtual void	resume();
   // EXPORT virtual void	kill();

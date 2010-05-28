@@ -43,34 +43,35 @@ private:
   Search	*s;
   class mfso	*mfsobj;
   int32_t	fd;	
+  bool		locked;
 
 public:
   class 	Node*  		node;
 
   VFile(int32_t fd, class mfso *mfsobj, class Node *node);
   ~VFile();
-  EXPORT	int 		close(void);
+  EXPORT	int32_t 		close(void);
 
   pdata*		read(void);
   pdata*		read(uint32_t size);
-  EXPORT	int 		read(void *buff, unsigned int size);
-  EXPORT	dff_ui64 	seek(dff_ui64 offset, char *whence);
-  EXPORT	dff_ui64 	seek(dff_ui64 offset, int whence);
-  EXPORT    	dff_ui64 	seek(dff_ui64 offset);
-  EXPORT	long long	seek(int offset, int whence);
-  EXPORT	int		write(string buff);
-  EXPORT    	int		write(char *buff, unsigned int size);
+  EXPORT	int32_t 		read(void *buff, uint32_t size);
+  EXPORT	uint64_t 	seek(uint64_t offset, char *whence);
+  EXPORT	uint64_t 	seek(uint64_t offset, int32_t whence);
+  EXPORT    	uint64_t 	seek(uint64_t offset);
+  EXPORT	uint64_t	seek(int32_t offset, int32_t whence);
+  EXPORT	int32_t		write(string buff);
+  EXPORT    	int32_t		write(char *buff, uint32_t size);
 
-  EXPORT	list<dff_ui64>	*search(char *needle, unsigned int len, char wildcard, dff_ui64 start = 0, dff_ui64 window = (dff_ui64)-1, unsigned int count = (unsigned int)-1);
+  EXPORT	list<uint64_t>	*search(char *needle, uint32_t len, char wildcard, uint64_t start = 0, uint64_t window = (uint64_t)-1, uint32_t count = (uint32_t)-1);
 
-  EXPORT	dff_ui64	find(char *needle, unsigned int len, char wildcard, dff_ui64 start=0, dff_ui64 window=(dff_ui64)-1);
+  EXPORT	uint64_t	find(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
 
-  EXPORT	dff_ui64	rfind(char *needle, unsigned int len, char wildcard, dff_ui64 start=0, dff_ui64 window=(dff_ui64)-1);
+  EXPORT	uint64_t	rfind(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
 
-  EXPORT	unsigned int	count(char *needle, unsigned int len, char wildcard, dff_ui64 start=0, dff_ui64 window=(dff_ui64)-1);
+  EXPORT	uint32_t	count(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
 
-  EXPORT int		dfileno();
-  EXPORT dff_ui64 	tell();
+  EXPORT int32_t	dfileno();
+  EXPORT uint64_t 	tell();
 };
 
 #endif

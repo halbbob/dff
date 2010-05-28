@@ -14,21 +14,24 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __FILEHANDLER_HPP__
-#define __FILEHANDLER_HPP__
+#include "record.hpp"
 
-#include "common.hpp"
-#include "fdmanager.hpp"
-
-class FileHandler
+PartitionEntry::PartitionEntry(part* p)
 {
-public:
-  vector<FileInfo*>	handler;
-  unsigned long long    inc;
-  FileHandler();
-  ~FileHandler();
-  unsigned long long	add(FileInfo* fi);
-  FileInfo*		get(unsigned long long handle);
-};
+  this->origin = origin;
+  this->offset = offset;
+}
 
-#endif
+PartitionEntry::~PartitionEntry()
+{
+}
+
+Record::Record(vfile* origin, uint64_t offset)
+{
+  this->origin = origin;
+  this->offset = offset;
+}
+
+Record::~Record()
+{
+}

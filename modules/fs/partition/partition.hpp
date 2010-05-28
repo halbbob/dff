@@ -17,24 +17,23 @@
 #ifndef __PARTITION_HPP__
 #define __PARTITION_HPP__
 
-#include "common.hpp"
-#include "fdmanager.hpp"
-#include "filehandler.hpp"
-#include "partition_struct.h"
+#include "mfso.hpp"
+#include "vfile.hpp"
+
+#include "record.hpp"
 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 
-class Partition : public fso
+class Partition : public mfso
 {
 private:
-  class fdmanager		*fdm;
-  FileHandler			*filehandler;
   std::ostringstream		Result;
-  Node				*ParentNode;
-  VFile				*File;
-  unsigned int			part_count;
+  Node				*parent;
+  VFile				*vfile;
+  uint32_t			part_count;
+  Record*			mbr;
 
   int				SetResult();
   int				getParts();
@@ -45,21 +44,10 @@ private:
   string			hexilify(char type);
 
 public:
-  int		Close();
-  int		Open();
-  int		Read(void *buff, unsigned int size);
-  dff_ui64	Seek(dff_ui64 offset);
-
   Partition();
   ~Partition();
 
   virtual void		start(argument* arg);
-  virtual unsigned int	status(void);
-  virtual int vopen(Handle* handle);
-  virtual int vread(int fd, void *buff, unsigned int size);
-  virtual int vclose(int fd);
-  virtual dff_ui64 vseek(int fd, dff_ui64 offset, int whence);
-  virtual int vwrite(int fd, void *buff, unsigned int size){return 0;};
 };
 
 #endif

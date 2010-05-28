@@ -113,7 +113,7 @@ chunck*			FileMapping::getChunckFromOffset(uint64_t offset)
   while ((i < size) && !found)
     {
       maxoffset = this->chuncks[i]->offset + this->chuncks[i]->size;
-      if ((offset >= this->chuncks[i]->offset) && (offset <= maxoffset))
+      if ((offset >= this->chuncks[i]->offset) && (offset < maxoffset))
 	found = true;
       else
 	i++;

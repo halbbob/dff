@@ -73,8 +73,6 @@ local::~local()
 {
 }
 
-
-
 void local::start(argument* arg)
 {
   u_attrib*	attr;
@@ -194,9 +192,9 @@ int local::vclose(int fd)
   return (0);
 }
 
-uint64_t local::vseek(int fd, dff_ui64 offset, int whence)
+uint64_t local::vseek(int fd, uint64_t offset, int whence)
 {
- dff_ui64  n = 0;
+ uint64_t  n = 0;
 
  if (whence == 0)
    whence = SEEK_SET;
@@ -214,6 +212,14 @@ uint64_t local::vseek(int fd, dff_ui64 offset, int whence)
      throw vfsError("local::vseek can't seek error " + string(strerror(errno)));
    }
  return (n);
+}
+
+uint64_t	local::vtell(int32_t fd)
+{
+  uint64_t	pos;
+
+  pos = this->vseek(fd, 0, 1);
+  return pos;
 }
 
 unsigned int local::status(void)

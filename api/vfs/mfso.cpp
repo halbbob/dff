@@ -30,7 +30,7 @@ fdinfo*		FdManager::get(int32_t fd)
 {
   fdinfo*	fi;
 
-  std::cout << "getting info from fd " << fd << std::endl;
+  //  std::cout << "getting info from fd " << fd << std::endl;
   if (fd > this->fds.size())
     throw("Provided fd is too high");
   else
@@ -38,7 +38,7 @@ fdinfo*		FdManager::get(int32_t fd)
       fi = this->fds[fd];
       if (fi != 0)
 	{
-	  std::cout << "fd found" << std::endl;
+	  //std::cout << "fd found" << std::endl;
 	  return fi;
 	}
       else
@@ -118,12 +118,33 @@ mfso::~mfso()
 // {
 // }
 
+VFile*		mfso::getVFileFromNode(Node* n)
+{
+  std::map<Node*, class VFile*>::iterator	it;
+  VFile*					vfile;
+
+  it = this->origins.find(n);
+  if (it != this->origins.end())
+    {
+      //std::cout << "already opened" << std::endl;
+      return it->second;
+    }
+  else
+    {
+      //      std::cout << "Not yet opened" << std::endl;
+      vfile = n->open();
+      this->origins[n] = vfile;
+      return vfile;
+    }
+    
+}
+
 
 int32_t 	mfso::vopen(Node *node)
 {
-  FileMapping	*fm;
-  fdinfo*	fi;
-  int32_t	fd;
+  FileMapping		*fm;
+  fdinfo*		fi;
+  int32_t		fd;
 
   if (node != NULL)
     {
@@ -156,38 +177,40 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
   uint32_t	currentread;
   uint32_t	totalread;
   bool		eof;
+  uint32_t	relativesize;
 
-  try
+  eof = false;
+  totalread = 0;
+  while ((totalread != size) && !eof)
     {
-      eof = false;
-      totalread = 0;
-      current = fi->fm->getChunckFromOffset(fi->offset);
-      while ((totalread != size) && !EOF)
+      //std::cout << "fd offset: " << fi->offset << std::endl;//""
+      try
 	{
-	  if ((current->offset + current->size) < fi->offset)
-	    current = fi->fm->getChunckFromOffset(fi->offset);
+	  current = fi->fm->getChunckFromOffset(fi->offset);	
 	  if (current->origin != NULL)
 	    {
-	      relativeoffset = fi->offset - current->offset;
-	      vfile = current->origin->open();
+	      relativeoffset = current->originoffset + (fi->offset - current->offset);
+	      vfile = this->getVFileFromNode(current->origin);
 	      vfile->seek(relativeoffset);
-	      currentread += vfile->read(((uint8_t*)buff)+totalread, size - totalread);
+	      relativesize = current->offset + current->size - fi->offset;
+	      if ((size - totalread) < relativesize)
+		relativesize = size - totalread;
+	      currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize);
+	      std::cout << "offset " << fi->offset << " of " << fi->node->getPath() << fi->node->getName() 
+			<< " is at offset " << relativeoffset << " in node "
+			<< current->origin->getPath() + current->origin->getName() << std::endl;
 	      fi->offset += currentread;
 	      totalread += currentread;
-	      std::cout << "offset " << fi->offset << " of " << fi->node->getPath() << fi->node->getName() 
-			<< " is at offset " << current->originoffset + relativeoffset << " in node " 
-			<< current->origin->getPath() + current->origin->getName() << std::endl;
 	    }
-	  else
-	    eof = true;
+	}
+      catch(...)
+	{
+	  eof = true;
 	}
     }
-  catch(...)
-    {
-      std::cout << "error with FileMapping" << std::endl;
-      return -1;
-    }
+  return totalread;
 }
+
 
 int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
 {
@@ -214,6 +237,22 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
   catch(...)
     {
       std::cout << "problem while reading node" << std::endl;
+      return 0;
+    }
+}
+
+uint64_t	mfso::vtell(int32_t fd)
+{
+  fdinfo*	fi;
+
+  try
+    {
+      fi = this->fdmanager->get(fd);
+      return fi->offset;
+    }
+  catch(...)
+    {
+      std::cout << "problem while getting fd information" << std::endl;
       return 0;
     }
 }

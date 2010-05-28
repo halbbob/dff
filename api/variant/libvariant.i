@@ -37,6 +37,7 @@
 %pythoncode
 %{
 import types
+import traceback
 %}
 
 %include "../include/export.hpp"
@@ -86,93 +87,6 @@ import types
 %template(__getVList) Variant::getValue< std::list<Variant *> *>;
 %template(__getVMap) Variant::getValue< std::map<std::string, Variant *> *>;
 
-
-%extend vlist
-{
-  %pythoncode
-  %{
-    def __proxyinit__(self, *args):
-        self.__originit__(())
-        if len(args) == 1:
-           if type(args[0]) == types.ListType:
-              try:
-                 ret = self.__createVariantList(args[0])
-                 newargs = (ret, )
-                 self.__originit__(*newargs)
-              except:
-                 return
-           else:
-	     TypeError("argument of type " str(Types.ListType) + " must be expected but " + type(args[0]) + " provided")
-
-
-    def __createPyVarToVariant(self, list):
-        res = VariantList()
-        res.thisown = False
-        for i in list:
-            v = Variant(i)
-            v.thisown = False
-            self.append(v)
-
-    def __repr__(self):
-        buff = "["
-        lsize = self.size()
-        i = 0
-        for item in self.iterator():
-           i += 1
-           buff += repr(item)
-           if i < lsize:
-              buff += ", "
-        buff += "]"
-        return buff
-
-  %}
-};
-
-
-/* %pythoncode */
-/* %{ */
-/*   VList.__originit__ = VList.__init__ */
-/*   VList.__init__ = VList.__proxyinit__ */
-/* %} */
-
-
-           /* elif type(args[0]) == types.DictType: */
-           /*    try: */
-           /*       ret = self.__createVariantMap(args[0]) */
-           /*       newargs = (ret, ) */
-           /*       self.__originit__(*newargs) */
-           /*    except(TypeError): */
-           /*       return */
-
-    /* def __createVariantMap(self, map): */
-    /*     res = VariantMap() */
-    /*     res.thisown = False */
-    /*     for key, val in map.iteritems(): */
-    /*         if type(key) != types.StringType: */
-    /*            exc = types.StringType, "expected but", str(type(key)), "provided" */
-    /*            raise TypeError(exc) */
-    /*         else: */
-    /*            vval = Variant(val) */
-    /*            vval.thisown = False */
-    /*            res[key] = vval */
-    /*     return res */
-
-
-    /* def __reprVariantMap(self): */
-    /*    vmap = self.__getValue() */
-    /*    buff = "{" */
-    /*    msize = len(vmap) */
-    /*    i = 0 */
-    /*    for key, val in vmap.iteritems(): */
-    /*       i += 1 */
-    /*       buff += repr(key) + ": " + repr(val) */
-    /*       if i < msize: */
-    /*          buff += ", " */
-    /*    buff += "}" */
-    /*    return buff */
-
-/* %extend append for setting thisown for each passed Variant */
-
 %extend Variant
 {
   %pythoncode
@@ -202,3 +116,131 @@ import types
             return None
   %}
 };
+
+%pythoncode
+%{
+########################################################
+# Following method provides overload for VMap and VList#
+########################################################
+VariantType = str(type(Variant()))[8:-2]
+VListType = str(type(VList()))[8:-2]
+VMapType = str(type(VList()))[8:-2]
+
+baseManagedTypes = [types.BooleanType, types.IntType, types.LongType,
+                    types.StringType, types.FloatType]
+
+def create_container_from_item(item):
+    if str(type(item)).find(VariantType) != -1 or str(type(item)).find(VListType) != -1 or str(type(item)).find(VMapType) != -1:
+        item.thisown = False
+        return item
+    elif type(item) == types.ListType:
+        vl = VList()
+        vl.thisown = False
+        for i in item:
+            container = create_container_from_item(i)
+            container.thisown = False
+            vl.append(container)
+        return vl
+    elif type(item) == types.DictType:
+        vm = VMap()
+        vm.thisown = False
+        for key, val in item.iteritems():
+            strkey = str(key)
+            container = create_container_from_item(val)
+            container.thisown = False
+            VMap[strkey] = container
+        return vm
+    elif type(item) in baseManagedTypes:
+        vitem = Variant(item)
+        vitem.thisown = False
+        return vitem
+    else:
+        TypeError("Management of type " + str(type(item)) + " is not implemented")
+
+
+def create_variant_from_item(item):
+    try:
+        if str(type(item)).find(VariantType) != -1:
+            return item
+        else:
+            vitem = create_container_from_item(item)
+            if str(type(vitem)).find(VListType) != -1 or str(type(vitem)).find(VMapType) != -1:
+                vvitem = Variant(vitem)
+                vvitem.thisown = False
+                return vvitem
+            else:
+                return vitem
+    except(TypeError):
+        traceback.print_exc()
+        return None
+
+
+# Wrapping methods for VList
+def __vlist_proxyinit__(self, *args):
+    self.__originit__()
+    if len(args) >= 1:
+        for arg in args:
+            self.append(arg)
+
+VList.__originit__ = VList.__init__
+VList.__init__ = __vlist_proxyinit__
+
+
+def vlist_append_proxy(self, item):
+    vitem = create_variant_from_item(item)
+    if vitem != None:
+        self.__origappend__(vitem)
+
+VList.__origappend__ = VList.append
+VList.append = vlist_append_proxy
+
+
+def vlist_setitem_proxy(self, *args):
+    witem = create_variant_from_item(args[1])
+    self.__orig_setitem__(args[0], witem)
+    
+VList.__orig_setitem__ = VList.__setitem__
+VList.__setitem__ = vlist_setitem_proxy
+
+
+def __vlist_repr__(self):
+    buff = "["
+    lsize = self.size()
+    i = 0
+    for item in self.iterator():
+        i += 1
+        buff += repr(item)
+        if i < lsize:
+            buff += ", "
+    buff += "]"
+    return buff
+
+
+VList.__orig_repr__ = VList.__repr__
+VList.__repr__ = __vlist_repr__
+
+
+# Wrapping methods for VMap
+def __vmap_setitem_proxy__(self, *args):
+    witem = create_variant_from_item(args[1])
+    self.__orig_setitem__(args[0], witem)
+
+VMap.__orig_setitem__ = VMap.__setitem__
+VMap.__setitem__ =  __vmap_setitem_proxy__
+
+
+def __vmap_repr_proxy__(self):
+    buff = "{"
+    msize = self.size()
+    i = 0
+    for key, val in self.iteritems():
+        i += 1
+        buff += repr(key) + ": " + repr(val)
+        if i < msize:
+            buff += ", "
+    buff += "}"
+    return buff
+
+VMap.__orig_repr__ = VMap.__repr__
+VMap.__repr__ = __vmap_repr_proxy__
+%}

@@ -22,14 +22,10 @@
 
 %{
 #include "export.hpp"
-#include "common.hpp"
-#include "fdmanager.hpp"
 #include "partition.hpp"
 %}
 
 %include "export.hpp"
-%include "common.hpp"
-%include "fdmanager.hpp"
 %include "partition.hpp"
 
 

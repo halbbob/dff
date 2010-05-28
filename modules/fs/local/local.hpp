@@ -54,9 +54,10 @@ public:
   int32_t	vopen(Node *n);
   int32_t 	vread(int fd, void *buff, unsigned int size);
   int32_t 	vclose(int fd);
-  uint64_t 	vseek(int fd, dff_ui64 offset, int whence);
+  uint64_t 	vseek(int fd, uint64_t offset, int whence);
   int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
   uint32_t	status(void);
+  uint64_t	vtell(int32_t fd);
   virtual void	start(argument* ar);
 };
 #endif

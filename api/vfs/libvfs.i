@@ -93,7 +93,6 @@
 
 %exception open
 {
-  printf("in it\n");
     try
     {
   //    SWIG_PYTHON_THREAD_BEGIN_BLOCK;

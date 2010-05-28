@@ -20,26 +20,15 @@ include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 
-if (UNIX)
 set(partition_srcs
   partition.cpp
-  fdmanager.cpp
-  filehandler.cpp
+  record.cpp
+  nodes.cpp
 )
-else (UNIX)
-set(partition_srcs
-  partition.cpp
-  fdmanager.cpp
-  filehandler.cpp
-)
-else (UNIX)
-endif(UNIX)
-
-
 
 SET_SOURCE_FILES_PROPERTIES(partition.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(PARTITION python partition.i ${partition_srcs})
-SWIG_LINK_LIBRARIES(PARTITION ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv)
+SWIG_LINK_LIBRARIES(PARTITION ${PYTHON_LIBRARIES} _libexceptions _libvariant _libtype _libvfs _libenv)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_PARTITION_REAL_NAME} PROPERTIES

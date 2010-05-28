@@ -30,9 +30,9 @@ VFile::~VFile()
   delete this->s;
 }
 
-int VFile::read(void *buff, unsigned int size)
+int VFile::read(void *buff, uint32_t size)
 {  
-  int n;
+  uint32_t n;
 
   try 
   {
@@ -47,7 +47,7 @@ int VFile::read(void *buff, unsigned int size)
 
 pdata* VFile::read(void)
 {
-  int n;
+  int32_t n;
   pdata* data = new pdata;
   //data->buff = malloc(node->attr->size);
   //data->len = node->attr->size;
@@ -75,10 +75,9 @@ pdata* VFile::read(uint32_t size)
   memset(data->buff, 0, size);
   try 
   { 
-    std::cout << "vfile reading size of " << size << std::endl;
     n = this->mfsobj->vread(this->fd, data->buff, size);
-    std::cout << "returned read size " << n << std::endl;
-    data->len = 2;
+    //std::cout << "returned read size " << n << std::endl;
+    data->len = n;
     return (data);
   }
   catch (vfsError e)
@@ -89,7 +88,7 @@ pdata* VFile::read(uint32_t size)
   }
 }
 
-int VFile::close(void)
+int32_t VFile::close(void)
 {
   try 
   {
@@ -103,9 +102,9 @@ int VFile::close(void)
 }
 
 
-int VFile::write(string buff)
+int32_t VFile::write(string buff)
 {
-  int n;
+  int32_t n;
    
   try 
     {
@@ -118,9 +117,9 @@ int VFile::write(string buff)
    }
 }
 
-int VFile::write(char *buff, unsigned int size)
+int32_t VFile::write(char *buff, unsigned int size)
 {
-  int n;
+  int32_t n;
   
   try 
     {
@@ -133,7 +132,7 @@ int VFile::write(char *buff, unsigned int size)
     }
 }
 
-dff_ui64 VFile::seek(dff_ui64 offset)
+uint64_t VFile::seek(uint64_t offset)
 {
   try
   {
@@ -145,10 +144,10 @@ dff_ui64 VFile::seek(dff_ui64 offset)
   }
 }
 
-dff_ui64  VFile::seek(dff_ui64 offset, char *cwhence)
+uint64_t  VFile::seek(uint64_t offset, char *cwhence)
 {
   int wh;
-  string whence = cwhence;   
+  string whence = cwhence;
 
   if (whence == string("SET"))
     wh = 0;
@@ -170,7 +169,7 @@ dff_ui64  VFile::seek(dff_ui64 offset, char *cwhence)
     }
 }
 
-dff_ui64  VFile::seek(dff_ui64 offset, int whence)
+uint64_t  VFile::seek(uint64_t offset, int32_t whence)
 {
   if (whence > 2)
     {
@@ -187,7 +186,7 @@ dff_ui64  VFile::seek(dff_ui64 offset, int whence)
     }
 }
 
-long long  VFile::seek(int offset, int whence)
+uint64_t  VFile::seek(int32_t offset, int32_t whence)
 {
   if (whence > 2)
     {
@@ -205,16 +204,16 @@ long long  VFile::seek(int offset, int whence)
  
 }
 
-int  VFile::dfileno()
+int32_t  VFile::dfileno()
 {
   return (fd);
 }
 
-dff_ui64 VFile::tell()
+uint64_t VFile::tell()
 {  
   try
     {
-      return (this->mfsobj->vseek(fd, 0, 1));
+      return (this->mfsobj->vtell(this->fd));
     }
   catch (vfsError e)
     {
@@ -222,16 +221,16 @@ dff_ui64 VFile::tell()
     }
 }
 
-list<dff_ui64>	*VFile::search(char *needle, unsigned int len, char wildcard, dff_ui64 start, dff_ui64 window, unsigned int count)
+list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window, uint32_t count)
 {
   //class Search	*s = new class Search((unsigned char*)needle, len, (unsigned char)wildcard);
   unsigned char *buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
-  list<unsigned int>		*res;
-  list<unsigned int>::iterator	it;
-  list<unsigned long long>	*real = new list<unsigned long long>;
-  int				bytes_read;
+  list<uint32_t>		*res;
+  list<uint32_t>::iterator	it;
+  list<uint64_t>	*real = new list<uint64_t>;
+  int32_t			bytes_read;
   bool				stop;
-  unsigned int			hslen;
+  uint32_t			hslen;
   
   s->setNeedle((unsigned char*)needle);
   s->setNeedleSize(len);
@@ -240,7 +239,7 @@ list<dff_ui64>	*VFile::search(char *needle, unsigned int len, char wildcard, dff
   stop = false;
   while(((bytes_read = this->read(buffer, BUFFSIZE)) > 0) && !stop)
     {
-      if (window != (dff_ui64)-1)
+      if (window != (uint64_t)-1)
 	{
 	  if (window < bytes_read)
 	    {
@@ -255,7 +254,7 @@ list<dff_ui64>	*VFile::search(char *needle, unsigned int len, char wildcard, dff
 	}
       else
 	hslen = BUFFSIZE;
-      if (count != (unsigned int)-1)
+      if (count != (uint32_t)-1)
 	{
 	  res = s->run(buffer, hslen, &count);
 	  if (count == 0)
@@ -274,10 +273,10 @@ list<dff_ui64>	*VFile::search(char *needle, unsigned int len, char wildcard, dff
 }
 
 
-dff_ui64	VFile::find(char *needle, unsigned int len, char wildcard, dff_ui64 start, dff_ui64 window)
+uint64_t	VFile::find(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
 {
-  list<dff_ui64>	*l;
-  dff_ui64		res;
+  list<uint64_t>	*l;
+  uint64_t		res;
 
   l = this->search(needle, len, wildcard, start, window, 1);
   if (l->size() > 0)
@@ -288,14 +287,14 @@ dff_ui64	VFile::find(char *needle, unsigned int len, char wildcard, dff_ui64 sta
   return res;
 }
 
-dff_ui64	VFile::rfind(char *needle, unsigned int len, char wildcard, dff_ui64 start, dff_ui64 window)
+uint64_t	VFile::rfind(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
 {
   return 0;
 }
 
-unsigned int	VFile::count(char *needle, unsigned int len, char wildcard, dff_ui64 start, dff_ui64 window)
+uint32_t	VFile::count(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
 {
-  list<dff_ui64>	*l;
+  list<uint64_t>	*l;
   unsigned int		count;
 
   l = this->search(needle, len, wildcard, start, window);
