@@ -22,7 +22,7 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 
 set(partition_srcs
   partition.cpp
-  record.cpp
+  dos.cpp
   nodes.cpp
 )
 

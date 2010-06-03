@@ -16,7 +16,7 @@
 
 #include "nodes.hpp"
 
-PartitionNode::PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj):  Node(name, size, parent, fsobj)
+PartitionNode::PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin):  Node(name, size, parent, fsobj)
 {
 }
 
@@ -36,7 +36,7 @@ EntryNode::EntryNode(std::string name, Node* parent, mfso* fsobj, Node* origin):
 {
 }
 
-EntryNode~EntryNode()
+EntryNode::~EntryNode()
 {
 }
 

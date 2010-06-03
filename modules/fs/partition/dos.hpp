@@ -14,13 +14,16 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __RECORD_HPP__
-#define __RECORD_HPP__
+#ifndef __DOS_HPP__
+#define __DOS_HPP__
 
 #include "vfile.hpp"
 #include "node.hpp"
 
-#include "nodes.hpp"
+#define MBR		0x00
+#define EBR		0x01
+
+#define is_ext(t) ((((t) == 0x05) || ((t) == 0x0F) || ((t) == 0x85)) ? 1 : 0)
 
 typedef struct		
 {
@@ -34,7 +37,7 @@ typedef struct
   uint8_t		end_cylinder; //bits 7-0
   uint8_t		lba[4];
   uint8_t		total_blocks[4];
-}		        part;
+}		        dos_pte;
 
 
 /*
@@ -61,26 +64,68 @@ typedef struct
       uint8_t	code[6];
     }ebr;
   } a;
-  part		partitions[4];
+  dos_pte	partitions[4];
   short		signature; //0xAA55
-}		record;
+}		dos_partition_record;
 
-// class PartitionEntry
-// {
-// public:
-//   PartitionEntry(Node* origin, uint64_t offset);
-//   ~PartitionEntry();
-// };
+
+typedef struct
+{
+  uint64_t	start;
+  uint64_t	end;
+}		partition_info;
+
+
+class Pte
+{
+protected:
+  dos_pte*	pte;
+  bool		extended;
+  bool		sane;
+  uint32_t	lba;
+  uint32_t	size;
+  uint8_t	type;
+  uint64_t	max;
+
+public:
+  Pte();
+  ~Pte();
+  void		set(dos_pte* pte);
+  std::string	Type();
+  uint32_t	Lba();
+  uint32_t	Size();
+  bool		isExtended();
+  bool		isSane();
+};
 
 class Record
 {
-private:
-  VFile*	vfile;
-  Node*		parent;
 public:
-  PartitionEntry*	getPartition(uint8_t number);
-  Record(Node* origin, uint64_t offset);
+  Record();
   ~Record();
+  read(VFile *vfile, uint64_t offset = 0);
+  //method for reading extended boot record which needs base of the first ebr
+  read(VFile* vfile, uint32_t base, uint64_t offset=0)
+  open(VFile *vfile, uint8_t type, uint64_t offset = 0);
+};
+
+class DosPartition
+{
+private:
+  vector<partition_info*>	parts;
+  Node*				node;
+  VFile*			vfile;
+  Pte*				pte;
+  bool				mbrBadMagic;
+  uint32_t			ebr_base;
+
+public:
+  DosPartition();
+  ~DosPartition();
+  //void			setMbrFile(Node* mbr);
+  void			open(Node* node, uint64_t offset = 0);
+  void			readEbr(uint32_t cur);
+  void			readMbr(uint64_t offset);
 };
 
 #endif

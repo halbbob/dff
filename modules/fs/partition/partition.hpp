@@ -20,7 +20,7 @@
 #include "mfso.hpp"
 #include "vfile.hpp"
 
-#include "record.hpp"
+#include "dos.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -31,17 +31,15 @@ class Partition : public mfso
 private:
   std::ostringstream		Result;
   Node				*parent;
-  VFile				*vfile;
-  uint32_t			part_count;
-  Record*			mbr;
 
-  int				SetResult();
-  int				getParts();
-  Node				*createPart(Node *parent, unsigned int sector_start, unsigned int size);
-  void				readMbr();
-  void				readExtended(Node *parent, unsigned int start, unsigned int next_lba);
-  bool				isExtended(char type);
-  string			hexilify(char type);
+  DosPartition*			dos;
+//   int				SetResult();
+//   int				getParts();
+//   Node				*createPart(Node *parent, unsigned int sector_start, unsigned int size);
+//   void				readMbr();
+//   void				readExtended(Node *parent, unsigned int start, unsigned int next_lba);
+//   bool				isExtended(char type);
+//   string			hexilify(char type);
 
 public:
   Partition();
