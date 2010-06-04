@@ -36,6 +36,7 @@ set(vfs_srcs
   vfs.py
   __init__.py
   libvfs.py
+  iodevice.py
 )
 
 install_lib(${SWIG_MODULE_libvfs_REAL_NAME})

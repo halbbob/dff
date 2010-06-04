@@ -14,4 +14,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["vfs", "libvfs"]
+__all__ = ["vfs", "libvfs", "iodevice"]
