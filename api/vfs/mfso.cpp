@@ -118,7 +118,7 @@ mfso::~mfso()
 // {
 // }
 
-VFile*		mfso::getVFileFromNode(Node* n)
+VFile*		mfso::vfileFromNode(Node* n)
 {
   std::map<Node*, class VFile*>::iterator	it;
   VFile*					vfile;
@@ -152,7 +152,7 @@ int32_t 	mfso::vopen(Node *node)
 	{
 	  //Check if mapping of the node is already in the cache
 	  fi = new fdinfo;
-	  fm = node->getFileMapping();
+	  fm = node->fileMapping();
 	  fi->offset = 0;
 	  fi->node = node;
 	  fi->fm = fm;
@@ -186,19 +186,19 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
       //std::cout << "fd offset: " << fi->offset << std::endl;//""
       try
 	{
-	  current = fi->fm->getChunckFromOffset(fi->offset);	
+	  current = fi->fm->chunckFromOffset(fi->offset);	
 	  if (current->origin != NULL)
 	    {
 	      relativeoffset = current->originoffset + (fi->offset - current->offset);
-	      vfile = this->getVFileFromNode(current->origin);
+	      vfile = this->vfileFromNode(current->origin);
 	      vfile->seek(relativeoffset);
 	      relativesize = current->offset + current->size - fi->offset;
 	      if ((size - totalread) < relativesize)
 		relativesize = size - totalread;
 	      currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize);
-	      std::cout << "offset " << fi->offset << " of " << fi->node->getPath() << fi->node->getName() 
+	      std::cout << "offset " << fi->offset << " of " << fi->node->path() << fi->node->name() 
 			<< " is at offset " << relativeoffset << " in node "
-			<< current->origin->getPath() + current->origin->getName() << std::endl;
+			<< current->origin->path() + current->origin->name() << std::endl;
 	      fi->offset += currentread;
 	      totalread += currentread;
 	    }
@@ -224,8 +224,8 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
       if ((fi->node != NULL) && (fi->fm != NULL))
 	{
 	  //Warn if fi->node->getSize() != fm->getSize() ?
-	  if (size > (fi->fm->getSize() - fi->offset))
-	    realsize = fi->fm->getSize() - fi->offset;
+	  if (size > (fi->fm->mappedFileSize() - fi->offset))
+	    realsize = fi->fm->mappedFileSize() - fi->offset;
 	  else
 	    realsize = size;
 	  bytesread = this->readFromMapping(fi, buff, realsize);

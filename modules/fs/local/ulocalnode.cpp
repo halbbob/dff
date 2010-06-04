@@ -39,7 +39,7 @@ Attributes*	ULocalNode::getAttributes()
   std::string	file;
   struct stat 	st;
 
-  file = *(this->basePath) + "/" + this->getPath() + this->getName();
+  file = *(this->basePath) + "/" + this->path() + this->name();
   if (lstat(file.c_str(), &st) != -1)
     {
       attr = new Attributes();

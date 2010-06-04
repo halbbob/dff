@@ -56,13 +56,13 @@ Node* VFS::GetNode(string path, Node* where)
   list<Node *>::iterator i;
 
   if (path == "..")
-    return (where->getParent());
+    return (where->parent());
   if (where->hasChildren())
     {
-      next = where->getChildren();
+      next = where->children();
       for (i = next.begin(); i != next.end(); i++)
 	{
-	  if ((*i)->getName() == path)
+	  if ((*i)->name() == path)
 	    return (*i); 
 	}
       return (0);

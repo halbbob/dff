@@ -127,7 +127,7 @@ int local::vopen(Node *node)
   struct stat 	stbuff;
   std::string	file;
 
-  file = this->basePath + "/" + node->getPath() + node->getName();
+  file = this->basePath + "/" + node->path() + node->name();
 #if defined(__FreeBSD__)
   if ((n = open(file.c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)

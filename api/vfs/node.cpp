@@ -30,97 +30,136 @@
 
 FileMapping::FileMapping()
 {
-  this->current = 0;
-  this->size = 0;
+  this->__mappedFileSize = 0;
 }
 
 FileMapping::~FileMapping()
 {
 }
 
-uint64_t		FileMapping::getChunckCount()
+uint32_t		FileMapping::chunckCount()
 {
-  return this->chuncks.size();
+  return this->__chuncks.size();
 }
 
-chunck*			FileMapping::getChunck(uint64_t pos)
+chunck*			FileMapping::chunckFromIdx(uint32_t idx)
 {
-  if (pos < this->chuncks.size())
-    return this->chuncks[pos];
+  if (idx < this->__chuncks.size())
+    return this->__chuncks[idx];
   else
     return NULL;
 }
 
-
-chunck*			FileMapping::getFirstChunck()
+std::vector<chunck *>	FileMapping::chuncksFromIdxRange(uint32_t begidx, uint32_t endidx)
 {
-  if (this->chuncks.size() > 0)
-    return this->chuncks.front();
-  else
-    return NULL;
-}
-
-chunck*			FileMapping::getLastChunck()
-{
-  if (this->chuncks.size() > 0)
-    return this->chuncks.back();
-  else
-    return NULL;
-}
-
-
-chunck*			FileMapping::getNextChunck()
-{
-  chunck*	next;
-
-  if (this->current + 1 < this->chuncks.size())
+  std::vector<chunck *>	v;
+  uint32_t		vsize;
+  std::vector<chunck *>::iterator	begit;
+  std::vector<chunck *>::iterator	endit;
+  
+  vsize = this->__chuncks.size();
+  if ((begidx < endidx) && (begidx < vsize) && (endidx < vsize))
     {
-      next = this->chuncks[this->current + 1];
-      this->current += 1;
+      begit = this->__chuncks.begin()+begidx;
+      endit = this->__chuncks.begin()+endidx;
+      v.assign(begit, endit);
     }
-  else
-    return NULL;
+  return v;
 }
 
-chunck*			FileMapping::getPrevChunck()
+std::vector<chunck *>	FileMapping::chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset)
 {
-  chunck*	prev;
+  std::vector<chunck *>	v;
+  uint32_t		begidx;
+  uint32_t		endidx;
 
-  if ((this->current - 1 < this->chuncks.size()) && (this->current - 1 > 0))
+  if ((begoffset > endoffset) || (begoffset > this->__mappedFileSize) || (endoffset > this->__mappedFileSize))
+    throw("provided offset too high");
+  try
     {
-      prev = this->chuncks[this->current - 1];
-      this->current -= 1;
+      begidx = this->chunckIdxFromOffset(begoffset);
+      endidx = this->chunckIdxFromOffset(endoffset);
+      v = this->chuncksFromIdxRange(begidx, endidx);
     }
+  catch (...)
+    {
+    }
+  return v;
+}
+
+chunck*			FileMapping::firstChunck()
+{
+  if (this->__chuncks.size() > 0)
+    return this->__chuncks.front();
   else
     return NULL;
 }
 
-std::vector<chunck *>	FileMapping::getChuncks()
+chunck*			FileMapping::lastChunck()
 {
-  return this->chuncks;
+  if (this->__chuncks.size() > 0)
+    return this->__chuncks.back();
+  else
+    return NULL;
 }
 
-chunck*			FileMapping::getChunckFromOffset(uint64_t offset)
+
+std::vector<chunck *>	FileMapping::chuncks()
+{
+  return this->__chuncks;
+}
+
+chunck*			FileMapping::chunckFromOffset(uint64_t offset)
 {
   uint32_t		i;
-  uint32_t		size;
+  uint32_t		vsize;
   bool			found;
   uint64_t		maxoffset;
 
+  if (offset > this->__mappedFileSize)
+    throw("provided offset too high");
   i = 0;
-  size = this->chuncks.size();
+  vsize = this->__chuncks.size();
   found = false;
-  while ((i < size) && !found)
+  while ((i < vsize) && !found)
     {
-      maxoffset = this->chuncks[i]->offset + this->chuncks[i]->size;
-      if ((offset >= this->chuncks[i]->offset) && (offset < maxoffset))
+      maxoffset = this->__chuncks[i]->offset + this->__chuncks[i]->size;
+      if ((offset >= this->__chuncks[i]->offset) && (offset < maxoffset))
 	found = true;
       else
 	i++;
     }
   if (found)
     {
-      return this->chuncks[i];
+      return this->__chuncks[i];
+    }
+  else
+    throw("not found");
+}
+
+uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset)
+{
+  uint32_t	i;
+  uint32_t	vsize;
+  bool		found;
+  uint64_t	maxoffset;
+
+  if (offset > this->__mappedFileSize)
+    throw("provided offset too high");
+  i = 0;
+  vsize = this->__chuncks.size();
+  found = false;
+  while ((i < vsize) && !found)
+    {
+      maxoffset = this->__chuncks[i]->offset + this->__chuncks[i]->size;
+      if ((offset >= this->__chuncks[i]->offset) && (offset < maxoffset))
+	found = true;
+      else
+	i++;
+    }
+  if (found)
+    {
+      return i;
     }
   else
     throw("not found");
@@ -137,90 +176,92 @@ void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uin
   c = new chunck;
   c->offset = offset;
   c->size = size;
-  this->size += size;
+  this->__mappedFileSize += size;
   c->origin = origin;
   c->originoffset = originoffset;
-  this->chuncks.push_back(c);
+  this->__chuncks.push_back(c);
 }
 
-uint64_t	FileMapping::getSize()
+uint64_t	FileMapping::mappedFileSize()
 {
-  return this->size;
+  return this->__mappedFileSize;
 }
 
 Attributes::Attributes()
 {
-  this->attrs = new std::map<std::string, class Variant*>;
+  //this->attrs = new std::map<std::string, class Variant*>;
 }
 
 Attributes::~Attributes()
 {
-  delete this->attrs;
+  //delete this->attrs;
 }
 
 void					Attributes::push(std::string key, class Variant *value)
 {
   if (value != NULL)
-    this->attrs->insert(pair<std::string, class Variant*>(key, value));
+    this->__attrs[key] = value;
+  //if (value != NULL)
+  //  this->attrs->insert(pair<std::string, class Variant*>(key, value));
 }
 
-std::list<std::string>			Attributes::getKeys()
+std::list<std::string>			Attributes::keys()
 {
   std::list<std::string>		keys;
   std::map<std::string, class Variant*>::iterator it;
 
-  for (it = this->attrs->begin(); it != this->attrs->end(); it++)
+  for (it = this->__attrs.begin(); it != this->__attrs.end(); it++)
     keys.push_back(it->first);
   return keys;
 }
 
-Variant*				Attributes::getValue(std::string key)
+Variant*				Attributes::value(std::string key)
 {
   std::map<std::string, class Variant*>::iterator it;
 
-  it = this->attrs->find(key);
-  if (it != this->attrs->end())
+  it = this->__attrs.find(key);
+  if (it != this->__attrs.end())
     return (it->second);
   else
     return NULL;
 }
 
-std::map<std::string, class Variant*>*	Attributes::get()
+std::map<std::string, class Variant*>	Attributes::attributes()
 {
-  return this->attrs;
+  return this->__attrs;
 }
 
 
 Node::Node(std::string name, uint64_t size, Node* parent, mfso* fsobj)
 {
-  this->childCount = 0;
-  this->mfsobj = fsobj;
-  this->size = size;
-  this->parent = parent;
-  if (this->parent != NULL)
-    this->parent->addChild(this);
-  this->name = name;
+  this->__childcount = 0;
+  this->__mfsobj = fsobj;
+  this->__size = size;
+  this->__parent = parent;
+  if (this->__parent != NULL)
+    this->__parent->addChild(this);
+  this->__name = name;
 }
 
 
-FileMapping*   Node::getFileMapping()
+FileMapping*   Node::fileMapping()
 {
   return NULL;
 }
 
-Attributes*    Node::getAttributes()
+Attributes*    Node::attributes()
 {
   return NULL;
 }
 
-uint64_t	Node::getSize()
+uint64_t	Node::size()
 {
-  return this->size;
+  return this->__size;
 }
 
 void		Node::setSize(uint64_t size)
 {
-  this->size = size;
+  this->__size = size;
 }
 
 // vtime*		Node::getTimes()
@@ -249,13 +290,13 @@ void		Node::setSize(uint64_t size)
 
 Node::~Node()
 {
-  if (!this->children.empty())
-    this->children.clear();
+  if (!this->__children.empty())
+    this->__children.clear();
 }
 
-std::list<class Node*>	Node::getChildren()
+std::list<class Node*>	Node::children()
 {
-  return this->children;
+  return this->__children;
 }
 
 
@@ -267,7 +308,7 @@ bool		Node::setParent(Node *parent)
   if (parent != NULL)
     {
       ret = true;
-      this->parent = parent;
+      this->__parent = parent;
     }
   else
     ;//XXX throw() NodeException;
@@ -293,15 +334,15 @@ bool		Node::setParent(Node *parent)
 //   return ret;
 // }
 
-uint32_t	Node::getChildCount()
+uint32_t	Node::childCount()
 {
-  return this->childCount;
+  return this->__childcount;
 }
 
 
-Node*		Node::getParent()
+Node*		Node::parent()
 {
-  return this->parent;
+  return this->__parent;
 }
 
 
@@ -310,13 +351,13 @@ VFile*		Node::open(void)
   int32_t	fd;
   VFile		*temp;
 
-  if (this->mfsobj == NULL)
+  if (this->__mfsobj == NULL)
     throw vfsError("Can't Open file");
   try
     {
-      if ((fd = this->mfsobj->vopen(this)) >= 0)
+      if ((fd = this->__mfsobj->vopen(this)) >= 0)
 	{
-	  temp = new VFile(fd, this->mfsobj, this);
+	  temp = new VFile(fd, this->__mfsobj, this);
 	  return (temp);
 	}
       throw vfsError("Can't Open file");
@@ -329,26 +370,26 @@ VFile*		Node::open(void)
 
 void	Node::setFsobj(mfso *obj)
 {
-  this->mfsobj = obj;
+  this->__mfsobj = obj;
 }
 
 
-std::string	Node::getName()
+std::string	Node::name()
 {
-  return this->name;
+  return this->__name;
 }
 
 
-std::string	Node::getPath()
+std::string	Node::path()
 {
   std::string path;
   Node	*tmp;
   
-  tmp = this->parent;
+  tmp = this->__parent;
   while (tmp != NULL)
     {
-      path = tmp->getName() + "/" + path;
-      tmp = tmp->parent;
+      path = tmp->name() + "/" + path;
+      tmp = tmp->parent();
     }
   return path;
 }
@@ -356,7 +397,7 @@ std::string	Node::getPath()
 
 bool            Node::hasChildren()
 {
-  if (this->childCount > 0)
+  if (this->__childcount > 0)
     return true;
   else
     return false;
@@ -365,6 +406,6 @@ bool            Node::hasChildren()
 
 bool		Node::addChild(class Node *child)
 {
-  this->children.push_back(child);
-  this->childCount++;
+  this->__children.push_back(child);
+  this->__childcount++;
 }

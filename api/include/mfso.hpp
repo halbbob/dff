@@ -88,7 +88,7 @@ private:
   // to ask children file corresponding a block
   // It also gives the ability to destroy children when "this" needs to be deleted
   std::list<class mfso*>			*__children;
-  class VFile*					getVFileFromNode(Node* n);
+  class VFile*					vfileFromNode(Node* n);
   // parent is used for having a up to bottom view. It gives the ability
   // to ask parent.
   // it is also useful to tell its parent that the current mfso is going to
