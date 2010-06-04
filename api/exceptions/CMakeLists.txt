@@ -41,6 +41,7 @@ add_custom_target(patchexceptions ALL
 )
 elseif(UNIX)
 add_custom_target(patchexceptions ALL
+  DEPENDS ${SWIG_MODULE_libexceptions_REAL_NAME}
   COMMENT "Patching libexceptions.py"
   COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/patch.py
     ${CMAKE_CURRENT_BINARY_DIR}/libexceptions.py
