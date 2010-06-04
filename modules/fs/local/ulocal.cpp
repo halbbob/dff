@@ -146,7 +146,7 @@ int local::vopen(Handle* handle)
   struct stat 	stbuff;
  
    
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__APPLE__)
   if ((n = open((handle->name).c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)
   if ((n = open((handle->name).c_str(), O_RDONLY | O_LARGEFILE)) == -1)
@@ -220,7 +220,7 @@ dff_ui64 local::vseek(int fd, dff_ui64 offset, int whence)
    whence = SEEK_CUR;
  else if (whence == 2)
    whence = SEEK_END;
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__APPLE__)
  n = lseek(fd, offset, whence);
 #elif defined(__linux__)
  n = lseek64(fd, offset, whence);
