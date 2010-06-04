@@ -18,6 +18,7 @@ add_subdirectory(hexedit)
 set(viewer_srcs
   cat.py
   viewerimage.py
+  __init__.py
 )
 
 install_file(viewer ${viewer_srcs})

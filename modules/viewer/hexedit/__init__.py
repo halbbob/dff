@@ -13,4 +13,4 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 
 
-__all__ = ["ViewerHexa", "Heditor"]
+__all__ = ["ViewerHexa", "Heditor", "search"]

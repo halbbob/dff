@@ -1,1 +1,1 @@
-__all__ = ['viewerimage', 'cat']
+__all__ = ['viewerimage', 'cat', 'hexedit']
