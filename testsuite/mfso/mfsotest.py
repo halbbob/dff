@@ -34,11 +34,11 @@ class MfsoTestNode(Node):
         self.origin = origin
         self.start = start
         self.size = 10
-        setattr(self, "getAttributes", self.getAttributes)
-        setattr(self, "getFileMapping", self.getFileMapping)
+        setattr(self, "attributes", self.attributes)
+        setattr(self, "fileMapping", self.fileMapping)
 
     
-    def getFileMapping(self):
+    def fileMapping(self):
         fm = FileMapping()
         fm.thisown = False
         voffset = 0
@@ -47,7 +47,7 @@ class MfsoTestNode(Node):
             voffset += 2
         return fm
 
-    def getAttributes(self):
+    def attributes(self):
         #print "Python node attributes requested"
         attr = Attributes()
         attr.thisown = False
