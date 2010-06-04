@@ -17,7 +17,7 @@ from decodeValues import *
 from navigation import *
 
 from options import *
-from search import *
+from modules.viewer.hexedit.search import *
 from goto import *
 
 from PyQt4.QtCore import QString, Qt, SIGNAL
