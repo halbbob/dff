@@ -25,18 +25,26 @@ class FILETYPE():
     def __init__(self):
         self.vfs = vfs.vfs()
         self.env = env.env()
-        self.mime = magic.open(magic.MAGIC_MIME)
-        self.type = magic.open(magic.MAGIC_NONE)
-        if os.name == "nt":
-          self.mime.load("./api/magic/magic")
-          self.type.load("./api/magic/magic")
-        else:
-          self.mime.load()
-          self.type.load()
+        self.magicClass = False
+        print "magic load"
+        try:
+          self.mime = magic.Magic(True)
+          self.type = magic.Magic(False)
+          self.magicClass = True
+        except AttributeError:
+          self.mime = magic.open(magic.MAGIC_MIME)
+          self.type = magic.open(magic.MAGIC_NONE)
+          if os.name == "nt":
+            self.mime.load("./api/magic/magic")
+            self.type.load("./api/magic/magic")
+          else:
+            self.mime.load()
+            self.type.load()
 
     def quit(self):
-        self.type.close() 
-        self.mime.close()
+        if not self.magicClass:
+          self.type.close() 
+          self.mime.close()
 
   __instance = None
 
@@ -78,9 +86,13 @@ class FILETYPE():
               f = node.open()
               buff = f.read(0x2000)
               f.close()
-              filetype = self.type.buffer(buff)
+              if not self.magicClass:
+                filetype = self.type.buffer(buff)
+                filemime = self.mime.buffer(buff)
+              else:
+                filetype = self.type.from_buffer(buff)
+                filemime = self.mime.from_buffer(buff)
               f.node.attr.smap["type"] = filetype
-              filemime = self.mime.buffer(buff)
               f.node.attr.smap["mime-type"] = filemime
             except vfsError:
               node.attr.smap["mime-type"] = "data" #? none
