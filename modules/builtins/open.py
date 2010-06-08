@@ -49,7 +49,7 @@ class Open(Script):
       self.taskmanager.add(mod, arg, ["thread", "gui"])       
     except IndexError: 
       print  "No module register type " + self.node.attr.string["type"]
-    print  "applying module " + mod + " on " + node.path + "/" + node.name
+    print  "applying module " + mod + " on " + node.absolute()
 
 class open(Module): 
   """Automatically apply module in background on a file. The module is determined by the file type."""

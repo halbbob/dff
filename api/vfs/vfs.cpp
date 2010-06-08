@@ -52,8 +52,8 @@ set<Node *>* VFS::GetTree(void)
 
 Node* VFS::GetNode(string path, Node* where)
 {
-  vector<Node *>next = where->next;
-  vector<Node *>::iterator i = next.begin();
+  list<Node *>			next;
+  list<Node *>::iterator i;
 
   if (path == "..")
     return (where->parent());
@@ -173,7 +173,46 @@ void VFS::addNode(Node *n)
 //   }
 }
 
-unsigned int VFS::AddNodes(list<Node*>  nl)
+void	VFS::postProcessCallback(Node* node)
+{
+  list<CallBack* >::iterator	cb_pp;
+
+  for (cb_pp = this->cbl_pp.begin(); cb_pp != this->cbl_pp.end(); cb_pp++)
+    (*cb_pp)->cbfunc((*cb_pp)->cbdata, node);
+}
+
+void	VFS::recursivePostProcess(Node *node)
+{
+  std::list<Node*>		children;
+  std::list<Node*>::iterator	node_it;
+
+  children = node->children();
+  for (node_it = children.begin(); node_it != children.end(); node_it++)
+    {
+      if ((*node_it)->hasChildren())
+	this->recursivePostProcess(*node_it);
+      this->postProcessCallback(*node_it);
+    }
+}
+
+void	VFS::updateCallback(Node* node)
+{
+  std::list<CallBack*>::iterator	cb;
+
+  for (cb = this->cbl.begin(); cb != this->cbl.end(); cb++)
+    (*cb)->cbfunc((*cb)->cbdata, node);
+}
+
+void	VFS::update(Node* head)
+{
+  if (head->hasChildren())
+    this->recursivePostProcess(head);
+  else
+    this->postProcessCallback(head);
+  this->updateCallback(head);
+}
+
+unsigned int VFS::AddNodes(list<Node*> nl)
 {
 //   unsigned int num = 0;
 //   list<Node* >::iterator n = nl.begin();
@@ -181,23 +220,22 @@ unsigned int VFS::AddNodes(list<Node*>  nl)
 //   if (!nl.size())
 //     return 0;
 //   for(;n  != nl.end(); n++)
-//   {
-//      (*n)->parent->addchild((*n));
-//      Tree.insert((*n));
-//      num++;
-//      list<CallBack* >::iterator cb_pp = cbl_pp.begin();
-//      for (; cb_pp != cbl_pp.end(); cb_pp++)
-//      {
-//       (*cb_pp)->cbfunc((*cb_pp)->cbdata, *n);
+//     {
+//       (*n)->parent->addchild((*n));
+//       Tree.insert((*n));
+//       num++;
+//       list<CallBack* >::iterator cb_pp = cbl_pp.begin();
+//       for (; cb_pp != cbl_pp.end(); cb_pp++)
+// 	{
+// 	  (*cb_pp)->cbfunc((*cb_pp)->cbdata, *n);
+// 	}
 //     }
-//   }
 //   list<CallBack* >::iterator cb = cbl.begin();
 //   for (; cb != cbl.end(); cb++)
-//   {
-//     (*cb)->cbfunc((*cb)->cbdata, (*nl.begin()));
-//   }
+//     {
+//       (*cb)->cbfunc((*cb)->cbdata, (*nl.begin()));
+//     }
 //   return (num);
-  
 }
 
 string  VFS::sanitaze(string name, Node* parent)
@@ -205,27 +243,27 @@ string  VFS::sanitaze(string name, Node* parent)
 //    string tmp;
 //    string::iterator i = name.begin();
 
-   for (; i != name.end(); ++i)
-   {
-      if (*i >= ' ' && *i <= '~')
-        tmp += *i;
-      else
-        tmp += '\?';
-   }
-   name = tmp;
-   vector<Node *>next = parent->next;
-   vector<Node*>::iterator n = next.begin();
-   for (; n != next.end(); ++n)
-   {
-     if (name == (*n)->name)
-     {
-       (*n)->same++;
-       char num[11] = {0}; 
-       sprintf(num, "%d", (*n)->same);
-       name += "." + string(num);
-     }
-   }
-  return (name);
+//    for (; i != name.end(); ++i)
+//    {
+//       if (*i >= ' ' && *i <= '~')
+//         tmp += *i;
+//       else
+//         tmp += '\?';
+//    }
+//    name = tmp;
+//    list<Node *>next = parent->next;
+//    list<Node*>::iterator n = next.begin();
+//    for (; n != next.end(); ++n)
+//    {
+//      if (name == (*n)->name)
+//      {
+//        (*n)->same++;
+//        char num[11] = {0}; 
+//        sprintf(num, "%d", (*n)->same);
+//        name += "." + string(num);
+//      }
+//    }
+//   return (name);
 }
 
 Node* VFS::CreateNodeDir(fso* fsobj, Node* parent, string name, attrib *attr, bool refresh)
@@ -269,9 +307,9 @@ Node* VFS::CreateNodeFile(fso* fsobj,  Node* parent, string name, attrib *attr, 
 
 void	VFS::SetCallBack(CBFUNC func, void* data, string type)
 {
-//   if (type == "refresh_tree")
-//     cbl.push_back(new CallBack(func, data));
-//   else if (type == "post_process")
-//     cbl_pp.push_back(new CallBack(func, data));
+  if (type == "refresh_tree")
+    cbl.push_back(new CallBack(func, data));
+  else if (type == "post_process")
+    cbl_pp.push_back(new CallBack(func, data));
 }
 

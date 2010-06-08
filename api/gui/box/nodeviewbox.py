@@ -69,7 +69,8 @@ class NodeViewBox(QGroupBox):
 
   def createCheckBoxAttribute(self):
     self.checkboxAttribute = QCheckBox("Show attributes", self)
-    self.checkboxAttribute.setCheckState(False)
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.checkboxAttribute.setCheckState(False)
     self.checkboxAttribute.setEnabled(False)
     self.checkboxAttribute.setTristate(False)
 
@@ -85,7 +86,7 @@ class NodeViewBox(QGroupBox):
         self.propertyTable.setVisible(False)	
 
   def moveToTop(self):
-     parent =  self.parent.model.rootItem.parent
+     parent =  self.parent.model.rootItem.parent()
      self.parent.model.setRootPath(parent)
  
   def imagethumbActivated(self):

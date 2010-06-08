@@ -51,6 +51,9 @@ private:
   VFS&          operator=(VFS&);
                 VFS(const VFS&);
   string	sanitaze(string, Node* parent);
+  void		postProcessCallback(Node* node);
+  void		recursivePostProcess(Node *node);
+  void		updateCallback(Node* node);
 
 public:
   class Node*           cwd;	
@@ -76,6 +79,8 @@ public:
   EXPORT void	        SetCallBack(CBFUNC func, void* cbdata, string type);
   EXPORT unsigned int	AddNodes(list<Node*> nl);
   EXPORT void 		addNode(Node *n);
+
+  void			update(Node* head);
 };
 #endif
 

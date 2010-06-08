@@ -79,7 +79,6 @@ void local::start(argument* arg)
   string 	path;
   Path		*tpath;
   struct stat 	stbuff;
-  Node*		root;
   Node*		parent;
   uint64_t	id;
  
@@ -111,13 +110,13 @@ void local::start(argument* arg)
     return ;
   }
   //this->attrib->setBasePath(this->basePath);
-  this->root = new Node(path, 0, NULL, this);
+  this->_root = new Node(path, 0, NULL, this);
   //this->root->setDecoder(this->attrib);
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-    this->iterdir(tpath->path, this->root);
+    this->iterdir(tpath->path, this->_root);
   else
-    this->root->setSize(stbuff.st_size);
-  this->parent->addChild(this->root);
+    this->_root->setSize(stbuff.st_size);
+  this->registerTree(this->parent, this->_root);
   return ;
 }
 

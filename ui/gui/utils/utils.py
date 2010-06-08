@@ -56,10 +56,10 @@ class Utils():
     def getPath(node):
         if not node :
             return ""
-        if node.name == "":
+        if node.name() == "":
             return str("/")
         else :
-            return str(node.path) + "/" + str(node.name)
+            return str(node.absolute())
 
     @staticmethod
     def getValue(arg):

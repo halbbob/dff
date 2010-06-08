@@ -414,7 +414,7 @@ void	DosPartition::readMbr(uint64_t offset)
 		}
 	      else
 		{
-		  this->parts.insert();
+		  //this->parts.insert();
 		}
 	    //this->ebr_base_sect = *((uint32_t*)this->record->partitions[i].lba);
 	    }

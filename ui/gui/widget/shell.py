@@ -55,7 +55,7 @@ class ShellView(QTextEdit, console):
         self.setPalette(pal)
         self.preloop()
         self.cwd = self.vfs.getcwd()
-        self.ps1 = self.cwd.path + "/" + self.cwd.name + " > "
+        self.ps1 = self.cwd.absolute() + " > "
 	self.redirect = RedirectIO()
 	self.sig = "Sputtext"
 	self.connect(self, SIGNAL(self.sig), self.puttext)
@@ -131,7 +131,7 @@ class ShellView(QTextEdit, console):
 	stop = self.onecmd(line, True)
         stop = self.postcmd(stop, line)
 	self.cwd = self.vfs.getcwd()
-	self.ps1 = self.cwd.path + "/" + self.cwd.name + " > "
+	self.ps1 = self.cwd.absolute() + " > "
         if self.more:
             self.write(self.ps2)
         else:
@@ -193,7 +193,7 @@ class ShellView(QTextEdit, console):
         self.point += res.length()
 
       self.cwd = self.vfs.getcwd()
-      self.ps1 = "\n" + self.cwd.path + "/" + self.cwd.name + " > "
+      self.ps1 = "\n" + self.cwd.absolute() + " > "
       self.write(self.ps1)
       self.write(QString(self.line))
 
@@ -210,7 +210,7 @@ class ShellView(QTextEdit, console):
 	   	proc = self.proc
 	   	proc.event.set()	
   	   	proc.exec_flags += ["thread"]
-	   	self.write("\n[" + str(proc.pid) + "]" + " background " + proc.name + "\n")
+	   	self.write("\n[" + str(proc.pid) + "]" + " background " + proc.name() + "\n")
 		e.ignore()
 		self.lines = []
         	self.__clearLine()

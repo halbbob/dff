@@ -154,7 +154,7 @@ void Partition::start(argument* arg)
   try
     {
       arg->get("parent", &this->parent);
-      this->dos->open(this->parent, 0);
+      //this->dos->open(this->parent, 0);
     }
   catch(vfsError e)
     {

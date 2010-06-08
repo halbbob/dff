@@ -166,16 +166,18 @@ class Info(QDockWidget):
 	        itemListRes = QTreeWidgetItem(itemModule)
 	        self.itemListResDic[mod] = itemListRes
 	        itemListRes.setText(0, "Results")
-             if proc.res:
-	      for type, name, val in self.env.get_val_map(proc.res.val_m):
-                try:
-	          itemResKey = self.itemResDic[(type, name, val)]  		
-	        except KeyError:
-	          itemResKey = QTreeWidgetItem(itemListRes)    
-	          self.itemResDic[(type, name, val)] = itemResKey	
-	          itemResKey.setText(1, name)
-	          itemResKey.setText(2, val)
-	          itemResKey.setText(4, type)
+             result = proc.res()
+             if result:
+                 val_map = self.env.get_val_map(result.val_m)
+                 for type, name, val in val_map:
+                     try:
+                         itemResKey = self.itemResDic[(type, name, val)]  		
+                     except KeyError:
+                         itemResKey = QTreeWidgetItem(itemListRes)    
+                         self.itemResDic[(type, name, val)] = itemResKey	
+                         itemResKey.setText(1, name)
+                         itemResKey.setText(2, val)
+                         itemResKey.setText(4, type)
 	          		    	 	    		
     def deleteInfoModule(self):
 	self.treeModule.clear()
@@ -261,8 +263,8 @@ class Info(QDockWidget):
 	    item.setText(1, str(proc.name))
           if item.text(2) != str(proc.state):
             item.setText(2, str(proc.state))
-          if item.text(3) != str(proc.stateinfo):
-	    item.setText(3, str(proc.stateinfo))
+          if item.text(3) != str(proc.stateInfo()):
+	    item.setText(3, str(proc.stateInfo()))
 
     def deleteInfoProcess(self):
         self.treeProcess.clear()

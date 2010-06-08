@@ -44,9 +44,9 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
      index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
-       if not node.empty_child():
+       if node.hasChildren():
 	 return True
-     return False	
+     return False
 
   def columnCount(self, parent = QModelIndex()):
      return 1
@@ -192,14 +192,14 @@ class NodeBrowser(QWidget):
 
   def nodeTreeDoubleClicked(self, mouseButton, node, index = None):
      if self.currentView().enterInDirectory:
-       if not node.empty_child():
+       if node.hasChildren():
 	 self.currentModel().setRootPath(node) 
 
   def nodeDoubleClicked(self, mouseButton, node, index = None):
      if self.currentView().enterInDirectory:
-       if not node.empty_child():
+       if node.hasChildren():
 	 self.currentModel().setRootPath(node) 
-       else:	
+       else:
 	 self.openDefault(node)
      else:  
          self.openDefault(node)
@@ -260,7 +260,7 @@ class NodeBrowser(QWidget):
          node = self.currentNode()
          if not node:
            return
-       self.propertyDialog.fillInfo(node, node.parent.next)
+       self.propertyDialog.fillInfo(node, node.parent().children())
        self.propertyDialog.exec_()
        self.propertyDialog.removeAttr()
  

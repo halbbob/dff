@@ -42,23 +42,23 @@ typedef struct
 
 class FileMapping
 {
-  public:
-  vector<class Node*>     next;
-  Node*			parent;	
-  attrib*		attr;	
-  class fso*		fsobj;	
-  unsigned int		same;
-  string		name;
-  string 		path;
-  bool			is_file; 
-  bool			is_root; 
-  string		absolute(void);	
-  bool                  has_child();  
-  bool                  empty_child();
-  EXPORT class VFile*	open(void);
-  Node();
-  ~Node();
-  void  		addchild(Node* path);
+private:
+  std::vector<chunck *> __chuncks;
+  uint64_t		__mappedFileSize;
+public:
+  FileMapping();
+  ~FileMapping();
+  uint64_t		mappedFileSize();
+  uint32_t		chunckCount();
+  chunck*		firstChunck();
+  chunck*		lastChunck();
+  chunck*		chunckFromIdx(uint32_t idx);
+  chunck*		chunckFromOffset(uint64_t offset);
+  uint32_t		chunckIdxFromOffset(uint64_t offset);
+  std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
+  std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
+  std::vector<chunck *>	chuncks();
+  void			push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
 };
 
 
@@ -112,6 +112,7 @@ public:
   EXPORT virtual uint64_t	size();
   EXPORT void			setSize(uint64_t size);
   //EXPORT virtual FileMapping* getSlackSpace();
+  EXPORT std::string		absolute();
   EXPORT std::string            name();
   EXPORT std::string            path();
   //EXPORT vtime*			getTimes();

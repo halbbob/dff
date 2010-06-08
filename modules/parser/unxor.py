@@ -31,7 +31,7 @@ class UNXOR(Script):
     self.res.add_const("result", res)
 
   def unxor(self, node, key):
-    dfilename = node.path + "/" + node.name +  "/decrypted"
+    dfilename = node.absolute() +  "/decrypted"
     dfile = self.touch(dfilename).open()
     file = node.open()
     decrypt = ""

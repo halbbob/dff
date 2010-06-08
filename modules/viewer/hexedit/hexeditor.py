@@ -51,8 +51,8 @@ class ViewerHexa(QWidget, Script):
         self.widget = Heditor(self)
         self.vlayout.addWidget(self.widget)
         node = self.args.get_node("file")
-        self.name = "hexedit " + str(node.name)        
-        if node.attr.size > 0:
+        self.name = "hexedit " + str(node.name())        
+        if node.size() > 0:
           self.widget.init(node)
         else:
           msg = QMessageBox(QMessageBox.Critical, "Hexadecimal viewer", "Error: File is empty", QMessageBox.Ok)

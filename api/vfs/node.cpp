@@ -374,6 +374,11 @@ void	Node::setFsobj(mfso *obj)
 }
 
 
+std::string	Node::absolute()
+{
+  return this->path() + this->__name;
+}
+
 std::string	Node::name()
 {
   return this->__name;
@@ -384,12 +389,20 @@ std::string	Node::path()
 {
   std::string path;
   Node	*tmp;
-  
-  tmp = this->__parent;
-  while (tmp != NULL)
+
+  //Root Node
+  if (this->__parent == NULL)
+    path = this->__name;
+  else
     {
-      path = tmp->name() + "/" + path;
-      tmp = tmp->parent();
+      tmp = this->__parent;
+      path = "";
+      while (tmp->parent() != NULL)
+	{
+	  path = tmp->name() + "/" + path;
+	  tmp = tmp->parent();
+	}
+      path = "/" + path;
     }
   return path;
 }
@@ -406,6 +419,7 @@ bool            Node::hasChildren()
 
 bool		Node::addChild(class Node *child)
 {
+  child->setParent(this);
   this->__children.push_back(child);
   this->__childcount++;
 }

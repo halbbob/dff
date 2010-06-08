@@ -22,5 +22,11 @@ class Script(object):
 	self.name = name
         self.env = env.env()
         self.vfs = vfs.vfs()
-	self.res = self.env.libenv.results(self.name)
-	self.stateinfo = "" 
+	self._res = self.env.libenv.results(self.name)
+	self.stateinfo = ""
+
+    def stateInfo(self):
+        return self.stateinfo
+
+    def res(self):
+        return self._res

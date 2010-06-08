@@ -44,7 +44,7 @@ class CAT(QTextEdit, Script):
 
   def cat(self, args):
     file = self.node.open()
-    fsize = self.node.attr.size
+    fsize = self.node.size()
     size = 0
     self.buff = ""
     while size < fsize:

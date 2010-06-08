@@ -33,7 +33,7 @@ class UNZIP(Script):
       for uzfile in zf.namelist():
           zinfo = zf.getinfo(uzfile)
           if zinfo.file_size > 0:
-              dfilename = node.path + "/" + node.name + "/" + uzfile
+              dfilename = node.absolute() + "/" + uzfile
               dnode = self.touch(dfilename)
               dfile = dnode.open()
               dfile.write(zf.read(uzfile))

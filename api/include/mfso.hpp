@@ -20,6 +20,7 @@
 #include "node.hpp"
 #include "results.hpp"
 #include "vfile.hpp"
+#include "vfs.hpp"
 //Cache manager for attributes and list of allocated blocks for files
 // class Cache
 // {
@@ -76,11 +77,12 @@ public:
 class mfso//: //public fso
 {
 private:
-  std::map<Node*, class VFile*>			origins;
-  FdManager*					fdmanager;
-  results					*res;
-  std::string					name;
-  class VFile					*__vfile;
+  std::map<Node*, class VFile*>			__origins;
+  FdManager*					__fdmanager;
+  std::string					__stateinfo;
+  results*					__res;
+  std::string					__name;
+  class VFile*					__vfile;
   //std::list<class Node*>			nodeList;
   //std::map<std::string, class Decoder *>	decoders;
 
@@ -88,29 +90,30 @@ private:
   // to ask children file corresponding a block
   // It also gives the ability to destroy children when "this" needs to be deleted
   std::list<class mfso*>			*__children;
-  class VFile*					vfileFromNode(Node* n);
   // parent is used for having a up to bottom view. It gives the ability
   // to ask parent.
   // it is also useful to tell its parent that the current mfso is going to
   // be destroyed
   class mfso					*__parent;
 
+  class VFile*					vfileFromNode(Node* n);
   int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
 
 protected:
   //  std::string				name;
-  class Node					*root;
+  class Node					*_root;
 //   bool					registerDecoder(std::string name, Decoder&);
 //   bool					unregisterDecoder(std::string name);
 //   virtual	uint64_t		getStartOffset() = 0;
 //   virtual	uint64_t		getEndOffset() = 0;
 //  EXPORT class Node			*createNode(class Node *parent, Decoder *decoder, uint64_t offset);
-
+  void					setStateInfo(std::string stateinfo);
+  void					registerTree(Node* parent, Node* head);
+  
 public:
   //  EXPORT mfso();
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
-
   EXPORT virtual void		start(argument* args) = 0;
   EXPORT virtual int32_t 	vopen(class Node *n);
   EXPORT virtual int32_t 	vread(int32_t fd, void *buff, uint32_t size);
@@ -119,6 +122,10 @@ public:
   EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence);
   EXPORT virtual uint32_t	status(void);
   EXPORT virtual uint64_t	vtell(int32_t fd);
+
+  EXPORT std::string		stateInfo();
+  EXPORT results*		res();
+  EXPORT std::string		name();
   // EXPORT virtual void	pause();
   // EXPORT virtual void	resume();
   // EXPORT virtual void	kill();

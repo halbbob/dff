@@ -40,7 +40,7 @@ class MAN(QWidget, Script):
         elif arg.type == "int":
             val = str(arg.get_int())
         elif i.type == "node" and i.get_node() :
-            val = arg.get_node().path + "/" + arg.get_node().name
+            val = arg.get_node().absolute()
         return val
 
     def start(self, args):        

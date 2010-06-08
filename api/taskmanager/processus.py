@@ -20,7 +20,7 @@ from api.type.libtype import *
 from api.vfs import *
 import threading
 
-class Processus(Script):
+class Processus():
   def __init__(self, mod, pid, args, exec_flags):
     self.vfs = vfs.vfs()
     self.mod = mod
@@ -56,7 +56,9 @@ class Processus(Script):
 
   def result(self):
      try :
-       for type, name, val in self.env.get_val_map(self.res.val_m):
+       result = self.res()
+       val_map = self.env.get_val_map(result.val_m)
+       for type, name, val in val_map:
 	     print name + ":" +"\n"  + val
      except AttributeError:
        pass

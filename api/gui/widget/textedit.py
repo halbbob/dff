@@ -6,7 +6,7 @@ class TextEdit(QTextEdit):
       QTextEdit.__init__(self)
       self.setReadOnly(1)
       self.icon = 0
-      self.name = proc.name 
+      self.name = proc.name()
       self.type = "autogen"
       self.proc = proc 
       proc.widget = self

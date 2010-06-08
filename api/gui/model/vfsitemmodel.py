@@ -59,12 +59,12 @@ class ImageThumb():
 
   def getThumb(self, node):
      buff = ""
-     if node.attr.size > 6:
+     if node.size() > 6:
        file = node.open()
        head = file.find("\xff\xd8\xff", 3, "", 3)
-       if head > 0 and head < node.attr.size:
+       if head > 0 and head < node.size():
          foot = file.find("\xff\xd9", 2, "", int(head))
-         if foot > 0 and foot < node.attr.size:
+         if foot > 0 and foot < node.size():
            file.seek(head)
            buff = file.read(foot + 2 - head)
        file.close()
@@ -92,7 +92,7 @@ class TypeWorker(QThread):
      count = 0
      while True:
        (parent, index, node) = self.typeQueue.get()
-       if node.attr.size: 
+       if node.size():
          map = node.attr.smap
          self.ft.filetype(node)
          ftype = node.attr.smap["type"]
@@ -141,13 +141,13 @@ class VFSItemModel(QAbstractItemModel):
   def setRootPath(self, node, item):
     self.emit(SIGNAL("rootPathChanged()"), item)
     self.rootItem = node
-    self.rootChildCount = len(node.next)
+    self.rootChildCount = node.childCount()
     #self.fetchedItems = 0
     self.reset()  
 
   def setRootPath(self, node):
     self.rootItem = node
-    self.rootChildCount = len(node.next)
+    self.rootChildCount = node.childCount()
     #self.fetchedItems = 0
 #   typeWorker.clearQueue()
     self.thumbQeued = {}
@@ -182,7 +182,7 @@ class VFSItemModel(QAbstractItemModel):
 	parentItem = self.rootItem
     else:
         parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    return len(parentItem.next)	
+    return parentItem.childCount()	
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
@@ -208,39 +208,44 @@ class VFSItemModel(QAbstractItemModel):
     column = index.column()
     if role == Qt.DisplayRole :
       if column == HNAME:
-        return QVariant(node.name)
+        return QVariant(node.name())
       if column == HSIZE:
-        return QVariant(node.attr.size)
-      time = node.attr.time
-      try :
-        if column == HACCESSED:
-          return QVariant(QDateTime(time['accessed'].get_time()))
-        if column == HCHANGED:
-          return QVariant(QDateTime(time['changed'].get_time()))
-        if column == HMODIFIED:
-          return QVariant(QDateTime(time['modified'].get_time()))
-      except IndexError:
-	pass
+        return QVariant(node.size())
+      #XXX patch here
+      #time = node.attr.time
+      #try :
+      #  if column == HACCESSED:
+      #    return QVariant(QDateTime(time['accessed'].get_time()))
+      #  if column == HCHANGED:
+      #    return QVariant(QDateTime(time['changed'].get_time()))
+      #  if column == HMODIFIED:
+      #    return QVariant(QDateTime(time['modified'].get_time()))
+      #except IndexError:
+      #  pass
       if column == HMODULE:
-        return QVariant(node.fsobj.name)
+        return QVariant(node.fsobj.name())
     if role == Qt.TextColorRole:
       if column == 0:
-        if node.attr.deleted:
-          return  QVariant(QColor(Qt.red))
+        #XXX patch
+        #if node.attr.deleted:
+        #  return  QVariant(QColor(Qt.red))
+        pass
     if role == Qt.DecorationRole:
       if column == HNAME:
-        if node.next.empty():
-          if not node.attr.size:
+        #if node.next.empty():
+        if not node.hasChildren():
+          if not node.size():
             return QVariant(QIcon(":folder_empty_128.png"))
           try :
+            #XXX attributes()
             ftype = node.attr.smap["type"]
           except IndexError:
-              try: 
-                self.thumbQueued[str(node.absolute())]
-              except KeyError :
-                self.thumbQueued[str(node.absolute())] = (node, index)
-    	        typeWorker.enqueue(self, index, node)
-              return QVariant(QIcon(":file_temporary.png"))
+            try: 
+              self.thumbQueued[str(node.absolute())]
+            except KeyError :
+              self.thumbQueued[str(node.absolute())] = (node, index)
+              typeWorker.enqueue(self, index, node)
+            return QVariant(QIcon(":file_temporary.png"))
           if ftype == "broken":
 	     #transparent broken icon (too slow !)	
              #pixmap = QPixmap(":image.png")
@@ -259,7 +264,7 @@ class VFSItemModel(QAbstractItemModel):
               return QVariant(QIcon(":file_temporary.png"))
           return QVariant(QIcon(":folder_empty_128.png"))
         else:
-          if node.attr.size != 0: 
+          if node.size() != 0: 
             return QVariant(QIcon(":folder_documents_128.png"))
           else:
 	    return QVariant(QIcon(":folder_128.png"))
@@ -278,8 +283,11 @@ class VFSItemModel(QAbstractItemModel):
      if parent.isValid():
        parentItem = self.VFS.getNodeFromPointer(parent.internalId())
      else:
-       parentItem = self.rootItem 
-     childItem = parentItem.next[row]
+       parentItem = self.rootItem
+     #XXX replace
+     #childItem = parentItem.next[row]
+     #with
+     childItem = parentItem.children()[row]
      index = self.createIndex(row, column, int(childItem.this))
      return index
 
@@ -287,12 +295,14 @@ class VFSItemModel(QAbstractItemModel):
      if not index.isValid(): 
        return QModelIndex()
      childItem = self.VFS.getNodeFromPointer(index.internalId())
-     parentItem = childItem.parent
+     parentItem = childItem.parent()
 #use this = this? #XXX faster ? 
      if parentItem.absolute() == self.rootItem.absolute():
        return QModelIndex()
      n = 0
-     for node in parentItem.parent.next:
+     children = parentItem.parent().children()
+     #for node in parentItem.parent.next:
+     for node in children:
         if parentItem.absolute() == node.absolute():
 	  break
 	n += 1
@@ -302,7 +312,13 @@ class VFSItemModel(QAbstractItemModel):
   def hasChildren(self, parent):
     if not parent.isValid():
 	self.parentItem = self.rootItem
-	return not self.rootItem.empty_child()
+        #XXX replace
+        # return not self.rootItem.empty_child()
+        # with
+        return self.rootItem.hasChildren()
     else:
         self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-  	return not self.parentItem.empty_child()
+        #XXX replace 
+        # return not self.parentItem.empty_child()
+        # with
+        return self.parentItem.hasChildren()

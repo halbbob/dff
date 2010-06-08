@@ -60,7 +60,7 @@ class env():
       elif i.type == "int":
        res += [(i.type, i.name, str(i.get_int()), i._from)]
       elif i.type == "node" and i.get_node() :
-       res += [(i.type, i.name, i.get_node().path + "/" + i.get_node().name, i._from)]
+       res += [(i.type, i.name, i.get_node().absolute(), i._from)]
       elif i.type == "path":
        res += [(i.type, i.name, i.get_path().path, i._from)]		
     return res
@@ -79,7 +79,7 @@ class env():
       elif a.type == "string":
 	res += [(a.type, i, str(a.get_string()))]
       elif a.type == "node" and a.get_node():
-	res += [(a.type, i,  a.get_node().path + "/" + a.get_node().name)]
+	res += [(a.type, i,  a.get_node().absolute())]
       elif a.type == "path":
 	res += [(a.type, i, a.get_path().path)]
     return res

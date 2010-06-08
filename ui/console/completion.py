@@ -108,10 +108,10 @@ class Completion():
                     out["matches"].append("/")
                 out["matched"] += 1
             else:
-                list = node.getChildren()
+                list = node.children()
                 if supplied == "":
                     for i in list:
-                        name = i.getName()
+                        name = i.name()
                         if i.hasChildren():
                             if len(name + "/") > out["length"]:
                                 out["length"] = len(name + "/")
@@ -123,7 +123,7 @@ class Completion():
                         out["matched"] += 1
                 else:
                     for i in list:
-                        name = i.getName()
+                        name = i.name()
                         if name.startswith(supplied) == True:
                             if i.hasChildren():
                                 if len(name + "/") > out["length"]:
@@ -235,7 +235,7 @@ class Completion():
                     elif i.type == "int":
                         val = str(i.get_int())
                     elif i.type == "node" and i.get_node() :
-                        val = i.get_node().path + "/" + i.get_node().name
+                        val = i.get_node().absolute()
                     if self.cur_str == "":
                         to_add = True
                     elif val.startswith(self.cur_str):

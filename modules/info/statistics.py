@@ -39,7 +39,7 @@ class STATISTICS(Script):
         self.dtype[file_type] = 1
       else:
         self.dtype[file_type] += 1
-    list = node.next
+    list = node.children()
     buff = ""
     for i in list:
         buff +=  self.getstat(i)

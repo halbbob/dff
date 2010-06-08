@@ -97,7 +97,7 @@ class Extractor(QDialog):
     def removeIdentical(self, toRemove):
         res = []
         for node in self.nodes:
-            if node.name not in toRemove:
+            if node.name() not in toRemove:
                 res.append(node)
         return res
 
@@ -106,8 +106,8 @@ class Extractor(QDialog):
         same = []
         content = os.listdir(self.path)
         for node in self.nodes:
-            if node.name in content:
-                same.append(str(node.name))
+            if node.name() in content:
+                same.append(str(node.name()))
         if len(same) > 0:
             msg = QMessageBox(self)
             msg.setText("Some selected files or folders already exist in the destination folder\n" + str(self.path))

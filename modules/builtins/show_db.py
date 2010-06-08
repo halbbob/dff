@@ -43,7 +43,7 @@ class SHOW_DB(Script):
         elif v.type == "node":
 	 node = v.get_node() 
 	 if node: 
-           res += "\t\t" + v.type  + "=" + node.path + "/" + node.name + " from " + v._from + "\n"
+           res += "\t\t" + v.type  + "=" + node.absolute() + " from " + v._from + "\n"
 	elif v.type == "path":
 	   res += "\t\t" + v.type  + "=" + v.get_path().path + " from " + v._from + "\n" 
       return res

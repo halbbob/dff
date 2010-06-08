@@ -24,7 +24,7 @@ class SHOW_CWD(Script):
 
   def start(self, args):
     cwd = self.vfs.getcwd()
-    print cwd.path + "/" + cwd.name
+    print cwd.absolute()
 
 class show_cwd(Module):
   """Display current working directory"""

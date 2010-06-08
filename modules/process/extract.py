@@ -37,7 +37,7 @@ class EXTRACT(Script):
     self.rec = args.get_bool('recursive')
     res = ""
     for node in self.nodes:
-      if not node.next.empty() and self.rec:
+      if node.hasChildren() and self.rec:
         self.total += self.get_total_to_extract(node)
       else:
         self.total += 1
@@ -48,18 +48,18 @@ class EXTRACT(Script):
 
   def launch(self, node):
     res = ""
-    if not node.next.empty():
+    if node.hasChildren():
       if self.rec:
         res += self.recurse(node, "")
       else:
         self.current += 1
         self.stateinfo = str(self.current) + " / " + str(self.total)
-        if not os.path.exists(self.path + "/" + node.name):
+        if not os.path.exists(self.path + "/" + node.name()):
           try:
-            os.mkdir(self.path + "/" + node.name)
-            res += "directory " + node.name + " created in " + self.path + "\n"
+            os.mkdir(self.path + "/" + node.name())
+            res += "directory " + node.name() + " created in " + self.path + "\n"
           except OSError:
-            res += "extract: Can't create directory " + self.path + node.name + "\n"
+            res += "extract: Can't create directory " + self.path + node.name() + "\n"
     else:
       res = self.extract(node, "")
     return res
@@ -67,11 +67,11 @@ class EXTRACT(Script):
 
   def get_total_to_extract(self, node):
     total = 0
-    next = node.next
+    next = node.children()
 
     total += 1
     for cur_node in next:
-      if not cur_node.next.empty():
+      if cur_node.hasChildren():
         total += self.get_total_to_extract(cur_node)
       else:
         total += 1
@@ -80,19 +80,19 @@ class EXTRACT(Script):
 
   def recurse(self, node, vpath):
     res = ""
-    if not node.next.empty():
-      vpath += "/" + node.name
+    if node.hasChildren():
+      vpath += "/" + node.name()
       self.current += 1
       self.stateinfo = str(self.current) + " / " + str(self.total)
       if not os.path.exists(self.path + vpath):
         try:
           os.mkdir(self.path + vpath)
-          res += "directory " + node.name + " created in " + self.path + vpath + "\n"
+          res += "directory " + node.name() + " created in " + self.path + vpath + "\n"
         except OSError:
-          res += "extract: Can't create directory " + self.path + vpath + node.name + "\n"
-      next = node.next
+          res += "extract: Can't create directory " + self.path + vpath + node.name() + "\n"
+      next = node.children()
       for cur_node in next:
-        if cur_node.next.empty():
+        if not cur_node.hasChildren():
           res += self.extract(cur_node, vpath)
         else:
           res += self.recurse(cur_node, vpath)
@@ -103,7 +103,7 @@ class EXTRACT(Script):
 
   def extract(self, node, vpath):
     syspath = self.path + vpath + "/"
-    sysname = node.name
+    sysname = node.name()
     try:
       self.current += 1
       self.stateinfo = str(self.current) + " / " + str(self.total)
@@ -116,9 +116,9 @@ class EXTRACT(Script):
         buff = vfile.read(readsize)
       vfile.close()
       sysfile.close()
-      return "file: " + node.path + "/"  + node.name + " extracted in " + syspath + sysname + "\n"
+      return "file: " + node.absolute() + " extracted in " + syspath + sysname + "\n"
     except vfsError, e:
-      return "extract: Can't open " + node.path + node.name + "\n"
+      return "extract: Can't open " + node.absolute() + "\n"
     except OSError:
       return "extract: Can't create file " + syspath + "\n"
 

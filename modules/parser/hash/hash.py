@@ -68,7 +68,7 @@ class HASH(Script):
             algmap = "hash-" + algorithm
             map[algmap] = h.hexdigest()
             f.close()
-            res = map[algmap] + "  " + node.path + "/" + node.name
+            res = map[algmap] + "  " + node.absolute()
             self.res.add_const("result", res)
  
 class hash(Module):

@@ -98,16 +98,17 @@ public:
   bool		isSane();
 };
 
-class Record
-{
-public:
-  Record();
-  ~Record();
-  read(VFile *vfile, uint64_t offset = 0);
-  //method for reading extended boot record which needs base of the first ebr
-  read(VFile* vfile, uint32_t base, uint64_t offset=0)
-  open(VFile *vfile, uint8_t type, uint64_t offset = 0);
-};
+// class Record
+// {
+// public:
+//   Record();
+//   ~Record();
+//   void	read(VFile *vfile, uint64_t offset = 0);
+//   //method for reading extended boot record which needs base of the first ebr
+//   void	read(VFile* vfile, uint32_t base, uint64_t offset=0);
+//   void	open(VFile *vfile, uint8_t type, uint64_t offset = 0);
+// };
+
 
 class DosPartition
 {
@@ -123,7 +124,7 @@ public:
   DosPartition();
   ~DosPartition();
   //void			setMbrFile(Node* mbr);
-  void			open(Node* node, uint64_t offset = 0);
+  void			open(VFile* vfile, uint64_t offset = 0);
   void			readEbr(uint32_t cur);
   void			readMbr(uint64_t offset);
 };

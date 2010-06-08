@@ -43,4 +43,4 @@ class PushButton(QPushButton):
                     node = self.browseVFS.returnSelection()
                     if node :
                         self.targetResult.addPathAndSelect(node)
-                    #self.targetResult.addPathAndSelect(node.path + "/" + node.name)
+                    #self.targetResult.addPathAndSelect(node.absolute())

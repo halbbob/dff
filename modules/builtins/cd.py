@@ -26,11 +26,11 @@ class CD(Script):
     if not node:
       self.res.add_const("error", "Can't find file")
       return	
-    if node.empty_child():
+    if not node.hasChildren():
       self.res.add_const("error", "Can't change current directory on file")
       return 
     self.vfs.setcwd(node)
-    self.res.add_const("result",  "change path to " + node.path + "/" + node.name)
+    self.res.add_const("result",  "change path to " + node.absolute())
 
 
 class cd(Module):

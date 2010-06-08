@@ -61,7 +61,7 @@ class console(Cmd):
         return line
 
     def postcmd(self, stop, line):
-        #self.prompt = "dff " + self.vfs.getcwd().path + "/" + self.vfs.getcwd().name + " > "
+        self.prompt = "dff " + self.vfs.getcwd().absolute() + " > "
         return stop
 
     def preloop(self):

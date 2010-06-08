@@ -242,7 +242,7 @@ class ImageView(QWidget, Script):
 
 
   def setImage(self):
-    if self.node.attr.size != 0:
+    if self.node.size() != 0:
       map = self.node.attr.smap
       try:
         #XXX temporary patch for windows magic

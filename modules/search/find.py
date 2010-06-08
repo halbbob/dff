@@ -32,14 +32,14 @@ class FIND(Script):
       return 
     buff = "Found " + str(len(fres)) + " files\n"
     for i in fres:
-      buff += i.path + "/" + i.name + "\n" 
+      buff += i.absolute() + "\n" 
     return	
 
   def c_display(self):
     buff = "Found " + str(len(self.fres)) + " files\n"
     for i in self.fres:
       for i in self.fres:
-        buff += i.path + "/" + i.name + "\n" 
+        buff += i.absolute() + "\n" 
     print buff
 	
  
@@ -60,9 +60,9 @@ class FIND(Script):
     list = self.vfs.gettree()
     for i in list:
      if starred:
-       if n.findall(i.name):
+       if n.findall(i.name()):
          self.fres.append(i)
-     elif i.name == filename :
+     elif i.name() == filename :
          self.fres.append(i)
     return self.fres
 

@@ -47,7 +47,7 @@ class Property(QDialog,  UiProperty):
         info['item'] = 0
         
         for i in  listNode :
-            if not i.next.empty() :
+            if i.hasChildren():
                 info_child = self.vfs.getInfoDirectory(i)
                 info['size'] = info['size'] + info_child['size']
                 info['item'] = info['item'] + info_child['item']
@@ -56,13 +56,13 @@ class Property(QDialog,  UiProperty):
                 else :
                     type = 0
             else :
-                info['size'] = info['size'] + i.attr.size
+                info['size'] = info['size'] + i.size()
                 info['item'] = info['item'] + 1
                 if type == -1 or type == 2:
                     type = 2
                 else :
                     type = 0
-            entryName = entryName + i.name + ", "
+            entryName = entryName + i.name() + ", "
         
         self.fillInfo2(entryName[:-2],  node, type,  info, len(listNode), listNode[0])
                 
@@ -70,14 +70,14 @@ class Property(QDialog,  UiProperty):
         self.vboxlayout.removeWidget(self.buttonClose)
         self.valueName.setText(names)
         
-        if node.name == "" :
+        if node.name() == "" :
             self.valuePath.setText("/")
         else :
-            self.valuePath.setText(node.path + "/" + node.name)
+            self.valuePath.setText(node.absolute())
         
         if nbrItem == 1 :
             if oneNode.is_file :
-                self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ), dump size : "+ str(oneNode.attr.size))
+                self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ), dump size : "+ str(oneNode.size()))
             else :
                 self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ) ")
             if types == 1 :

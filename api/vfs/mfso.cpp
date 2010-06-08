@@ -96,14 +96,21 @@ void		FdManager::remove(int32_t fd)
 
 mfso::mfso(std::string name)
 {
-  this->name = name;
-  this->res = new results(name);
-  this->fdmanager = new FdManager();
+  this->__name = name;
+  this->__res = new results(this->__name);
+  this->__fdmanager = new FdManager();
+  this->__stateinfo = "";
   //this->root = new Node(NULL, name, 0);
 }
 
 mfso::~mfso()
 {
+}
+
+void	mfso::registerTree(Node* parent, Node* head)
+{
+  parent->addChild(head);
+  VFS::Get().update(head);
 }
 
 // bool		mfso::registerDecoder(std::string name, Decoder&)
@@ -118,13 +125,33 @@ mfso::~mfso()
 // {
 // }
 
+std::string		mfso::name()
+{
+  return this->__name;
+}
+
+results*		mfso::res()
+{
+  return this->__res;
+}
+
+void			mfso::setStateInfo(std::string stateinfo)
+{
+  this->__stateinfo = stateinfo;
+}
+
+std::string		mfso::stateInfo()
+{
+  return this->__stateinfo;
+}
+
 VFile*		mfso::vfileFromNode(Node* n)
 {
   std::map<Node*, class VFile*>::iterator	it;
   VFile*					vfile;
 
-  it = this->origins.find(n);
-  if (it != this->origins.end())
+  it = this->__origins.find(n);
+  if (it != this->__origins.end())
     {
       //std::cout << "already opened" << std::endl;
       return it->second;
@@ -133,7 +160,7 @@ VFile*		mfso::vfileFromNode(Node* n)
     {
       //      std::cout << "Not yet opened" << std::endl;
       vfile = n->open();
-      this->origins[n] = vfile;
+      this->__origins[n] = vfile;
       return vfile;
     }
     
@@ -156,7 +183,7 @@ int32_t 	mfso::vopen(Node *node)
 	  fi->offset = 0;
 	  fi->node = node;
 	  fi->fm = fm;
-	  fd = this->fdmanager->push(fi);
+	  fd = this->__fdmanager->push(fi);
 	  return fd;
 	}
       catch(...)
@@ -220,7 +247,7 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
 
   try
     {
-      fi = this->fdmanager->get(fd);
+      fi = this->__fdmanager->get(fd);
       if ((fi->node != NULL) && (fi->fm != NULL))
 	{
 	  //Warn if fi->node->getSize() != fm->getSize() ?
@@ -247,27 +274,56 @@ uint64_t	mfso::vtell(int32_t fd)
 
   try
     {
-      fi = this->fdmanager->get(fd);
+      fi = this->__fdmanager->get(fd);
       return fi->offset;
     }
   catch(...)
     {
       std::cout << "problem while getting fd information" << std::endl;
-      return 0;
+      return (uint64_t)-1;
     }
 }
 
+//need COW implementation to reflect forensically sound process
 int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 {
 }
 
 int32_t 	mfso::vclose(int32_t fd)
 {
-  this->fdmanager->remove(fd);
+  this->__fdmanager->remove(fd);
 }
 
+//need same implementation of lseek syscall ?
 uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int whence)
 {
+  fdinfo*	fi;
+
+  try
+    {
+      fi = this->__fdmanager->get(fd);
+      switch (whence)
+	{
+	case 0:
+	  if (offset > fi->fm->mappedFileSize())
+	    return (uint64_t)-1;
+	  else
+	    fi->offset = offset;
+	case 1:
+	  if ((fi->offset + offset) > fi->fm->mappedFileSize())
+	    return (uint64_t)-1;
+	  else
+	    fi->offset += offset;
+	case 2:
+	  fi->offset = fi->fm->mappedFileSize();
+	}
+      return fi->offset;
+    }
+  catch(...)
+    {
+      std::cout << "problem while getting fd information" << std::endl;
+      return (uint64_t)-1;
+    }
 }
 
 uint32_t	mfso::status(void)

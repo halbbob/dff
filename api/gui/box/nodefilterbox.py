@@ -32,11 +32,11 @@ class NodeFilterBox(QGroupBox):
 
     self.filterSyntaxComboBox = QComboBox()
     self.filterSyntaxComboBox.addItem("Regular expression",
-                QtCore.QRegExp.RegExp)
+                QVariant(QtCore.QRegExp.RegExp))
     self.filterSyntaxComboBox.addItem("Wildcard",
-                QtCore.QRegExp.Wildcard)
+                QVariant(QtCore.QRegExp.Wildcard))
     self.filterSyntaxComboBox.addItem("Fixed string",
-                QtCore.QRegExp.FixedString)
+                QVariant(QtCore.QRegExp.FixedString))
     self.filterSyntaxLabel = QLabel("Syntax:")
     self.filterSyntaxLabel.setBuddy(self.filterSyntaxComboBox)
 
@@ -48,11 +48,18 @@ class NodeFilterBox(QGroupBox):
     self.filterColumnLabel = QLabel("Attribute:")
     self.filterColumnLabel.setBuddy(self.filterColumnComboBox)
 
-    self.filterPatternLineEdit.textChanged.connect(self.filterRegExpChanged)
-    self.filterSyntaxComboBox.currentIndexChanged.connect(self.filterRegExpChanged)
-    self.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
-    self.filterCaseSensitivityCheckBox.toggled.connect(self.filterRegExpChanged)
-    self.sortCaseSensitivityCheckBox.toggled.connect(self.sortChanged)
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.filterPatternLineEdit.textChanged.connect(self.filterRegExpChanged)
+      self.filterSyntaxComboBox.currentIndexChanged.connect(self.filterRegExpChanged)
+      self.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
+      self.filterCaseSensitivityCheckBox.toggled.connect(self.filterRegExpChanged)
+      self.sortCaseSensitivityCheckBox.toggled.connect(self.sortChanged)
+    else:
+      QtCore.QObject.connect(self.filterPatternLineEdit, SIGNAL("textChanged(QString)"), self.filterRegExpChanged)
+      QtCore.QObject.connect(self.filterSyntaxComboBox, SIGNAL("currentIndexChanged(int)"), self.filterRegExpChanged)
+      QtCore.QObject.connect(self.filterColumnComboBox, SIGNAL("currentIndexChanged(int)"), self.filterColumnChanged)
+      QtCore.QObject.connect(self.filterCaseSensitivityCheckBox, SIGNAL("toggled(bool)"), self.filterRegExpChanged)
+      QtCore.QObject.connect(self.sortCaseSensitivityCheckBox, SIGNAL("toggled(bool)"), self.sortChanged)
     self.filterCaseSensitivityCheckBox.setChecked(True)
     self.sortCaseSensitivityCheckBox.setChecked(True)
 

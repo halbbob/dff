@@ -28,7 +28,7 @@ class LINK(Script):
       self.res.add_const("error", "Can't find file")
       return	
     self.vfs.link(node, dest) 
-    self.res.add_const("result",  "linked " + dest.path + "/" + node.name + " created")
+    self.res.add_const("result",  "linked " + dest.path + "/" + node.name() + " created")
 
 
 class link(Module):

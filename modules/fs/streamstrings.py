@@ -50,8 +50,8 @@ class streamfs(fso):
     parent = args.get_node('parent')
     attr  = attrib()
     attr.thisown = 0 
-    self.size = parent.attr.size
-    attr.size = parent.attr.size 
+    self.size = parent.size()
+    attr.size = parent.size() 
     attr.handle = Handle("strings")
     self.parent = parent.open()
     self.fdm = fdmanager()
