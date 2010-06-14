@@ -205,6 +205,10 @@ class VFSItemModel(QAbstractItemModel):
     if not index.isValid():
       return QVariant()
     node = self.VFS.getNodeFromPointer(index.internalId())
+    attr = node.attributes()
+    attributes = None
+    if attr != None:
+      attributes = attr.attributes()
     column = index.column()
     if role == Qt.DisplayRole :
       if column == HNAME:
@@ -213,40 +217,51 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant(node.size())
       #XXX patch here
       #time = node.attr.time
-      #try :
+     # try :
       #  if column == HACCESSED:
-      #    return QVariant(QDateTime(time['accessed'].get_time()))
+       #   accessed = attributes['accessed'].value()
+        #  return QVariant(QDateTime(accessed.get_time()))
+          #return QVariant()
       #  if column == HCHANGED:
-      #    return QVariant(QDateTime(time['changed'].get_time()))
+       #   changed = attributes['changed'].value()
+        #  return QVariant(QDateTime(changed.get_time()))
+          #return QVariant()
       #  if column == HMODIFIED:
-      #    return QVariant(QDateTime(time['modified'].get_time()))
-      #except IndexError:
-      #  pass
+       #   modified = attributes['modified'].value()
+        #  return QVariant(QDateTime(modified.get_time()))
+          #return QVariant()
+ #     except IndexError:
+  #      pass
       if column == HMODULE:
-        return QVariant(node.fsobj.name())
-    if role == Qt.TextColorRole:
-      if column == 0:
+        fsobj = node.fsobj()
+        if (fsobj != None):
+          return QVariant(fsobj.name())
+        else:
+          return QVariant()
+  #  if role == Qt.TextColorRole:
+   #   if column == 0:
         #XXX patch
         #if node.attr.deleted:
         #  return  QVariant(QColor(Qt.red))
-        pass
+    #    pass
     if role == Qt.DecorationRole:
       if column == HNAME:
         #if node.next.empty():
-        if not node.hasChildren():
-          if not node.size():
+      #  if not node.hasChildren():
+       #   if not node.size():
             return QVariant(QIcon(":folder_empty_128.png"))
-          try :
-            #XXX attributes()
-            ftype = node.attr.smap["type"]
-          except IndexError:
-            try: 
-              self.thumbQueued[str(node.absolute())]
-            except KeyError :
-              self.thumbQueued[str(node.absolute())] = (node, index)
-              typeWorker.enqueue(self, index, node)
-            return QVariant(QIcon(":file_temporary.png"))
-          if ftype == "broken":
+        #  ftype = ""
+          #XXX attributes()
+          #try :
+          #  ftype = node.attr.smap["type"]
+          #except IndexError:
+          #  try: 
+          #    self.thumbQueued[str(node.absolute())]
+          #  except KeyError :
+          #    self.thumbQueued[str(node.absolute())] = (node, index)
+          #    typeWorker.enqueue(self, index, node)
+          #  return QVariant(QIcon(":file_temporary.png"))
+#          if ftype == "broken":
 	     #transparent broken icon (too slow !)	
              #pixmap = QPixmap(":image.png")
              #print pixmap
@@ -254,20 +269,20 @@ class VFSItemModel(QAbstractItemModel):
              #mask = broken.createHeuristicMask()  
              #pixmap.setMask(mask)
              #return QVariant(QIcon(pixmap))
-	     return QVariant(QIcon(":file_broken.png")) 
-	  if self.imagesthumbnails: #gettype
-            if pixmapCache.find(node.absolute()):
-              pixmap =  pixmapCache.find(node.absolute())
-              return QVariant(QIcon(pixmap))
-            elif typeWorker.isImage(ftype):
-  	      typeWorker.enqueue(self, index, node)
-              return QVariant(QIcon(":file_temporary.png"))
-          return QVariant(QIcon(":folder_empty_128.png"))
-        else:
-          if node.size() != 0: 
-            return QVariant(QIcon(":folder_documents_128.png"))
-          else:
-	    return QVariant(QIcon(":folder_128.png"))
+ #            return QVariant(QIcon(":file_broken.png")) 
+	#  if self.imagesthumbnails: #gettype
+         #   if pixmapCache.find(node.absolute()):
+          #    pixmap =  pixmapCache.find(node.absolute())
+           #   return QVariant(QIcon(pixmap))
+           # elif typeWorker.isImage(ftype):
+  	   #   typeWorker.enqueue(self, index, node)
+           #   return QVariant(QIcon(":file_temporary.png"))
+        #  return QVariant(QIcon(":folder_empty_128.png"))
+      #  else:
+       #   if node.size() != 0: 
+        #    return QVariant(QIcon(":folder_documents_128.png"))
+         # else:
+	  #  return QVariant(QIcon(":folder_128.png"))
     return QVariant() 
 
   def setImagesThumbnails(self, flag):
@@ -297,13 +312,13 @@ class VFSItemModel(QAbstractItemModel):
      childItem = self.VFS.getNodeFromPointer(index.internalId())
      parentItem = childItem.parent()
 #use this = this? #XXX faster ? 
-     if parentItem.absolute() == self.rootItem.absolute():
+     if parentItem.this == self.rootItem.this:
        return QModelIndex()
      n = 0
      children = parentItem.parent().children()
      #for node in parentItem.parent.next:
      for node in children:
-        if parentItem.absolute() == node.absolute():
+        if parentItem.this == node.this:
 	  break
 	n += 1
      index = self.createIndex(n , 0, int(parentItem.this))

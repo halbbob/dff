@@ -87,7 +87,7 @@ private:
 
   //XXX parent could be a list of Node. Ex: Raid reconstruction based on two nodes which
   //    are aggregated to only one Node
-  std::list<class Node *>       __children;
+  std::vector<class Node *>       __children;
   uint32_t                      __childcount;
 
   std::string			__name;
@@ -115,6 +115,8 @@ public:
   EXPORT std::string		absolute();
   EXPORT std::string            name();
   EXPORT std::string            path();
+  EXPORT class mfso*		fsobj();
+
   //EXPORT vtime*			getTimes();
 //   EXPORT virtual vtime*		getModifiedTime();
 //   EXPORT virtual vtime*		getAccessedTime();
@@ -123,7 +125,7 @@ public:
 
   EXPORT Node*                  parent();
   EXPORT uint32_t               childCount();
-  EXPORT std::list<class Node*> children();
+  EXPORT std::vector<class Node*> children();
   EXPORT void                   setFsobj(mfso* obj);
   EXPORT bool                   setParent(Node* parent);
   EXPORT bool                   hasChildren();
@@ -132,6 +134,3 @@ public:
 };
 
 #endif
-
-
-

@@ -294,7 +294,7 @@ Node::~Node()
     this->__children.clear();
 }
 
-std::list<class Node*>	Node::children()
+std::vector<class Node*>	Node::children()
 {
   return this->__children;
 }
@@ -345,6 +345,10 @@ Node*		Node::parent()
   return this->__parent;
 }
 
+mfso*		Node::fsobj()
+{
+  return this->__mfsobj;
+}
 
 VFile*		Node::open(void)
 {

@@ -301,7 +301,7 @@ public:
 
 
   template<typename T>
-  T	getValue(void)
+  T	value(void)
   {
     std::string type;
     uint8_t	itype;

@@ -16,6 +16,8 @@
 
 %module(package="api.variant") libvariant
 
+%newobject Variant::value();
+
 %include "std_string.i"
 %include "stdint.i"
 %include "std_list.i"
@@ -51,41 +53,41 @@ import traceback
 %{
   Variant.__origininit__ = Variant.__init__
   Variant.__init__ = Variant.__proxyinit__
-  Variant.funcMapper = {typeId.Char: "_Variant__getValueChar",
-                          typeId.Int16: "_Variant__getValueInt16",
-                          typeId.UInt16: "_Variant__getValueUInt16",
-                          typeId.Int32: "_Variant__getValueInt32",
-                          typeId.UInt32: "_Variant__getValueUInt32",
-                          typeId.Int64: "_Variant__getValueInt64",
-                          typeId.UInt64: "_Variant__getValueUInt64",
-                          typeId.String: "_Variant__getValueString",
-                          typeId.CArray: "_Variant__getValueCArray",
-//                      typeId.Node: "_Variant__getValueNode",
-                          typeId.VTime: "_Variant__getValueVTime",
-		          typeId.List: "_Variant__getVList",
-  		          typeId.Map: "_Variant__getVMap"}
+  Variant.funcMapper = {typeId.Char: "_Variant__valueChar",
+                          typeId.Int16: "_Variant__valueInt16",
+                          typeId.UInt16: "_Variant__valueUInt16",
+                          typeId.Int32: "_Variant__valueInt32",
+                          typeId.UInt32: "_Variant__valueUInt32",
+                          typeId.Int64: "_Variant__valueInt64",
+                          typeId.UInt64: "_Variant__valueUInt64",
+                          typeId.String: "_Variant__valueString",
+                          typeId.CArray: "_Variant__valueCArray",
+//                      typeId.Node: "_Variant__valueNode",
+                          typeId.VTime: "_Variant__valueVTime",
+		          typeId.List: "_Variant__VList",
+  		          typeId.Map: "_Variant__VMap"}
 
 %}
 
 //%include "../include/node.hpp"
 %import "../type/libtype.i"
 
-%template(__getValueChar) Variant::getValue<char>;
-%template(__getValueInt16) Variant::getValue<int16_t>;
-%template(__getValueUInt16) Variant::getValue<uint16_t>;
-%template(__getValueInt32) Variant::getValue<int32_t>;
-%template(__getValueUInt32) Variant::getValue<uint32_t>;
-%template(__getValueInt64) Variant::getValue<int64_t>;
-%template(__getValueUInt64) Variant::getValue<uint64_t>;
-%template(__getValueCArray) Variant::getValue<char *>;
-//%template(__getValueNode) Variant::getValue<Node*>;
-%template(__getValueVTime) Variant::getValue<vtime*>;
+%template(__valueChar) Variant::value<char>;
+%template(__valueInt16) Variant::value<int16_t>;
+%template(__valueUInt16) Variant::value<uint16_t>;
+%template(__valueInt32) Variant::value<int32_t>;
+%template(__valueUInt32) Variant::value<uint32_t>;
+%template(__valueInt64) Variant::value<int64_t>;
+%template(__valueUInt64) Variant::value<uint64_t>;
+%template(__valueCArray) Variant::value<char *>;
+//%template(__valueNode) Variant::value<Node*>;
+%template(__valueVTime) Variant::value<vtime*>;
 
-%template(__getValueString) Variant::getValue<std::string>;
+%template(__valueString) Variant::value<std::string>;
 %template(VList) std::list<Variant*>;
 %template(VMap) std::map<std::string, Variant*>;
-%template(__getVList) Variant::getValue< std::list<Variant *> *>;
-%template(__getVMap) Variant::getValue< std::map<std::string, Variant *> *>;
+%template(__VList) Variant::value< std::list<Variant *> *>;
+%template(__VMap) Variant::value< std::map<std::string, Variant *> *>;
 
 %extend Variant
 {
@@ -99,12 +101,12 @@ import traceback
 
     def __repr__(self):
         if self.type() in [typeId.Char, typeId.CArray, typeId.String]:
-           buff = "'" + str(self.__getValue()) + "'"
+           buff = "'" + str(self.value()) + "'"
         else:
-           buff = str(self.__getValue())
+           buff = str(self.value())
         return buff
 
-    def __getValue(self):
+    def value(self):
         valType = self.type()
         if valType in self.funcMapper.keys():
             func = getattr(self, self.funcMapper[valType])

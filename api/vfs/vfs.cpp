@@ -52,18 +52,18 @@ set<Node *>* VFS::GetTree(void)
 
 Node* VFS::GetNode(string path, Node* where)
 {
-  list<Node *>			next;
-  list<Node *>::iterator i;
+  std::vector<Node *>	next;
+  uint32_t		i;
 
   if (path == "..")
     return (where->parent());
   if (where->hasChildren())
     {
       next = where->children();
-      for (i = next.begin(); i != next.end(); i++)
+      for (i = 0; i < next.size(); i++)
 	{
-	  if ((*i)->name() == path)
-	    return (*i); 
+	  if (next[i]->name() == path)
+	    return (next[i]); 
 	}
       return (0);
     }
@@ -183,15 +183,15 @@ void	VFS::postProcessCallback(Node* node)
 
 void	VFS::recursivePostProcess(Node *node)
 {
-  std::list<Node*>		children;
-  std::list<Node*>::iterator	node_it;
+  std::vector<Node*>	children;
+  uint32_t		i;
 
   children = node->children();
-  for (node_it = children.begin(); node_it != children.end(); node_it++)
+  for (i = 0; i < children.size(); i++)
     {
-      if ((*node_it)->hasChildren())
-	this->recursivePostProcess(*node_it);
-      this->postProcessCallback(*node_it);
+      if (children[i]->hasChildren())
+	this->recursivePostProcess(children[i]);
+      this->postProcessCallback(children[i]);
     }
 }
 

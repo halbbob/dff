@@ -65,7 +65,7 @@ void local::iterdir(std::string dir, Node *parent)
   //res->add_const("nodes created", total);
 }
 
-local::local(): mfso("")
+local::local(): mfso("local")
 {
 }
 
@@ -109,9 +109,9 @@ void local::start(argument* arg)
     //res->add_const("error", "stat: " + std::string(strerror(errno)));    	
     return ;
   }
-  //this->attrib->setBasePath(this->basePath);
-  this->_root = new Node(path, 0, NULL, this);
-  //this->root->setDecoder(this->attrib);
+  ULocalNode* __root = new ULocalNode(path, 0, NULL, this);
+  __root->setBasePath(&this->basePath);
+  this->_root = __root;
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
     this->iterdir(tpath->path, this->_root);
   else

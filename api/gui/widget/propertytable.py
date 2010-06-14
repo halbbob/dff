@@ -25,7 +25,11 @@ class PropertyTable(QTableWidget):
   def fill(self, node):
     self.clear()
     if self.isVisible():
-      table = { "name" : str(node.name()) , "module" : str(node.fsobj.name()), "size" : str(node.size()) }
+      fsobj = node.fsobj()
+      fsobjname = ""
+      if fsobj != None:
+        fsobjname = fsobj.name()
+      table = { "name" : str(node.name()) , "module" : str(fsobjname), "size" : str(node.size()) }
       for key in node.attr.smap:
 	table[key] = node.attr.smap[key]
       for key in node.attr.imap:

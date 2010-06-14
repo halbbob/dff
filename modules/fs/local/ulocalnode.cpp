@@ -33,7 +33,7 @@ void		ULocalNode::setBasePath(std::string* bp)
   this->basePath = bp;
 }
 
-Attributes*	ULocalNode::getAttributes()
+Attributes*	ULocalNode::attributes()
 {
   Attributes*	attr;
   std::string	file;

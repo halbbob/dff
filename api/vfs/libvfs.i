@@ -23,6 +23,8 @@
 %feature("director") Node;
 
 %newobject Node::open();
+%newobject Node::attributes();
+%newobject Node::fileMapping();
 
 /* %feature("director:except") fso  */
 /* { */

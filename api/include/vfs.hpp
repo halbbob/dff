@@ -83,4 +83,3 @@ public:
   void			update(Node* head);
 };
 #endif
-
