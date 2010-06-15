@@ -24,13 +24,9 @@ class vfs():
             return self.getcwd()
         if type(path) != type(""):
 	   return path
-        if path and not path[:1] == "/":
-            if self.getcwd().path:
-                path = self.getcwd().path + "/" + self.getcwd().name + "/" + path
-            elif self.getcwd().name:
-                path = "/" + self.getcwd().name + "/" + path
-            else:
-                path = "/" + path
+        if path and path[0] != "/":
+            abspath = self.getcwd().absolute()
+            path = str(abspath + "/" + path).replace("//", "/")
         # Avoid trailing '/'
         while len(path) > 1 and path[-1:] == "/":
             path = path[:-1]
@@ -42,7 +38,7 @@ class vfs():
     def open(self, path):
 	if type(path) == type(""):
           node = self.getnode(path)
-        if node and node.is_file:
+        if node: #and node.is_file:
 	   return node.open()
         else:
 	   return
@@ -64,9 +60,9 @@ class vfs():
         if nodeDir == False:
             return False
         listing = []
-        list = nodeDir.next
+        list = nodeDir.children()
         for i in list:
-            if not i.next.empty() or not i.is_file :
+            if i.hasChildren():# or not i.is_file :
                 listing.append(i)
         return listing
     
@@ -74,29 +70,30 @@ class vfs():
     def listingDirectoriesAndFiles(self, nodeDir):
         if nodeDir == False:
             return False
-        if nodeDir.next.empty() and nodeDir.is_file:
+        if not nodeDir.hasChildren(): #and nodeDir.is_file:
             return False
         listing = []
-        list = nodeDir.next
+        list = nodeDir.children()
         for i in list:
             listing.append(i)
         return listing
     
     def getInfoDirectory(self, nodeDir):
-        list = nodeDir.next
+        list = nodeDir.children()
         info = {}
         info['size'] = 0
         info['item'] = 0
 
         for i in list :
-            if not i.next.empty() or not i.is_file :
+            if i.hasChildren(): #or not i.is_file :
                 info_child = self.getInfoDirectory(i)
                 info['size'] = info['size'] + info_child['size']
                 info['item'] = info['item'] + info_child['item'] + 1
             else :
                 info['item'] = info['item'] + 1
-                info['size'] = info['size'] + i.attr.size
+                info['size'] = info['size'] + i.size()
         return info
 
     def link(self, node, dest):
-       Link(node, dest)
+        pass
+        #Link(node, dest)

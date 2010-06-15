@@ -84,7 +84,6 @@ class console(Cmd):
                        if cmd != None:
     		          self.history.add(line.strip())
     		          self.proc = self.taskmanager.add(cmd, args,exec_type)
-                          print cmd, args
 			  if self.proc:
 			    if wait:
 				self.proc.event.wait()

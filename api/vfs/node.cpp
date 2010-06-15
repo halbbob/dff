@@ -396,7 +396,7 @@ std::string	Node::path()
 
   //Root Node
   if (this->__parent == NULL)
-    path = this->__name;
+    path = "";
   else
     {
       tmp = this->__parent;

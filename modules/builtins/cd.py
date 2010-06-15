@@ -24,13 +24,13 @@ class CD(Script):
   def start(self, args):
     node = args.get_node("dir")
     if not node:
-      self.res.add_const("error", "Can't find file")
+      self._res.add_const("error", "Can't find file")
       return	
     if not node.hasChildren():
-      self.res.add_const("error", "Can't change current directory on file")
+      self._res.add_const("error", "Can't change current directory on file")
       return 
     self.vfs.setcwd(node)
-    self.res.add_const("result",  "change path to " + node.absolute())
+    self._res.add_const("result",  "change path to " + node.absolute())
 
 
 class cd(Module):

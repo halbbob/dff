@@ -29,7 +29,7 @@ def get_arg_with_no_key(args):
     return res
 
 
-def needs_no_key(cdl):
+def keyPriority(cdl):
     priority = {0: [], 1: []}
 
     for i in range(len(cdl)):
@@ -37,6 +37,11 @@ def needs_no_key(cdl):
             priority[0].append(cdl[i])
         elif cdl[i].type in ["path", "node"]:
             priority[1].append(cdl[i])
+    return priority
+
+
+def needs_no_key(cdl):
+    priority = keyPriority(cdl)
     if len(priority[0]) == 1:
         return priority[0][0]
     elif len(priority[1]) == 1:

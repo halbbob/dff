@@ -79,14 +79,11 @@ class Completion():
 
         path = self.cur_str
         if path == "" or path[0] != "/":
-            path = "/" + path
-            #if self.vfs.getcwd().path == "" and self.vfs.getcwd().name == "":
-            #    rpath = "/"
-            #else:
-            #    rpath =  #self.vfs.getcwd().path + "/" + self.vfs.getcwd().name + "/" 
+            if self.vfs.getcwd().path() == "" and self.vfs.getcwd().name() == "":
+                rpath = "/"
+            else:
+                rpath = str(self.vfs.getcwd().absolute() + "/").replace("//", "/")
 
-	if path == "/":
-	  path = "//"
         idx = path.rfind("/")
         if idx == -1:
             supplied = path

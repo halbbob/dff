@@ -72,7 +72,6 @@ class Line_to_arguments():
         res = 0
 
         if value == None:
-            #value = self.vfs.getcwd().path + "/" + self.vfs.getcwd().name
             node = self.vfs.getnode(value)
         else:
 	    value = value.replace("\ ", " ")
@@ -153,8 +152,8 @@ class Line_to_arguments():
 
         i = 0
         needs_no_key = utils.needs_no_key(cdl)
+        priority = utils.keyPriority(cdl)
         arg_with_no_key = utils.get_arg_with_no_key(args)
-        #print args
         while i != (len(cdl)) and res == 0:
             func = self.get_func_generator(cdl[i])
             if func != None:
@@ -169,11 +168,14 @@ class Line_to_arguments():
                             print "Argument error: the argument <", cdl[i].name, "> is required by command: <", args[0], ">"
                             res = -1
                     else:
-                        #if arg_with_no_key != -1:
-                        #    value = args[arg_with_no_key]
-                        #    res = func(cdl[i].name, value, gen_arg)
-                        #else:# cdl[i].type == "node" or cdl[i].type == "path":
-                        res = func(cdl[i].name, None, gen_arg)
+                        if arg_with_no_key != -1 and len(priority[0]) == 0 and len(priority[1]) == 1:
+                            if cdl[i].name == priority[1][0].name:
+                                value = args[arg_with_no_key]
+                                res = func(cdl[i].name, value, gen_arg)
+                            else:
+                                res = func(cdl[i].name, None, gen_arg)
+                        else:
+                            res = func(cdl[i].name, None, gen_arg)
                 else:
                     key_idx = args.index(key)
                     if cdl[i].type == "bool":
