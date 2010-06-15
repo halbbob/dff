@@ -25,6 +25,7 @@
 #include "export.hpp"
 #include "search.hpp"
 #include "mfso.hpp"
+#include <stdint.h>
 
 using namespace std;
 

@@ -25,8 +25,6 @@
 #include "vtime.hpp"
 #include "node.hpp"
 
-#define DEBUG 1
-
 class typeId
 {
 private:
@@ -316,14 +314,7 @@ public:
 	  return T();
       }
     else
-      {
-	printf("Unknown type\n");
-	if (DEBUG)
-	  {
-	    printf("type id: %s\n", typeid(static_cast<T>(0)).name());
-	  }
-	return T();
-      }
+      return T();
   }
 
   std::string	toString();

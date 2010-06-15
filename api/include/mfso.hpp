@@ -17,6 +17,7 @@
 #ifndef __MFSO_HPP__
 #define __MFSO_HPP__
 
+#include <stdint.h>
 #include "node.hpp"
 #include "results.hpp"
 #include "vfile.hpp"
