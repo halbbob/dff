@@ -28,7 +28,7 @@ class LS(Script):
     self.rec = args.get_bool('recursive')
     if self.node == None:
       self.node = self.vfs.getcwd()
-    self.res = self.launch()
+    self._res = self.launch()
 
   def launch(self):
      if self.rec:
@@ -39,14 +39,14 @@ class LS(Script):
   def recurse(self, cur_node):
     if cur_node.hasChildren():
       self.ls(cur_node)
-    next = cur_node.getChildren()
+    next = cur_node.children()
     for next_node in next:
       if next_node.hasChildren():
         self.recurse(next_node)
 
   def ls(self, node):
      buff = ""
-     next = node.getChildren()
+     next = node.children()
      for n in next:
        print self.display_node(n)
        #self.display_node(n)
@@ -58,16 +58,16 @@ class LS(Script):
       return self.display_node_simple(node)
 
   def display_node_long(self, node):
-    buff = node.getPath() + node.getName()
+    buff = node.absolute()
     if not node.hasChildren():
-      buff += "/" 
-    #if node.is_file:
-    #  buff += '\t' + str(node.attr.size)
+      buff += "/"
+    if not node.hasChildren():
+      buff += '\t' + str(node.size())
     return buff
 
   def display_node_simple(self, node):
     buff = ''	
-    buff = node.getName()
+    buff = node.name()
     if node.hasChildren():
      buff += "/"
     return buff

@@ -67,21 +67,21 @@ class Processus():
     if trace:
 	 err_type, err_value, err_traceback = trace 
 	 if issubclass(err_type, envError):
-	    self.res.add_const("error", err_value.error)
+	    self.res().add_const("error", err_value.error)
             return
          elif issubclass(err_type, vfsError):
-	    self.res.add_const("error", err_value.error)
+	    self.res().add_const("error", err_value.error)
 	    return
- 	 self.res.add_const("error", "Error in execution")
+ 	 self.res().add_const("error", "Error in execution")
          err_typval = traceback.format_exception_only(err_type, err_value)
 	 res = ""
          for err in err_typval:
             res += err
-	 self.res.add_const("error type", err)
+	 self.res().add_const("error type", err)
 	 err_trace =  traceback.format_tb(err_traceback)
          for err in err_trace:
 	   res += err
-	   self.res.add_const("error trace", res)
+	   self.res().add_const("error trace", res)
            self.state = "fail"
          return
     try :
