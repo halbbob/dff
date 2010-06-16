@@ -154,7 +154,9 @@ void Partition::start(argument* arg)
   try
     {
       arg->get("parent", &this->parent);
-      //this->dos->open(this->parent, 0);
+      this->_root = new Node("partition");
+      this->dos->open(this->parent->open(), 0, this->_root, this, this->parent);
+      this->registerTree(this->parent, this->_root);
     }
   catch(vfsError e)
     {

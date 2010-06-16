@@ -21,29 +21,32 @@
 
 class PartitionNode: public Node
 {
+private:
+  uint64_t	start;
+  Node*		origin;
 public:
-  PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin);
+  PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin, uint64_t start);
   ~PartitionNode();
-  virtual class FileMapping*	getFileMapping();
-  virtual class Attributes*	getAttributes();
+  virtual class FileMapping*	fileMapping();
+  virtual class Attributes*	attributes();
 };
 
-class EntryNode: public Node
-{
-public:
-  EntryNode(std::string name, Node* parent, mfso* fsobj, Node* origin);
-  ~EntryNode();
-  virtual class FileMapping*	getFileMapping();
-  virtual class Attributes*	getAttributes();
-};
+// class EntryNode: public Node
+// {
+// public:
+//   EntryNode(std::string name, Node* parent, mfso* fsobj, Node* origin);
+//   ~EntryNode();
+//   virtual class FileMapping*	getFileMapping();
+//   virtual class Attributes*	getAttributes();
+// };
 
-class RecordNode: public Node
-{
-public:
-  RecordNode(std::string name, Node* parent, mfso* fsobj, Node* origin);
-  ~RecordNode();
-  virtual class FileMapping*	getFileMapping();
-  virtual class Attributes*	getAttributes();
-};
+// class RecordNode: public Node
+// {
+// public:
+//   RecordNode(std::string name, Node* parent, mfso* fsobj, Node* origin);
+//   ~RecordNode();
+//   virtual class FileMapping*	getFileMapping();
+//   virtual class Attributes*	getAttributes();
+// };
 
 #endif 

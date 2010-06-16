@@ -114,17 +114,20 @@ class DosPartition
 {
 private:
   vector<partition_info*>	parts;
-  Node*				node;
+  Node*				root;
+  Node*				origin;
+  mfso*				fsobj;
   VFile*			vfile;
   Pte*				pte;
   bool				mbrBadMagic;
   uint32_t			ebr_base;
+  uint32_t			partnum;
 
 public:
   DosPartition();
   ~DosPartition();
   //void			setMbrFile(Node* mbr);
-  void			open(VFile* vfile, uint64_t offset = 0);
+  void			open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, Node* origin);
   void			readEbr(uint32_t cur);
   void			readMbr(uint64_t offset);
 };

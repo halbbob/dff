@@ -14,10 +14,12 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#include "dos.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+
+#include "dos.hpp"
+#include "nodes.hpp"
 
 char partition_types[256][128] = 
 {
@@ -333,8 +335,10 @@ uint32_t	       Pte::Lba()
 DosPartition::DosPartition()
 {
   this->vfile = NULL;
-  this->node = NULL;
+  this->root = NULL;
+  this->origin = NULL;
   this->pte = new Pte();
+  this->partnum = 0;
 }
 
 DosPartition::~DosPartition()
@@ -370,12 +374,15 @@ DosPartition::~DosPartition()
 //     }
 // }
 
-void	DosPartition::open(VFile* vfile, uint64_t offset)
+void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, Node* origin)
 {
   if (vfile != NULL)
     {
       try
 	{
+	  this->root = root;
+	  this->origin = origin;
+	  this->fsobj = fsobj;
 	  this->vfile = vfile;
 	  this->readMbr(offset);
 	}
@@ -392,6 +399,8 @@ void	DosPartition::readMbr(uint64_t offset)
 {
   dos_partition_record	record;
   uint8_t		i;
+  PartitionNode*	node;
+  char			partname[32];
 
   try
     {
@@ -409,11 +418,19 @@ void	DosPartition::readMbr(uint64_t offset)
 			<< std::endl;
 	      if (this->pte->isExtended())
 		{
+		  memset(partname, 0, 32);
+		  sprintf(partname, "part%d (extended)\0", this->partnum);
+		  this->partnum += 1;
+		  node = new PartitionNode(partname, this->pte->Size() * 512, this->root, this->fsobj, this->origin, this->pte->Lba() * 512);
 		  this->ebr_base = this->pte->Lba();
 		  this->readEbr(this->pte->Lba());
 		}
 	      else
 		{
+		  memset(partname, 0, 32);
+		  sprintf(partname, "part%d\0", this->partnum);
+		  this->partnum += 1;
+		  node = new PartitionNode(partname, this->pte->Size() * 512, this->root, this->fsobj, this->origin, this->pte->Lba() * 512);
 		  //this->parts.insert();
 		}
 	    //this->ebr_base_sect = *((uint32_t*)this->record->partitions[i].lba);
@@ -430,6 +447,8 @@ void	DosPartition::readEbr(uint32_t cur)
 {
   dos_partition_record	record;
   uint8_t		i;
+  PartitionNode*	node;
+  char			partname[32];
 
   try
     {
@@ -445,6 +464,13 @@ void	DosPartition::readEbr(uint32_t cur)
 			<< std::endl;
 	      if (this->pte->isExtended())
 		this->readEbr(this->ebr_base + this->pte->Lba());
+	      else
+		{
+		  memset(partname, 0, 32);
+		  sprintf(partname, "part%d\0", this->partnum);
+		  this->partnum += 1;
+		  node = new PartitionNode(partname, this->pte->Size() * 512, this->root, this->fsobj, this->origin, this->pte->Lba() * 512);
+		}
 	    }
 	}
     }

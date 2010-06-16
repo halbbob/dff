@@ -16,51 +16,59 @@
 
 #include "nodes.hpp"
 
-PartitionNode::PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin):  Node(name, size, parent, fsobj)
+PartitionNode::PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin, uint64_t start):  Node(name, size, parent, fsobj)
 {
+  this->origin = origin;
+  this->start = start;
 }
 
 PartitionNode::~PartitionNode()
 {
 }
 
-FileMapping*	PartitionNode::getFileMapping()
+FileMapping*	PartitionNode::fileMapping()
 {
+  FileMapping*	fm;
+
+  fm = new FileMapping();
+  fm->push(0, this->size(), this->origin, this->start);
+  return fm;
 }
 
-Attributes*	PartitionNode::getAttributes()
+Attributes*	PartitionNode::attributes()
 {
+  return NULL;
 }
 
-EntryNode::EntryNode(std::string name, Node* parent, mfso* fsobj, Node* origin): Node(name, 0x10, parent, fsobj)
-{
-}
+// EntryNode::EntryNode(std::string name, Node* parent, mfso* fsobj, Node* origin): Node(name, 0x10, parent, fsobj)
+// {
+// }
 
-EntryNode::~EntryNode()
-{
-}
+// EntryNode::~EntryNode()
+// {
+// }
 
-FileMapping*	EntryNode::getFileMapping()
-{
-}
+// FileMapping*	EntryNode::getFileMapping()
+// {
+// }
 
-Attributes*	EntryNode::getAttributes()
-{
-}
+// Attributes*	EntryNode::getAttributes()
+// {
+// }
 
 
-RecordNode::RecordNode(std::string name, Node* parent, mfso* fsobj, Node* origin):Node(name, 0x200, parent, fsobj)
-{
-}
+// RecordNode::RecordNode(std::string name, Node* parent, mfso* fsobj, Node* origin):Node(name, 0x200, parent, fsobj)
+// {
+// }
 
-RecordNode::~RecordNode()
-{
-}
+// RecordNode::~RecordNode()
+// {
+// }
 
-FileMapping*	RecordNode::getFileMapping()
-{
-}
+// FileMapping*	RecordNode::getFileMapping()
+// {
+// }
 
-Attributes*	RecordNode::getAttributes()
-{
-}
+// Attributes*	RecordNode::getAttributes()
+// {
+// }
