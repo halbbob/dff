@@ -146,7 +146,7 @@ uint64_t VFile::seek(uint64_t offset)
 
 uint64_t  VFile::seek(uint64_t offset, char *cwhence)
 {
-  int wh;
+  int32_t wh;
   string whence = cwhence;
 
   if (whence == string("SET"))

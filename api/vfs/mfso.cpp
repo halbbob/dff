@@ -305,7 +305,7 @@ int32_t 	mfso::vclose(int32_t fd)
 }
 
 //need same implementation of lseek syscall ?
-uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int whence)
+uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int32_t whence)
 {
   fdinfo*	fi;
 
@@ -319,13 +319,16 @@ uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int whence)
 	    return (uint64_t)-1;
 	  else
 	    fi->offset = offset;
+	  break;
 	case 1:
 	  if ((fi->offset + offset) > fi->fm->mappedFileSize())
 	    return (uint64_t)-1;
 	  else
 	    fi->offset += offset;
+	  break;
 	case 2:
 	  fi->offset = fi->fm->mappedFileSize();
+	  break;
 	}
       return fi->offset;
     }
