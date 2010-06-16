@@ -45,6 +45,8 @@ class FileMapping
 private:
   std::vector<chunck *> __chuncks;
   uint64_t		__mappedFileSize;
+  chunck*		__prevChunck;
+  void			allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
 public:
   FileMapping();
   ~FileMapping();
@@ -58,7 +60,7 @@ public:
   std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
   std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
   std::vector<chunck *>	chuncks();
-  void			push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
+  void			push(uint64_t offset, uint64_t size, class Node* origin=NULL, uint64_t originoffset=0);
 };
 
 

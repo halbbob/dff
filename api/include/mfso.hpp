@@ -22,6 +22,7 @@
 #include "results.hpp"
 #include "vfile.hpp"
 #include "vfs.hpp"
+#include <string.h>
 //Cache manager for attributes and list of allocated blocks for files
 // class Cache
 // {

@@ -16,8 +16,6 @@
 
 %module(package="api.variant") libvariant
 
-%newobject Variant::value();
-
 %include "std_string.i"
 %include "stdint.i"
 %include "std_list.i"
@@ -53,17 +51,17 @@ import traceback
 %{
   Variant.__origininit__ = Variant.__init__
   Variant.__init__ = Variant.__proxyinit__
-  Variant.funcMapper = {typeId.Char: "_Variant__valueChar",
-                          typeId.Int16: "_Variant__valueInt16",
-                          typeId.UInt16: "_Variant__valueUInt16",
-                          typeId.Int32: "_Variant__valueInt32",
-                          typeId.UInt32: "_Variant__valueUInt32",
-                          typeId.Int64: "_Variant__valueInt64",
-                          typeId.UInt64: "_Variant__valueUInt64",
-                          typeId.String: "_Variant__valueString",
-                          typeId.CArray: "_Variant__valueCArray",
-//                      typeId.Node: "_Variant__valueNode",
-                          typeId.VTime: "_Variant__valueVTime",
+  Variant.funcMapper = {typeId.Char: "_Variant__Char",
+                          typeId.Int16: "_Variant__Int16",
+                          typeId.UInt16: "_Variant__UInt16",
+                          typeId.Int32: "_Variant__Int32",
+                          typeId.UInt32: "_Variant__UInt32",
+                          typeId.Int64: "_Variant__Int64",
+                          typeId.UInt64: "_Variant__UInt64",
+                          typeId.String: "_Variant__String",
+                          typeId.CArray: "_Variant__CArray",
+//                      typeId.Node: "_Variant__Node",
+                          typeId.VTime: "_Variant__VTime",
 		          typeId.List: "_Variant__VList",
   		          typeId.Map: "_Variant__VMap"}
 
@@ -72,18 +70,18 @@ import traceback
 //%include "../include/node.hpp"
 %import "../type/libtype.i"
 
-%template(__valueChar) Variant::value<char>;
-%template(__valueInt16) Variant::value<int16_t>;
-%template(__valueUInt16) Variant::value<uint16_t>;
-%template(__valueInt32) Variant::value<int32_t>;
-%template(__valueUInt32) Variant::value<uint32_t>;
-%template(__valueInt64) Variant::value<int64_t>;
-%template(__valueUInt64) Variant::value<uint64_t>;
-%template(__valueCArray) Variant::value<char *>;
-//%template(__valueNode) Variant::value<Node*>;
-%template(__valueVTime) Variant::value<vtime*>;
+%template(__Char) Variant::value<char>;
+%template(__Int16) Variant::value<int16_t>;
+%template(__UInt16) Variant::value<uint16_t>;
+%template(__Int32) Variant::value<int32_t>;
+%template(__UInt32) Variant::value<uint32_t>;
+%template(__Int64) Variant::value<int64_t>;
+%template(__UInt64) Variant::value<uint64_t>;
+%template(__CArray) Variant::value<char *>;
+//%template(__getValueNode) Variant::value<Node*>;
+%template(__VTime) Variant::value<vtime*>;
 
-%template(__valueString) Variant::value<std::string>;
+%template(__String) Variant::value<std::string>;
 %template(VList) std::list<Variant*>;
 %template(VMap) std::map<std::string, Variant*>;
 %template(__VList) Variant::value< std::list<Variant *> *>;
@@ -126,7 +124,7 @@ import traceback
 ########################################################
 VariantType = str(type(Variant()))[8:-2]
 VListType = str(type(VList()))[8:-2]
-VMapType = str(type(VList()))[8:-2]
+VMapType = str(type(VMap()))[8:-2]
 
 baseManagedTypes = [types.BooleanType, types.IntType, types.LongType,
                     types.StringType, types.FloatType]

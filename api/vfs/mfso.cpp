@@ -213,15 +213,15 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
       //std::cout << "fd offset: " << fi->offset << std::endl;//""
       try
 	{
-	  current = fi->fm->chunckFromOffset(fi->offset);	
+	  current = fi->fm->chunckFromOffset(fi->offset);
+	  relativeoffset = current->originoffset + (fi->offset - current->offset);
+	  relativesize = current->offset + current->size - fi->offset;
+	  if ((size - totalread) < relativesize)
+	    relativesize = size - totalread;
 	  if (current->origin != NULL)
 	    {
-	      relativeoffset = current->originoffset + (fi->offset - current->offset);
 	      vfile = this->vfileFromNode(current->origin);
 	      vfile->seek(relativeoffset);
-	      relativesize = current->offset + current->size - fi->offset;
-	      if ((size - totalread) < relativesize)
-		relativesize = size - totalread;
 	      currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize);
 	      std::cout << "offset " << fi->offset << " of " << fi->node->path() << fi->node->name() 
 			<< " is at offset " << relativeoffset << " in node "
@@ -229,6 +229,16 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	      fi->offset += currentread;
 	      totalread += currentread;
 	    }
+	  else if (current->size != 0)
+	    {
+	      memset((uint8_t*)buff+totalread, 0, relativesize);
+	      std::cout << "offset " << fi->offset << " of " << fi->node->path() << fi->node->name()
+			<< " is at offset " << relativeoffset << " in shadow node " << std::endl;
+	      fi->offset += relativesize;
+	      totalread += relativesize;
+	    }
+	  else
+	    throw("chunck is not valid");
 	}
       catch(...)
 	{

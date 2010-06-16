@@ -31,6 +31,7 @@
 FileMapping::FileMapping()
 {
   this->__mappedFileSize = 0;
+  this->__prevChunck = NULL;
 }
 
 FileMapping::~FileMapping()
@@ -165,14 +166,11 @@ uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset)
     throw("not found");
 }
 
-//XXX Do some sanity checks:
-// origin != NULL
-// originoffset < origin.size
-// originoffset + size < origin.size
-void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
+
+void		FileMapping::allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
   chunck	*c;
-  
+
   c = new chunck;
   c->offset = offset;
   c->size = size;
@@ -180,7 +178,36 @@ void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uin
   c->origin = origin;
   c->originoffset = originoffset;
   this->__chuncks.push_back(c);
+  this->__prevChunck = c;
 }
+
+//XXX Do some sanity checks:
+// origin != NULL
+// originoffset < origin.size
+// originoffset + size < origin.size
+// 
+// Manage pushed chunck on the fly to check if current push is contiguous with prev chunck
+//  if (origin == prev_chunck->origin) and (originoffset == prev_chunck->offset + prev_chunck->size)
+//    prev_chunck->size += size
+// if origin and originoffset not provided, the chunck is seen as shadow:
+//  - reading on this kind of chunck will provide a buffer filled with 0
+void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
+{
+  if (origin != NULL)
+    if (this->__prevChunck != NULL)
+      if ((origin == this->__prevChunck->origin) && (originoffset == (this->__prevChunck->offset + this->__prevChunck->size)))
+	{
+	  this->__prevChunck->size += size;
+	  this->__mappedFileSize += size;
+	}
+      else
+	this->allocChunck(offset, size, origin, originoffset);
+    else
+      this->allocChunck(offset, size, origin, originoffset);
+  else
+    this->allocChunck(offset, size, origin, originoffset);
+}
+
 
 uint64_t	FileMapping::mappedFileSize()
 {
