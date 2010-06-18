@@ -109,7 +109,7 @@ class EXTRACT(Script):
       self.stateinfo = str(self.current) + " / " + str(self.total)
       vfile = node.open()
       sysfile = open(syspath + sysname, 'wb')
-      readsize = 8096
+      readsize = 8192
       buff = vfile.read(readsize)
       while len(buff):
         sysfile.write(buff)
