@@ -22,6 +22,11 @@ add_subdirectory(vfs)
 add_subdirectory(widget)
 add_subdirectory(dialog)
 
+add_custom_target(gui_ressources ALL
+  COMMAND ${PYTHON_QT4_RCC} ${CMAKE_CURRENT_SOURCE_DIR}/gui.qrc -o ${CMAKE_CURRENT_BINARY_DIR}/gui_rc.py
+  )
+
+
 set(gui_srcs
   __init__.py
   gui.py

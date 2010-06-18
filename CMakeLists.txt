@@ -167,6 +167,14 @@ else(NOT PYTHON_QT4_QSCI_PATH)
   message(STATUS "Python QScintilla library bindings found: ${PYTHON_QT4_QSCI_PATH}")
 endif(NOT PYTHON_QT4_QSCI_PATH)
 
+## PyQt resource compiler check, to generate icons
+find_program(PYTHON_QT4_RCC NAMES pyrcc4)
+if(PYTHON_QT4_RCC)
+  message(STATUS "Python Qt4 resource compiler found: ${PYTHON_QT4_RCC}")
+else(PYTHON_QT4_RCC)
+  message(SEND_ERROR "Python Qt4 resource compiler not found.")
+endif(PYTHON_QT4_RCC)
+
 
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
