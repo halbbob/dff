@@ -15,6 +15,9 @@
  */
 
 #include "mfso.hpp"
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 
 FdManager::FdManager()
 {
@@ -100,6 +103,7 @@ mfso::mfso(std::string name)
   this->__res = new results(this->__name);
   this->__fdmanager = new FdManager();
   this->__stateinfo = "";
+  this->__verbose = false;
   //this->root = new Node(NULL, name, 0);
 }
 
@@ -196,6 +200,24 @@ int32_t 	mfso::vopen(Node *node)
   return -1;
 }
 
+std::string	hexlify(uint64_t val)
+{
+  char		res[32];
+  
+  snprintf(res, 32, "0x%llx", val);
+  return res;
+}
+
+void			mfso::setVerbose(bool verbose)
+{
+  this->__verbose = verbose;
+}
+
+bool			mfso::verbose()
+{
+  return this->__verbose;
+}
+
 int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 {
   VFile*	vfile;
@@ -220,20 +242,29 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	    relativesize = size - totalread;
 	  if (current->origin != NULL)
 	    {
+	      if (this->__verbose == true)
+		{
+		  std::cout << "[" << this->__name << "] reading " << fi->node->absolute() << std::endl
+			    << "   " << hexlify(fi->offset) << "-" << hexlify(fi->offset + relativesize)
+			    << " mapped @ " << hexlify(relativeoffset) << "-" << hexlify(relativeoffset + relativesize)
+			    << " in " << current->origin->absolute() << std::endl;
+		}
 	      vfile = this->vfileFromNode(current->origin);
 	      vfile->seek(relativeoffset);
 	      currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize);
-	      std::cout << "offset " << fi->offset << " of " << fi->node->path() << fi->node->name() 
-			<< " is at offset " << relativeoffset << " in node "
-			<< current->origin->path() + current->origin->name() << std::endl;
 	      fi->offset += currentread;
 	      totalread += currentread;
 	    }
 	  else if (current->size != 0)
 	    {
 	      memset((uint8_t*)buff+totalread, 0, relativesize);
-	      std::cout << "offset " << fi->offset << " of " << fi->node->path() << fi->node->name()
-			<< " is at offset " << relativeoffset << " in shadow node " << std::endl;
+	      if (this->__verbose == true)
+		{
+		  std::cout << "[" << this->__name << "] reading " << fi->node->absolute() << std::endl
+			    << "   " << hexlify(fi->offset) << "-" << hexlify(fi->offset + relativesize)
+			    << " mapped @ " << hexlify(relativeoffset) << "-" << hexlify(relativeoffset + relativesize)
+			    << " in shadow node" << std::endl;
+		}
 	      fi->offset += relativesize;
 	      totalread += relativesize;
 	    }

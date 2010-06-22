@@ -98,6 +98,8 @@ private:
   // be destroyed
   class mfso					*__parent;
 
+  bool						__verbose;
+
   class VFile*					vfileFromNode(Node* n);
   int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
 
@@ -125,6 +127,8 @@ public:
   EXPORT virtual uint32_t	status(void);
   EXPORT virtual uint64_t	vtell(int32_t fd);
 
+  EXPORT void			setVerbose(bool verbose);
+  EXPORT bool			verbose();
   EXPORT std::string		stateInfo();
   EXPORT results*		res();
   EXPORT std::string		name();
