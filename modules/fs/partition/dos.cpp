@@ -413,7 +413,7 @@ void	DosPartition::readMbr(uint64_t offset)
 	  this->pte->set(&(record.partitions[i]));
 	  if (this->pte->isSane())
 	    {
-	      std::cout << "lba start: " << this->pte->Lba() << " size: " 
+	      std::cout << "lba start: " << this->pte->Lba() << " size: "
 			<< this->pte->Size() << " type: " << this->pte->Type()
 			<< std::endl;
 	      if (this->pte->isExtended())
@@ -421,8 +421,8 @@ void	DosPartition::readMbr(uint64_t offset)
 		  memset(partname, 0, 32);
 		  sprintf(partname, "part%d (extended)\0", this->partnum);
 		  this->partnum += 1;
-		  node = new PartitionNode(partname, this->pte->Size() * 512, this->root, this->fsobj, this->origin, this->pte->Lba() * 512);
-		  this->ebr_base = this->pte->Lba();
+		  node = new PartitionNode(partname, (uint64_t)(this->pte->Size()) * 512, this->root, this->fsobj, this->origin, (uint64_t)(this->pte->Lba()) * 512);
+		  this->ebr_base = (uint64_t)(this->pte->Lba());
 		  this->readEbr(this->pte->Lba());
 		}
 	      else
@@ -430,7 +430,7 @@ void	DosPartition::readMbr(uint64_t offset)
 		  memset(partname, 0, 32);
 		  sprintf(partname, "part%d\0", this->partnum);
 		  this->partnum += 1;
-		  node = new PartitionNode(partname, this->pte->Size() * 512, this->root, this->fsobj, this->origin, this->pte->Lba() * 512);
+		  node = new PartitionNode(partname, (uint64_t)(this->pte->Size()) * 512, this->root, this->fsobj, this->origin, (uint64_t)(this->pte->Lba()) * 512);
 		  //this->parts.insert();
 		}
 	    //this->ebr_base_sect = *((uint32_t*)this->record->partitions[i].lba);
@@ -452,24 +452,24 @@ void	DosPartition::readEbr(uint32_t cur)
 
   try
     {
-      this->vfile->seek((uint64_t)(cur * 512));
+      this->vfile->seek((uint64_t)(cur)*512);
       this->vfile->read(&record, sizeof(dos_partition_record));
       for (i = 0; i != 4; i++)
 	{
 	  this->pte->set(&(record.partitions[i]));
 	  if (this->pte->isSane())
 	    {
-	      std::cout << "lba start: " << this->pte->Lba() << " size: " 
+	      std::cout << "lba start: " << this->ebr_base << "+" << this->pte->Lba() << " size: " 
 			<< this->pte->Size() << " type: " << this->pte->Type()
 			<< std::endl;
 	      if (this->pte->isExtended())
-		this->readEbr(this->ebr_base + this->pte->Lba());
+		this->readEbr(this->ebr_base + (uint64_t)(this->pte->Lba()));
 	      else
 		{
 		  memset(partname, 0, 32);
 		  sprintf(partname, "part%d\0", this->partnum);
 		  this->partnum += 1;
-		  node = new PartitionNode(partname, this->pte->Size() * 512, this->root, this->fsobj, this->origin, this->pte->Lba() * 512);
+		  node = new PartitionNode(partname, (uint64_t)(this->pte->Size()) * 512, this->root, this->fsobj, this->origin, (uint64_t)(this->pte->Lba()) * 512);
 		}
 	    }
 	}
