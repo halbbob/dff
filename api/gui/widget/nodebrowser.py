@@ -197,7 +197,7 @@ class NodeBrowser(QWidget):
 
   def nodeDoubleClicked(self, mouseButton, node, index = None):
      if self.currentView().enterInDirectory:
-       if node.hasChildren():
+       if node.hasChildren() or node.isDir():
 	 self.currentModel().setRootPath(node) 
        else:
 	 self.openDefault(node)

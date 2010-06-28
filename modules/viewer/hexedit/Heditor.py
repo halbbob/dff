@@ -46,7 +46,7 @@ class Heditor(QWidget):
     def init(self, node):
         self.node = node
         self.file = node.open()
-        self.filesize = self.file.node.size()
+        self.filesize = self.node.size()
 
         self.initInfos()
         #Init view and scene

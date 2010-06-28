@@ -23,13 +23,12 @@
 #include <set>
 #include <iostream>
 #include <sys/types.h>
-//#include "type.hpp"
-//#include "attrib.hpp"
 #include "export.hpp"
 #include "vfile.hpp"
 #include "mfso.hpp"
 #include "variant.hpp"
 #include "vtime.hpp"
+#include "exceptions.hpp"
 
 typedef struct
 {
@@ -38,7 +37,6 @@ typedef struct
   class Node*   origin;
   uint64_t	originoffset;
 }               chunck;
-
 
 class FileMapping
 {
@@ -56,7 +54,7 @@ public:
   chunck*		lastChunck();
   chunck*		chunckFromIdx(uint32_t idx);
   chunck*		chunckFromOffset(uint64_t offset);
-  uint32_t		chunckIdxFromOffset(uint64_t offset);
+  uint32_t		chunckIdxFromOffset(uint64_t offset, uint32_t begidx=0);
   std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
   std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
   std::vector<chunck *>	chuncks();
@@ -77,62 +75,74 @@ public:
   std::map<std::string, class Variant*> attributes();   
 };
 
+#define ISFILE		0x01
+#define ISDIR		0x02
+#define ISLINK		0x04
+#define ISDELETED	0x08
+
 class Node
 {
 private:
-  //internal node id, use by cache for file mapping ?
-  uint64_t                      __id;
   //uint64_t                    offset;
 
-  //class fso*                  fsobj;
-  //class Metadata*             meta;
-
-  //XXX parent could be a list of Node. Ex: Raid reconstruction based on two nodes which
+  //XXX parent could be a list of Node. 
+  //    Ex: Raid reconstruction based on two nodes which
   //    are aggregated to only one Node
-  std::vector<class Node *>       __children;
-  uint32_t                      __childcount;
+  class Node*			__parent;
+
+  std::vector<class Node *>	__children;
+  uint32_t			__childcount;
 
   std::string			__name;
   uint64_t			__size;
-  class Node*                   __parent;
   class mfso*			__mfsobj;
-  //attrib*                     attr;
-  //unsigned int                same;
-  //bool                        is_file;
-  //bool                        is_root;
+  uint64_t			__common_attributes;
+
+protected:
+  EXPORT void				setFile();
+  EXPORT void				setDir();
+  EXPORT void				setLink();
+  EXPORT void				setDeleted();
+  EXPORT void				setSize(uint64_t size);
+  EXPORT void				setFsobj(mfso* obj);
+  EXPORT void				setParent(Node* parent);
 
 public:
-  //EXPORT Node(std::string name, class Node* parent = NULL, uint64_t offset = 0, Metadata* meta=NULL);
   EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, mfso* fsobj=NULL);
   EXPORT virtual ~Node();
 
-  EXPORT virtual FileMapping*   fileMapping();
-  // May become the following method in case of lots of small chunck !!!
-  // ability to provide a defined range
-  //EXPORT virtual FileMapping*   getFileMapping(uint64_t offset=0, uint64_t range=0);
-  EXPORT virtual Attributes*    attributes();
-  EXPORT virtual uint64_t	size();
-  EXPORT void			setSize(uint64_t size);
-  //EXPORT virtual FileMapping* getSlackSpace();
-  EXPORT std::string		absolute();
-  EXPORT std::string            name();
-  EXPORT std::string            path();
-  EXPORT class mfso*		fsobj();
+  EXPORT virtual FileMapping*		fileMapping();
+  EXPORT virtual Attributes*		attributes();
 
-  //EXPORT vtime*			getTimes();
-//   EXPORT virtual vtime*		getModifiedTime();
-//   EXPORT virtual vtime*		getAccessedTime();
-//   EXPORT virtual vtime*		getCreatedTime();
-//   EXPORT virtual vtime*		getDeletedTime();
+  EXPORT virtual vtime*			modifiedTime();
+  EXPORT virtual vtime*			accessedTime();
+  EXPORT virtual vtime*			createdTime();
+  EXPORT virtual vtime*			changedTime();
+  EXPORT std::map<std::string, vtime*>	times();
 
-  EXPORT Node*                  parent();
-  EXPORT uint32_t               childCount();
-  EXPORT std::vector<class Node*> children();
-  EXPORT void                   setFsobj(mfso* obj);
-  EXPORT bool                   setParent(Node* parent);
-  EXPORT bool                   hasChildren();
-  EXPORT bool                   addChild(class Node* child);
-  EXPORT class VFile*           open(void);
+
+  EXPORT uint64_t			size();
+
+  EXPORT std::string			path();
+  EXPORT std::string			name();
+  EXPORT std::string			absolute();
+
+  EXPORT bool				isFile();
+  EXPORT bool				isDir();
+  EXPORT bool				isLink();
+  EXPORT bool				isVDir();
+  EXPORT bool				isDeleted();
+
+  EXPORT class mfso*			fsobj();
+
+  EXPORT Node*				parent();
+
+  EXPORT std::vector<class Node*>	children();
+  EXPORT bool				addChild(class Node* child);
+  EXPORT bool				hasChildren();
+  EXPORT uint32_t			childCount();
+
+  EXPORT class VFile*			open();
 };
 
 #endif

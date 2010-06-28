@@ -47,14 +47,14 @@ void local::iterdir(std::string dir, Node *parent)
 	    {
 	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
 		{
-		  tmp = new ULocalNode(dp->d_name, 0, parent, this);
+		  tmp = new ULocalNode(dp->d_name, 0, parent, this, ULocalNode::DIR);
 		  tmp->setBasePath(&this->basePath);
 		  total++;
 		  this->iterdir(upath, tmp);
 		}
 	      else
 		{
-		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this);
+		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this, ULocalNode::FILE);
 		  tmp->setBasePath(&this->basePath);
 		  total++;
 		}
@@ -109,13 +109,19 @@ void local::start(argument* arg)
     //res->add_const("error", "stat: " + std::string(strerror(errno)));    	
     return ;
   }
-  ULocalNode* __root = new ULocalNode(path, 0, NULL, this);
-  __root->setBasePath(&this->basePath);
-  this->_root = __root;
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-    this->iterdir(tpath->path, this->_root);
+    {
+      ULocalNode* __root = new ULocalNode(path, 0, NULL, this, ULocalNode::DIR);
+      __root->setBasePath(&this->basePath);
+      this->_root = __root;
+      this->iterdir(tpath->path, this->_root);
+    }
   else
-    this->_root->setSize(stbuff.st_size);
+    {
+      ULocalNode* __root = new ULocalNode(path, stbuff.st_size, NULL, this, ULocalNode::FILE);
+      __root->setBasePath(&this->basePath);
+      this->_root = __root;
+    }
   this->registerTree(this->parent, this->_root);
   return ;
 }

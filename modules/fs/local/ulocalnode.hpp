@@ -22,14 +22,25 @@
 
 class ULocalNode: public Node
 {
-private:
+protected:
   std::string*			basePath;
+  vtime*			utimeToVtime(time_t* t1);
+  struct stat*			localStat();
+
 public:
-  ULocalNode(std::string name, uint64_t size, Node* parent, mfso* fsobj);
+  enum Type
+    {
+      FILE,
+      DIR
+    };
+  ULocalNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type);
   ~ULocalNode();
-  void			setBasePath(std::string* bp);
+  void				setBasePath(std::string* bp);
   virtual class FileMapping*	fileMapping(){}
-  virtual Attributes*	attributes();
+  virtual Attributes*		attributes();
+  virtual vtime*		modifiedTime();
+  virtual vtime*		accessedTime();
+  virtual vtime*		changedTime();
 };
 
 #endif

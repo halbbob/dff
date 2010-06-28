@@ -215,41 +215,53 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant(node.name())
       if column == HSIZE:
         return QVariant(node.size())
-      #XXX patch here
-      #time = node.attr.time
-     # try :
-      #  if column == HACCESSED:
-       #   accessed = attributes['accessed'].value()
-        #  return QVariant(QDateTime(accessed.get_time()))
-          #return QVariant()
-      #  if column == HCHANGED:
-       #   changed = attributes['changed'].value()
-        #  return QVariant(QDateTime(changed.get_time()))
-          #return QVariant()
-      #  if column == HMODIFIED:
-       #   modified = attributes['modified'].value()
-        #  return QVariant(QDateTime(modified.get_time()))
-          #return QVariant()
- #     except IndexError:
-  #      pass
+      try :
+        time = node.times()
+        if column == HACCESSED:
+          accessed = time['accessed']
+          if accessed != None:
+            return QVariant(QDateTime(accessed.get_time()))
+          else:
+            return QVariant()
+        if column == HCHANGED:
+          changed = time['changed']
+          if changed != None:
+            return QVariant(QDateTime(changed.get_time()))
+          else:
+            return QVariant()
+        if column == HMODIFIED:
+          modified = time['modified']
+          if modified != None:
+            return QVariant(QDateTime(modified.get_time()))
+          else:
+            return QVariant()
+      except IndexError:
+        return QVariant()
       if column == HMODULE:
         fsobj = node.fsobj()
         if (fsobj != None):
           return QVariant(fsobj.name())
         else:
           return QVariant()
-  #  if role == Qt.TextColorRole:
-   #   if column == 0:
-        #XXX patch
-        #if node.attr.deleted:
-        #  return  QVariant(QColor(Qt.red))
-    #    pass
+
+    if role == Qt.TextColorRole:
+      if column == 0:
+        if node.isDeleted():
+          return  QVariant(QColor(Qt.red))
+
     if role == Qt.DecorationRole:
       if column == HNAME:
+        if node.isFile():
+          return QVariant(QIcon(":file.png"))
+        if node.isDir():
+          if node.hasChildren():
+            return QVariant(QIcon(":folder_documents_128.png"))            
+          else:
+            return QVariant(QIcon(":folder_128.png"))
         #if node.next.empty():
       #  if not node.hasChildren():
        #   if not node.size():
-            return QVariant(QIcon(":folder_empty_128.png"))
+        #    return QVariant(QIcon(":folder_empty_128.png"))
         #  ftype = ""
           #XXX attributes()
           #try :
@@ -280,7 +292,7 @@ class VFSItemModel(QAbstractItemModel):
         #  return QVariant(QIcon(":folder_empty_128.png"))
       #  else:
        #   if node.size() != 0: 
-        #    return QVariant(QIcon(":folder_documents_128.png"))
+       #    return QVariant(QIcon(":folder_documents_128.png"))
          # else:
 	  #  return QVariant(QIcon(":folder_128.png"))
     return QVariant() 
@@ -299,9 +311,6 @@ class VFSItemModel(QAbstractItemModel):
        parentItem = self.VFS.getNodeFromPointer(parent.internalId())
      else:
        parentItem = self.rootItem
-     #XXX replace
-     #childItem = parentItem.next[row]
-     #with
      childItem = parentItem.children()[row]
      index = self.createIndex(row, column, int(childItem.this))
      return index
@@ -311,12 +320,10 @@ class VFSItemModel(QAbstractItemModel):
        return QModelIndex()
      childItem = self.VFS.getNodeFromPointer(index.internalId())
      parentItem = childItem.parent()
-#use this = this? #XXX faster ? 
      if parentItem.this == self.rootItem.this:
        return QModelIndex()
      n = 0
      children = parentItem.parent().children()
-     #for node in parentItem.parent.next:
      for node in children:
         if parentItem.this == node.this:
 	  break
@@ -327,13 +334,7 @@ class VFSItemModel(QAbstractItemModel):
   def hasChildren(self, parent):
     if not parent.isValid():
 	self.parentItem = self.rootItem
-        #XXX replace
-        # return not self.rootItem.empty_child()
-        # with
         return self.rootItem.hasChildren()
     else:
         self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-        #XXX replace 
-        # return not self.parentItem.empty_child()
-        # with
         return self.parentItem.hasChildren()

@@ -25,6 +25,13 @@
 %newobject Node::open();
 %newobject Node::attributes();
 %newobject Node::fileMapping();
+%newobject Node::modifiedTime();
+%newobject Node::accessedTime();
+%newobject Node::createdTime();
+
+%newobject VFile::search();
+//%newobject VFile::read();
+//%newobject VFile::read(uint32_t);
 
 /* %feature("director:except") fso  */
 /* { */
@@ -63,13 +70,13 @@
 %catches(vfsError) Node::open(void);
 
 %catches(vfsError) VFile::read(void);
-%catches(vfsError) VFile::read(unsigned int size);
-%catches(vfsError) VFile::read(void *buff, unsigned int size);
-%catches(vfsError) VFile::write(char *, unsigned int);
-%catches(vfsError) VFile::write(string buff);
+%catches(vfsError) VFile::read(uint32_t);
+%catches(vfsError) VFile::read(void*, uint32_t);
+%catches(vfsError) VFile::write(char*, uint32_t);
+%catches(vfsError) VFile::write(string);
 %catches(vfsError) VFile::close(void);
-%catches(vfsError) VFile::seek(dff_ui64 offset,char *chwence);
-%catches(vfsError) VFile::seek(dff_ui64 offset);
+%catches(vfsError) VFile::seek(uint64_t, char*);
+%catches(vfsError) VFile::seek(uint64_t);
 %catches(vfsError) VFile::tell(void);
 
 /* %catches(envError) fso::start(argument* args); fso::vopen(Handle *handle); Node::open(void);  */
@@ -201,14 +208,13 @@
 
 namespace std
 {
-  %template(VecNode)     vector<Node*>;
-  %template(ListNode)     list<Node*>;
-  %template(SetNode)      set<Node *>;
-  %template(Listui64) list<dff_ui64>;
+  %template(VecNode)    vector<Node*>;
+  %template(ListNode)   list<Node*>;
+  %template(SetNode)    set<Node *>;
+  %template(Listui64)	list<uint64_t>;
+  //%template(MapTime)	map<string, vtime*>;
 };
 
-%newobject VFile::read;
-%newobject VFile::argument;
 
 %extend VFS
 {

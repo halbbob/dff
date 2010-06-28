@@ -18,25 +18,77 @@
 
 VFile::VFile(int32_t fd, class mfso *mfsobj, class Node *node) 
 {
-  this->s = new Search();
-  this->fd = fd;
-  this->mfsobj = mfsobj;
-  this->node = node;
+  this->__search = new Search();
+  this->__fd = fd;
+  this->__mfsobj = mfsobj;
+  this->__node = node;
 };
 
 VFile::~VFile()
 {
-  std::cout << "deleting vfile" << std::endl;
-  delete this->s;
+  this->close();
+  delete this->__search;
+}
+
+class Node*	VFile::node()
+{
+  return this->__node;
+}
+
+pdata* VFile::read(void)
+{
+  int32_t	n;
+  pdata*	data;
+  uint64_t	size;
+
+  data = new pdata;
+  size = this->__node->size();
+  try
+    {
+      data->buff = malloc(size);
+      memset(data->buff, 0, size);
+      n = this->__mfsobj->vread(this->__fd, (void*)data->buff, size);
+      data->len = n;
+      return (data);
+    }
+  catch (vfsError e)
+    {
+      free(data->buff);
+      delete data;
+      throw vfsError("VFile::read() throw\n" + e.error);
+    }
+}
+
+pdata* VFile::read(uint32_t size)
+{
+  int32_t	n;
+  pdata*	data;
+
+  data = new pdata;
+  try
+    {
+      data->buff = malloc(size);
+      data->len = size;
+      memset(data->buff, 0, size);
+      n = this->__mfsobj->vread(this->__fd, data->buff, size);
+      data->len = n;
+      return (data);
+    }
+  catch (vfsError e)
+    {
+      free(data->buff);
+      delete data;
+      throw vfsError("VFile::read(size) throw\n" + e.error);
+    }
 }
 
 int VFile::read(void *buff, uint32_t size)
-{  
+{
   uint32_t n;
 
   try 
   {
-    n = this->mfsobj->vread(fd, buff, size);
+    n = this->__mfsobj->vread(this->__fd, buff, size);
     return (n);
   }
   catch (vfsError e)
@@ -45,109 +97,10 @@ int VFile::read(void *buff, uint32_t size)
   }
 }
 
-pdata* VFile::read(void)
-{
-  int32_t n;
-  pdata* data = new pdata;
-  //data->buff = malloc(node->attr->size);
-  //data->len = node->attr->size;
-  try 
-  {
-    //n = this->mfsobj->vread(fd, (void*)data->buff, node->attr->size);
-    //data->len = n;	
-    return (data);
-  }
-  catch (vfsError e)
-  {
-    free(data->buff);
-    free(data);
-    throw vfsError("VFile::read() throw\n" + e.error);
-  }
-}
-
-pdata* VFile::read(uint32_t size)
-{
-  int32_t n;
-  pdata* data = new pdata;
-  data->buff = malloc(size); 
-  data->len = size;
-
-  memset(data->buff, 0, size);
-  try 
-  { 
-    n = this->mfsobj->vread(this->fd, data->buff, size);
-    //std::cout << "returned read size " << n << std::endl;
-    data->len = n;
-    return (data);
-  }
-  catch (vfsError e)
-  {
-    free(data->buff);
-    free(data);
-    throw vfsError("VFile::read(size) throw\n" + e.error);
-  }
-}
-
-int32_t VFile::close(void)
-{
-  try 
-  {
-    this->mfsobj->vclose(fd);
-  }
-  catch (vfsError e)
-  {
-     throw vfsError("Vfile::close() throw\n" + e.error);
-  }
-  return 0;
-}
-
-
-int32_t VFile::write(string buff)
-{
-  int32_t n;
-   
-  try 
-    {
-      n = this->mfsobj->vwrite(fd, (void *)buff.c_str(), buff.size());
-      return (n);
-    }
-  catch (vfsError e)
-   {
-     throw vfsError("VFile::write(string) throw\n" + e.error);
-   }
-}
-
-int32_t VFile::write(char *buff, unsigned int size)
-{
-  int32_t n;
-  
-  try 
-    {
-      n = this->mfsobj->vwrite(fd, buff, size);
-      return (n);
-    }
-  catch (vfsError e)
-    {
-      throw vfsError("VFile::write(buff, size) throw\n" + e.error);
-    }
-}
-
-uint64_t VFile::seek(uint64_t offset)
-{
-  try
-  {
-    return (this->mfsobj->vseek(fd, offset, 0));
-  }
-  catch (vfsError e)
-  {
-    throw vfsError("VFile::seek(dff_ui64) throw\n" + e.error);
-  }
-}
-
 uint64_t  VFile::seek(uint64_t offset, char *cwhence)
 {
-  int32_t wh;
-  string whence = cwhence;
+  int32_t	wh;
+  string	whence = cwhence;
 
   if (whence == string("SET"))
     wh = 0;
@@ -156,12 +109,10 @@ uint64_t  VFile::seek(uint64_t offset, char *cwhence)
   else if (whence == string("END"))
     wh = 2;
   else
-    {
-      throw vfsError("VFile::vseek(dff_ui64, char *) error whence not defined ( SET, CUR, END )");
-    }
+    throw vfsError("VFile::vseek(dff_ui64, char *) error whence not defined ( SET, CUR, END )");
   try
-    { 
-      return (this->mfsobj->vseek(fd, offset, wh));
+    {
+      return (this->__mfsobj->vseek(this->__fd, offset, wh));
     }
   catch (vfsError e)
     {
@@ -172,13 +123,10 @@ uint64_t  VFile::seek(uint64_t offset, char *cwhence)
 uint64_t  VFile::seek(uint64_t offset, int32_t whence)
 {
   if (whence > 2)
-    {
-      throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
-      return 0;
-    }
+    throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
   try
     {
-      return (this->mfsobj->vseek(fd, offset, whence));
+      return (this->__mfsobj->vseek(this->__fd, offset, whence));
     }
   catch (vfsError e)
     {
@@ -186,34 +134,95 @@ uint64_t  VFile::seek(uint64_t offset, int32_t whence)
     }
 }
 
+uint64_t VFile::seek(uint64_t offset)
+{
+  try
+    {
+      return (this->__mfsobj->vseek(this->__fd, offset, 0));
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("VFile::seek(dff_ui64) throw\n" + e.error);
+    }
+}
+
 uint64_t  VFile::seek(int32_t offset, int32_t whence)
 {
   if (whence > 2)
-    {
-      throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
-      return 0;
-    }
+    throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
   try
     {
-      return (this->mfsobj->vseek(fd, (long long)offset, whence));
+      return (this->__mfsobj->vseek(this->__fd, (uint64_t)offset, whence));
     }
   catch (vfsError e)
-  {
-    throw vfsError("Vfile::seek(int offset, int whence) throw\n" + e.error);
-  }
- 
+    {
+      throw vfsError("Vfile::seek(int offset, int whence) throw\n" + e.error);
+    }
 }
+
+int32_t VFile::write(std::string buff)
+{
+  int32_t n;
+   
+  try 
+    {
+      n = this->__mfsobj->vwrite(this->__fd, (void *)buff.c_str(), buff.size());
+      return (n);
+    }
+  catch (vfsError e)
+   {
+     throw vfsError("VFile::write(string) throw\n" + e.error);
+   }
+}
+
+int32_t VFile::write(char *buff, uint32_t size)
+{
+  int32_t n;
+  
+  try
+    {
+      n = this->__mfsobj->vwrite(this->__fd, buff, size);
+      return (n);
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("VFile::write(buff, size) throw\n" + e.error);
+    }
+}
+
+int32_t VFile::close(void)
+{
+  try 
+  {
+    this->__mfsobj->vclose(this->__fd);
+  }
+  catch (vfsError e)
+  {
+     throw vfsError("Vfile::close() throw\n" + e.error);
+  }
+  return 0;
+}
+
+// void		VFile::enableIORecord()
+// {
+//   this->__ioRecord = false;
+// }
+
+// void		VFile::disableIORecord()
+// {
+//   this->__ioRecord = false;
+// }
 
 int32_t  VFile::dfileno()
 {
-  return (fd);
+  return (this->__fd);
 }
 
 uint64_t VFile::tell()
 {  
   try
     {
-      return (this->mfsobj->vtell(this->fd));
+      return (this->__mfsobj->vtell(this->__fd));
     }
   catch (vfsError e)
     {
@@ -223,18 +232,17 @@ uint64_t VFile::tell()
 
 list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window, uint32_t count)
 {
-  //class Search	*s = new class Search((unsigned char*)needle, len, (unsigned char)wildcard);
-  unsigned char *buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  unsigned char			*buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   list<uint32_t>		*res;
   list<uint32_t>::iterator	it;
-  list<uint64_t>	*real = new list<uint64_t>;
+  list<uint64_t>		*real = new list<uint64_t>;
   int32_t			bytes_read;
   bool				stop;
   uint32_t			hslen;
   
-  s->setNeedle((unsigned char*)needle);
-  s->setNeedleSize(len);
-  s->setWildcard((unsigned char)wildcard);
+  this->__search->setNeedle((unsigned char*)needle);
+  this->__search->setNeedleSize(len);
+  this->__search->setWildcard((unsigned char)wildcard);
   this->seek(start, 0);
   stop = false;
   while(((bytes_read = this->read(buffer, BUFFSIZE)) > 0) && !stop)
@@ -256,12 +264,12 @@ list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_
 	hslen = BUFFSIZE;
       if (count != (uint32_t)-1)
 	{
-	  res = s->run(buffer, hslen, &count);
+	  res = this->__search->run(buffer, hslen, &count);
 	  if (count == 0)
 	    stop = true;
 	}
       else
-	res = s->run(buffer, hslen);
+	res = this->__search->run(buffer, hslen);
       for (it = res->begin(); it != res->end(); it++)
 	real->push_back(*it + this->tell() - bytes_read);
       if (bytes_read == BUFFSIZE)

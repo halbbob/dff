@@ -17,17 +17,6 @@
 
 #include "node.hpp"
 
-// Node::Node(std::string name, class Node *parent, uint64_t offset, Metadata* meta)
-// {
-//   this->name = name;
-//   this->parent = parent;
-//   this->offset = offset;
-//   this->meta = meta;
-//   this->childCount = 0;
-//   if (this->parent != NULL)
-//     this->parent->addChild(this);
-// }
-
 FileMapping::FileMapping()
 {
   this->__mappedFileSize = 0;
@@ -112,58 +101,66 @@ std::vector<chunck *>	FileMapping::chuncks()
 
 chunck*			FileMapping::chunckFromOffset(uint64_t offset)
 {
-  uint32_t		i;
-  uint32_t		vsize;
-  bool			found;
-  uint64_t		maxoffset;
-
+  uint32_t		begidx;
+  uint32_t		mididx;
+  uint32_t		endidx;
+  
   if (offset > this->__mappedFileSize)
     throw("provided offset too high");
-  i = 0;
-  vsize = this->__chuncks.size();
-  found = false;
-  while ((i < vsize) && !found)
-    {
-      maxoffset = this->__chuncks[i]->offset + this->__chuncks[i]->size;
-      if ((offset >= this->__chuncks[i]->offset) && (offset < maxoffset))
-	found = true;
-      else
-	i++;
-    }
-  if (found)
-    {
-      return this->__chuncks[i];
-    }
-  else
+  if (this->__chuncks.size() == 0)
     throw("not found");
+  else if (this->__chuncks.size() == 1)
+    return this->__chuncks[0];
+  else
+    {
+      begidx = 0;
+      mididx = this->__chuncks.size() / 2;
+      endidx = this->__chuncks.size();
+      while (true)
+	{
+// 	  std::cout << "begidx: " << begidx << " mididx: " << mididx << " endidx: " << endidx
+// 		    << " offset: " << offset << " mididx->offset: " << this->__chuncks[mididx]->offset << std::endl;
+	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
+	    return this->__chuncks[mididx];
+	  else if (offset < this->__chuncks[mididx]->offset)
+	    endidx = mididx;
+	  else
+	    begidx = mididx;
+	  mididx = begidx + ((endidx - begidx) / 2);
+	}
+    }
 }
 
-uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset)
+uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset, uint32_t providedidx)
 {
-  uint32_t	i;
-  uint32_t	vsize;
-  bool		found;
-  uint64_t	maxoffset;
-
+  uint32_t		begidx;
+  uint32_t		mididx;
+  uint32_t		endidx;
+  
   if (offset > this->__mappedFileSize)
     throw("provided offset too high");
-  i = 0;
-  vsize = this->__chuncks.size();
-  found = false;
-  while ((i < vsize) && !found)
-    {
-      maxoffset = this->__chuncks[i]->offset + this->__chuncks[i]->size;
-      if ((offset >= this->__chuncks[i]->offset) && (offset < maxoffset))
-	found = true;
-      else
-	i++;
-    }
-  if (found)
-    {
-      return i;
-    }
-  else
+  if (this->__chuncks.size() == 0)
     throw("not found");
+  else if (this->__chuncks.size() == 1)
+    return 0;
+  else
+    {
+      begidx = providedidx;
+      endidx = this->__chuncks.size();
+      mididx = begidx + ((endidx - begidx) / 2);
+      while (true)
+	{
+// 	  std::cout << "begidx: " << begidx << " mididx: " << mididx << " endidx: " << endidx
+// 		    << " offset: " << offset << " mididx->offset: " << this->__chuncks[mididx]->offset << std::endl;
+	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
+	    return mididx;
+	  else if (offset < this->__chuncks[mididx]->offset)
+	    endidx = mididx;
+	  else
+	    begidx = mididx;
+	  mididx = begidx + ((endidx - begidx) / 2);
+	}
+    }
 }
 
 
@@ -216,20 +213,16 @@ uint64_t	FileMapping::mappedFileSize()
 
 Attributes::Attributes()
 {
-  //this->attrs = new std::map<std::string, class Variant*>;
 }
 
 Attributes::~Attributes()
 {
-  //delete this->attrs;
 }
 
 void					Attributes::push(std::string key, class Variant *value)
 {
   if (value != NULL)
     this->__attrs[key] = value;
-  //if (value != NULL)
-  //  this->attrs->insert(pair<std::string, class Variant*>(key, value));
 }
 
 std::list<std::string>			Attributes::keys()
@@ -261,6 +254,7 @@ std::map<std::string, class Variant*>	Attributes::attributes()
 
 Node::Node(std::string name, uint64_t size, Node* parent, mfso* fsobj)
 {
+  this->__common_attributes = 0;
   this->__childcount = 0;
   this->__mfsobj = fsobj;
   this->__size = size;
@@ -268,6 +262,59 @@ Node::Node(std::string name, uint64_t size, Node* parent, mfso* fsobj)
   if (this->__parent != NULL)
     this->__parent->addChild(this);
   this->__name = name;
+}
+
+Node::~Node()
+{
+  if (!this->__children.empty())
+    this->__children.clear();
+}
+
+void		Node::setFile()
+{
+  if (!this->isDir())
+    this->__common_attributes |= ISFILE;
+  else
+    throw("attribute ISDIR already setted");
+}
+
+void		Node::setDir()
+{
+  if (!this->isFile())
+    this->__common_attributes |= ISDIR;
+  else
+    throw("attribute ISFILE already setted");
+}
+
+void		Node::setLink()
+{
+  this->__common_attributes |= ISLINK;
+}
+
+void		Node::setDeleted()
+{
+  this->__common_attributes |= ISDELETED;
+}
+
+void		Node::setSize(uint64_t size)
+{
+  this->__size = size;
+}
+
+void	Node::setFsobj(mfso *obj)
+{
+  this->__mfsobj = obj;
+}
+
+void		Node::setParent(Node *parent)
+{
+  if (parent != NULL)
+    {
+      this->__parent = parent;
+      //this->__parent->addChild(this);
+    }
+  else
+    ;//XXX throw() NodeException;
 }
 
 
@@ -281,140 +328,41 @@ Attributes*    Node::attributes()
   return NULL;
 }
 
+vtime*			Node::modifiedTime()
+{
+  return NULL;
+}
+
+vtime*			Node::accessedTime()
+{
+  return NULL;
+}
+
+vtime*			Node::createdTime()
+{
+  return NULL;
+}
+
+vtime*			Node::changedTime()
+{
+  return NULL;
+}
+
+std::map<std::string, vtime*>	Node::times()
+{
+  std::map<std::string, vtime*>	t;
+
+  t["modified"] = this->modifiedTime();
+  t["accessed"] = this->accessedTime();
+  t["created"] = this->createdTime();
+  t["changed"] = this->changedTime();
+  return t;
+}
+
 uint64_t	Node::size()
 {
   return this->__size;
 }
-
-void		Node::setSize(uint64_t size)
-{
-  this->__size = size;
-}
-
-// vtime*		Node::getTimes()
-// {
-// }
-
-// vtime*		Node::getModifiedTime()
-// {
-//   return NULL;
-// }
-
-// vtime*		Node::getAccessedTime()
-// {
-//   return NULL;
-// }
-
-// vtime*		Node::getCreatedTime()
-// {
-//   return NULL;
-// }
-
-// vtime*		Node::getDeletedTime()
-// {
-//   return NULL;
-// }
-
-Node::~Node()
-{
-  if (!this->__children.empty())
-    this->__children.clear();
-}
-
-std::vector<class Node*>	Node::children()
-{
-  return this->__children;
-}
-
-
-bool		Node::setParent(Node *parent)
-{
-  bool		ret;
-
-  ret = false;
-  if (parent != NULL)
-    {
-      ret = true;
-      this->__parent = parent;
-    }
-  else
-    ;//XXX throw() NodeException;
-}
-
-// uint64_t	Node::getOffset()
-// {
-//   return this->offset;
-// }
-
-// bool		Node::setDecoder(Metadata *meta)
-// {
-//   bool		ret;
-
-//   ret = false;
-//   if (meta != NULL)
-//     {
-//       this->meta = meta;
-//       ret = true;
-//     }
-//   else
-//     this->meta = NULL;
-//   return ret;
-// }
-
-uint32_t	Node::childCount()
-{
-  return this->__childcount;
-}
-
-
-Node*		Node::parent()
-{
-  return this->__parent;
-}
-
-mfso*		Node::fsobj()
-{
-  return this->__mfsobj;
-}
-
-VFile*		Node::open(void)
-{
-  int32_t	fd;
-  VFile		*temp;
-
-  if (this->__mfsobj == NULL)
-    throw vfsError("Can't Open file");
-  try
-    {
-      if ((fd = this->__mfsobj->vopen(this)) >= 0)
-	{
-	  temp = new VFile(fd, this->__mfsobj, this);
-	  return (temp);
-	}
-      throw vfsError("Can't Open file");
-    }
-  catch (vfsError e)
-    {
-      throw vfsError("MfsoNode::open(void) throw\n" + e.error);
-    }
-}
-
-void	Node::setFsobj(mfso *obj)
-{
-  this->__mfsobj = obj;
-}
-
-
-std::string	Node::absolute()
-{
-  return this->path() + this->__name;
-}
-
-std::string	Node::name()
-{
-  return this->__name;
-}
-
 
 std::string	Node::path()
 {
@@ -438,6 +386,78 @@ std::string	Node::path()
   return path;
 }
 
+std::string	Node::name()
+{
+  return this->__name;
+}
+
+std::string	Node::absolute()
+{
+  return this->path() + this->__name;
+}
+
+bool				Node::isFile()
+{
+  if ((this->__common_attributes & ISFILE) == ISFILE)
+    return true;
+  else
+    return false;
+}
+
+bool				Node::isDir()
+{
+  if ((this->__common_attributes & ISDIR) == ISDIR)
+    return true;
+  else
+    return false;
+}
+
+bool				Node::isLink()
+{
+  if ((this->__common_attributes & ISLINK) == ISLINK)
+    return true;
+  else
+    return false;
+}
+
+bool				Node::isVDir()
+{
+  if (this->isFile() && this->hasChildren())
+    return true;
+  else
+    return false;
+}
+
+bool				Node::isDeleted()
+{
+  if ((this->__common_attributes & ISDELETED) == ISDELETED)
+    return true;
+  else
+    return false;
+}
+
+
+mfso*		Node::fsobj()
+{
+  return this->__mfsobj;
+}
+
+Node*		Node::parent()
+{
+  return this->__parent;
+}
+
+std::vector<class Node*>	Node::children()
+{
+  return this->__children;
+}
+
+bool		Node::addChild(class Node *child)
+{
+  child->setParent(this);
+  this->__children.push_back(child);
+  this->__childcount++;
+}
 
 bool            Node::hasChildren()
 {
@@ -447,10 +467,29 @@ bool            Node::hasChildren()
     return false;
 }
 
-
-bool		Node::addChild(class Node *child)
+uint32_t	Node::childCount()
 {
-  child->setParent(this);
-  this->__children.push_back(child);
-  this->__childcount++;
+  return this->__childcount;
+}
+
+VFile*		Node::open()
+{
+  int32_t	fd;
+  VFile		*temp;
+
+  if (this->__mfsobj == NULL)
+    throw vfsError("Can't Open file");
+  try
+    {
+      if ((fd = this->__mfsobj->vopen(this)) >= 0)
+	{
+	  temp = new VFile(fd, this->__mfsobj, this);
+	  return (temp);
+	}
+      throw vfsError("Can't Open file");
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("Node::open(void) throw\n" + e.error);
+    }
 }

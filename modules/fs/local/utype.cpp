@@ -83,7 +83,7 @@ u_attrib::u_attrib(struct stat  *st, char *path)
 #endif
 	    ;
 	  else
-	      size = (dff_ui64)numsectors * 512;
+	      size = (uint64_t)numsectors * 512;
 	  close(fd);
 	}
     }
@@ -92,7 +92,7 @@ u_attrib::u_attrib(struct stat  *st, char *path)
     if (((st->st_mode & S_IFMT) == S_IFDIR))
       size = 0;
     else
-      size  = (dff_ui64)st->st_size;
+      size  = (uint64_t)st->st_size;
   }
   time["accessed"] = new u_vtime(gmtime(&st->st_atime));
   time["modified"] = new u_vtime(gmtime(&st->st_mtime));
@@ -117,4 +117,3 @@ void u_attrib::get_stat(struct stat* st)
         st->st_ctime = mktime(cur_time->get_tm());
    }
 }
-
