@@ -24,9 +24,7 @@
 #include "type.hpp"
 #include "vfs.hpp"
 #include "conf.hpp"
-#ifndef WIN32
-#include "utype.hpp"
-#else
+#ifdef WIN32
 #include "wtype.hpp"
 #endif
 #include "mfso.hpp"

@@ -18,7 +18,7 @@
 
 VFS::VFS()
 {
-  root = new Node("/");
+  root = new VfsRoot("/");
   //root->name = "";
   //root->path = "";
   //root->is_root = 1; 

@@ -24,7 +24,6 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 if (UNIX)
   set(local_srcs
     ulocal.cpp
-    utype.cpp
     ulocalnode.cpp
     )
 else (UNIX)

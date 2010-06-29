@@ -369,20 +369,16 @@ std::string	Node::path()
   std::string path;
   Node	*tmp;
 
-  //Root Node
-  if (this->__parent == NULL)
-    path = "";
-  else
+  if (this->__parent == this)
+    return "";
+  path = "";
+  tmp = this->__parent;
+  while (tmp->__parent != tmp)
     {
-      tmp = this->__parent;
-      path = "";
-      while (tmp->parent() != NULL)
-	{
-	  path = tmp->name() + "/" + path;
-	  tmp = tmp->parent();
-	}
-      path = "/" + path;
+      path = tmp->name() + "/" + path;
+      tmp = tmp->parent();
     }
+  path = "/" + path;
   return path;
 }
 
@@ -492,4 +488,14 @@ VFile*		Node::open()
     {
       throw vfsError("Node::open(void) throw\n" + e.error);
     }
+}
+
+VfsRoot::VfsRoot(std::string name): Node(name)
+{
+  this->setParent(this);
+  this->setDir();
+}
+
+VfsRoot::~VfsRoot()
+{
 }

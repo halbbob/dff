@@ -145,4 +145,11 @@ public:
   EXPORT class VFile*			open();
 };
 
+class VfsRoot: public Node
+{
+public:
+  VfsRoot(std::string name);
+  ~VfsRoot();
+};
+
 #endif

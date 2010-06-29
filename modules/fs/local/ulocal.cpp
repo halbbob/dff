@@ -75,7 +75,6 @@ local::~local()
 
 void local::start(argument* arg)
 {
-  u_attrib*	attr;
   string 	path;
   Path		*tpath;
   struct stat 	stbuff;

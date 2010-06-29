@@ -18,7 +18,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "ulocalnode.hpp"
-#include "utype.hpp"
 
 ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
 {
@@ -120,7 +119,7 @@ struct stat*	ULocalNode::localStat()
   std::string	file;
   struct stat* 	st;
 
-  file = *(this->basePath) + "/" + this->path() + this->name();
+  file = *(this->basePath) + this->path() + this->name();
   st = (struct stat*)malloc(sizeof(struct stat));
   if (lstat(file.c_str(), st) != -1)
     return st;
