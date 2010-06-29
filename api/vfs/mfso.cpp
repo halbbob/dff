@@ -115,7 +115,6 @@ void	mfso::registerTree(Node* parent, Node* head)
 {
   parent->addChild(head);
   this->__parent = parent->fsobj();
-  parent->fsobj()->addChild(this);
   VFS::Get().update(head);
 }
 

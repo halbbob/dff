@@ -33,7 +33,6 @@ ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, mfso* fsob
     default:
       break;
     }
-  this->setDeleted();
 }
 
 ULocalNode::~ULocalNode()

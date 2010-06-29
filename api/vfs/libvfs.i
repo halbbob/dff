@@ -211,7 +211,11 @@ namespace std
   %template(VecNode)    vector<Node*>;
   %template(ListNode)   list<Node*>;
   %template(SetNode)    set<Node *>;
+#ifdef 64_BITS
+  %template(Listui64)	list<unsigned long int>;
+#else
   %template(Listui64)	list<uint64_t>;
+#endif
   //%template(MapTime)	map<string, vtime*>;
 };
 
@@ -225,6 +229,15 @@ namespace std
   }
 
 //XXX 64bits !
+#ifdef 64_BITS
+  PyObject* getNodeFromPointer(unsigned long pnode)
+  {
+    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+    PyObject* obj = SWIG_NewPointerObj((void *)pnode, SWIGTYPE_p_Node, 0);
+    SWIG_PYTHON_THREAD_END_BLOCK;
+    return obj;
+  }
+#else
   PyObject* getNodeFromPointer(unsigned int pnode)
   {
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -232,6 +245,7 @@ namespace std
     SWIG_PYTHON_THREAD_END_BLOCK;
     return obj;
   }
+#endif
 
   unsigned int getNodePointer(PyObject *obj)
   {
