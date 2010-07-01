@@ -254,6 +254,7 @@ std::map<std::string, class Variant*>	Attributes::attributes()
 
 Node::Node(std::string name, uint64_t size, Node* parent, mfso* fsobj)
 {
+  this->__static_attributes = NULL;
   this->__common_attributes = 0;
   this->__childcount = 0;
   this->__mfsobj = fsobj;
@@ -317,45 +318,67 @@ void		Node::setParent(Node *parent)
     ;//XXX throw() NodeException;
 }
 
-
-FileMapping*   Node::fileMapping()
+void   Node::fileMapping(FileMapping *)
 {
-  return NULL;
 }
 
-Attributes*    Node::attributes()
+void			Node::setStaticAttribute(std::string key, class Variant* value)
 {
-  return NULL;
+  if (this->__static_attributes == NULL)
+    this->__static_attributes = new Attributes();
+  this->__static_attributes->push(key, value);
 }
 
-vtime*			Node::modifiedTime()
+Attributes*			Node::staticAttributes()
 {
-  return NULL;
+  return this->__static_attributes;
 }
 
-vtime*			Node::accessedTime()
+
+void			Node::extendedAttributes(Attributes *)
 {
-  return NULL;
 }
 
-vtime*			Node::createdTime()
+void			Node::modifiedTime(vtime *)
 {
-  return NULL;
 }
 
-vtime*			Node::changedTime()
+void			Node::accessedTime(vtime *)
 {
-  return NULL;
+}
+
+void			Node::createdTime(vtime *)
+{
+}
+
+void			Node::changedTime(vtime *)
+{
 }
 
 std::map<std::string, vtime*>	Node::times()
 {
   std::map<std::string, vtime*>	t;
 
-  t["modified"] = this->modifiedTime();
-  t["accessed"] = this->accessedTime();
-  t["created"] = this->createdTime();
-  t["changed"] = this->changedTime();
+  //t["modified"] = this->modifiedTime(new vtime);
+  vtime *mod = new vtime;
+  this->modifiedTime(mod);
+  t["modified"] = mod;
+
+  //t["accessed"] = this->accessedTime(new vtime);
+  vtime *acc = new vtime;
+  this->accessedTime(acc);
+  t["accessed"] = acc;
+
+  //t["created"] = this->createdTime(new vtime);
+  vtime *crea = new vtime;
+  this->createdTime(crea);
+  t["created"] = crea;
+
+  //t["changed"] = this->changedTime(new vtime);
+  vtime *chan = new vtime;
+  this->changedTime(chan);
+  t["changed"] = chan;
+
   return t;
 }
 

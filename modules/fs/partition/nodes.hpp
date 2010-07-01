@@ -27,8 +27,7 @@ private:
 public:
   PartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin, uint64_t start);
   ~PartitionNode();
-  virtual class FileMapping*	fileMapping();
-  virtual class Attributes*	attributes();
+  virtual void	fileMapping(class FileMapping* fm);
 };
 
 // class EntryNode: public Node

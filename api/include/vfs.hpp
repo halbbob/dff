@@ -22,12 +22,12 @@
 #ifndef __VFS_HH__
 #define __VFS_HH__
 
+#include "fso.hpp"
 #include "export.hpp"
 #include "exceptions.hpp"
 #include "type.hpp"
 #include "vfile.hpp"
 #include "node.hpp"
-#include "fso.hpp"
 
 #include <deque>
 #include <list>

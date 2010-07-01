@@ -30,7 +30,11 @@ class ui():
   def launch(self):
    if self.type == "gui":
      self.g = gui()
-     self.g.launch(self.modPath)
+     try:
+       self.c
+       self.g.launch()
+     except AttributeError:
+       self.g.launch(self.modPath)
    if self.type == "console":
      try :
       self.c.cmdloop()

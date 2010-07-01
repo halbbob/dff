@@ -76,7 +76,7 @@ class Property(QDialog,  UiProperty):
             self.valuePath.setText(node.absolute())
         
         if nbrItem == 1 :
-            if oneNode.is_file :
+            if oneNode.isFile() :
                 self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ), dump size : "+ str(oneNode.size()))
             else :
                 self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ) ")

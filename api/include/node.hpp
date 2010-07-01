@@ -17,6 +17,7 @@
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
+#include "mfso.hpp"
 #include <string>
 #include <map>
 #include <vector>
@@ -25,7 +26,6 @@
 #include <sys/types.h>
 #include "export.hpp"
 #include "vfile.hpp"
-#include "mfso.hpp"
 #include "variant.hpp"
 #include "vtime.hpp"
 #include "exceptions.hpp"
@@ -97,8 +97,12 @@ private:
   uint64_t			__size;
   class mfso*			__mfsobj;
   uint64_t			__common_attributes;
+  Attributes*			__static_attributes;
 
-protected:
+public:
+  EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, mfso* fsobj=NULL);
+  EXPORT virtual ~Node();
+
   EXPORT void				setFile();
   EXPORT void				setDir();
   EXPORT void				setLink();
@@ -107,17 +111,16 @@ protected:
   EXPORT void				setFsobj(mfso* obj);
   EXPORT void				setParent(Node* parent);
 
-public:
-  EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, mfso* fsobj=NULL);
-  EXPORT virtual ~Node();
+  EXPORT virtual void			fileMapping(FileMapping *);
+  EXPORT void				setStaticAttribute(std::string key, class Variant* value);
+  EXPORT Attributes*			staticAttributes();
+  EXPORT virtual void			extendedAttributes(Attributes *);
 
-  EXPORT virtual FileMapping*		fileMapping();
-  EXPORT virtual Attributes*		attributes();
+  EXPORT virtual void			modifiedTime(vtime *);
+  EXPORT virtual void			accessedTime(vtime *);
+  EXPORT virtual void			createdTime(vtime *);
+  EXPORT virtual void			changedTime(vtime *);
 
-  EXPORT virtual vtime*			modifiedTime();
-  EXPORT virtual vtime*			accessedTime();
-  EXPORT virtual vtime*			createdTime();
-  EXPORT virtual vtime*			changedTime();
   EXPORT std::map<std::string, vtime*>	times();
 
 

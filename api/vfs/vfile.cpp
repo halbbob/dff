@@ -26,7 +26,13 @@ VFile::VFile(int32_t fd, class mfso *mfsobj, class Node *node)
 
 VFile::~VFile()
 {
-  this->close();
+  try
+    {
+      this->close();
+    }
+  catch (vfsError e)
+    {
+    }
   delete this->__search;
 }
 

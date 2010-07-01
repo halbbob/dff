@@ -44,7 +44,7 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
      index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
-       if node.hasChildren():
+       if node.hasChildren() or node.parent().absolute() == "/":
 	 return True
      return False
 

@@ -20,24 +20,16 @@ PartitionNode::PartitionNode(std::string name, uint64_t size, Node* parent, mfso
 {
   this->origin = origin;
   this->start = start;
+  this->setFile();
 }
 
 PartitionNode::~PartitionNode()
 {
 }
 
-FileMapping*	PartitionNode::fileMapping()
+void	PartitionNode::fileMapping(FileMapping* fm)
 {
-  FileMapping*	fm;
-
-  fm = new FileMapping();
   fm->push(0, this->size(), this->origin, this->start);
-  return fm;
-}
-
-Attributes*	PartitionNode::attributes()
-{
-  return NULL;
 }
 
 // EntryNode::EntryNode(std::string name, Node* parent, mfso* fsobj, Node* origin): Node(name, 0x10, parent, fsobj)

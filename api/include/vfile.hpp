@@ -17,15 +17,15 @@
 #ifndef __VPATH_HH__
 #define __VPATH_HH__
 
+#include "mfso.hpp"
 #include <stdlib.h> 
 #include <string>
 #include <string.h>
+#include <stdint.h>
 #include "node.hpp"
 #include "type.hpp"
 #include "export.hpp"
 #include "search.hpp"
-#include "mfso.hpp"
-#include <stdint.h>
 
 #define BUFFSIZE 1024*1024*10
 

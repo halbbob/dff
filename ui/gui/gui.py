@@ -35,10 +35,11 @@ class gui():
         self.splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
         self.splash.setMask(pixmap.mask()) 
 
-    def launch(self, modPath):
+    def launch(self, modPath=None):
         self.splash.show()
-        self.loader = loader()
-        self.loader.do_load(modPath, self.splash.showMessage)
+        if modPath:
+          self.loader = loader()
+          self.loader.do_load(modPath, self.splash.showMessage)
         mainWindow = MainWindow(self.app)
         mainWindow.show()
 

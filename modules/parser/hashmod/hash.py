@@ -47,30 +47,43 @@ class HASH(Script):
 	  algorithm = "md5"
         if algorithm == "":
 	  algorithm = "md5"
-        try :
-          f = node.open()
-        except vfsError, e:
-	  print e.error
-	  return 
-        map = node.attr.smap 
+        attr = node.staticAttributes()
+        res = ""
+        algmap = "hash-" + algorithm
         try:
-            algmap = "hash-" + algorithm
-            map[algmap]
+            map = attr.attributes()
+            file_hash = map[algmap]
+            res = file_hash + "  " + node.absolute()
         except:
-            h = self.getHash(algorithm)
-            buff = f.read(8192)
-            while len(buff) > 0:
-                h.update(buff)
-                try :  
-                    buff = f.read(8192)
-                except vfsError:
-                    pass
-            algmap = "hash-" + algorithm
-            map[algmap] = h.hexdigest()
-            f.close()
-            res = map[algmap] + "  " + node.absolute()
-            self.res.add_const("result", res)
- 
+            file_hash = self.hashCalc(node, algorithm)
+            if file_hash != "":
+                value = Variant(file_hash)
+                value.thisown = False
+                node.setStaticAttribute(algmap, value)
+                res = file_hash + "  " + node.absolute()
+            else:
+                res = algorithm + " hashing failed on " + node.absolute()  
+        #self.res.add_const("result", res)
+
+
+    def hashCalc(self, node, algorithm):
+        try :
+            f = node.open()
+        except vfsError, e:
+            print e.error, node.absolute()
+            return ""
+        h = self.getHash(algorithm)
+        buff = f.read(8192)
+        while len(buff) > 0:
+            h.update(buff)
+            try :
+                buff = f.read(8192)
+            except vfsError:
+                pass
+        f.close()
+        return h.hexdigest()
+
+
 class hash(Module):
   """Hash a file and add the results in the file attribute.
 ex: hash /myfile"""

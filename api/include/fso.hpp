@@ -16,6 +16,8 @@
 
 #ifndef __FSO_HH__
 #define __FSO_HH__
+#include <Python.h>
+
 #include <iostream>
 #include <stdio.h>
 #include <list>
@@ -30,7 +32,6 @@
 
 using namespace std;
 
-#include <Python.h>
 typedef PyObject* (*CBGETFUNC) (void *);
 typedef void (*CBSETFUNC) (void *, PyObject*);
 

@@ -24,7 +24,7 @@ class ULocalNode: public Node
 {
 protected:
   std::string*			basePath;
-  vtime*			utimeToVtime(time_t* t1);
+  void				utimeToVtime(time_t* t1, vtime* vt);
   struct stat*			localStat();
 
 public:
@@ -36,11 +36,10 @@ public:
   ULocalNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type);
   ~ULocalNode();
   void				setBasePath(std::string* bp);
-  virtual class FileMapping*	fileMapping(){}
-  virtual Attributes*		attributes();
-  virtual vtime*		modifiedTime();
-  virtual vtime*		accessedTime();
-  virtual vtime*		changedTime();
+  virtual void			extendedAttributes(Attributes* attr);
+  virtual void			modifiedTime(vtime* mt);
+  virtual void			accessedTime(vtime* at);
+  virtual void			changedTime(vtime* ct);
 };
 
 #endif

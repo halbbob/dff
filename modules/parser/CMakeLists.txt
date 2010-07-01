@@ -14,7 +14,7 @@
 
 
 #add_subdirectory(carving)
-add_subdirectory(hash)
+add_subdirectory(hashmod)
 
 set(parser_srcs
   smsdecode.py

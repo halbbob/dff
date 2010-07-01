@@ -18,6 +18,7 @@ import magic
 from api.vfs import *
 from api.env import *
 from api.exceptions.libexceptions import *
+from api.variant.libvariant import Variant
 import os
 
 class FILETYPE():
@@ -66,22 +67,29 @@ class FILETYPE():
       idx = -1
       buff = ""
       for v in val:
-          if v.type == "string":
-              nidx = node.attr.smap["type"].find(v.get_string())
-              if nidx > idx:
-                  buff  = v._from
-                  res.append(buff)
-              nidx = node.attr.smap["mime-type"].find(v.get_string())
-              if nidx > idx:
-                  buff = v._from
-                  res.append(buff)
+        if v.type == "string":
+          attr = node.staticAttributes()
+          map = attr.attributes()
+          try:
+            nidx = str(map["type"]).find(v.get_string())
+            #nidx = node.attr.smap["type"].find(v.get_string())
+            if nidx > idx:
+              buff  = v._from
+              res.append(buff)
+          except KeyError:
+            nidx = str(map["mime-type"]).find(v.get_string())
+            if nidx > idx:
+              buff = v._from
+              res.append(buff)
       return res
 
   def filetype(self, node):
 	  buff = ""
           try :
-            node.attr.smap["type"]
-          except IndexError:
+            attr = node.staticAttributes()
+            map = attr.attributes()
+            map["type"]
+          except AttributeError, IndexError:
             try:
               f = node.open()
               buff = f.read(0x2000)
@@ -92,8 +100,13 @@ class FILETYPE():
               else:
                 filetype = self.type.from_buffer(buff)
                 filemime = self.mime.from_buffer(buff)
-              f.node.attr.smap["type"] = filetype
-              f.node.attr.smap["mime-type"] = filemime
+              vfiletype = Variant(filetype)
+              vfiletype.thisown = False
+              vfilemime = Variant(filemime)
+              vfilemime.thisown = False
+              node.setStaticAttribute("type", vfiletype)
+              node.setStaticAttribute("mime-type", vfilemime)
             except vfsError:
-              node.attr.smap["mime-type"] = "data" #? none
-              node.attr.smap["type"] = "data"
+              vdata = Variant("data")
+              node.setStaticAttribute("type", vdata)
+              node.setStaticAttribute("mime-type", vdata)

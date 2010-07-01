@@ -38,46 +38,28 @@ ULocalNode::~ULocalNode()
 {
 }
 
-vtime*			ULocalNode::modifiedTime()
+void			ULocalNode::modifiedTime(vtime* vt)
 {
-  vtime*	t;
   struct stat*	st;
   
   if ((st = this->localStat()) != NULL)
-    {
-      t = this->utimeToVtime(&(st->st_mtime));
-      return t;
-    }
-  else
-    return NULL;
+    this->utimeToVtime(&(st->st_mtime), vt);
 }
 
-vtime*			ULocalNode::accessedTime()
+void			ULocalNode::accessedTime(vtime* vt)
 {
-  vtime*	t;
   struct stat*	st;
   
   if ((st = this->localStat()) != NULL)
-    {
-      t = this->utimeToVtime(&(st->st_atime));
-      return t;
-    }
-  else
-    return NULL;
+    this->utimeToVtime(&(st->st_atime), vt);
 }
 
-vtime*			ULocalNode::changedTime()
+void			ULocalNode::changedTime(vtime* vt)
 {
-  vtime*	t;
   struct stat*	st;
   
   if ((st = this->localStat()) != NULL)
-    {
-      t = this->utimeToVtime(&(st->st_ctime));
-      return t;
-    }
-  else
-    return NULL;
+    this->utimeToVtime(&(st->st_ctime), vt);
 }
 
 void		ULocalNode::setBasePath(std::string* bp)
@@ -85,16 +67,14 @@ void		ULocalNode::setBasePath(std::string* bp)
   this->basePath = bp;
 }
 
-vtime*		ULocalNode::utimeToVtime(time_t* tt)
+void		ULocalNode::utimeToVtime(time_t* tt, vtime* vt)
 {
-  vtime*	vt;
   struct tm*	t;
 
   if (tt != NULL)
     {
       if ((t = gmtime(tt)) != NULL)
 	{
-	  vt = new vtime();
 	  vt->year = t->tm_year + 1900;
 	  vt->month = t->tm_mon + 1;
 	  vt->day = t->tm_mday;
@@ -105,13 +85,8 @@ vtime*		ULocalNode::utimeToVtime(time_t* tt)
 	  vt->wday = t->tm_wday;
 	  vt->yday = t->tm_yday;
 	  vt->usecond = 0;
-	  return vt;
 	}
-      else
-	return NULL;
     }
-  else
-    return NULL;
 }
 
 struct stat*	ULocalNode::localStat()
@@ -130,21 +105,15 @@ struct stat*	ULocalNode::localStat()
     }
 }
 
-Attributes*	ULocalNode::attributes()
+void	ULocalNode::extendedAttributes(Attributes* attr)
 {
-  Attributes*	attr;
   struct stat*	st;
 
   if ((st = this->localStat()) != NULL)
     {
-      attr = new Attributes();
-      attr->push("size", new Variant(st->st_size));
       attr->push("uid", new Variant(st->st_uid));
       attr->push("gid", new Variant(st->st_gid));
       attr->push("inode", new Variant(st->st_ino));
       free(st);
-      return attr;
     }
-  else
-    return NULL;
 }

@@ -184,7 +184,8 @@ int32_t 	mfso::vopen(Node *node)
 	{
 	  //Check if mapping of the node is already in the cache
 	  fi = new fdinfo;
-	  fm = node->fileMapping();
+          fm = new FileMapping; //delete when ? 
+	  node->fileMapping(fm);
 	  fi->offset = 0;
 	  fi->node = node;
 	  fi->fm = fm;
