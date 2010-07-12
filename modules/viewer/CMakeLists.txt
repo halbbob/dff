@@ -14,6 +14,7 @@
 
 
 add_subdirectory(hexedit)
+add_subdirectory(bindiff)
 
 set(viewer_srcs
   cat.py
