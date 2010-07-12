@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
         self.sched = scheduler.sched
         self.vfs = VFS.Get()
 
-        self.ApplyModule = ApplyModule(self)
+#        self.ApplyModule = ApplyModule(self)
         self.dialog = Dialog(self)
 	
 	self.initCallback()
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
 	#icon 
         self.toolbarList = [
              ["New_Dump"],
-	     ["ApplyModule", "List_Files"]
+	     ["List_Files"]
 	]
 
         self.actionList = [
@@ -75,7 +75,7 @@ class MainWindow(QMainWindow):
 	     ["Exit", "Exit", None,  ":exit.png", "Exit"], 
 	     ["Load", "Load", self.dialog.loadDriver, None, None ],
       	     ["About", "?", self.dialog.about, None, None ],
-	     ["ApplyModule", "ApplyModule", self.ApplyModule.openApplyModule, ":exec.png", "Open With"],
+#	     ["ApplyModule", "ApplyModule", self.ApplyModule.openApplyModule, ":exec.png", "Open With"],
 	     ["List_Files", "List Files", self.addBrowser, ":view_detailed.png", "Open List"]
 	  ] 
 
@@ -99,6 +99,10 @@ class MainWindow(QMainWindow):
     def addBrowser(self):
         self.addDockWidgets(NodeBrowser(self)) 
  
+    def applyModule(self, modname, modtype, selected):
+        appMod = ApplyModule(self)
+        appMod.openApplyModule(modname, modtype, selected)
+
     def initCallback(self):
         self.sched.set_callback("add_qwidget", self.qwidgetResult)
         self.connect(self, SIGNAL("qwidgetResultView"), self.qwidgetResultView)

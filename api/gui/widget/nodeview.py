@@ -86,6 +86,7 @@ class NodeTreeView(QTreeView, NodeViewEvent):
   def __init__(self, parent):
      QTreeView.__init__(self, parent)
      NodeViewEvent.__init__(self, parent) 
+     self.origView = QTreeView
      self.setSelectionMode(QAbstractItemView.SingleSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectItems)
      self.setExpandsOnDoubleClick(False)

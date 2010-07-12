@@ -10,14 +10,13 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Francois Percot <percot@gmail.com>
+#  Jeremy MOUNIER <jmo@arxsys.fr>
 # 
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
-from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL
-
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog
+from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex
 
 # CORE
 from api.loader import *
@@ -25,16 +24,17 @@ from api.env import *
 from api.vfs import *
 from api.taskmanager.taskmanager import *
 from api.type import *
+
+from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.widget.nodeview import NodeTreeView
+
 from api.gui.box.nodecombobox import NodeComboBox
 from api.gui.box.stringcombobox import StringComboBox
 from api.gui.box.boolcombobox import BoolComboBox
 from api.gui.box.checkbox import CheckBoxWidgetEnable
-from api.gui.button.pushbutton import PushButton
 from api.gui.dialog.uiapplymodule import UiApplyModule 
-from api.gui.widget.applymoduletable import ApplyModuleTable
 
 from ui.gui.utils.utils import Utils
-
 
 
 class ApplyModule(QDialog,  UiApplyModule):
@@ -42,7 +42,7 @@ class ApplyModule(QDialog,  UiApplyModule):
         QDialog.__init__(self,  mainWindow)
         UiApplyModule.__init__(self)
         self.setupUi(self)
-        
+
         self.__mainWindow = mainWindow
         self.loader = loader.loader()
         self.env = env.env()
@@ -52,34 +52,29 @@ class ApplyModule(QDialog,  UiApplyModule):
         
     def initDialog(self):
         self.initArguments()
-        
         self.vlayout = QVBoxLayout(self)
-        self.vlayout.addWidget(self.label)
-        self.tableModules = ApplyModuleTable(self)
-        self.splitter = QSplitter(Qt.Vertical, self)
-        self.splitter.addWidget(self.tableModules)
-        self.splitter.addWidget(self.argumentsContainer)
-        
-        self.vlayout.addWidget(self.splitter)
+#        self.vlayout.addWidget(self.label)
+#        self.splitter = QSplitter(Qt.Vertical, self)
+#        self.splitter.addWidget(self.argumentsContainer)        
+        self.vlayout.addWidget(self.infoContainer)
+        self.vlayout.addWidget(self.argumentsContainer)
         self.vlayout.addWidget(self.buttonBox)
+
+    def initArguments(self):
+        self.infoContainer = QGroupBox("Informations", self)
+        self.argumentsContainer = QGroupBox("Arguments", self)
+#        self.argumentsContainer = QWidget(self)
+        self.gridArgs = QGridLayout(self.argumentsContainer)
+        self.labelArgs = {}
+        self.valueArgs = {}
+        self.checkBoxArgs = {}
+        self.hboxArgs = {}
+        self.browserButtons = {}
+        self.lineEdit = {}
     
     
     def initCallback(self):
-        self.connect(self.tableModules, SIGNAL("currentItemChanged(QTableWidgetItem *, QTableWidgetItem *)"),  self.currentItemChanged)
         self.connect(self.buttonBox,SIGNAL("accepted()"), self.validateModule)
-        #self.connect(self.tableModules, SIGNAL("itemChanged(QTableWidgetItem *)"),  self.itemChanged)
-
-    def currentItemChanged(self,  itemCurrent,  itemPrevious):
-        if itemCurrent :
-            if (itemPrevious and itemCurrent.row() <> itemPrevious.row()) or not itemPrevious:
-                if itemCurrent.column() == 1 :
-                    itemType = itemCurrent
-                    itemCurrent = self.tableModules.item(itemCurrent.row(), 0)
-                else :
-                    itemType = self.tableModules.item(itemCurrent.row(), 1)
-                self.reloadAllArguments(str(itemCurrent.text()),  str(itemType.text()))
-            self.tableModules.resizeTableModules()
-            self.tableModules.scrollToItem(itemCurrent)
 
     def validateModule(self):
         errorArg = []
@@ -100,105 +95,48 @@ class ApplyModule(QDialog,  UiApplyModule):
     
     def initAllInformations(self, nameModule, typeModule, nodesSelected):
         self.__nodesSelected = nodesSelected
-        self.deleteAllArguments()
-        self.deleteList()
-        self.fillListModules()
-        if nameModule <> None :
-            self.loadOneItem(nameModule, typeModule)
-        else :
-            self.deleteAllArguments()
-        self.tableModules.setColumnWidth(0, 333)
-        self.tableModules.setColumnWidth(1, 43)
+        self.currentModName = str(nameModule)
         
+        name = "Module : "
+        name += nameModule
+        lname = QLabel(name)
+        typ = "Type : "
+        typ += typeModule
+        ltype = QLabel(typ)
+
+        desc = "General Description : "
+        desc += self.loader.modules[str(nameModule)].conf.description
+        ldesc = QLabel(desc)
+
+        vboxinfo = QVBoxLayout(self.infoContainer)
+        vboxinfo.addWidget(lname)
+        vboxinfo.addWidget(ltype)
+        vboxinfo.addWidget(ldesc)
+
+        # Set argument description
+        args = Utils.getArgs(str(nameModule))
+#        vars_db = self.env.vars_db
+        for arg in args:            
+            argdesc = " - "
+            argdesc += arg.name
+            argdesc += " : "
+            argdesc += arg.description
+            arglabeldesc = QLabel(argdesc)
+            vboxinfo.addWidget(arglabeldesc)
+
+
+        self.infoContainer.setLayout(vboxinfo)
+
+        self.loadArguments(str(nameModule), str(typeModule))
     
-    ###### MANAGE QTABLEWIDGET ######
-    def deleteList(self):
-        self.tableModules.clearContents()
-        for i in range(0, self.tableModules.rowCount()) :
-            self.tableModules.removeRow(0)
-    
-    def fillListModules(self):
-        modules = self.loader.modules
-        self.tableModules.setSortingEnabled(False)
-        row = self.tableModules.rowCount() 
-        self.tableModules.setRowCount(row + len(modules))
-        
-        for mod in modules :
-            #if str(script) <> "opendump" and type(script) == StringType :
-            item = QTableWidgetItem(str(mod))
-            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-            item2 = QTableWidgetItem(modules[mod].tags)
-            item2.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-            self.tableModules.setItem(row, 0, item)
-            self.tableModules.setItem(row, 1, item2)
-            row = row + 1
-    
-    def selectedItem(self, nameModule):
-        for i in range(0, self.tableModules.rowCount()) :
-            item = self.tableModules.item(i, 0)
-            if (item.text() == nameModule) :
-                self.tableModules.setCurrentItem(item)
-                return
-    
-    def loadOneItem(self, nameModule, typeModule):
-        self.tableModules.setRowCount(1)
-        item = QTableWidgetItem(str(nameModule))
-        item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        item2 = QTableWidgetItem(str(typeModule))
-        item2.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.tableModules.setItem(0, 0, item)
-        self.tableModules.setItem(0, 1, item2)
-        self.tableModules.setCurrentItem(item)
-    
-    ####### MANAGE ARGUMENTS
-    def initArguments(self):
-        self.argumentsContainer = QWidget(self)
-        self.gridArgs = QGridLayout(self.argumentsContainer)
-        self.labelArgs = {}
-        self.valueArgs = {}
-        self.checkBoxArgs = {}
-        self.hboxArgs = {}
-        self.browserButtons = {}
-            
-    def deleteAllArguments(self):
-        if self.argumentsContainer <> None :
-            listarg = self.argumentsContainer.children()
-        for i in self.labelArgs :
-            self.gridArgs.removeWidget(self.labelArgs[i])
-            #self.labelArgs[i].hide()
-            self.labelArgs[i].deleteLater()
-            
-            if self.valueArgs[i] <> None :
-                self.gridArgs.removeWidget(self.valueArgs[i])
-                #self.valueArgs[i].hide()
-                self.valueArgs[i].deleteLater()
-            
-            if self.browserButtons[i] != None :
-                self.gridArgs.removeWidget(self.browserButtons[i])
-                #self.browserButtons[i].hide()
-                self.browserButtons[i].deleteLater()
-                
-            if self.checkBoxArgs[i] != None :
-                self.gridArgs.removeWidget(self.checkBoxArgs[i])
-                #self.checkBoxArgs[i].hide()
-                self.checkBoxArgs[i].deleteLater()
-        
-        self.valueArgs.clear()
-        self.labelArgs.clear()
-        self.browserButtons.clear()    
-        self.checkBoxArgs.clear()
-#        if self.argumentsContainer <> None :
-#            listarg = self.argumentsContainer.children()
-#            self.argumentsContainer.destroy(True, True)
-#            self.argumentsContainer = None   
-    
-    def reloadAllArguments(self, nameModule, type):
-        self.deleteAllArguments()
+    def loadArguments(self, nameModule, type):
         if self.argumentsContainer == None :
-            self.argumentsContainer = QWidget(self)
+            self.argumentsContainer = QGroupBox("Arguments", self)
+#            self.argumentsContainer = QWidget(self)
 
         iterator = 0
         args = Utils.getArgs(nameModule)
+
         vars_db = self.env.vars_db
         for arg in args:
             label = QLabel(arg.name + " ( "+ str(arg.type) + " ) " + ":", self.argumentsContainer)
@@ -206,18 +144,14 @@ class ApplyModule(QDialog,  UiApplyModule):
             label.setMaximumSize(QSize(120,  28))
             list = self.env.getValuesInDb(arg.name,  arg.type)
             if arg.type == "node" :
-                value = NodeComboBox(self.argumentsContainer)
-                
-                for i in range(0, len(list)) :
-                    value.addPath(list[i])
-                button = PushButton(self.argumentsContainer, value, arg.name, self.__mainWindow.SelectNodes , self.__mainWindow.widget["NodeTree"].treeItemModel.rootItemVFS.node)
-                currentItem = self.__mainWindow.widget["NodeTree"].treeView.getCurrentItem()
-                value.addPath(currentItem.node)
-                
-                if self.__nodesSelected  :
-                    list = self.__nodesSelected
-                    for i in range(0,  len(self.__nodesSelected)):
-                        value.addPath(self.__nodesSelected[i])
+                value = pathEdit(self)
+                button = browseButton(self.argumentsContainer, value, arg.name, 0)
+                # Check if a node is selected
+                currentNode = self.__mainWindow.nodeBrowser.currentNode()
+                if currentNode != None:
+                    value.clear()
+                    value.insert(currentNode.absolute())
+                    value.setCurrentNode(currentNode)
 
             elif arg.type == "int":
                 value = StringComboBox(self.argumentsContainer)
@@ -238,7 +172,7 @@ class ApplyModule(QDialog,  UiApplyModule):
                 value.setEditable(True)
                 for i in range(0, len(list)) :
                     value.addPath(list[i])
-                button = PushButton(self.argumentsContainer,  value, arg.name)
+                button = browseButton(self.argumentsContainer,  value, arg.name, 1)
             
             elif arg.type == "bool" :
                 value = BoolComboBox(self.argumentsContainer)
@@ -257,24 +191,14 @@ class ApplyModule(QDialog,  UiApplyModule):
             if checkBox != None :
                 self.gridArgs.addWidget(checkBox, iterator, 3)
 
-            value.setCurrentIndex(value.count() - 1)
             self.labelArgs[arg] = label
             self.valueArgs[arg] = value
             self.checkBoxArgs[arg] = checkBox
             self.browserButtons[arg] = button
             iterator = iterator + 1
 
-    def currentType(self):
-        item = self.tableModules.currentItem()
-        if item.column() == 0 :
-            item = self.tableModules.item(item.row() , 1)
-        return str(item.text())
-        
     def currentModuleName(self):
-        item = self.tableModules.currentItem()
-        if item.column() == 1 :
-            item = self.tableModules.item(item.row(), 0)
-        return str(item.text())
+        return self.currentModName
 
     # get Arguments
     def getArguments(self):
@@ -283,17 +207,14 @@ class ApplyModule(QDialog,  UiApplyModule):
         for i in self.valueArgs :
             if i.type == "node" :
                 self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
-        #        print Utils.getPath(self.valueArgs[i].currentNode())
             else :
                 value = str(self.valueArgs[i].currentText())
                 if i.type == "path" :
-                    tmp = libtype.Path(str(value))
-                    tmp.thisown = 0
-                    self.arg.add_path(str(i.name), tmp)
+                    self.arg.add_path(str(i.name), str(value))
                 elif i.type == "int" :
                     self.arg.add_int(str(i.name), int(value))
                 elif i.type == "string" :
-                    self.arg.add_string(str(i.name), value)            
+                    self.argadd_string(str(i.name), value)            
                 elif i.type == "bool" :
                     if value == "True" :
                         value = 1
@@ -306,15 +227,161 @@ class ApplyModule(QDialog,  UiApplyModule):
         return self.arg
 
     def openApplyModule(self,  nameModule = None, typeModule = None, nodesSelected = None):
+#        self.deleteAllArguments()
         if(self.isVisible()):
             QMessageBox.critical(self, "Erreur", u"This box is already open")
         else:
             self.initAllInformations(nameModule, typeModule,  nodesSelected)
             iReturn = self.exec_()
         if iReturn :
-            type = self.currentType()
-            script = self.currentModuleName()
+            script = nameModule
             arg = self.getArguments()
-        self.deleteAllArguments()
     
+class VFSDialog(QDialog):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.initShape()
+
+    def initShape(self):
+#        self.vbox = QVBoxLayout(self)
+        self.grid = QGridLayout(self)
+        self.title = QLabel("Select a node in the Virtual File System :")
+        self.vfs = SimpleNodeBrowser(self)
+
+        self.createButtons()
+        
+        self.grid.addWidget(self.title, 0, 0)
+        self.grid.addWidget(self.vfs, 1, 0)
+        self.grid.addWidget(self.buttonbox, 2, 0)
+
+    def createButtons(self):
+        self.buttonbox = QDialogButtonBox()
+        self.buttonbox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.connect(self.buttonbox, SIGNAL("accepted()"),self.accept)
+        self.connect(self.buttonbox, SIGNAL("rejected()"),self.reject)
+
+    def getSelectedNode(self):
+        return self.vfs.nodeSelected()
+
+
+# vtype 0 Normal, 1 VFS
+class browseButton(QPushButton):
+    def __init__(self, parent, targetResult, arg_name, vtype = 0):
+        QPushButton.__init__(self,  parent)
+        self.targetResult = targetResult
+        self.vtype = vtype
+#        self.node = node
+        self.setObjectName("Button" + arg_name)
+        self.setText(QApplication.translate("BrowserButton", "Browse", None, QApplication.UnicodeUTF8))
+        self.setFixedSize(QSize(80,  28))
+        self.connect(self,  SIGNAL("clicked()"), self.click)
+        
+    def click(self):
+        if self.vtype == 1:
+            sFileName = QFileDialog.getOpenFileName(self, QApplication.translate("BrowserButton", "Add Dump", None, QApplication.UnicodeUTF8),  "/home")
+            if (sFileName) :
+#                self.targetResult.clear()
+                self.targetResult.addPathAndSelect(sFileName)
+        else:
+            BrowseVFSDialog = VFSDialog()
+            iReturn = BrowseVFSDialog.exec_()
+            if iReturn :
+                node = BrowseVFSDialog.getSelectedNode()
+                if node :
+                    self.targetResult.clear()
+                    self.targetResult.insert(node.absolute())
+                    self.targetResult.setCurrentNode(node)
+                    
+class SimpleNodeBrowser(QWidget):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
+        self.type = "filebrowser"
+        self.icon = None
+        self.name = "nodebrowser"
+        self.setObjectName(self.name)
+
+        self.vfs = vfs.vfs()
+        
+        self.addNodeTreeView()
+        self.selection = None
+        
+        self.box = QGridLayout()
+        self.box.addWidget(self.treeView, 0,0)
+        self.setLayout(self.box)
+
+    def addNodeTreeView(self):
+        self.treeModel = VFSItemModel(self)
+        self.treeModel.setRootPath(self.vfs.getnode("/"))
+        self.treeProxyModel = NodeTreeProxyModel()
+        self.treeProxyModel.setSourceModel(self.treeModel)
+        self.treeView = NodeTreeView(self)
+        self.treeView.setMinimumWidth(640)
+        self.treeView.setModel(self.treeProxyModel)
+        self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
+
+    def select(self, button, node):
+        print button
+        print node.name()
+        self.selection = node
+
+    def nodeSelected(self):
+        return self.selection
+
+
+# Model For QCompleter
+
+class NodeTreeProxyModel(QSortFilterProxyModel):
+  def __init__(self, parent = None):
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()  
+
+  def filterAcceptsRow(self, row, parent):
+     index = self.sourceModel().index(row, 0, parent) 
+     if index.isValid():
+	 return True
+     return False
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
+
+
+class pathEdit(QLineEdit):
+    def __init__(self, parent):
+        QLineEdit.__init__(self,  parent) 
+        self.init(parent)
+#        self.addModel()
+#        self.initCompleter()
+#        self.initCompleter()
+
+    def init(self, parent):
+        self.parent = parent
+#        self.setReadOnly(True)
+        self.node = None
+#        self.vfs = vfs.vfs()
+
+    def currentNode(self):
+        return self.node
+
+    def setCurrentNode(self, node):
+        self.node = node
+
+
+    def addModel(self):
+        self.treeModel = VFSItemModel(self)
+        self.treeModel.setRootPath(self.vfs.getnode("/"))
+        self.treeProxyModel = NodeTreeProxyModel()
+        self.treeProxyModel.setSourceModel(self.treeModel)
+#        self.treeView = NodeTreeView(self)
+#        self.treeView.setModel(self.treeProxyModel)
+#        self.browserLayout.addWidget(self.treeView)
+#        self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
+
+
+    def initCompleter(self):
+        self.completer = QCompleter(self)
+#        self.treeModel = VFSItemModel(self.completer)
+#        self.treeModel.setRootPath(self.vfs.getnode("/"))
+        self.completer.setModel(self.treeProxyModel)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
+        self.setCompleter(self.completer)
 

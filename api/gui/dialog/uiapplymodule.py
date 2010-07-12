@@ -19,21 +19,21 @@ class UiApplyModule(object):
     def setupUi(self, applyModule):
         applyModule.setObjectName("applyModule")
         applyModule.setWindowModality(QtCore.Qt.ApplicationModal)
-        applyModule.resize(QtCore.QSize(QtCore.QRect(0,0,421,440).size()).expandedTo(applyModule.minimumSizeHint()))
-        applyModule.setMinimumSize(QtCore.QSize(421,440))
+#        applyModule.resize(QtCore.QSize(QtCore.QRect(0,0,421,440).size()).expandedTo(applyModule.minimumSizeHint()))
+        applyModule.setMinimumWidth(640)
 
-        self.label = QtGui.QLabel(applyModule)
-        self.label.setGeometry(QtCore.QRect(9,9,403,20))
+#        self.label = QtGui.QLabel(applyModule)
+#        self.label.setGeometry(QtCore.QRect(9,9,403,20))
 
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setWeight(75)
-        font.setBold(True)
-        self.label.setFont(font)
-        self.label.setObjectName("label")
+#        font = QtGui.QFont()
+#        font.setPointSize(10)
+#        font.setWeight(75)
+#        font.setBold(True)
+#        self.label.setFont(font)
+#        self.label.setObjectName("label")
 
         self.buttonBox = QtGui.QDialogButtonBox(applyModule)
-        self.buttonBox.setGeometry(QtCore.QRect(9,403,403,28))
+#        self.buttonBox.setGeometry(QtCore.QRect(9,403,403,28))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.NoButton|QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
@@ -44,5 +44,5 @@ class UiApplyModule(object):
 
     def retranslateUi(self, applyModule):
         applyModule.setWindowTitle(QtGui.QApplication.translate("applyModule", "Apply Module", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("applyModule", " Scripts and Drivers :", None, QtGui.QApplication.UnicodeUTF8))
+#        self.label.setText(QtGui.QApplication.translate("applyModule", " Scripts and Drivers :", None, QtGui.QApplication.UnicodeUTF8))
 

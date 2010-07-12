@@ -28,7 +28,7 @@ class Action(QAction):
         if text <> 0 :
             self.setText(str(text))
         self.connect(self, SIGNAL("triggered()"), self.sendSignal)
-        self.connect(self, SIGNAL("launchScript"), self.__mainWindow.ApplyModule.openApplyModule)
+        self.connect(self, SIGNAL("launchScript"), self.__mainWindow.applyModule)
         self.connect(self, SIGNAL("execModule"), Utils.execModule)
     
     def sendSignal(self):
