@@ -19,34 +19,42 @@
 
 #include "node.hpp"
 #include "vfile.hpp"
+#include "bootsector.hpp"
+
+#define FATFS_12_MASK   0x00000fff
+#define FATFS_16_MASK   0x0000ffff
+#define FATFS_32_MASK   0x0fffffff
 
 class FileAllocationTable
 {
 private:
-  uint8_t		type;
-  uint8_t		total;
-  uint32_t		size;
-  uint64_t		firstfatoffset;
   VFile*		vfile;
-  Node*			parent;
+  Node*			origin;
+  BootSector*		bs;
+  //std::vector<uint32_t>	freeclusterscountbyfat;
 
 public:
   FileAllocationTable();
-  //FileAllocationTable(fsinfo* ctx, mfso* fsobj, Node* n);
   ~FileAllocationTable();
-  void			setParent(Node* parent);
-  void			setNumberOfFat(uint8_t total);
-  void			setFirstFatOffset(uint64_t firstfatoffset);
-  void			setFatType(uint8_t type);
-  void			setFatSize(uint32_t size);
-  uint32_t		getNextCluster(uint32_t current, uint8_t which=0);
-  std::list<uint32_t>	getClusterChain(uint32_t start, uint8_t which=0);
-  std::list<uint32_t>	getFreeClusters(uint8_t which=0);
-  uint32_t		getFreeClusterCount(uint8_t which=0);
-  std::list<uint32_t>	getAllocatedClusters(uint8_t which=0);
-  uint32_t		getAllocatedClusterCount(uint8_t which=0);
-  // virtual class FileMapping*	getFileMapping(class Node* node){};
-  // virtual class Attributes*	getAttributes(class Node* node){};
+  uint64_t		clusterOffsetInFat(uint64_t cluster, uint8_t which);
+  uint32_t		cluster12(uint64_t offset, uint32_t current);
+  uint32_t		cluster16(uint64_t offset);
+  uint32_t		cluster32(uint64_t offset);
+  void			setContext(Node* origin, BootSector *bs);
+  uint32_t		nextCluster(uint32_t current, uint8_t which=0);
+  std::vector<uint64_t>	clusterChainOffsets(uint32_t cluster, uint8_t which=0);
+  std::vector<uint32_t>	clusterChain(uint32_t start, uint8_t which=0);
+  bool			isFreeCluster(uint32_t cluster, uint8_t which);
+  std::vector<uint64_t>	listFreeClustersOffset(uint8_t which=0);
+  std::vector<uint32_t>	listFreeClusters(uint8_t which=0);
+  uint32_t		freeClustersCount(uint8_t which=0);
+  std::list<uint32_t>	listAllocatedClusters(uint8_t which=0);
+  uint32_t		allocatedClustersCount(uint8_t which=0);
+  std::list<uint32_t>	listBadClusters(uint8_t which=0);
+  std::list<uint32_t>	listBadClustersCount(uint8_t which=0);
+  uint64_t		clusterToOffset(uint32_t cluster);
+  uint32_t		offsetToCluster(uint64_t offset);
+  void			diffFats();
 };
 
 #endif

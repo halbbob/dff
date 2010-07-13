@@ -17,8 +17,9 @@
 #ifndef __BOOTSECTOR_HPP__
 #define __BOOTSECTOR_HPP__
 
-#include "node.hpp"
 #include "vfile.hpp"
+#include <list>
+#include <string>
 
 typedef struct
 {
@@ -69,33 +70,85 @@ typedef struct
 
 } bootsector;
 
+typedef struct
+{
+  char		oemname[8];
+  uint16_t	ssize;
+  uint8_t	csize;
+  uint16_t	reserved;
+  uint8_t	numfat;
+  uint16_t	numroot;
+  uint32_t	prevsect;
+  uint32_t	vol_id;
+  uint8_t	vol_lab[11];
+  uint8_t	fs_type[8];
 
-class bootSector//: public Metadata
+  //Only for Fat32
+  uint16_t	ext_flag;
+  uint16_t	fs_ver;
+  uint32_t	rootclust;
+  uint16_t	fsinfo;
+  uint16_t	bs_backup;
+  uint8_t	drvnum;
+  
+  //total sector count
+  uint32_t	totaldatasector;
+  uint32_t	totalsector;
+  uint32_t	sectperfat;
+  uint32_t	totalcluster;
+  
+  //precomputed values based on bytes per sector and cluster size
+  uint32_t	rootdirsector;
+  uint64_t	firstfatoffset;
+  uint64_t	rootdiroffset;
+  uint32_t	rootdirsize;
+  uint64_t	dataoffset;
+  uint32_t	datasector;
+  uint32_t	fatsize;
+  uint64_t	totalsize;
+
+  //fat type based on computation
+  uint8_t	fattype;
+}		fsctx;
+
+#define BADSSIZE	0x01
+#define BADCSIZE	0x02
+#define BADTOTALSECTOR	0x04
+#define BADRESERVED	0x08
+#define BADNUMFAT	0x10
+#define BADSECTPERFAT	0x20
+#define BADNUMROOT	0x40
+//#define BAD		0x70
+
+#define ERRFATTYPEMASK	0x7F
+
+class BootSector: public fsctx
 {
 private:
-  Node*		parent;
-  void		bootsectorToCtx();
-  bool		checkBootSectorFields();
-  bool		DetermineFatType();
-
-public:
-  bootSector();
-  ~bootSector();
-  void	process();
-//   virtual class FileMapping*	getFileMapping(class Node* node);
-//   virtual class Attributes*	getAttributes(class Node* node);
-};
-
-class bootSectorNode: public Node
-{
-private:
-  uint64_t	offset;
+  uint8_t	err;
+  std::string	errlog;
+  bootsector	bs;
   Node*		origin;
+  VFile*	vfile;
+
+  void		fillSectorSize();
+  void		fillClusterSize();
+  void		fillTotalSector();
+  void		fillTotalSize();
+  void		fillReserved();
+  void		fillSectorPerFat();
+  void		fillNumberOfFat();
+  void		fillNumRoot();
+  void		fillFatType();
+  void		fillExtended();
+  void		fillCtx();
+//   bool		checkBootSectorFields();
+//   bool		fillBaseParameters();
+//   bool		fillExtendedParameters();
 public:
-  bootSectorNode(std::string name, mfso* fsobj, Node* parent, Node* readon, uint64_t offset);
-  ~bootSectorNode();
-  class FileMapping*	getFileMapping();
-  class Attributes*	getAttributes();
+  BootSector();
+  ~BootSector();
+  void			process(Node* node);
 };
 
 #endif

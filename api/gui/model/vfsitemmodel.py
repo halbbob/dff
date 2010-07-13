@@ -53,10 +53,9 @@ class ImageThumb():
       f.close()
       load = img.loadFromData(buff)
     if load:
-      img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
+      img = img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
       return img
-    else:
-      return None
+    return None
 
   def getThumb(self, node):
      buff = ""
@@ -83,11 +82,13 @@ class TypeWorker(QThread):
     self.typeQueue.put((parent, index, node))
 
   def clearQueue(self):
+     self.typeQueue = Queue() # ok ?
      #self.typeQueue.all_tasks_done()
      #print self.typeQueue.empty()
      pass
 
   def isImage(self, ftype):
+      #return  self.regImage.match(type)
     res = self.regImage.search(ftype)
     return res
 
@@ -110,7 +111,7 @@ class TypeWorker(QThread):
              val = Variant("broken")
              val.thisown = False
              node.setStaticAttribute("type", val)
-         parent.emit(SIGNAL('dataType'), index, node) 
+             #parent.emit(SIGNAL('dataType'), index, node) 
        self.typeQueue.task_done()
 
 typeWorker = TypeWorker()
@@ -130,13 +131,11 @@ class VFSItemModel(QAbstractItemModel):
     self.thumbQueued = {}
 
   def setDataType(self, index, node, type = None):
-     #self.data(index, Qt.DecorationRole)
      self.__parent.currentView().viewport().update()
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(node.absolute(), pixmap)
-     #self.data(index, Qt.DecorationRole)
      self.__parent.currentView().viewport().update()
 
   def refresh(self, node):
@@ -149,6 +148,7 @@ class VFSItemModel(QAbstractItemModel):
     self.emit(SIGNAL("rootPathChanged()"), item)
     self.rootItem = node
     self.rootChildCount = node.childCount()
+    #typeWorker.clearQueue()
     #self.fetchedItems = 0
     self.reset()  
 
@@ -156,8 +156,7 @@ class VFSItemModel(QAbstractItemModel):
     self.rootItem = node
     self.rootChildCount = node.childCount()
     #self.fetchedItems = 0
-#   typeWorker.clearQueue()
-    self.thumbQeued = {}
+    #typeWorker.clearQueue()  #find a way to clear the queue / must have a queue by browser
     self.reset()  
 # 
   #def canFetchMore(self, parent):
@@ -239,44 +238,35 @@ class VFSItemModel(QAbstractItemModel):
           else:
             return QVariant()
       except IndexError:
-        return QVariant()
+        pass 
       if column == HMODULE:
         fsobj = node.fsobj()
         if (fsobj != None):
-          return QVariant(fsobj.name())
+          return QVariant(fsobj.name)
         else:
           return QVariant()
-
     if role == Qt.TextColorRole:
       if column == 0:
         if node.isDeleted():
           return  QVariant(QColor(Qt.red))
-
     if role == Qt.DecorationRole:
       if column == HNAME:
-        if node.isFile():
-          if node.hasChildren():
-            return QVariant(QIcon(":folder_documents_128.png"))
+        if not node.hasChildren():
+          if node.isDir():
+            return QVariant(QIcon(":folder_128.png"))
+          if not node.size():
+            return QVariant(QIcon(":folder_empty_128.png"))
           try:
             attrs = node.staticAttributes()
             map = attrs.attributes()
             ftype = str(map["type"])
           except (IndexError, AttributeError):
-            try:
-              self.thumbQueued[str(node.absolute())]
-            except KeyError:
-              self.thumbQueued[str(node.absolute())] = (node, index)
-              typeWorker.enqueue(self, index, node)
-            if self.imagesthumbnails:
-              return QVariant(QIcon(":file_temporary.png"))
-            else:
-              return QVariant(QIcon(":file.png"))
-
+            typeWorker.enqueue(self, index, node)
+            return QVariant(QIcon(":file_temporary.png"))
           if ftype == "broken":
-            return QVariant()
+            return QVariant(QIcon(":file_broken.png"))
             #transparent broken icon (too slow !)	
             #pixmap = QPixmap(":image.png")
-            #print pixmap
             #broken = QPixmap(":file_broken.png")
             #mask = broken.createHeuristicMask()  
             #pixmap.setMask(mask)
@@ -289,19 +279,16 @@ class VFSItemModel(QAbstractItemModel):
             elif typeWorker.isImage(ftype):
               typeWorker.enqueue(self, index, node)
               return QVariant(QIcon(":file_temporary.png"))
-            else:
-              return QVariant(QIcon(":file.png"))
-          else:
-            return QVariant(QIcon(":file.png"))
-        elif node.isDir():
-          return QVariant(QIcon(":folder_128.png"))
+          return QVariant(QIcon(":folder_empty_128.png"))
         else:
-          return QVariant()
+          if node.size() != 0:
+	    return QVariant(QIcon(":folder_documents_128.png"))
+          else:
+	    return QVariant(QIcon(":folder_128.png"))
     return QVariant() 
 
   def setImagesThumbnails(self, flag):
-    pass
-    #self.imagesthumbnails = flag
+    self.imagesthumbnails = flag
  
   def columnCount(self, parent = QModelIndex()):
      return 6

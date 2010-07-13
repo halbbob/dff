@@ -81,8 +81,6 @@ class mfso//: //public fso
 private:
   std::map<Node*, class VFile*>			__origins;
   FdManager*					__fdmanager;
-  std::string					__stateinfo;
-  results*					__res;
   std::string					__name;
   class VFile*					__vfile;
   //std::list<class Node*>			nodeList;
@@ -111,10 +109,10 @@ protected:
 //   virtual	uint64_t		getStartOffset() = 0;
 //   virtual	uint64_t		getEndOffset() = 0;
 //  EXPORT class Node			*createNode(class Node *parent, Decoder *decoder, uint64_t offset);
-  void					setStateInfo(std::string stateinfo);
-  void					registerTree(Node* parent, Node* head);
   
 public:
+  results*					res;
+  std::string					stateinfo;
   //  EXPORT mfso();
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
@@ -127,11 +125,11 @@ public:
   EXPORT virtual uint32_t	status(void);
   EXPORT virtual uint64_t	vtell(int32_t fd);
 
+
+  void					registerTree(Node* parent, Node* head);
   EXPORT void			setVerbose(bool verbose);
   EXPORT bool			verbose();
-  EXPORT std::string		stateInfo();
-  EXPORT results*		res();
-  EXPORT std::string		name();
+  EXPORT std::string		name;
   // EXPORT virtual void	pause();
   // EXPORT virtual void	resume();
   // EXPORT virtual void	kill();

@@ -14,67 +14,283 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-Dos::Dos()
+#include "entries.hpp"
+
+EntriesManager::EntriesManager(uint8_t fattype)
+{
+  this->fattype = fattype;
+  this->c = NULL;
+}
+
+EntriesManager::~EntriesManager()
 {
 }
 
-Dos::~Dos()
+// void		EntriesManager::setContext(Node* origin)
+// {
+// }
+
+// void		EntriesManager::setContext(uint8_t fattype)
+// {
+//   this->fattype = fattype;
+// }
+
+lfnentry*	EntriesManager::toLfn(uint8_t* entry)
 {
+  lfnentry*	lfn;
+
+  lfn = new lfnentry;
+  lfn->order = entry[0];
+  memcpy(lfn->first, entry+1, 10);
+  lfn->attributes = entry[11];
+  lfn->reserved = entry[12];
+  lfn->checksum = entry[13];
+  memcpy(lfn->second, entry+14, 12);
+  memcpy(&(lfn->cluster), entry+26, 2);
+  memcpy(lfn->third, entry+28, 4);
+  return lfn;
 }
 
-bool		Dos::sanitizeEntry(dectx* ctx)
+dosentry*	EntriesManager::toDos(uint8_t* entry)
 {
+  dosentry*	dos;
+
+  dos = new dosentry;
+  memcpy(dos->name, entry, 8);
+  memcpy(dos->ext, entry+8, 3);
+  dos->attributes = entry[11];
+  dos->ntres = entry[12];
+  dos->ctimetenth = entry[13];
+  memcpy(&(dos->ctime), entry+14, 2);
+  memcpy(&(dos->cdate), entry+16, 2);
+  memcpy(&(dos->adate), entry+18, 2);
+  memcpy(&(dos->clusthigh), entry+20, 2);
+  memcpy(&(dos->mtime), entry+22, 2);
+  memcpy(&(dos->mdate), entry+24, 2);
+  memcpy(&(dos->clustlow), entry+26, 2);
+  memcpy(&(dos->size), entry+28, 4);
+  return dos;
 }
 
-dectx*		Dos::createDentryCtx(Node* n)
+void	EntriesManager::updateLfnName(lfnentry* lfn)
 {
-  VFile*	vfile;
-  dosentry*	dentry;
-  dectx*	ctx;
+  int	i;
+  std::string	name;
 
-  try
+  i = 0;
+  name = "";
+  //while ((i != 10) && (lfn->first[i] != 0x20) && (lfn->first[i] != 0xFF) && (lfn->first[i] != 0x00))
+  while ((i != 10) && (lfn->first[i] != 0xFF) && (lfn->first[i] != 0x00))
     {
-      dentry = new dosentry;
-      vfile = n->open();
-      vfile->seek(n->getOffset());
-      if (vfile->read(dentry, sizeof(dosentry)) != sizeof(dosentry))
-	return NULL;
-      ctx = new dectx;
-      memcpy(ctx->name, dentry->name, 8);
-      memcpy(ctx->ext, dentry->ext, 3);
-      ctx->attrib = dentry->attrib;
-      ctx->lowercase = dentry->lowercase;
-      ctx->ctimeten = dentry->ctimeten;       /* create times */
-      ctx->ctime = *((uint16_t*)dentry->ctime);
-      ctx->cdate = *((uint16_t*)dentry->cdate);
-      ctx->adate = *((uint16_t*)dentry->adate);/* access time */
-      ctx->highclust = *((uint16_t*)dentry->highclust);
-      ctx->wtime = *((uint16_t*)dentry->wtime);       /* last write time */
-      ctx->wdate = *((uint16_t*)dentry->wdate);
-      ctx->startclust = *((uint16_t*)dentry->startclust);
-      ctx->size = *((uint32_t*)dentry->size);
-      delete dentry;
-      return (ctx);
+      name += lfn->first[i];
+      i += 2;
     }
-  catch(vfsError e)
+  i = 0;
+  //while ((i != 12) && (lfn->second[i] != 0x20) && (lfn->second[i] != 0xFF) && (lfn->second[i] != 0x00))
+  while ((i != 12) && (lfn->second[i] != 0xFF) && (lfn->second[i] != 0x00))
     {
-      throw ("Fat module: dosEntry::isRelevant cannot open node" + e.error);
-    }  
+      name += lfn->second[i];
+      i += 2;
+    }
+  i = 0;
+  //while ((i != 4) && (lfn->third[i] != 0x20) && (lfn->third[i] != 0xFF) && (lfn->third[i] != 0x00))
+  while ((i != 4) && (lfn->third[i] != 0xFF) && (lfn->third[i] != 0x00))
+    {
+      name += lfn->third[i];
+      i += 2;
+    }
+  this->c->lfnname = name + this->c->lfnname;
 }
 
-
-lfnEntry::lfnEntry()
+bool	EntriesManager::isDosName(uint8_t* buff)
 {
+  int	i;
+
+  if ((buff[0] != 0xE5) && (buff[0] != '.') && (FATFS_IS_83_NAME(buff[0]) == 0))
+    return false;
+  if (buff[0] == 0x20)
+    return false;
+  if ((memcmp(buff, "\x2E\x20\x20\x20\x20\x20\x20\x20", 8) == 0) ||
+      (memcmp(buff, "\x2E\x2E\x20\x20\x20\x20\x20\x20", 8) == 0))
+    return false;
+  else
+    {
+      for (i = 2; i != 8; i++)
+	if (FATFS_IS_83_NAME(buff[i]) == 0)
+	  return false;
+      for (i = 0; i != 3; i++)
+	if (FATFS_IS_83_EXT(buff[8+i]) == 0)
+	  return false;
+    }
+  return true;
 }
 
-lfnEntry::~lfnEntry()
+bool	EntriesManager::isDosEntry(uint8_t* buff)
 {
+  if (*(buff+11) & ATTR_NORMAL) 
+    {
+      if ((*(buff+11) & ATTR_VOLUME) ||
+	  (*(buff+11) & ATTR_DIRECTORY))
+	return false;
+    }
+  if (*(buff+11) & ATTR_VOLUME) 
+    {
+      if ((*(buff+11) & ATTR_DIRECTORY) ||
+	  (*(buff+11) & ATTR_READ_ONLY) ||
+	  (*(buff+11) & ATTR_ARCHIVE))
+	return false;
+    }
+  return this->isDosName(buff);
 }
 
-Entry::Entry()
+void	EntriesManager::setDosName(dosentry* dos)
 {
+  std::string	name;
+  int		i;
+
+  name = "";
+  i = 0;
+  if (dos->name[0] == 0xe5)
+    {
+      name += "_";
+      i = 1;
+    }
+  while ((i != 8) && (dos->name[i] != '\x20'))
+    {
+      if (((dos->ntres & FATFS_CASE_LOWER_BASE) == FATFS_CASE_LOWER_BASE) &&
+	  (dos->name[i] >= 'A') && (dos->name[i] <= 'Z'))
+	name += dos->name[i] + 32;
+      else
+	name += dos->name[i];
+      i++;
+    }
+  i = 0;
+  while ((i != 3) && (dos->ext[i] != '\x20'))
+    {
+      if (i == 0)
+	name += ".";
+      if (((dos->ntres & FATFS_CASE_LOWER_EXT) == FATFS_CASE_LOWER_EXT) &&
+	  (dos->ext[i] >= 'A') && (dos->ext[i] <= 'Z'))
+	name += dos->ext[i] + 32;
+      else
+	name += dos->ext[i];
+      i++;
+    }
+  this->c->dosname = name;
 }
 
-Entry::~Entry()
+bool	EntriesManager::isChecksumValid(uint8_t* buff)
 {
+  uint8_t	sum;
+  int		i;
+
+  if (this->c->lfnmetaoffset != 0)
+    { 
+      for (i = 11; i; i--)
+	sum = ((sum & 1) << 7) + (sum >> 1) + *buff++;
+      if (sum == this->c->checksum)
+	return true;
+      else
+	return false;
+    }
+  else
+    return true;
+}
+
+bool	EntriesManager::push(uint8_t* buff, uint64_t offset)
+{
+  lfnentry*	lfn;
+  dosentry*	dos;
+
+  if (this->c == NULL)
+    this->initCtx();
+  if (*(buff+11) > 0x3F)
+    return false;
+  if (((*(buff+11)) & ATTR_LFN) == ATTR_LFN)
+    {
+      if ((*(buff) > (FATFS_LFN_SEQ_FIRST | 0x0f))
+	  && ((*buff) != 0xE5))
+	return false;
+      else
+	{
+	  lfn = this->toLfn(buff);
+	  if (this->c->lfnmetaoffset == 0)
+	    {
+	      //this->c->checksum = *(buff+13);
+	      this->c->lfnmetaoffset = offset;
+	    }
+// 	  else if (this->c->checksum == *(buff+13))
+	  this->updateLfnName(lfn);
+// 	  else
+// 	    {
+// 	      //printf("bad checksum between: 0x%llx / 0x%llx -- prev checksum: %d -- current checksum: %d\n", this->c->lfnmetaoffset, offset, this->c->checksum, *(buff+13));
+// 	      this->c->checksum = 0;
+// 	      this->c->lfnmetaoffset = 0;
+// 	      this->c->lfnname = "";
+// 	    }
+	  delete lfn;
+	  return false;
+	}
+    }
+  else
+    {
+      if (this->isDosEntry(buff))
+	{
+// 	  if (this->isChecksumValid(buff))
+// 	    {
+// 	      this->c->lfnmetaoffset = 0;
+// 	      this->c->lfnname = "";
+// 	    }
+	  this->c->dosmetaoffset = offset;
+	  dos = this->toDos(buff);
+	  this->setDosName(dos);
+	  if ((dos->attributes & ATTR_DIRECTORY) == ATTR_DIRECTORY)
+	    {
+// 	      if (dos->size != 0)
+// 		this->c->valid = false;
+	      this->c->dir = true;
+	    }
+	  if (dos->name[0] == 0xE5)
+	    this->c->deleted = true;
+	  this->c->size = dos->size;
+	  if ((this->fattype == 12) || (this->fattype == 16))
+	    this->c->cluster = dos->clustlow;
+	  else
+	    {
+	      this->c->cluster = dos->clustlow;
+	      this->c->cluster |= (dos->clusthigh << 16);
+	    }
+	  delete dos;
+	  return true;
+	}
+      else
+	return false;
+    }
+}
+
+void	EntriesManager::initCtx()
+{
+  this->c = new ctx;
+  this->c->valid = true;
+  this->c->dosname = "";
+  this->c->lfnname = "";
+  this->c->dir = false;
+  this->c->deleted = false;
+  this->c->size = 0;
+  this->c->cluster = 0;
+  this->c->lfnmetaoffset = 0;
+  this->c->dosmetaoffset = 0;
+}
+
+// void	EntriesManager::convert()
+// {
+// }
+
+ctx*	EntriesManager::fetchCtx()
+{
+  ctx*	ret;
+  
+  ret = this->c;
+  this->c = NULL;
+  return ret;
 }

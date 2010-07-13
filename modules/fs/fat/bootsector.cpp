@@ -16,177 +16,278 @@
 
 #include "bootsector.hpp"
 
-bootSector::bootSector()
+BootSector::BootSector()
 {
-  //this->bs = new bootsector;
-  //  this->parent = parent;
+  this->errlog = "";
+  this->err = 0;
 }
 
-bootSector::~bootSector()
+BootSector::~BootSector()
 {
-  //delete this->bs;
 }
 
-//XXX -- Check as much values as possible
-bool	bootSector::checkBootSectorFields()
+void	BootSector::process(Node *origin)
 {
-  // if ( (this->ctx->spec->ssize != 512) &&
-  //      (this->ctx->spec->ssize != 1024) &&
-  //      (this->ctx->spec->ssize != 2048) &&
-  //      (this->ctx->spec->ssize != 4096))
-  //   throw("Fatfs: sector size field not valid");
-  // if ((this->ctx->spec->csize != 0x01) &&
-  //     (this->ctx->spec->csize != 0x02) &&
-  //     (this->ctx->spec->csize != 0x04) &&
-  //     (this->ctx->spec->csize != 0x08) &&
-  //     (this->ctx->spec->csize != 0x10) &&
-  //     (this->ctx->spec->csize != 0x20) &&
-  //     (this->ctx->spec->csize != 0x40) && 
-  //     (this->ctx->spec->csize != 0x80))
-  //   throw("Fatfs: cluster size field not valid");
-  // if (this->ctx->spec->sectors16 != 0)
-  //   this->ctx->spec->totalsector = (uint32_t)this->ctx->spec->sectors16;
-  // else if (this->ctx->spec->sectors32 != 0)
-  //   this->ctx->spec->totalsector = this->ctx->spec->sectors32;
-  // else
-  //   throw("Fatfs: total sector count not setted");
-  // this->ctx->spec->totalsize = this->ctx->spec->totalsector * this->ctx->spec->ssize;
-  // if (this->ctx->spec->sectperfat16 != 0)
-  //   this->ctx->spec->sectperfat = (uint32_t)this->ctx->spec->sectperfat16;
-  // else if (this->ctx->spec->sectperfat32 != 0)
-  //   this->ctx->spec->sectperfat = (uint32_t)this->ctx->spec->sectperfat32;
-  // else
-  //   throw("Fatfs: sector per fat not setted");
-  // this->ctx->spec->fatsize = this->ctx->spec->sectperfat * this->ctx->spec->ssize;
-  // if ((this->ctx->spec->fatsize == 0) || (this->ctx->spec->numfat == 0))
-  //   throw("Fatfs: size of fat and number of fat not valid");
+  this->origin = origin;
+  try
+    {
+      this->vfile = this->origin->open();
+      if (this->vfile->read(&(this->bs), sizeof(bootsector)) == 512)
+	this->fillCtx();
+    }
+  catch(...)
+    {
+      throw("err");
+    }
+}
+
+void	BootSector::fillSectorSize()
+{
+  this->ssize = *((uint16_t*)this->bs.ssize);
+  if ((this->ssize != 512) &&
+      (this->ssize != 1024) &&
+      (this->ssize != 2048) &&
+      (this->ssize != 4096))
+    {
+      this->errlog += "invalid sector size field\n";
+      this->err |= BADSSIZE;
+    }
+}
+
+void	BootSector::fillClusterSize()
+{
+  this->csize = this->bs.csize;
+  if ((this->csize != 0x01) &&
+      (this->csize != 0x02) &&
+      (this->csize != 0x04) &&
+      (this->csize != 0x08) &&
+      (this->csize != 0x10) &&
+      (this->csize != 0x20) &&
+      (this->csize != 0x40) && 
+      (this->csize != 0x80))
+    {
+      this->errlog += "invalid cluster size field\n";
+      this->err |= BADCSIZE;
+    }
+}
+
+void   BootSector::fillTotalSector()
+{
+  uint16_t	sectors16;
+  uint32_t	sectors32;
+
+  sectors16 = *((uint16_t*)this->bs.sectors16);
+  sectors32 = *((uint32_t*)this->bs.sectors32);
+  if (sectors16 != 0)
+    this->totalsector = (uint32_t)sectors16;
+  else if (sectors32 != 0)
+    this->totalsector = sectors32;
+  else
+    {
+      this->errlog += "total sector field not defined\n";
+      this->err |= BADTOTALSECTOR;
+    }
+//   if (this->totalsector * this->ssize > this->node->size())
+//     this->warnlog.push_back("total sector size ");
+}
+
+void	BootSector::fillTotalSize()
+{
+  uint32_t	missingsect;
+
+  if (((this->err & BADTOTALSECTOR) != BADTOTALSECTOR) && ((this->err & BADSSIZE) != BADSSIZE))
+    {
+      this->totalsize = (uint64_t)this->totalsector * (uint64_t)this->ssize;
+      if (this->totalsize > this->origin->size())
+	{
+	  missingsect = (this->totalsize - this->origin->size()) / (uint64_t)this->ssize;
+	  this->errlog += "total size exceeds node size\n";
+	}
+    }
+}
+
+void	BootSector::fillReserved()
+{
+  this->reserved = *((uint16_t*)this->bs.reserved);
+  if (((this->err & BADTOTALSECTOR) != BADTOTALSECTOR) && (this->reserved > this->totalsector))
+    {
+      this->errlog += "number of reserved sector(s) exceeds total number of sectors\n";
+      this->err |= BADRESERVED;
+    }
+}
+
+//if numfat setted to 0, search for FAT pattern
+void	BootSector::fillSectorPerFat()
+{
+  uint16_t	sectperfat16;
+  uint32_t	sectperfat32;
+
+  this->sectperfat = 0;
+  sectperfat16 = *((uint16_t*)this->bs.sectperfat16);
+  sectperfat32 = *((uint32_t*)this->bs.a.f32.sectperfat32);
+  if (sectperfat16 != 0)
+    this->sectperfat = (uint32_t)sectperfat16;
+  else if (sectperfat32 != 0)
+    this->sectperfat = sectperfat32;
+  else
+    {
+      this->errlog += "total sector per fat not defined\n";
+      this->err |= BADSECTPERFAT;
+    }
+  if (((this->err & BADTOTALSECTOR) != BADTOTALSECTOR) && (this->sectperfat > this->totalsector))
+    {
+      this->errlog += "total number of sector(s) per fat exceeds total number of sectors\n";
+      this->err |= BADSECTPERFAT;
+    }
+}
+
+void	BootSector::fillNumberOfFat()
+{
+  this->numfat = this->bs.numfat;
+  if (this->numfat == 0)
+    {
+      this->errlog += "number of fat not defined\n";
+      this->err |= BADNUMFAT;
+    }
+  if (((this->err & BADTOTALSECTOR) != BADTOTALSECTOR) && 
+      ((this->err & BADSECTPERFAT) != BADSECTPERFAT) &&
+      ((this->numfat * this->sectperfat) > this->totalsector))
+    {
+      this->errlog += "total number of sector allocated for FAT(s) exceeds total number of sectors\n";
+      this->err |= BADNUMFAT;
+    }
+}
+
+void	BootSector::fillNumRoot()
+{
+  this->numroot = *((uint16_t*)this->bs.numroot);
+//   if (((this->fattype == 12) || (this->fattype == 16)) && (this->numroot < 2)) // . and .. entries
+//     {
+//       this->err |= BADNUMROOT;
+//       this->errlog += "total number of entries in root directory less than 2 (. and .. entries)\n";
+//     }
+//   else if (((this->numroot * 32) / this->ssize) > this->totalsector)
+//     {
+//       this->err |= BADNUMROOT;
+//       this->errlog += "total number of entries in root directory exceeds total number of sector\n";
+//     }
+}
+
+void		BootSector::fillFatType()
+{
+  this->rootdirsector = ((this->numroot * 32) + (this->ssize - 1)) / this->ssize;
+  this->rootdirsize = (this->numroot * 32);
+  this->datasector = this->reserved + (this->numfat * this->sectperfat) + this->rootdirsector;
+  this->totaldatasector = this->totalsector - (this->reserved + (this->numfat * this->sectperfat) + this->rootdirsector);
+  this->totalcluster = this->totaldatasector / this->csize;
+  this->firstfatoffset = this->reserved * this->ssize;
+
+  if(this->totalcluster < 4085)
+    this->fattype = 12;
+  else if(this->totalcluster < 65525)
+    this->fattype = 16;
+  else
+    this->fattype = 32;
+}
+
+void	BootSector::fillExtended()
+{
+  this->totalsize = (uint64_t)this->totaldatasector * this->ssize;
+  if (this->fattype == 32)
+    {
+      this->vol_id = *((uint32_t*)this->bs.a.f32.vol_id);
+      memcpy(this->vol_lab, this->bs.a.f32.vol_lab, 11);
+      memcpy(this->fs_type, this->bs.a.f32.fs_type, 8);
+      this->rootclust = *((uint32_t*)this->bs.a.f32.rootclust);
+      this->ext_flag = *((uint16_t*)this->bs.a.f32.ext_flag);
+      this->fs_ver = *((uint16_t*)this->bs.a.f32.fs_ver);
+      this->fsinfo = *((uint16_t*)this->bs.a.f32.fsinfo);
+      this->bs_backup = *((uint16_t*)this->bs.a.f32.bs_backup);
+      this->drvnum = this->bs.a.f32.drvnum;
+      this->rootdiroffset = ((this->rootclust - 2) * this->csize) + this->datasector * this->ssize;
+      this->dataoffset = this->reserved * this->ssize + this->fatsize * this->numfat;
+    }
+  else
+    {
+      this->vol_id = *((uint32_t*)this->bs.a.f16.vol_id);
+      memcpy(this->vol_lab, this->bs.a.f16.vol_lab, 11);
+      memcpy(this->fs_type, this->bs.a.f16.fs_type, 8);
+      this->rootdiroffset = this->firstfatoffset + this->fatsize * this->numfat;
+      this->dataoffset = this->firstfatoffset + this->fatsize * this->numfat + rootdirsector * this->ssize;
+    }
+}
+
+void	BootSector::fillCtx()
+{
+  memcpy(this->oemname, this->bs.oemname, 8);
+  this->fillSectorSize();
+  this->fillClusterSize();
+  this->fillTotalSector();
+  this->fillReserved();
+  this->fillSectorPerFat();
+  this->fillNumberOfFat();
+  this->fillNumRoot();
+  this->prevsect = *((uint32_t*)this->bs.prevsect);
+  if (this->err != 0)
+    {
+      std::cout << "error: " << this->errlog << std::endl;
+      throw("bad bootsector");
+    }
+  else
+    {
+      this->fatsize = this->sectperfat * this->ssize;
+      this->fillFatType();
+      this->fillExtended();
+      char name[9];
+      memset(name, 0, 9);
+      memcpy(name, this->oemname, 8);
+      printf("oemname: %s\n", name);
+      printf("ssize: %d\n", this->ssize);
+      printf("csize: %d\n", this->csize);
+      printf("reserved: %d\n", this->reserved);
+      printf("numfat: %d\n", this->numfat);
+      printf("numroot: %d\n", this->numroot);
+      printf("prevsect: %d\n", this->prevsect);
+      printf("vol id: %d\n", this->vol_id);
+      char vollab[12];
+      memset(vollab, 0, 12);
+      memcpy(vollab, this->vol_lab, 11);
+      printf("vol lab: %s\n", vollab);
+      char fstype[9];
+      memset(fstype, 0, 9);
+      memcpy(fstype, this->fs_type, 8);
+      printf("fstype: %s\n", fstype);
+      printf("root clust: %d\n", this->rootclust);
+      printf("total data sector: %d\n", this->datasector);
+      printf("total sector: %d\n", this->totalsector);
+      printf("sect per fat: %d\n", this->sectperfat);
+      printf("total cluster: %d\n", this->totalcluster);
+      printf("root dir sector: %d\n", this->rootdirsector);
+      printf("first fat offset: 0x%llx\n", this->firstfatoffset);
+      printf("root dir offset: 0x%llx\n", this->rootdiroffset);
+      printf("root dir size: %d\n", this->rootdirsize);
+      printf("data offset: 0x%llx\n", this->dataoffset);
+      printf("data sector: %d\n", this->datasector);
+      printf("fatsize: %d\n", this->fatsize);
+      printf("total size: %d\n", this->totalsize);
+    }
 }
 
 //Further implementation:
 // - create translation based on endianness
-void	bootSector::bootsectorToCtx()
-{
-//   this->ctx->spec->ssize = *((uint16_t*)this->bs->ssize);
-//   this->ctx->spec->csize = this->bs->csize;
-//   this->ctx->spec->reserved = *((uint16_t*)this->bs->reserved);
-//   this->ctx->spec->numfat = this->bs->numfat;
-//   this->ctx->spec->numroot = *((uint16_t*)this->bs->numroot);
-//   this->ctx->spec->sectors16 = *((uint16_t*)this->bs->sectors16);
-//   this->ctx->spec->sectperfat16 = *((uint16_t*)this->bs->sectperfat16);
-//   this->ctx->spec->prevsect = *((uint32_t*)this->bs->prevsect);
-//   this->ctx->spec->sectors32 = *((uint32_t*)this->bs->sectors32);
-//   this->ctx->spec->sectperfat32 = *((uint32_t*)this->bs->a.f32.sectperfat32);
-//   this->ctx->spec->ext_flag = *((uint16_t*)this->bs->a.f32.ext_flag);
-//   this->ctx->spec->fs_ver = *((uint16_t*)this->bs->a.f32.fs_ver);
-//   this->ctx->spec->rootclust = *((uint32_t*)this->bs->a.f32.rootclust);
-//   this->ctx->spec->fsinfo = *((uint16_t*)this->bs->a.f32.fsinfo);
-//   this->ctx->spec->bs_backup = *((uint16_t*)this->bs->a.f32.bs_backup);
+// void	BootSector::createCtx()
+// {
+//    uint32_t	rootdirsector;
+
+
 // }
 
 // bool	bootSector::DetermineFatType()
 // {
-//   uint32_t	rootdirsector;
 
-//   rootdirsector = ((this->ctx->spec->numroot * 32) + (this->ctx->spec->ssize - 1)) / this->ctx->spec->ssize;
-//   this->ctx->spec->datasector = this->ctx->spec->reserved + (this->ctx->spec->numfat * this->ctx->spec->fatsize) + rootdirsector;
-//   this->ctx->spec->totaldatasector = this->ctx->spec->totalsector - (this->ctx->spec->reserved + (this->ctx->spec->numfat * this->ctx->spec->sectperfat) + rootdirsector);
-//   this->ctx->spec->totalcluster = this->ctx->spec->totaldatasector / this->ctx->spec->csize;
-//   this->ctx->spec->firstfatoffset = this->ctx->spec->reserved * this->ctx->spec->ssize;
-  
-//   if(this->ctx->spec->totalcluster < 4085)
-//     {
-//       this->ctx->spec->fattype = 12;
-//       this->ctx->spec->rootdiroffset = this->ctx->spec->firstfatoffset + this->ctx->spec->fatsize * this->ctx->spec->numfat;
-//       this->ctx->spec->dataoffset = this->ctx->spec->firstfatoffset + this->ctx->spec->fatsize * this->ctx->spec->numfat + rootdirsector * this->ctx->spec->ssize;
-//     }
-//   else if(this->ctx->spec->totalcluster < 65525)
-//     {
-//       this->ctx->spec->fattype = 16;
-//       this->ctx->spec->rootdiroffset = this->ctx->spec->firstfatoffset + this->ctx->spec->fatsize * this->ctx->spec->numfat;
-//       this->ctx->spec->dataoffset = this->ctx->spec->firstfatoffset + this->ctx->spec->fatsize * this->ctx->spec->numfat + rootdirsector * this->ctx->spec->ssize;
-//     }
-//   else
-//     {
-//       this->ctx->spec->fattype = 32;
-//       this->ctx->spec->rootdiroffset = ((this->ctx->spec->rootclust - 2) * this->ctx->spec->csize) + this->ctx->spec->datasector;
-//       this->ctx->spec->dataoffset = this->ctx->spec->reserved * this->ctx->spec->ssize + this->ctx->spec->fatsize * this->ctx->spec->numfat;
-//     }
-}
+// }
 
 // bsctx*		bootSector::getBootSectorContext()
 // {
 //   return (this->ctx);
 // }
-
-void	bootSector::process()
-{
-  // this->input = input;
-  // try
-  //   {
-  //     this->vfile = this->input->open();
-  //     if (this->vfile->read(this->bs, sizeof(bootsector)) == 512)
-  // 	{
-  // 	  this->fillParameters(params);
-  // 	  this->checkSpec(params);
-  // 	  this->DetermineFatType(params);
-  // 	}
-  //     else
-  // 	throw("Fatfs: not enough bytes read for boot sector");
-  //   }
-  // catch (...)
-  //   {
-  //     throw("Fatfs: error while reading boot sector");
-  //   }
-}
-
-// Attributes*	bootSector::getAttributes(Node *node)
-// {
-//   Attributes*	attr;
-
-//   attr = new Attributes();
-//   attr->push("size", new Variant(0x200));
-//   attr->push("type of FAT", new Variant(this->ctx->spec->fattype));
-//   attr->push("oem name", new Variant(this->bs->oemname));
-//   attr->push("sector size", new Variant(this->ctx->spec->ssize));
-//   attr->push("number of fat", new Variant(this->ctx->spec->numfat));
-//   attr->push("allocation block size", new Variant(this->ctx->spec->csize * this->ctx->spec->ssize));
-//   attr->push("total sector available", new Variant(this->ctx->spec->totalsector));
-//   attr->push("total sectors available for data", new Variant(this->ctx->spec->totaldatasector));
-//   attr->push("total cluster", new Variant(this->ctx->spec->totalcluster));
-//   attr->push("root directory offset", new Variant(this->ctx->spec->rootdiroffset));
-//   if (this->ctx->spec->fattype != 32)
-//     attr->push("root directory size", new Variant(this->ctx->spec->rootdirsize));
-//   return attr;
-// }
-
-bootSectorNode::bootSectorNode(std::string name, mfso* fsobj, Node* parent, Node* origin, uint64_t offset): Node(name, parent, fsobj)
-{
-  this->origin = origin;
-  this->offset = offset;
-}
-
-bootSectorNode::~bootSectorNode()
-{
-}
-
-FileMapping*	bootSectorNode::getFileMapping()
-{
-  FileMapping*	fm;
-
-  fm = new FileMapping();
-
-  fm->push(0, 0x200, this->origin, this->offset);
-  fm->push(0x200, 0x200, this->origin, 0x4000);
-  fm->push(0x400, 0x200, this->origin, 0x1000);
-  //std::cout << "bootsector node return mapping" << std::endl;
-  return fm;
-}
-
-Attributes*	bootSectorNode::getAttributes()
-{
-  Attributes*	attr;
-
-  attr = new Attributes();
-  attr->push("size", new Variant(0x200));
-  return attr;
-}

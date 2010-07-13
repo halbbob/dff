@@ -50,14 +50,14 @@ class IODevice(QIODevice):
       return False
 
    def size(self):
-      return long(self.node.attr.size)
+      return long(self.node.size())
 
    def reset(self):
       self.file.seek(0)
       return True
 
    def atEnd(self):
-      if self.file.tell() >= self.node.attr.size:
+      if self.file.tell() >= self.node.size():
 	return True
       return False  
 

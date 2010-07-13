@@ -190,18 +190,18 @@ void		FileMapping::allocChunck(uint64_t offset, uint64_t size, class Node* origi
 //  - reading on this kind of chunck will provide a buffer filled with 0
 void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
-  if (origin != NULL)
-    if (this->__prevChunck != NULL)
-      if ((origin == this->__prevChunck->origin) && (originoffset == (this->__prevChunck->offset + this->__prevChunck->size)))
-	{
-	  this->__prevChunck->size += size;
-	  this->__mappedFileSize += size;
-	}
-      else
-	this->allocChunck(offset, size, origin, originoffset);
-    else
-      this->allocChunck(offset, size, origin, originoffset);
-  else
+	//if (origin != NULL)
+	//if (this->__prevChunck != NULL)
+	//if ((origin == this->__prevChunck->origin) && (originoffset == (this->__prevChunck->offset + this->__prevChunck->size)))
+	//{
+	//this->__prevChunck->size += size;
+	//this->__mappedFileSize += size;
+	//}
+	//else
+	//this->allocChunck(offset, size, origin, originoffset);
+	//else
+	//this->allocChunck(offset, size, origin, originoffset);
+	//else
     this->allocChunck(offset, size, origin, originoffset);
 }
 
@@ -328,6 +328,7 @@ void			Node::setStaticAttribute(std::string key, class Variant* value)
     this->__static_attributes = new Attributes();
   this->__static_attributes->push(key, value);
 }
+
 
 Attributes*			Node::staticAttributes()
 {

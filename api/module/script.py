@@ -19,14 +19,15 @@ from api.exceptions.libexceptions import *
 
 class Script(object):
     def __init__(self, name):
+        print "hello"
 	self.name = name
         self.env = env.env()
         self.vfs = vfs.vfs()
-	self._res = self.env.libenv.results(self.name)
+	self.res = self.env.libenv.results(self.name)
 	self.stateinfo = ""
 
-    def stateInfo(self):
-        return self.stateinfo
-
-    def res(self):
-        return self._res
+    #def stateInfo(self):
+        #return self.stateinfo
+#
+    #def res(self):
+        #return self._res

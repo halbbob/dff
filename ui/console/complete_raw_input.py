@@ -130,7 +130,7 @@ class complete_raw_input():
          sizex = 80
        return sizex    	
 
-     def get_char(self):
+     def get_char(self, timeout = None):
        ch = msvcrt.getch()      
        if len(ch) == 1:
          if ch in string.printable:

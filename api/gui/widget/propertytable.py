@@ -25,14 +25,13 @@ class PropertyTable(QTreeWidget):
     self.setHeaderLabels(["Attribute", "Value"])
     self.setAlternatingRowColors(True)
     self.ft = FILETYPE()
-    #self.setHorizontalHeaderLabels(["Attribute","Value"])
-    #self.setShowGrid(False)
+
 
   def fillBase(self, node):
     fsobj = node.fsobj()
     fsobjname = ""
     if fsobj != None:
-      fsobjname = fsobj.name()
+      fsobjname = fsobj.name
     itemName = QTreeWidgetItem(self)
     itemName.setText(0, "name")
     itemName.setText(1, str(node.name()))
@@ -71,7 +70,7 @@ class PropertyTable(QTreeWidget):
       itemCompat.setText(0, "relevant module(s)")
       buff = ""
       for i in l:
-        buff += str(i)
+        buff += str(i) + " " 
       itemCompat.setText(1, buff)
 
   def fillChildren(self, node):
@@ -128,7 +127,7 @@ class PropertyTable(QTreeWidget):
           if str(type(value.value())).find("VMap") != -1:
             self.fillMap(itemAttr, value.value())
           elif str(type(value.value())).find("VList") != -1:
-            self.fillList(item, value.value())
+            self.fillList(itemAttr, value.value())
           else:
             itemAttr.setText(1, str(value))
         else:
@@ -149,7 +148,7 @@ class PropertyTable(QTreeWidget):
           if str(type(value.value())).find("VMap") != -1:
             self.fillMap(itemAttr, value.value())
           elif str(type(value.value())).find("VList") != -1:
-            self.fillList(item, value.value())
+            self.fillList(itemAttr, value.value())
           else:
             itemAttr.setText(1, str(value))
         else:
@@ -188,27 +187,3 @@ class PropertyTable(QTreeWidget):
       self.fillStaticAttributes(node)
       self.fillExtendedAttributes(node)
 
-      #self.setRowCount(len(table))
-      #self.setColumnCount(2)
-
-      #hHeader = self.horizontalHeader()
-      #hHeader.setStretchLastSection(True)
-      #hHeader.setResizeMode(QHeaderView.ResizeToContents)
-      #hHeader.setSortIndicator(1, 1)
-      #hHeader.setSortIndicatorShown(True)
-
-      #vHeader = self.verticalHeader().hide()
-
-      #self.sortByColumn(1) 
-      #self.setSortingEnabled(True)
-      #count = 0
-      #for key in table:
-      #  item0 = QTableWidgetItem(QString(key))
-      #  item0.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)	
-      #  item1 = QTableWidgetItem(QString(table[key]))
-      #  item1.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)	
-      #  self.setItem(count, 0, item0)
-      #  self.setItem(count, 1, item1)
-      #  count += 1
-      #self.setHorizontalHeaderLabels(["Attribute","Value"])
-      #self.resizeColumnsToContents()   

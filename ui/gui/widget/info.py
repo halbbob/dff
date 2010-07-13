@@ -166,7 +166,7 @@ class Info(QDockWidget):
 	        itemListRes = QTreeWidgetItem(itemModule)
 	        self.itemListResDic[mod] = itemListRes
 	        itemListRes.setText(0, "Results")
-             result = proc.res()
+             result = proc.res
              if result:
                  val_map = self.env.get_val_map(result.val_m)
                  for type, name, val in val_map:
@@ -263,8 +263,8 @@ class Info(QDockWidget):
 	    item.setText(1, str(proc.name))
           if item.text(2) != str(proc.state):
             item.setText(2, str(proc.state))
-          if item.text(3) != str(proc.stateInfo()):
-	    item.setText(3, str(proc.stateInfo()))
+          if item.text(3) != str(proc.stateinfo):
+	    item.setText(3, str(proc.stateinfo))
 
     def deleteInfoProcess(self):
         self.treeProcess.clear()

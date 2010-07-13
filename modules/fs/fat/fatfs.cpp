@@ -19,32 +19,33 @@
 void		Fatfs::process()
 {
   Node	*tmp;
+
   try
     {
-      //this->ctx = new fsinfo;
-      this->root = new Node("Fat File System");
-      //this->bootsector->process(this->parent);
-      tmp = new bootSectorNode("$bootsector", this, this->root, this->parent, 0x0);
-      tmp = new bootSectorNode("$bootsector1", this, this->root, this->parent, 0x200);
-      std::cout << "adding two nodes" << std::endl;
-      //this->fat->process(this->bootsector);
-      this->parent->addChild(this->root);
-      //this->bootsector = new bootSector();
+      if (this->parent->size() > 0)
+	{
+	  this->bs->process(this->parent);
+	  this->fat->setContext(this->parent, this->bs);
+	  this->root = new Node("Fat File System", 0, NULL, this);
+	  this->tree->process(this->parent, this, this->root);
+	  //this->createTree(this->root);
+	  this->root->setDir();
+	  this->registerTree(this->parent, this->root);
+	}
     }
   catch(...)
     {
-      throw("Fatfs module: error while processing");
+      //throw("Fatfs module: error while processing");
     }
   return;
 }
 
 void		Fatfs::setContext(argument* arg)
 {
-  Node	*tmp;
+  //Node	*tmp;
   try
     {
-      arg->get("parent", &tmp);
-      this->parent = tmp;
+      arg->get("parent", &(this->parent));
     }
   catch(...)
     {
@@ -74,6 +75,7 @@ Fatfs::~Fatfs()
 
 Fatfs::Fatfs(): mfso("Fat File System")
 {
-  this->bootsector = new bootSector();
+  this->bs = new BootSector();
   this->fat = new FileAllocationTable();
+  this->tree = new FatTree();
 }

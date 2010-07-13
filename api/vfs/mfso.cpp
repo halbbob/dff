@@ -99,10 +99,10 @@ void		FdManager::remove(int32_t fd)
 
 mfso::mfso(std::string name)
 {
-  this->__name = name;
-  this->__res = new results(this->__name);
+  this->name = name;
+  this->res = new results(this->__name);
   this->__fdmanager = new FdManager();
-  this->__stateinfo = "";
+  this->stateinfo = "";
   this->__verbose = false;
   //this->root = new Node(NULL, name, 0);
 }
@@ -130,25 +130,11 @@ void	mfso::registerTree(Node* parent, Node* head)
 // {
 // }
 
-std::string		mfso::name()
-{
-  return this->__name;
-}
+//std::string		mfso::name()
+//{
+//return this->__name;
+//}
 
-results*		mfso::res()
-{
-  return this->__res;
-}
-
-void			mfso::setStateInfo(std::string stateinfo)
-{
-  this->__stateinfo = stateinfo;
-}
-
-std::string		mfso::stateInfo()
-{
-  return this->__stateinfo;
-}
 
 VFile*		mfso::vfileFromNode(Node* n)
 {
@@ -232,12 +218,14 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 
   eof = false;
   totalread = 0;
+  //printf("%d\n", size);
   while ((totalread != size) && !eof)
     {
       //std::cout << "fd offset: " << fi->offset << std::endl;//""
       try
 	{
 	  current = fi->fm->chunckFromOffset(fi->offset);
+	  //printf("chunck found\n");
 	  relativeoffset = current->originoffset + (fi->offset - current->offset);
 	  relativesize = current->offset + current->size - fi->offset;
 	  if ((size - totalread) < relativesize)
@@ -275,7 +263,20 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	}
       catch(...)
 	{
-	  eof = true;
+// 	  printf("no segment found to read at %llu\n", fi->offset + totalread);
+// 	  if (fi->offset < fi->node->size())
+// 	    {
+// 	      if (totalread < size)
+// 		{
+// 		  memset((uint8_t*)buff+totalread, 0, size-totalread);
+// 		  fi->offset += (size-totalread);
+// 		  totalread += size-totalread;
+// 		}
+// 	      else
+// 		eof = true;
+// 	    }
+// 	  else
+	    eof = true;
 	}
     }
   return totalread;
@@ -293,11 +294,16 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
       fi = this->__fdmanager->get(fd);
       if ((fi->node != NULL) && (fi->fm != NULL))
 	{
-	  //Warn if fi->node->getSize() != fm->getSize() ?
-	  if (size > (fi->fm->mappedFileSize() - fi->offset))
-	    realsize = fi->fm->mappedFileSize() - fi->offset;
+	  if (fi->node->size() <= fi->fm->mappedFileSize())
+	    if (size <= (fi->node->size() - fi->offset))
+	      realsize = size;
+	    else
+	      realsize = fi->node->size() - fi->offset;
 	  else
-	    realsize = size;
+	    if (size <= (fi->fm->mappedFileSize() - fi->offset))
+	      realsize = size;
+	    else
+	      realsize = fi->fm->mappedFileSize() - fi->offset;
 	  bytesread = this->readFromMapping(fi, buff, realsize);
 	  return bytesread;
 	}

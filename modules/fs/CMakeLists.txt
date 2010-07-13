@@ -16,7 +16,7 @@
 
 add_subdirectory (local)
 add_subdirectory (partition)
-#add_subdirectory (fat)
+add_subdirectory (fat)
 #add_subdirectory (carver)
 #add_subdirectory (shm)
 #if(HAVE_FUSE)

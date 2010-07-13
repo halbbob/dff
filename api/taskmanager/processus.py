@@ -18,9 +18,10 @@ from api.vfs.libvfs import *
 from api.taskmanager.scheduler import *
 from api.type.libtype import *
 from api.vfs import *
+from api.env.env import env
 import threading
 
-class Processus():
+class Processus(Script):
   def __init__(self, mod, pid, args, exec_flags):
     self.vfs = vfs.vfs()
     self.mod = mod
@@ -31,6 +32,7 @@ class Processus():
     self.args = args
     self.stream = Queue()
     self.event = threading.Event()
+    self.env = env()
 
   def launch(self):
     self.state = "exec"
@@ -56,32 +58,30 @@ class Processus():
 
   def result(self):
      try :
-       result = self.res()
-       val_map = self.env.get_val_map(result.val_m)
-       for type, name, val in val_map:
+       for type, name, val in self.env.get_val_map(self.res.val_m):
 	     print name + ":" +"\n"  + val
-     except AttributeError:
+     except AttributeError, e:
        pass
 
   def error(self, trace = None):
     if trace:
 	 err_type, err_value, err_traceback = trace 
 	 if issubclass(err_type, envError):
-	    self.res().add_const("error", err_value.error)
+	    self.res.add_const("error", err_value.error)
             return
          elif issubclass(err_type, vfsError):
-	    self.res().add_const("error", err_value.error)
+	    self.res.add_const("error", err_value.error)
 	    return
- 	 self.res().add_const("error", "Error in execution")
+ 	 self.res.add_const("error", "Error in execution")
          err_typval = traceback.format_exception_only(err_type, err_value)
 	 res = ""
          for err in err_typval:
             res += err
-	 self.res().add_const("error type", err)
+	 self.res.add_const("error type", err)
 	 err_trace =  traceback.format_tb(err_traceback)
          for err in err_trace:
 	   res += err
-	   self.res().add_const("error trace", res)
+	   self.res.add_const("error trace", res)
            self.state = "fail"
          return
     try :

@@ -17,23 +17,24 @@
 #ifndef __FATFS_HPP__
 #define __FATFS_HPP__
 
+#include "mfso.hpp"
 #include "bootsector.hpp"
 #include "fat.hpp"
-#include "mfso.hpp"
+#include "fattree.hpp"
 #include "node.hpp"
-//#include "fsinfo.hpp"
 
 class Fatfs : public mfso
 {
 private:
-  Node*			parent;
   Node*			root;
-  bootSector*		bootsector;
-  FileAllocationTable*	fat;
   
 public:
   Fatfs();
   ~Fatfs();
+  Node*			parent;
+  class FatTree*	tree;
+  BootSector*		bs;
+  FileAllocationTable*	fat;
 
   virtual void		start(argument *arg);
   void			setContext(argument* arg);

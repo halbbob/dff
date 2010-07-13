@@ -243,14 +243,14 @@ class ImageView(QWidget, Script):
 
   def setImage(self):
     if self.node.size() != 0:
-      map = self.node.attr.smap
+      #map = self.node.attr.smap
       try:
         #XXX temporary patch for windows magic
-        f = self.node.attr.smap["type"]
+        f = str(self.node.staticAttributes().attributes()["type"])
       except IndexError:
         #XXX temporary patch for windows magic
         self.ft.filetype(node)
-        f = self.node.attr.smap["type"]
+        f = str(self.node.staticAttributes().attributes()["type"])
     res = self.reg_viewer.match(f)
     if res != None:
       type = f[:f.find(" ")]

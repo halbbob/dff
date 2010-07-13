@@ -26,8 +26,9 @@ set(fat_srcs
   fatfs.cpp
   bootsector.cpp
   fat.cpp
-#  entries.cpp
-#  fsinfo.cpp
+  fattree.cpp
+  fatnodes.cpp
+  entries.cpp
 )
 
 

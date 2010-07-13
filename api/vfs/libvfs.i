@@ -106,10 +106,10 @@
     try
     {
   //    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-   //   SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+  //    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
       $action
-       //SWIG_PYTHON_THREAD_END_ALLOW;
-    //  SWIG_PYTHON_THREAD_END_BLOCK;
+    //  SWIG_PYTHON_THREAD_END_ALLOW;
+     // SWIG_PYTHON_THREAD_END_BLOCK;
     }
     catch (Swig::DirectorException e)
     {
@@ -211,6 +211,7 @@ namespace std
   %template(VecNode)    vector<Node*>;
   %template(ListNode)   list<Node*>;
   %template(SetNode)    set<Node *>;
+  %template(VectChunck)  vector<chunck *>;
 #ifdef 64_BITS
   %template(Listui64)	list<unsigned long int>;
 #else
