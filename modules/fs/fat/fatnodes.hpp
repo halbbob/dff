@@ -29,6 +29,9 @@ private:
   uint64_t	lfnmetaoffset;
   uint64_t	dosmetaoffset;
   uint32_t	cluster;
+
+  void		dosToVtime(vtime* vt, uint16_t dos_time, uint16_t dos_date);
+  uint8_t	*readDosEntry();
 public:
   FatNode(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
   ~FatNode();
@@ -40,39 +43,6 @@ public:
   virtual void                  modifiedTime(vtime* mt);
   virtual void                  accessedTime(vtime* at);
   virtual void                  createdTime(vtime* ct);
-};
-
-class FatDir: public Node
-{
-public:
-  FatDir(std::string name, uint64_t size, Node* parent, class Fatfs* fat, uint64_t offset, bool deleted=false);
-  ~FatDir();
-  virtual void                  extendedAttributes(Attributes* attr);
-  virtual void                  modifiedTime(vtime* mt);
-  virtual void                  accessedTime(vtime* at);
-  virtual void                  createdTime(vtime* ct);
-};
-
-class FatFile: public Node
-{
-private:
-  uint64_t      offset;
-public:
-  FatFile(std::string name, uint64_t size, Node* parent, class Fatfs* fat, uint64_t offset, bool deleted=false);
-  ~FatFile();
-  virtual void                  extendedAttributes(Attributes* attr);
-  virtual void                  modifiedTime(vtime* mt);
-  virtual void                  accessedTime(vtime* at);
-  virtual void                  createdTime(vtime* ct);
-};
-
-class SlackFile: public Node
-{
-private:
-  uint64_t      offset;
-public:
-  SlackFile(std::string name, uint64_t size, Node* parent, class Fatfs* fat, uint64_t offset, bool deleted=false);
-  ~SlackFile();
 };
 
 #endif

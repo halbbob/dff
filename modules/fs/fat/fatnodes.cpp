@@ -25,6 +25,27 @@ FatNode::~FatNode()
 {
 }
 
+void	FatNode::dosToVtime(vtime* vt, uint16_t dos_time, uint16_t dos_date)
+{
+  vt->day = (dos_date & 31);
+  vt->month = ((dos_date >> 5) & 15);
+  vt->year = ((dos_date >> 9) + 1980);
+
+  if (dos_time != 0)
+    {
+      vt->second = (dos_time & 31) * 2;
+      vt->minute = ((dos_time >> 5) & 63);
+      vt->hour = (dos_time >> 11);
+    }
+  else
+    {
+      vt->second = 0;
+      vt->minute = 0;
+      vt->hour = 0;
+    }
+}
+
+
 void		FatNode::setLfnMetaOffset(uint64_t lfnmetaoffset)
 {
   this->lfnmetaoffset = lfnmetaoffset;
@@ -80,71 +101,44 @@ void            FatNode::extendedAttributes(Attributes* attr)
 
 void            FatNode::modifiedTime(vtime* mt)
 {
+  uint16_t	mtime;
+  uint16_t	mdate;
+  uint8_t	mbuff[4];
+
+  this->fs->vfile->seek(this->dosmetaoffset+22);
+  this->fs->vfile->read(mbuff, 4);
+  memcpy(&mtime, mbuff, 2);
+  memcpy(&mdate, mbuff+2, 2);
+  this->dosToVtime(mt, mtime, mdate);
 }
 
 void            FatNode::accessedTime(vtime* at)
 {
+  uint16_t	adate;
+
+  this->fs->vfile->seek(this->dosmetaoffset+18);
+  this->fs->vfile->read(&adate, 2);
+  this->dosToVtime(at, 0, adate);
 }
 
 void            FatNode::createdTime(vtime* ct)
 {
+  uint8_t	ctimetenth;
+  uint16_t	ctime;
+  uint16_t	cdate;
+  uint8_t	cbuff[5];
+
+  this->fs->vfile->seek(this->dosmetaoffset+13);
+  this->fs->vfile->read(cbuff, 5);
+//   for (int i = 0; i != 5; i++)
+//     {
+//       if (cbuff[i] < 0x10)
+// 	printf("0x0%x", cbuff[i]);
+//       else
+// 	printf("0x%x", cbuff[i]);
+//     }
+  ctimetenth = *cbuff;
+  memcpy(&ctime, cbuff+1, 2);
+  memcpy(&cdate, cbuff+3, 2);
+  this->dosToVtime(ct, ctime, cdate);
 }
-
-
-
-// FatDir::FatDir(std::string name, uint64_t size, Node* parent, Fatfs* fatfs, uint64_t offset, bool deleted): Node(name, size, parent, fatfs)
-// {
-// }
-
-// FatDir::~FatDir()
-// {
-// }
-
-// void                  FatDir::extendedAttributes(Attributes* attr)
-// {
-// }
-
-// void                  FatDir::modifiedTime(vtime* mt)
-// {
-// }
-
-// void                  FatDir::accessedTime(vtime* at)
-// {
-// }
-
-// void                  FatDir::createdTime(vtime* ct)
-// {
-// }
-
-
-// FatFile::FatFile(std::string name, uint64_t size, Node* parent, Fatfs* fatfs, uint64_t offset, bool deleted): Node(name, size, parent, fatfs)
-// {
-// }
-
-// FatFile::~FatFile()
-// {
-// }
-
-// void                  FatFile::extendedAttributes(Attributes* attr)
-// {
-// }
-
-// void                  FatFile::modifiedTime(vtime* mt)
-// {
-// }
-
-// void                  FatFile::accessedTime(vtime* at)
-// {
-// }
-
-// void                  FatFile::createdTime(vtime* ct)
-// {
-// }
-
-// SlackFile::SlackFile(std::string name, uint64_t size, Node* parent, Fatfs* fatfs, uint64_t offset, bool deleted): Node(name, size, parent, fatfs)
-// {
-// }
-
-// SlackFile::~SlackFile()
-// {
-// }

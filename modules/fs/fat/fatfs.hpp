@@ -36,6 +36,7 @@ public:
   BootSector*		bs;
   FileAllocationTable*	fat;
 
+  VFile*		vfile;
   virtual void		start(argument *arg);
   void			setContext(argument* arg);
   void			process();

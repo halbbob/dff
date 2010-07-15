@@ -54,7 +54,7 @@ void	FatTree::rootdir(Node* parent)
 		  if ((c->dir) && (!c->deleted) && (c->cluster < this->fs->bs->totalcluster))
 		    {
 		      this->depth++;
-		      std::cout << "root dir walk on: " << c->dosname << std::endl;
+		      //std::cout << "root dir walk on: " << c->dosname << std::endl;
 		      this->walk(c->cluster, node);
 		      delete c;
 		      this->depth--;

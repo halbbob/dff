@@ -24,6 +24,7 @@ void		Fatfs::process()
     {
       if (this->parent->size() > 0)
 	{
+	  this->vfile = this->parent->open();
 	  this->bs->process(this->parent);
 	  this->fat->setContext(this->parent, this->bs);
 	  this->root = new Node("Fat File System", 0, NULL, this);
