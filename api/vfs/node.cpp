@@ -118,8 +118,6 @@ chunck*			FileMapping::chunckFromOffset(uint64_t offset)
       endidx = this->__chuncks.size();
       while (true)
 	{
-// 	  std::cout << "begidx: " << begidx << " mididx: " << mididx << " endidx: " << endidx
-// 		    << " offset: " << offset << " mididx->offset: " << this->__chuncks[mididx]->offset << std::endl;
 	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
 	    return this->__chuncks[mididx];
 	  else if (offset < this->__chuncks[mididx]->offset)

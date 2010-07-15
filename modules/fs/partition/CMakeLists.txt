@@ -23,7 +23,6 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 set(partition_srcs
   partition.cpp
   dos.cpp
-  nodes.cpp
 )
 
 SET_SOURCE_FILES_PROPERTIES(partition.i PROPERTIES CPLUSPLUS ON)

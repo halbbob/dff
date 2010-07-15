@@ -19,7 +19,6 @@
 #include <sstream>
 
 #include "dos.hpp"
-#include "nodes.hpp"
 
 char partition_types[256][128] = 
 {
@@ -281,55 +280,90 @@ char partition_types[256][128] =
   "Xenix Bad Block Table"
 };
 
-Pte::Pte()
+std::string	uint32ToStr(uint32_t ui32)
 {
-  this->pte = NULL;
-  this->extended = false;
-  this->sane = false;
+  ostringstream os;
+
+  os << ui32;
+  return os.str();
 }
 
-Pte::~Pte()
+std::string	uint64ToStr(uint64_t ui64)
+{
+  ostringstream os;
+
+  os << ui64;
+  return os.str();
+}
+
+DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin):  Node(name, size, parent, fsobj)
+{
+  this->origin = origin;
+  this->setFile();
+}
+
+DosPartitionNode::~DosPartitionNode()
 {
 }
 
-bool		Pte::isExtended()
+void	DosPartitionNode::fileMapping(FileMapping* fm)
 {
-  return this->extended;
+  uint64_t	offset;
+
+  offset = ((uint64_t)this->base + this->pte->lba) * 512;
+  fm->push(0, this->size(), this->origin, offset);
 }
 
-bool		Pte::isSane()
-{
-  return this->sane;
-}
-
-void		Pte::set(dos_pte* pte)
-{
-  this->lba = *((uint32_t*)pte->lba);
-  this->size = *((uint32_t*)pte->total_blocks);
-  if ((this->lba == 0) && (this->size == 0))
-    this->sane = false;
-  else
-    this->sane = true;
-  this->type = pte->type;
-  this->extended = is_ext(pte->type);
-}
-
-std::string		Pte::Type()
+void	DosPartitionNode::extendedAttributes(Attributes* attr)
 {
   std::string		str_type;
+  std::string		startsect;
+  uint64_t		startoffset;
 
-  str_type = partition_types[this->type];
-  return str_type;
+  if ((this->type & LOGICAL) == LOGICAL)
+    {
+      //memset(startsect, 0, 64);
+      startsect = uint32ToStr(this->base) + "+" + uint32ToStr(this->pte->lba);
+      //sprintf(startsect, "%u+%d", this->base, this->pte->lba);
+      attr->push("starting sector", new Variant(std::string(startsect)));
+      startoffset = ((uint64_t)this->base + (uint64_t)this->pte->lba) * 512;
+      attr->push("starting offset", new Variant(startoffset));
+    }
+  else
+    {
+      attr->push("starting sector", new Variant(this->pte->lba));
+      attr->push("starting offset", new Variant((uint64_t)this->pte->lba * 512));
+    }
+  attr->push("total sectors", new Variant(this->pte->total_blocks));
+  attr->push("total size (bytes)", new Variant((uint64_t)this->pte->total_blocks * 512));
+  attr->push("entry offset", new Variant(this->entryoffset));
+  if (this->pte->status == 0x80)
+    attr->push("status", new Variant("bootable"));
+  else if (this->pte->status == 0x00)
+    attr->push("status", new Variant("non bootable"));
+  else
+    attr->push("status", new Variant("invalid"));
+  str_type = "";
+  if ((this->type & PRIMARY) == PRIMARY)
+    str_type += "(primary";
+  if ((this->type & LOGICAL) == LOGICAL)
+    str_type += "(logical";
+  if ((this->type & EXTENDED) == EXTENDED)
+    str_type += "(extended";
+  if ((this->type & HIDDEN) == HIDDEN)
+    str_type += " | hidden)";
+  else
+    str_type += ") ";
+  str_type += partition_types[pte->type];
+  attr->push("type", new Variant(str_type));
 }
 
-uint32_t		Pte::Size()
+void	DosPartitionNode::setCtx(uint64_t entryoffset, dos_pte* pte, uint8_t type, uint32_t base)
 {
-  return this->size;
-}
-
-uint32_t	       Pte::Lba()
-{
-  return this->lba;
+  this->pte = pte;
+  this->entryoffset = entryoffset;
+  this->type = type;
+  this->base = base;
 }
 
 DosPartition::DosPartition()
@@ -337,8 +371,7 @@ DosPartition::DosPartition()
   this->vfile = NULL;
   this->root = NULL;
   this->origin = NULL;
-  this->pte = new Pte();
-  this->partnum = 0;
+  this->partnum = 1;
 }
 
 DosPartition::~DosPartition()
@@ -356,23 +389,6 @@ DosPartition::~DosPartition()
 	}
     }
 }
-
-// void	Record::sanitizePte(part* pte)
-// {
-//   uint32_t	lba;
-//   uint32_t	total_blocks;
-//   std::ostringstream stm;
-
-//   stm << std::hex << std::setiosflags(ios_base::showbase);
-//   lba = *((uint32_t*)pte->lba);
-//   total_blocks = *((uint32_t*)pte->total_blocks);
-//   if ((lba != 0) && (total_blocks != 0))
-//     {
-//       stm << (int)pte->type;
-//       std::cout << "logical block address: " << lba << " total allocated blocks: "
-// 		<< total_blocks << " type: " << stm.str() << std::endl;
-//     }
-// }
 
 void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, Node* origin)
 {
@@ -395,45 +411,66 @@ void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, 
     throw("provided node is NULL");
 }
 
+dos_pte*	DosPartition::toPte(uint8_t* buff)
+{
+  dos_pte*	pte;
+  uint32_t	lba;
+  uint32_t	total_blocks;
+
+  memcpy(&lba, buff+8, 4);
+  memcpy(&total_blocks, buff+12, 4);
+  if ((lba == 0) && (total_blocks == 0))
+    return NULL;
+  else
+    {
+      pte = new dos_pte;
+      memcpy(pte, buff, 8);
+      pte->lba = lba;
+      pte->total_blocks = total_blocks;
+      return pte;
+    }
+}
+
+void	DosPartition::createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base)
+{
+  DosPartitionNode*	node;
+  uint64_t		size;
+  std::string		partname;
+
+  partname =  "part" + uint32ToStr(this->partnum);
+  this->partnum += 1;
+  size = (uint64_t)(pte->total_blocks) * 512;
+  node = new DosPartitionNode(partname, size, this->root, this->fsobj, this->origin);
+  node->setCtx(offset, pte, type, base);
+}
+
 void	DosPartition::readMbr(uint64_t offset)
 {
   dos_partition_record	record;
   uint8_t		i;
-  PartitionNode*	node;
-  char			partname[32];
+  dos_pte*		pte;
 
   try
     {
       this->vfile->seek(offset);
-      this->vfile->read(&record, sizeof(dos_partition_record));
-      if (record.signature != 0x55AA)
-	;//this->mbr_bad_magic = true;
-      for (i = 0; i != 4; i++)
+      if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
 	{
-	  this->pte->set(&(record.partitions[i]));
-	  if (this->pte->isSane())
+	  if (record.signature != 0x55AA)
+	    ;//this->mbr_bad_magic = true;
+	  for (i = 0; i != 4; i++)
 	    {
-	      std::cout << "lba start: " << this->pte->Lba() << " size: "
-			<< this->pte->Size() << " type: " << this->pte->Type()
-			<< std::endl;
-	      if (this->pte->isExtended())
+	      pte = this->toPte(record.partitions+(i*16));
+	      if (pte != NULL)
 		{
-		  memset(partname, 0, 32);
-		  sprintf(partname, "part%d (extended)\0", this->partnum);
-		  this->partnum += 1;
-		  node = new PartitionNode(partname, (uint64_t)(this->pte->Size()) * 512, this->root, this->fsobj, this->origin, (uint64_t)(this->pte->Lba()) * 512);
-		  this->ebr_base = (uint64_t)(this->pte->Lba());
-		  this->readEbr(this->pte->Lba());
+		  if (is_ext(pte->type))
+		    {
+		      this->createNode(pte, offset + 446 + i * 16, EXTENDED);
+		      this->ebr_base = (uint64_t)(pte->lba);
+		      this->readEbr(pte->lba);
+		    }
+		  else
+		    this->createNode(pte, offset + 446 + i * 16, PRIMARY);
 		}
-	      else
-		{
-		  memset(partname, 0, 32);
-		  sprintf(partname, "part%d\0", this->partnum);
-		  this->partnum += 1;
-		  node = new PartitionNode(partname, (uint64_t)(this->pte->Size()) * 512, this->root, this->fsobj, this->origin, (uint64_t)(this->pte->Lba()) * 512);
-		  //this->parts.insert();
-		}
-	    //this->ebr_base_sect = *((uint32_t*)this->record->partitions[i].lba);
 	    }
 	}
     }
@@ -443,33 +480,35 @@ void	DosPartition::readMbr(uint64_t offset)
     }
 }
 
-void	DosPartition::readEbr(uint32_t cur)
+void	DosPartition::readEbr(uint32_t cur, uint32_t shift)
 {
   dos_partition_record	record;
   uint8_t		i;
-  PartitionNode*	node;
-  char			partname[32];
+  dos_pte*		pte;
+  uint64_t		offset;
 
   try
     {
-      this->vfile->seek((uint64_t)(cur)*512);
-      this->vfile->read(&record, sizeof(dos_partition_record));
-      for (i = 0; i != 4; i++)
+      offset = this->vfile->seek((uint64_t)(cur)*512);
+      if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
 	{
-	  this->pte->set(&(record.partitions[i]));
-	  if (this->pte->isSane())
+	  for (i = 0; i != 4; i++)
 	    {
-	      std::cout << "lba start: " << this->ebr_base << "+" << this->pte->Lba() << " size: " 
-			<< this->pte->Size() << " type: " << this->pte->Type()
-			<< std::endl;
-	      if (this->pte->isExtended())
-		this->readEbr(this->ebr_base + (uint64_t)(this->pte->Lba()));
-	      else
+	      pte = this->toPte(record.partitions+(i*16));
+	      if (pte != NULL)
 		{
-		  memset(partname, 0, 32);
-		  sprintf(partname, "part%d\0", this->partnum);
-		  this->partnum += 1;
-		  node = new PartitionNode(partname, (uint64_t)(this->pte->Size()) * 512, this->root, this->fsobj, this->origin, (uint64_t)(this->pte->Lba()) * 512);
+		  if (is_ext(pte->type))
+		    {
+		      if ((this->ebr_base + pte->lba) != cur)
+			this->readEbr(this->ebr_base + (uint64_t)(pte->lba), pte->lba);
+		    }
+		  else
+		    {
+ 		      if (i > 2)
+			this->createNode(pte, offset + 446 + i * 16, LOGICAL|HIDDEN, this->ebr_base + shift);
+		      else
+			this->createNode(pte, offset + 446 + i * 16, LOGICAL, this->ebr_base + shift);
+		    }
 		}
 	    }
 	}

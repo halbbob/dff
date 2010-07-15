@@ -218,18 +218,16 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 
   eof = false;
   totalread = 0;
-  //printf("%d\n", size);
-  while ((totalread != size) && !eof)
+  while ((totalread != size) && (!eof))
     {
-      //std::cout << "fd offset: " << fi->offset << std::endl;//""
       try
 	{
 	  current = fi->fm->chunckFromOffset(fi->offset);
-	  //printf("chunck found\n");
 	  relativeoffset = current->originoffset + (fi->offset - current->offset);
-	  relativesize = current->offset + current->size - fi->offset;
-	  if ((size - totalread) < relativesize)
+	  if ((size - totalread) < (current->offset + current->size - fi->offset))
 	    relativesize = size - totalread;
+	  else
+	    relativesize = current->offset + current->size - fi->offset;
 	  if (current->origin != NULL)
 	    {
 	      if (this->__verbose == true)
@@ -241,7 +239,8 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 		}
 	      vfile = this->vfileFromNode(current->origin);
 	      vfile->seek(relativeoffset);
-	      currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize);
+	      if ((currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize)) == 0)
+		eof = true;
 	      fi->offset += currentread;
 	      totalread += currentread;
 	    }
@@ -263,20 +262,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	}
       catch(...)
 	{
-// 	  printf("no segment found to read at %llu\n", fi->offset + totalread);
-// 	  if (fi->offset < fi->node->size())
-// 	    {
-// 	      if (totalread < size)
-// 		{
-// 		  memset((uint8_t*)buff+totalread, 0, size-totalread);
-// 		  fi->offset += (size-totalread);
-// 		  totalread += size-totalread;
-// 		}
-// 	      else
-// 		eof = true;
-// 	    }
-// 	  else
-	    eof = true;
+	  eof = true;
 	}
     }
   return totalread;
@@ -295,15 +281,19 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
       if ((fi->node != NULL) && (fi->fm != NULL))
 	{
 	  if (fi->node->size() <= fi->fm->mappedFileSize())
-	    if (size <= (fi->node->size() - fi->offset))
-	      realsize = size;
-	    else
-	      realsize = fi->node->size() - fi->offset;
+	    {
+	      if (size <= (fi->node->size() - fi->offset))
+		realsize = size;
+	      else
+		realsize = fi->node->size() - fi->offset;
+	    }
 	  else
-	    if (size <= (fi->fm->mappedFileSize() - fi->offset))
-	      realsize = size;
-	    else
-	      realsize = fi->fm->mappedFileSize() - fi->offset;
+	    {
+	      if (size <= (fi->fm->mappedFileSize() - fi->offset))
+		realsize = size;
+	      else
+		realsize = fi->fm->mappedFileSize() - fi->offset;
+	    }
 	  bytesread = this->readFromMapping(fi, buff, realsize);
 	  return bytesread;
 	}
@@ -312,8 +302,7 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
     }
   catch(...)
     {
-      std::cout << "problem while reading node" << std::endl;
-      return 0;
+      throw(vfsError("problem while reading file"));
     }
 }
 

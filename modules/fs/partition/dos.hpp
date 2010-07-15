@@ -20,9 +20,6 @@
 #include "vfile.hpp"
 #include "node.hpp"
 
-#define MBR		0x00
-#define EBR		0x01
-
 #define is_ext(t) ((((t) == 0x05) || ((t) == 0x0F) || ((t) == 0x85)) ? 1 : 0)
 
 typedef struct		
@@ -35,10 +32,9 @@ typedef struct
   uint8_t		end_head;
   uint8_t		end_sector; //sector in bit 5-0, bits 9-8 of cylinders are in bits 7-6...
   uint8_t		end_cylinder; //bits 7-0
-  uint8_t		lba[4];
-  uint8_t		total_blocks[4];
+  uint32_t		lba;
+  uint32_t		total_blocks;
 }		        dos_pte;
-
 
 /*
 "code" field is usually empty in extended boot record but could contain
@@ -64,71 +60,52 @@ typedef struct
       uint8_t	code[6];
     }ebr;
   } a;
-  dos_pte	partitions[4];
+  uint8_t	partitions[64];
   short		signature; //0xAA55
 }		dos_partition_record;
 
-
-typedef struct
+class DosPartitionNode: public Node
 {
-  uint64_t	start;
-  uint64_t	end;
-}		partition_info;
-
-
-class Pte
-{
-protected:
+private:
+  uint64_t	entryoffset;
   dos_pte*	pte;
-  bool		extended;
-  bool		sane;
-  uint32_t	lba;
-  uint32_t	size;
+  Node*		origin;
   uint8_t	type;
-  uint64_t	max;
-
+  uint32_t	base;
 public:
-  Pte();
-  ~Pte();
-  void		set(dos_pte* pte);
-  std::string	Type();
-  uint32_t	Lba();
-  uint32_t	Size();
-  bool		isExtended();
-  bool		isSane();
+  DosPartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin);
+  ~DosPartitionNode();
+  void		setCtx(uint64_t entryoffset, dos_pte* pte, uint8_t type, uint32_t base=0);
+  virtual void	fileMapping(class FileMapping* fm);
+  virtual void	extendedAttributes(Attributes* attr);
 };
 
-// class Record
-// {
-// public:
-//   Record();
-//   ~Record();
-//   void	read(VFile *vfile, uint64_t offset = 0);
-//   //method for reading extended boot record which needs base of the first ebr
-//   void	read(VFile* vfile, uint32_t base, uint64_t offset=0);
-//   void	open(VFile *vfile, uint8_t type, uint64_t offset = 0);
-// };
-
+#define PRIMARY		0x01
+#define EXTENDED	0x02
+#define	LOGICAL		0x04
+#define HIDDEN		0x08
 
 class DosPartition
 {
 private:
-  vector<partition_info*>	parts;
+  //vector<partition_info*>	parts;
   Node*				root;
   Node*				origin;
   mfso*				fsobj;
   VFile*			vfile;
-  Pte*				pte;
+  //Pte*				pte;
   bool				mbrBadMagic;
   uint32_t			ebr_base;
   uint32_t			partnum;
 
+  dos_pte*			toPte(uint8_t* buff);
+  void				createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base=0);
+
 public:
   DosPartition();
   ~DosPartition();
-  //void			setMbrFile(Node* mbr);
   void			open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, Node* origin);
-  void			readEbr(uint32_t cur);
+  void			readEbr(uint32_t cur, uint32_t shift=0);
   void			readMbr(uint64_t offset);
 };
 
