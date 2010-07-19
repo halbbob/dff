@@ -267,7 +267,10 @@ list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_
 	    }
 	}
       else
-	hslen = BUFFSIZE;
+	if (bytes_read < BUFFSIZE)
+	  hslen = bytes_read;
+	else
+	  hslen = BUFFSIZE;
       if (count != (uint32_t)-1)
 	{
 	  res = this->__search->run(buffer, hslen, &count);
@@ -301,10 +304,10 @@ uint64_t	VFile::find(char *needle, uint32_t len, char wildcard, uint64_t start, 
   return res;
 }
 
-uint64_t	VFile::rfind(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
-{
-  return 0;
-}
+// uint64_t	VFile::rfind(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
+// {
+//   return 0;
+// }
 
 uint32_t	VFile::count(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
 {

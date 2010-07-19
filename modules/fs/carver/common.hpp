@@ -45,7 +45,7 @@ typedef struct	description
   pattern	*header;
   pattern	*footer;
   char		*type;
-  unsigned int	window;
+  uint32_t	window;
   bool		aligned;
 }		description;
 
@@ -54,14 +54,8 @@ typedef struct		s_context
   description		*descr;
   unsigned char		*headerBcs;
   unsigned char		*footerBcs;
-  vector<dff_ui64>	headers;
-  vector<dff_ui64>	footers;
+  vector<uint64_t>	headers;
+  vector<uint64_t>	footers;
 }			context;
-
-typedef struct s_FileInfo
-{
-  dff_ui64	offset;
-  dff_ui64	size;
-}		FileInfo;
 
 #endif

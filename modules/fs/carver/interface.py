@@ -39,13 +39,11 @@ class worker(QThread):
         QThread.__init__(self)
         self.args = kwargs["toCarve"]
         self.mapper = kwargs["mapper"]
-        self.callback = kwargs["callback"]
         self.startOffset = kwargs["start"]
         self.aligned = kwargs["aligned"]
 
     def run(self):
         res = self.mapper(self.args, self.startOffset, self.aligned)
-        self.callback()
         self.emit(SIGNAL("end(QString)"), QString(res))
 
 
@@ -156,24 +154,24 @@ class carvingProcess(QWidget, DEventHandler):
         self.notify(e)
 
 
-class PyCarver(QWidget, fso):
+class PyCarver(QWidget, mfso):
     def __init__(self):
-        fso.__init__(self)
-        self.name = "carver"
-        self.res = results(self.name)
+        mfso.__init__(self, "carver")
+        #self.name = "carver"
+        #self.res = results(self.name)
         self.carver = Carver()
         setattr(self, "vread", self.carver.vread)
         setattr(self, "vseek", self.carver.vseek)
         setattr(self, "vopen", self.carver.vopen)
         setattr(self, "vclose", self.carver.vclose)
         self.mapperFunc = getattr(self.carver, "process")
-        self.addNodesFunc = getattr(self.carver, "AddNodes")
+        #self.addNodesFunc = getattr(self.carver, "AddNodes")
         self.tellFunc = getattr(self.carver, "tell")
 
     def start(self, args):
         self.carver.start(args)
-        self.name += " <" + args.get_node("ifile").name + ">"
-        self.filesize = args.get_node("ifile").attr.size
+        self.name += " <" + args.get_node("ifile").name() + ">"
+        self.filesize = args.get_node("ifile").size()
 
 
     def status(self):
@@ -292,7 +290,7 @@ class PyCarver(QWidget, fso):
         if factor == 0:
             factor = 1
         carvingArgs = {"min": 0, "max": self.filesize, "toCarve": toCarve, 
-                       "callback": self.addNodesFunc, "mapper": self.mapperFunc,
+                       "mapper": self.mapperFunc,
                        "factor": factor, "start": self.offsetSpinBox.value(),
                        "aligned": self.alignedCheck.isChecked()}
         self.carvingProcess.show()

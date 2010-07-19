@@ -64,7 +64,7 @@ public:
 //   EXPORT void		disableIORecord();
   EXPORT list<uint64_t>	*search(char *needle, uint32_t len, char wildcard, uint64_t start = 0, uint64_t window = (uint64_t)-1, uint32_t count = (uint32_t)-1);
   EXPORT uint64_t	find(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
-  EXPORT uint64_t	rfind(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
+  //EXPORT uint64_t	rfind(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
   EXPORT uint32_t	count(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
   EXPORT int32_t	dfileno();
   EXPORT uint64_t 	tell();

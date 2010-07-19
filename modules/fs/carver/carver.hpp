@@ -19,21 +19,33 @@
 #define __CARVER_HPP__
 
 #include "common.hpp"
-#include "filehandler.hpp"
-#include "fdmanager.hpp"
+#include "node.hpp"
 #include "DEventHandler.hpp"
 
 //Let the possibility to modify the matching footer or to dynamically set the window
 //representing the carved file.
 
-class Carver: public fso, public DEventHandler
+class CarvedNode: public Node
+{
+private:
+  uint64_t	__start;
+  Node*		__origin;
+public:
+  CarvedNode(std::string name, uint64_t size, Node* parent, mfso* fsobj);
+  ~CarvedNode();
+  void		setStart(uint64_t start);
+  void		setOrigin(Node* origin);
+  virtual void	fileMapping(class FileMapping* fm);
+};
+
+class Carver: public mfso, public DEventHandler
 {
 private:
   Node			*inode;
   Node			*root;
   VFile			*ifile;
-  FileHandler		*filehandler;
-  fdmanager		*fdm;
+  //FileHandler		*filehandler;
+  //fdmanager		*fdm;
   BoyerMoore		*bm;
   vector<context*>	ctx;
   unsigned int		maxNeedle;
@@ -42,24 +54,19 @@ private:
   string		Results;
 
   bool			createFile();
-  void			registerNode(Node *parent, dff_ui64 start, dff_ui64 end);
-  unsigned int		createWithoutFooter(Node *parent, vector<dff_ui64> *headers, unsigned int max);
-  unsigned int		createWithFooter(Node *parent, vector<dff_ui64> *headers, vector<dff_ui64> *footers, unsigned int max);
-  int			createNodes();
+  void			createNode(Node *parent, uint64_t start, uint64_t end);
+  unsigned int		createWithoutFooter(Node *parent, vector<uint64_t> *headers, unsigned int max);
+  unsigned int		createWithFooter(Node *parent, vector<uint64_t> *headers, vector<uint64_t> *footers, uint32_t max);
+  int		        createTree();
   void			mapper();
+  std::string		generateName(uint64_t start, uint64_t end);
 
 public:
   Carver();
   ~Carver();
-  dff_ui64		tell();
-  EXPORT string		process(list<description *> *d, dff_ui64 start, bool aligned);
+  uint64_t		tell();
+  EXPORT string		process(list<description *> *d, uint64_t start, bool aligned);
   virtual void          start(argument *arg);
-  virtual int		vopen(Handle *handle);
-  virtual int		vread(int fd, void *buff, unsigned int size);
-  virtual int		vclose(int fd);
-  virtual dff_ui64	vseek(int fd, dff_ui64 offset, int whence);
-  virtual int		vwrite(int fd, void *buff, unsigned int size){return 0;};
-  virtual unsigned int	status();
   virtual void		Event(DEvent *e);
   int			Read(char *buffer, unsigned int size);
 };

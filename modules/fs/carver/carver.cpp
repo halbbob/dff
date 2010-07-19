@@ -14,6 +14,9 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "carver.hpp"
 
 // Next gen: process like scalpel
@@ -23,14 +26,32 @@
 // implies to preprocess each shift table
 // Test if faster or not
 
-  
-Carver::Carver()
+CarvedNode::CarvedNode(std::string name, uint64_t size, Node* parent, mfso* fsobj): Node(name, size, parent, fsobj)
 {
-  name = "carver";
-  res = new results("empty");
-  this->fdm = new fdmanager;
-  this->fdm->InitFDM();
-  this->filehandler = new FileHandler;
+}
+
+CarvedNode::~CarvedNode()
+{
+}
+
+void	CarvedNode::setStart(uint64_t start)
+{
+  this->__start = start;
+}
+
+void	CarvedNode::setOrigin(Node* origin)
+{
+  this->__origin = origin;
+}
+
+void	CarvedNode::fileMapping(class FileMapping* fm)
+{
+  fm->push(0, this->size(), this->__origin, this->__start);
+}
+
+Carver::Carver(): mfso("carver")
+{
+  //res = new results("empty");
 }
 
 Carver::~Carver()
@@ -56,7 +77,9 @@ void		Carver::start(argument *arg)
       attrib	*attr = new attrib;
       arg->get("ifile", &(this->inode));
       this->ifile = this->inode->open();
-      this->root = CreateNodeDir(this->inode, "carved", attr);
+      this->root = new Node("carved", 0, NULL, this);
+      this->root->setDir();
+      this->registerTree(this->inode, this->root);
       //this->header = new Header(this->inode);
       //this->footer = new Footer(this->inode);
     }
@@ -81,7 +104,7 @@ int		Carver::Read(char *buffer, unsigned int size)
     }
 }
 
-string		Carver::process(list<description *> *d, dff_ui64 start, bool aligned)
+string		Carver::process(list<description *> *d, uint64_t start, bool aligned)
 {
   list<description*>::iterator  it;
   context			*tmp;
@@ -180,25 +203,29 @@ void		Carver::mapper()
 	this->ifile->seek(this->tell() - this->maxNeedle, 0);
     }
   free(buffer);
-  this->createNodes();
+  this->createTree();
 }
 
-void		Carver::registerNode(Node *parent, dff_ui64 start, dff_ui64 end)
+std::string	Carver::generateName(uint64_t start, uint64_t end)
 {
-  FileInfo	*fi;
+  ostringstream os;
+
+  os << start << "-" << end;
+  return os.str();
+}
+
+void		Carver::createNode(Node *parent, uint64_t start, uint64_t end)
+{
+  CarvedNode*	cn;
   char		name[128];
-  dff_ui64	handle;
-  attrib	*attr;
 
   sprintf(name, "0x%llx-0x%llx", start, end);
-  fi = new FileInfo;
-  fi->size = end - start;
-  fi->offset = start;
-  handle = this->filehandler->add(fi);
-  attr = new attrib;
-  attr->handle = new Handle(handle);
-  attr->size = fi->size;
-  CreateNodeFile(parent, name, attr);
+  std::cout << this->generateName(start, end) << std::endl;
+
+  cn = new CarvedNode(name, end-start, parent, this);
+  cn->setFile();
+  cn->setStart(start);
+  cn->setOrigin(this->inode);
 }
 
 unsigned int		Carver::createWithoutFooter(Node *parent, vector<dff_ui64> *headers, unsigned int max)
@@ -214,19 +241,19 @@ unsigned int		Carver::createWithoutFooter(Node *parent, vector<dff_ui64> *header
       if (this->aligned)
 	{
 	  if (((*headers)[i] % 512) == 0)
-	    this->registerNode(parent, (*headers)[i], (*headers)[i] + (dff_ui64)max);
+	    this->createNode(parent, (*headers)[i], (*headers)[i] + (uint64_t)max);
 	  total += 1;
 	}
       else
 	{
-	  this->registerNode(parent, (*headers)[i], (*headers)[i] + (dff_ui64)max);
+	  this->createNode(parent, (*headers)[i], (*headers)[i] + (uint64_t)max);
 	  total += 1;
 	}
     }
   return total;
 }
 
-unsigned int		Carver::createWithFooter(Node *parent, vector<dff_ui64> *headers, vector<dff_ui64> *footers, unsigned int max)
+unsigned int		Carver::createWithFooter(Node *parent, vector<uint64_t> *headers, vector<uint64_t> *footers, unsigned int max)
 {
   unsigned int	i;
   unsigned int	j;
@@ -254,25 +281,25 @@ unsigned int		Carver::createWithFooter(Node *parent, vector<dff_ui64> *headers, 
 	  if (((*headers)[i] % 512) == 0)
 	    {
 	      if (found)
-		this->registerNode(parent, (*headers)[i], (*footers)[j]);
+		this->createNode(parent, (*headers)[i], (*footers)[j]);
 	      else
-		this->registerNode(parent, (*headers)[i], (*headers)[i] + (dff_ui64)max);
+		this->createNode(parent, (*headers)[i], (*headers)[i] + (uint64_t)max);
 	      total += 1;
 	    }
 	}
       else
 	{
 	  if (found)
-	    this->registerNode(parent, (*headers)[i], (*footers)[j]);
+	    this->createNode(parent, (*headers)[i], (*footers)[j]);
 	  else
-	    this->registerNode(parent, (*headers)[i], (*headers)[i] + (dff_ui64)max);
+	    this->createNode(parent, (*headers)[i], (*headers)[i] + (dff_ui64)max);
 	  total += 1;
 	}
     }
   return total;
 }
 
-int		Carver::createNodes()
+int		Carver::createTree()
 {
   context	*ctx;
   Node		*parent;
@@ -289,7 +316,8 @@ int		Carver::createNodes()
       ctx = this->ctx[i];
       if (ctx->headers.size() > 0)
 	{
- 	  parent = CreateNodeDir(this->root, ctx->descr->type, new attrib);
+	  parent = new Node(ctx->descr->type, 0, NULL, this);
+	  parent->setDir();
 	  if (ctx->descr->window > 0)
 	    max = ctx->descr->window;
 	  else
@@ -302,12 +330,7 @@ int		Carver::createNodes()
 	  sprintf(tmp, "%d", total);
 	  this->Results += string(ctx->descr->type) + ":" + string(tmp) + " header(s) found\n";
 	}
+      this->registerTree(this->root, parent);
     }
   return 0;
 }
-
-unsigned int	Carver::status()
-{
-  return 0;
-}
-

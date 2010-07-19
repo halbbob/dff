@@ -23,9 +23,6 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/include ${CMAKE_HOME_DIRECTORY}/
 
 set(carver_srcs
   carver.cpp
-  carver_io.cpp
-  filehandler.cpp
-  fdmanager.cpp
   DEventHandler.cpp
 )
 
