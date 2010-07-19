@@ -76,7 +76,7 @@ class FILETYPE():
             if nidx > idx:
               buff  = v._from
               res.append(buff)
-          except KeyError:
+          except (IndexError, KeyError, AttributeError):
             nidx = str(map["mime-type"]).find(v.get_string())
             if nidx > idx:
               buff = v._from
@@ -89,7 +89,7 @@ class FILETYPE():
             attr = node.staticAttributes()
             map = attr.attributes()
             map["type"]
-          except AttributeError, IndexError:
+          except (AttributeError, IndexError, KeyError):
             try:
               f = node.open()
               buff = f.read(0x2000)

@@ -97,6 +97,12 @@ class NodeBrowser(QWidget):
     self.addNodeLinkTreeView()
     self.addNodeView()
     self.addOptionsView()
+    self.VFS.set_callback("refresh_tree", self.refresh)
+
+  def refresh(self, node):
+     self.thumbsView.model().sourceModel().emit(SIGNAL("refresh"), None)
+     self.tableView.model().sourceModel().emit(SIGNAL("refresh"), None)
+     self.treeModel.emit(SIGNAL("refresh"), node)	
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)

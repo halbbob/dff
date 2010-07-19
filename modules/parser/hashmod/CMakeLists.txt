@@ -16,6 +16,7 @@
 set(hash_srcs
   hash.py
   hdatabase.py
+  __init__.py
 )
 
 install_file(hash ${hash_srcs})

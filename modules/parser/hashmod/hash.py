@@ -17,6 +17,7 @@ import hashlib
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
+from api.variant.libvariant import Variant
 
 class HASH(Script):
     def __init__(self):
@@ -63,7 +64,7 @@ class HASH(Script):
                 res = file_hash + "  " + node.absolute()
             else:
                 res = algorithm + " hashing failed on " + node.absolute()  
-        #self.res.add_const("result", res)
+        self.res.add_const("result", res)
 
 
     def hashCalc(self, node, algorithm):

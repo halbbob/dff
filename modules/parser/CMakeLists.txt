@@ -12,13 +12,13 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-
-#add_subdirectory(carving)
 add_subdirectory(hashmod)
 
 set(parser_srcs
   smsdecode.py
   unxor.py
+  integrity.py
+  __init__.py
 )
 
 install_file(parser ${parser_srcs})

@@ -19,7 +19,6 @@ from api.exceptions.libexceptions import *
 
 class Script(object):
     def __init__(self, name):
-        print "hello"
 	self.name = name
         self.env = env.env()
         self.vfs = vfs.vfs()

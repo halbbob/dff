@@ -214,7 +214,7 @@ class ApplyModule(QDialog,  UiApplyModule):
                 elif i.type == "int" :
                     self.arg.add_int(str(i.name), int(value))
                 elif i.type == "string" :
-                    self.argadd_string(str(i.name), value)            
+                    self.arg.add_string(str(i.name), value)            
                 elif i.type == "bool" :
                     if value == "True" :
                         value = 1

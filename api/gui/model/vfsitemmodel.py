@@ -124,9 +124,9 @@ class VFSItemModel(QAbstractItemModel):
     self.VFS = libvfs.VFS.Get()
     self.map = {}
     self.imagesthumbnails = None
-    self.VFS.set_callback("refresh_tree", self.refresh)
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
     self.connect(self, SIGNAL("dataType"), self.setDataType)
+    self.connect(self, SIGNAL("refresh"), self.refresh)
     self.fetchedItems = 0
     self.thumbQueued = {}
 
@@ -135,7 +135,7 @@ class VFSItemModel(QAbstractItemModel):
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
-     pixmapCache.insert(node.absolute(), pixmap)
+     pixmapCache.insert(str(node.this), pixmap)
      self.__parent.currentView().viewport().update()
 
   def refresh(self, node):
@@ -273,7 +273,7 @@ class VFSItemModel(QAbstractItemModel):
             #return QVariant(QIcon(pixmap))
             #return QVariant(QIcon(":file_broken.png")) 
           if self.imagesthumbnails:
-            pixmap = pixmapCache.find(node.absolute())
+            pixmap = pixmapCache.find(str(node.this))
             if pixmap:
               return QVariant(QIcon(pixmap))
             elif typeWorker.isImage(ftype):

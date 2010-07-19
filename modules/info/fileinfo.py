@@ -99,7 +99,7 @@ class FILEINFO(Script):
         buff += "relevant module(s):\n"
         for i in n:
           buff += " " + i + "\n"
-    self.res().add_const("result", buff)
+    self.res.add_const("result", buff)
 
 class fileinfo(Module):
   """Display file attribute informations. (size, MAC time, ...)"""
