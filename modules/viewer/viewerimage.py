@@ -52,7 +52,7 @@ class LoadedImage(QLabel):
   def __init__(self):
     QLabel.__init__(self)
     #self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-    self.node = None
+    #self.node = None
     self.angle = 0
     self.factor = 1
     self.imgWidth = 0
@@ -251,7 +251,7 @@ class ImageView(QWidget, Script):
         #XXX temporary patch for windows magic
         self.ft.filetype(node)
         f = str(self.node.staticAttributes().attributes()["type"])
-    res = self.reg_viewer.match(f)
+    res = self.reg_viewer.match(str(f))
     if res != None:
       type = f[:f.find(" ")]
       self.loadedImage.load(self.node, type)
