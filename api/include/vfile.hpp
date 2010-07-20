@@ -21,7 +21,11 @@
 #include <stdlib.h> 
 #include <string>
 #include <string.h>
+#ifndef WIN32
 #include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 #include "node.hpp"
 #include "type.hpp"
 #include "export.hpp"
@@ -46,8 +50,8 @@ private:
   bool		__recordUnread;
 
 public:
-  VFile(int32_t fd, class mfso *mfsobj, class Node *node);
-  ~VFile();
+  EXPORT VFile(int32_t fd, class mfso *mfsobj, class Node *node);
+  EXPORT ~VFile();
   EXPORT class Node*	node();
   EXPORT pdata*		read(void);
   EXPORT pdata*		read(uint32_t size);

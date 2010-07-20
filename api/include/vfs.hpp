@@ -22,7 +22,6 @@
 #ifndef __VFS_HH__
 #define __VFS_HH__
 
-#include "fso.hpp"
 #include "export.hpp"
 #include "exceptions.hpp"
 #include "type.hpp"
@@ -50,7 +49,6 @@ private:
   EXPORT                ~VFS();
   VFS&          operator=(VFS&);
                 VFS(const VFS&);
-  string	sanitaze(string, Node* parent);
   void		postProcessCallback(Node* node);
   void		recursivePostProcess(Node *node);
   void		updateCallback(Node* node);
@@ -74,10 +72,7 @@ public:
   EXPORT Node* 	        GetCWD(void);
   EXPORT Node*	        GetNode(string path);
   EXPORT Node*	        GetNode(string path, Node* where);
-  EXPORT Node*	        CreateNodeDir(class fso* fsobj ,  Node* parent, string name, class attrib* attr, bool refresh = false); 
-  EXPORT Node*	        CreateNodeFile(fso* fsobj,  Node* parent, string name, attrib* attr, bool refresh = false); 
   EXPORT void	        SetCallBack(CBFUNC func, void* cbdata, string type);
-  EXPORT unsigned int	AddNodes(list<Node*> nl);
   EXPORT void 		addNode(Node *n);
 
   void			update(Node* head);

@@ -27,7 +27,7 @@ using namespace std;
 class Handle
 {
  public:
-  Handle();
+  EXPORT Handle();
 
   EXPORT	Handle(dff_ui64);
   EXPORT	Handle(string);

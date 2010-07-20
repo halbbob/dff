@@ -100,7 +100,7 @@ void		FdManager::remove(int32_t fd)
 mfso::mfso(std::string name)
 {
   this->name = name;
-  this->res = new results(this->__name);
+  this->res = new results(this->name);
   this->__fdmanager = new FdManager();
   this->stateinfo = "";
   this->__verbose = false;
@@ -325,11 +325,13 @@ uint64_t	mfso::vtell(int32_t fd)
 //need COW implementation to reflect forensically sound process
 int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 {
+	return 0;
 }
 
 int32_t 	mfso::vclose(int32_t fd)
 {
   this->__fdmanager->remove(fd);
+  return 0;
 }
 
 //need same implementation of lseek syscall ?

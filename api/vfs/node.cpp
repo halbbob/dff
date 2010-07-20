@@ -472,9 +472,14 @@ std::vector<class Node*>	Node::children()
 
 bool		Node::addChild(class Node *child)
 {
+  if (0) {
+	// FIXME check if child already present
+	return false;
+  }
   child->setParent(this);
   this->__children.push_back(child);
   this->__childcount++;
+  return true;
 }
 
 bool            Node::hasChildren()

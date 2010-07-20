@@ -46,19 +46,19 @@ private:
   chunck*		__prevChunck;
   void			allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
 public:
-  FileMapping();
-  ~FileMapping();
-  uint64_t		mappedFileSize();
-  uint32_t		chunckCount();
-  chunck*		firstChunck();
-  chunck*		lastChunck();
-  chunck*		chunckFromIdx(uint32_t idx);
-  chunck*		chunckFromOffset(uint64_t offset);
-  uint32_t		chunckIdxFromOffset(uint64_t offset, uint32_t begidx=0);
-  std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
-  std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
-  std::vector<chunck *>	chuncks();
-  void			push(uint64_t offset, uint64_t size, class Node* origin=NULL, uint64_t originoffset=0);
+  EXPORT FileMapping();
+  EXPORT ~FileMapping();
+  EXPORT uint64_t		mappedFileSize();
+  EXPORT uint32_t		chunckCount();
+  EXPORT chunck*		firstChunck();
+  EXPORT chunck*		lastChunck();
+  EXPORT chunck*		chunckFromIdx(uint32_t idx);
+  EXPORT chunck*		chunckFromOffset(uint64_t offset);
+  EXPORT uint32_t		chunckIdxFromOffset(uint64_t offset, uint32_t begidx=0);
+  EXPORT std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
+  EXPORT std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
+  EXPORT std::vector<chunck *>	chuncks();
+  EXPORT void			push(uint64_t offset, uint64_t size, class Node* origin=NULL, uint64_t originoffset=0);
 };
 
 
@@ -67,12 +67,12 @@ class Attributes
 private:
   std::map<std::string, class Variant*> __attrs;
 public:
-  Attributes();
-  ~Attributes();
-  void                                  push(std::string key, class Variant *value);
-  std::list<std::string>                keys();
-  Variant*                              value(std::string key);
-  std::map<std::string, class Variant*> attributes();   
+  EXPORT Attributes();
+  EXPORT ~Attributes();
+  EXPORT void                                  push(std::string key, class Variant *value);
+  EXPORT std::list<std::string>                keys();
+  EXPORT Variant*                              value(std::string key);
+  EXPORT std::map<std::string, class Variant*> attributes();   
 };
 
 #define ISFILE		0x01

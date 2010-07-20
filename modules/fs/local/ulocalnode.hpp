@@ -14,8 +14,8 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __ATTRIBUTES_HPP__
-#define __ATTRIBUTES_HPP__
+#ifndef __ULOCALNODE_HPP__
+#define __ULOCALNODE_HPP__
 
 //#include "variant.hpp"
 #include "node.hpp"

@@ -20,7 +20,11 @@
 #include "fatfs.hpp"
 #include "node.hpp"
 #include "variant.hpp"
+#ifndef WIN32
 #include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 
 class FatNode: public Node
 {

@@ -17,12 +17,24 @@
 #ifndef __MFSO_HPP__
 #define __MFSO_HPP__
 
+#include <Python.h>
+#include <iostream>
+#include <stdio.h>
+#include <list>
+#include <map>
+#include <vector>
 #include "vfs.hpp"
+#ifndef WIN32
 #include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 #include <string.h>
 #include "node.hpp"
 #include "results.hpp"
 #include "vfile.hpp"
+
+
 //Cache manager for attributes and list of allocated blocks for files
 // class Cache
 // {
@@ -126,10 +138,10 @@ public:
   EXPORT virtual uint64_t	vtell(int32_t fd);
 
 
-  void					registerTree(Node* parent, Node* head);
+  EXPORT void			registerTree(Node* parent, Node* head);
   EXPORT void			setVerbose(bool verbose);
   EXPORT bool			verbose();
-  EXPORT std::string		name;
+  std::string			name;
   // EXPORT virtual void	pause();
   // EXPORT virtual void	resume();
   // EXPORT virtual void	kill();

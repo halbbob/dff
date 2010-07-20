@@ -12,6 +12,7 @@
  * 
  * Author(s):
  *  Solal Jacob <sja@digital-forensic.org>
+ *  Christophe Malinge <cma@digital-forensic.org>
  */
 
 #include "local.hpp"
@@ -19,67 +20,72 @@
 #include <windows.h>
 #include <shlwapi.h>
 
-void local::frec(char *name, Node *rfv)
+void				local::frec(const char *name, Node *rfv)
 {
-  HANDLE hd;
-  WIN32_FIND_DATAA  find;
-  string  	  		nname;
-
-  string searchPath = name;
+  HANDLE			hd;
+  WIN32_FIND_DATAA	find;
+  std::string		nname;
+  std::string		searchPath = name;
+  s_ull				sizeConverter;
+	
   searchPath +=  "\\*";  
   
-  if((hd = FindFirstFileA(searchPath.c_str(), &find)) != INVALID_HANDLE_VALUE)
-    {
-      do
-	{
-	  Node* tmp; //= new Node;
-	  
-	  if (!strcmp(find.cFileName, ".")  || !strcmp(find.cFileName, ".."))
+  if ((hd = FindFirstFileA(searchPath.c_str(), &find)) != INVALID_HANDLE_VALUE) {
+    do {
+	  WLocalNode	*tmp; //= new Node;
+	  std::string	handle;
+		
+	  if (!strcmp(find.cFileName, ".") || !strcmp(find.cFileName, ".."))
 	    continue ;
 	  nname = name;
 	  nname += "\\";
 	  nname += find.cFileName;
-	  string handle;
 	  handle += nname; 
-	  attrib*   attr = new w_attrib(find);
-	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-	    {
-	      tmp = CreateNodeDir(rfv, find.cFileName, attr);
-	      frec((char *)nname.c_str(), tmp);
-	    }
-	  else
-	    { 
-	      attr->handle = new Handle(handle);
-	      tmp = CreateNodeFile(rfv, find.cFileName, attr);
-	    }
-	}  while(FindNextFileA(hd, &find));
-      
-      FindClose(hd);
-    }
+	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+		// Create a virtual directory
+		std::string	fsPath = this->basePath + "/" + rfv->absolute();
+		
+		tmp = new WLocalNode(find.cFileName, 0, rfv, this, WLocalNode::DIR);
+		tmp->setBasePath(&(fsPath));
+		this->frec((char *)nname.c_str(), tmp);
+	  }
+	  else {
+		// Create a virtual file
+	    std::string	fsPath = this->basePath + "/" + rfv->absolute();
+		
+		sizeConverter.Low = find.nFileSizeLow;
+		sizeConverter.High = find.nFileSizeHigh;
+		tmp = new WLocalNode(find.cFileName, sizeConverter.ull, NULL, this, WLocalNode::FILE);
+		tmp->setBasePath(&(fsPath));
+	  }
+	} while (FindNextFileA(hd, &find));
+    
+    FindClose(hd);
+  }
 }
 
-local::local()
+local::local(): mfso("local")
 {
-  res = new results("local");
-  this->name = "local";
 }
 
-void local::start(argument *arg)
+local::~local()
 {
-  attrib*	attr;
-  string 	path;
-  Path		*lpath;
-  Node*		root;
-  Node*		parent;
-  WIN32_FILE_ATTRIBUTE_DATA info;
+}
 
+void						local::start(argument *arg)
+{
+  std::string				path;
+  Path						*lpath;
+  WIN32_FILE_ATTRIBUTE_DATA	info;
+  s_ull						sizeConverter;
+  
   try
   {	 
-    arg->get("parent", &parent);
+    arg->get("parent", &(this->parent));
   }
   catch (envError e)
   {
-    parent = VFS::Get().GetNode("/");
+    this->parent = VFS::Get().GetNode("/");
   }
   try 
   {
@@ -99,36 +105,42 @@ void local::start(argument *arg)
     path = path.substr(path.rfind("\\") + 1);
   else 
     path = path.substr(path.rfind("/") + 1);
-
+  this->basePath = lpath->path.substr(0, lpath->path.rfind('/'));
   if(!GetFileAttributesExA(lpath->path.c_str(), GetFileExInfoStandard, &info))
   {
 	  res->add_const("error", string("error stating file:" + path)); 
       return ;
   }
-  attr = new w_attrib(info);	
   if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
   {
-    root = CreateNodeDir(parent, path, attr);
-    frec((char *)(lpath->path.c_str()), root);
+	// Create a virtual directory
+	WLocalNode	*__root = new WLocalNode(path, 0, NULL, this, WLocalNode::DIR);
+    __root->setBasePath(&(this->basePath));
+    this->_root = __root;
+    //recurse
+	this->frec(lpath->path.c_str(), this->_root);
   }
   else 
   {
-    string handle;
-    handle += lpath->path.c_str();
-    attr->handle = new Handle(handle);
-    root = CreateNodeFile(parent, path, attr);
+	// Create a virtual file
+	sizeConverter.Low = info.nFileSizeLow;
+	sizeConverter.High = info.nFileSizeHigh;
+	WLocalNode	*__root = new WLocalNode(path, sizeConverter.ull, NULL, this, WLocalNode::FILE);
+    __root->setBasePath(&(this->basePath));
+    this->_root = __root;
   }
-  res->add_const("result", std::string("no problem")); 
-  res->add_const("root", root);
-
- return ;
+  this->registerTree(this->parent, this->_root);
+  return ;
 }
 
-int local::vopen(Handle* handle)
+int local::vopen(Node *node)
 {
-  if (handle != NULL)
-    return ((int)CreateFileA(handle->name.c_str(), GENERIC_READ, FILE_SHARE_READ,
+  if (node != NULL) {
+	std::string	filePath = this->basePath + "/" + node->absolute();
+	
+    return ((int)CreateFileA(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ,
 			     0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0));
+  }
   else
     return -1;
 }
@@ -148,15 +160,34 @@ int local::vclose(int fd)
   return (!CloseHandle((HANDLE)fd));
 }
 
-dff_ui64 local::vseek(int fd, dff_ui64 offset, int whence)
+uint64_t	local::vseek(int fd, uint64_t offset, int whence)
 {
+  PLONG		highSeek = NULL;
+  uint32_t	lowSeek;
+  
+  // SetFilePointer takes two signed (!) 32bits value to form a 64bit value to seek to
+  // First is the direct, second is a pointer to this value (NULL if 32bit is enought).
+  if (offset > 0xffffffff) {
+	lowSeek = offset & 0x00000000ffffffff;
+	*highSeek = (offset & 0xffffffff00000000) >> 32;
+  }
+  else
+	lowSeek = (uint32_t)offset;
   if (whence == 0)
     whence = FILE_BEGIN;
   else if (whence == 1)
     whence = FILE_CURRENT;
   else if (whence == 2)
     whence = FILE_END;
-  return (SetFilePointer((HANDLE)fd, offset, 0, whence)); 
+  return (SetFilePointer((HANDLE)fd, lowSeek, highSeek, whence)); 
+}
+
+uint64_t	local::vtell(int32_t fd)
+{
+  uint64_t	pos;
+
+  pos = this->vseek(fd, 0, 1);
+  return pos;
 }
 
 unsigned int local::status(void)

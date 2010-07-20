@@ -139,34 +139,50 @@ Variant::Variant(void *user)
 
 std::string	Variant::toString()
 {
+    //FIXME
+	return std::string();
 }
 
 uint16_t	Variant::toUInt16()
 {
+	//FIXME
+	return 0;
 }
 
 int16_t		Variant::toInt16()
 {
+	//FIXME
+	return 0;
 }
 
 uint32_t	Variant::toUInt32()
 {
+	//FIXME
+	return 0;
 }
 
 int32_t		Variant::toInt32()
 {
+	//FIXME
+	return 0;
 }
 
 uint64_t	Variant::toUInt64()
 {
+	//FIXME
+	return 0;
 }
 
 int64_t		Variant::toInt64()
 {
+	//FIXME
+	return 0;
 }
 
 bool		Variant::toBool()
 {
+	//FIXME
+	return true;
 }
 
 uint8_t		Variant::type()

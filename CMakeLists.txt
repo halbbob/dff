@@ -91,18 +91,18 @@ ENDIF(WIN32)
 
 
 ## Python check
-
-execute_process ( COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process ( COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process ( COMMAND python -c "from distutils.sysconfig import get_python_version; print get_python_version()" OUTPUT_VARIABLE PYTHON_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
+FIND_PACKAGE(PythonInterp REQUIRED)
+execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_version; print get_python_version()" OUTPUT_VARIABLE PYTHON_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 if (UNIX)
   if (APPLE)
-    execute_process ( COMMAND  python -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"PYTHONFRAMEWORKPREFIX\"] + \"/\" + get_config_vars()[\"LDLIBRARY\"]" OUTPUT_VARIABLE PYTHON_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"PYTHONFRAMEWORKPREFIX\"] + \"/\" + get_config_vars()[\"LDLIBRARY\"]" OUTPUT_VARIABLE PYTHON_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
   else ()
-    execute_process ( COMMAND  python -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"LIBDIR\"] + \"/\" + get_config_vars()[\"LDLIBRARY\"]" OUTPUT_VARIABLE PYTHON_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"LIBDIR\"] + \"/\" + get_config_vars()[\"LDLIBRARY\"]" OUTPUT_VARIABLE PYTHON_LIBRARIES OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif (APPLE)
-  execute_process ( COMMAND  python -c "from distutils.sysconfig import get_python_inc; print get_python_inc()" OUTPUT_VARIABLE PYTHON_INCLUDE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process ( COMMAND  python -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"BINDIR\"]" OUTPUT_VARIABLE PYTHON_BIN_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_inc; print get_python_inc()" OUTPUT_VARIABLE PYTHON_INCLUDE_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_config_vars; print get_config_vars()[\"BINDIR\"]" OUTPUT_VARIABLE PYTHON_BIN_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(NOT PYTHON_LIBRARIES)
     message(SEND_ERROR "No Python library found ; please install Python package, at least version 2.5.")
   else(NOT PYTHON_LIBRARIES)
@@ -116,6 +116,7 @@ if (UNIX)
 else (UNIX)
   find_package(PythonLibs)
   find_package(PythonInterp)
+  SET(PYTHON_BIN_PATH ${PYTHON_EXECUTABLE})
 # FIXME for windows validate presence of Python.h in PYTHON_INCLUDE_PATH
 endif(UNIX)
 
@@ -123,7 +124,6 @@ message(STATUS "Python in: ${PYTHON_BIN_PATH}")
 
 
 #XXX SIP TEST 
-FIND_PACKAGE(PythonInterp REQUIRED)
 FIND_PACKAGE(PythonLibrary REQUIRED)
 FIND_PACKAGE(SIP REQUIRED)
 FIND_PACKAGE(PyQt4 REQUIRED)
@@ -143,7 +143,7 @@ INCLUDE(${QT_USE_FILE})
 
 ## Python-magic check for Unix only
 if(UNIX)
-  execute_process(COMMAND python -c "import magic; print magic.__file__" OUTPUT_VARIABLE PYTHON_MAGIC_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import magic; print magic.__file__" OUTPUT_VARIABLE PYTHON_MAGIC_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(NOT PYTHON_MAGIC_PATH)
     message(STATUS "Python magic not found. Not needed at build step but mandatory to start DFF.")
   else(NOT PYTHON_MAGIC_PATH)
@@ -152,7 +152,7 @@ if(UNIX)
 endif(UNIX)
 
 ## Python-QT bindings check
-execute_process(COMMAND python -c "import PyQt4; print PyQt4.__path__[0]" OUTPUT_VARIABLE PYTHON_QT4_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import PyQt4; print PyQt4.__path__[0]" OUTPUT_VARIABLE PYTHON_QT4_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(NOT PYTHON_QT4_PATH)
   message(STATUS "Python QT4 bindings not found. Not needed at build step but mandatory to start DFF.")
 else(NOT PYTHON_QT4_PATH)
@@ -160,7 +160,7 @@ else(NOT PYTHON_QT4_PATH)
 endif(NOT PYTHON_QT4_PATH)
 
 ## QScintilla python bindings check, for IDE
-execute_process(COMMAND python -c "from PyQt4 import Qsci; print Qsci.__file__" OUTPUT_VARIABLE PYTHON_QT4_QSCI_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from PyQt4 import Qsci; print Qsci.__file__" OUTPUT_VARIABLE PYTHON_QT4_QSCI_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 if(NOT PYTHON_QT4_QSCI_PATH)
   message(STATUS "Python QScintilla bindings not found. Not needed at build step but mandatory to start DFF.")
 else(NOT PYTHON_QT4_QSCI_PATH)
@@ -302,27 +302,29 @@ ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_GENERATOR "DEB" "RPM")
 ENDIF(WIN32 AND NOT UNIX)
 
+IF(NOT WIN32 AND UNIX)
 #debian specific
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Malinge Christophe packaging@digital-forensic.org")
-execute_process ( COMMAND uname -m  OUTPUT_VARIABLE CURRENT_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
-IF("${CURRENT_ARCH}" STREQUAL "x86_64")
-  SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
-ELSE("${CURRENT_ARCH}" STREQUAL "x86_64")
-  SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
-ENDIF("${CURRENT_ARCH}" STREQUAL "x86_64")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION} (>=${PYTHON_VERSION}.0), python-qt4 (>= 4.4.0), python-qscintilla2 (>= 2.2), python-magic (>= 4.26)")
-SET(CPACK_DEBIAN_PACKAGE_SECTION "utils")
+  SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Malinge Christophe packaging@digital-forensic.org")
+  execute_process ( COMMAND uname -m  OUTPUT_VARIABLE CURRENT_ARCH OUTPUT_STRIP_TRAILING_WHITESPACE)
+  IF("${CURRENT_ARCH}" STREQUAL "x86_64")
+    SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
+  ELSE("${CURRENT_ARCH}" STREQUAL "x86_64")
+    SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "i386")
+  ENDIF("${CURRENT_ARCH}" STREQUAL "x86_64")
+  SET(CPACK_DEBIAN_PACKAGE_DEPENDS "python${PYTHON_VERSION} (>=${PYTHON_VERSION}.0), python-qt4 (>= 4.4.0), python-qscintilla2 (>= 2.2), python-magic (>= 4.26)")
+  SET(CPACK_DEBIAN_PACKAGE_SECTION "utils")
 
 #rpm specific
-SET(CPACK_RPM_PACKAGE_ARCHITECTURE "${CURRENT_ARCH}")
-SET(CPACK_RPM_PACKAGE_GROUP "Applications/System")
-SET(CPACK_RPM_PACKAGE_LICENSE "GPLV2")
-SET(CPACK_RPM_PACKAGE_REQUIRES "python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, qscintilla-python >= 2.2, python-magic >= 4.26")
-include(CPack)
+  SET(CPACK_RPM_PACKAGE_ARCHITECTURE "${CURRENT_ARCH}")
+  SET(CPACK_RPM_PACKAGE_GROUP "Applications/System")
+  SET(CPACK_RPM_PACKAGE_LICENSE "GPLV2")
+  SET(CPACK_RPM_PACKAGE_REQUIRES "python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, qscintilla-python >= 2.2, python-magic >= 4.26")
+  include(CPack)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
-  DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}
-  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
+    DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+ENDIF(NOT WIN32 AND UNIX)
 
 if (UNIX)
 # Install binary  launcher, icons, shortcuts.

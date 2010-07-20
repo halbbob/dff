@@ -29,8 +29,7 @@ if (UNIX)
 else (UNIX)
   set(local_srcs
     wlocal.cpp
-    wtype.cpp
-    wmetadata.cpp
+    wlocalnode.cpp
     )
 else (UNIX)
 endif(UNIX)

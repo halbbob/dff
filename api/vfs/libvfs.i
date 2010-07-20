@@ -63,8 +63,8 @@
 %include "std_map.i"
 %include "std_vector.i"
 %include "std_except.i"
-%include "windows.i"
 %include "stdint.i"
+%include "windows.i"
 %import "../exceptions/libexceptions.i"
 
 %catches(vfsError) Node::open(void);
@@ -156,7 +156,6 @@
   #include "export.hpp"
   #include "vfs.hpp"
   #include "node.hpp"
-  #include "fso.hpp"
   #include "mfso.hpp"
   #include "vfile.hpp"
   //  #include "../include/variant.hpp"
@@ -201,7 +200,6 @@
 %include "../include/exceptions.hpp"
 %include "../include/vfs.hpp"
 %include "../include/node.hpp"
-%include "../include/fso.hpp"
 %include "../include/mfso.hpp"
 %include "../include/vfile.hpp"
  //%include "../include/variant.hpp"
@@ -257,15 +255,6 @@ namespace std
     SWIG_PYTHON_THREAD_END_BLOCK;
     return ptr;
   }
-};
-
-%extend fso 
-{
- void set_getstate(PyObject *pyfunc)
- {
-   self->SetCallBack(__CBgetstate__, (void*)pyfunc);
-   Py_INCREF(pyfunc);
- } 
 };
 
 //%pythoncode

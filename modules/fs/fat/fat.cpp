@@ -297,6 +297,8 @@ uint64_t		FileAllocationTable::clusterToOffset(uint32_t cluster)
 
 uint32_t		FileAllocationTable::offsetToCluster(uint64_t offset)
 {
+	//FIXME
+	return 0;
 }
 
 void			FileAllocationTable::diffFats()

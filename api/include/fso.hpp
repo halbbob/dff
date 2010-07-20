@@ -45,7 +45,6 @@ public:
 //bouger ds une classe a part
   argument*		arg;
   results*		res;
-//XXX yet nothing is compatble with mfso good job !  
   string 		name;
   string		stateinfo;
   list<Node*>		nl;
@@ -58,9 +57,7 @@ public:
   void*                 getpyfunc;
   CBGETFUNC             getcbfunc;
 
-  EXPORT  class Node* 	CreateNodeDir(class Node* parent, string name, class attrib* attr, bool refresh = false);
-  EXPORT  class Node* 	CreateNodeFile(class Node* parent, string name, attrib* attr, bool refresh = false);
-  unsigned int 		AddNodes(void);
+
   void                  SetCallBack(CBGETFUNC func, void* data);
   virtual void		start(argument* args) = 0;
   virtual int 		vopen(Handle *handle) = 0;

@@ -17,7 +17,11 @@
 #ifndef __VARIANT_HPP__
 #define __VARIANT_HPP__
 
+#ifndef WIN32
 #include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 #include <iostream>
 #include <list>
 #include <map>
@@ -87,23 +91,23 @@ class Variant
 {
 public:
 
-  Variant();
-  ~Variant();
-  Variant(std::string str);
-  Variant(char *carray);
-  Variant(char c);
-  Variant(uint16_t us);
-  Variant(int16_t s);
-  Variant(uint32_t ui);
-  Variant(int32_t i);
-  Variant(int64_t ull);
-  Variant(uint64_t ll);
-  //  Variant(bool b);
-  Variant(vtime *vt);
-  Variant(class Node *node);
-  Variant(std::list<class Variant*> l);
-  Variant(std::map<std::string, class Variant*> m);
-  Variant(void *user);
+  EXPORT Variant();
+  EXPORT ~Variant();
+  EXPORT Variant(std::string str);
+  EXPORT Variant(char *carray);
+  EXPORT Variant(char c);
+  EXPORT Variant(uint16_t us);
+  EXPORT Variant(int16_t s);
+  EXPORT Variant(uint32_t ui);
+  EXPORT Variant(int32_t i);
+  EXPORT Variant(int64_t ull);
+  EXPORT Variant(uint64_t ll);
+  // EXPORT Variant(bool b);
+  EXPORT Variant(vtime *vt);
+  EXPORT Variant(class Node *node);
+  EXPORT Variant(std::list<class Variant*> l);
+  EXPORT Variant(std::map<std::string, class Variant*> m);
+  EXPORT Variant(void *user);
 
 
   bool	convert(uint8_t itype, void *res)

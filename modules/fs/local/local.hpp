@@ -25,10 +25,11 @@
 #include "vfs.hpp"
 #include "conf.hpp"
 #ifdef WIN32
-#include "wtype.hpp"
+#include "wlocalnode.hpp"
+#else
+#include "ulocalnode.hpp"
 #endif
 #include "mfso.hpp"
-#include "ulocalnode.hpp"
 
 using namespace std;
 
@@ -42,10 +43,10 @@ private:
 
 public:
 #ifndef WIN32
-  list<string>	lpath;
-  void		iterdir(std::string path, Node* parent);
+  std::list<string>	lpath;
+  void				iterdir(std::string path, Node* parent);
 #else
-  void 		frec(char *, Node *rfv);
+  void 		frec(const char *, Node *rfv);
 #endif
   local();
   ~local();

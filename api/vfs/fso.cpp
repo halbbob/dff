@@ -39,29 +39,3 @@ PyObject* fso::__getstate__(void)
   if (getpyfunc && getcbfunc)
     return  (*getcbfunc)(getpyfunc);
 }
-
-unsigned int	fso::AddNodes(void)
-{
-  return VFS::Get().AddNodes(nl);
-}
-
-Node 	*fso::CreateNodeFile(Node *parent, string name, attrib* attr, bool refresh)
-{
-  Node* n;
-
-  n = VFS::Get().CreateNodeFile((fso*)this, parent, name, attr, refresh);
-  nl.push_back(n);
-
-// // return (VFS::Get().CreateNodeFile((fso*)this,  parent, name, attr));
-  return (n);
-}
-
-Node	*fso::CreateNodeDir(Node *parent, string name, attrib* attr, bool refresh)
-{
-  Node* n;
-
-  n = VFS::Get().CreateNodeFile((fso*)this, parent, name, attr, refresh);
-  nl.push_back(n);
-
-  return (n);
-}
