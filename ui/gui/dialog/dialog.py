@@ -5,11 +5,13 @@ from PyQt4.QtGui import QFileDialog, QMessageBox
 from api.taskmanager import *
 from api.taskmanager.taskmanager import * 
 from api.loader import *
+from api.vfs import vfs
 
 class Dialog():
   def __init__(self, parent):
      self.parent = parent 
      self.env = env.env()
+     self.vfs = vfs.vfs()
      self.taskmanager = TaskManager()
      self.loader = loader.loader()
 
@@ -20,6 +22,7 @@ class Dialog():
             arg = self.env.libenv.argument("gui_input")
             arg.thisown = 0
 	    arg.add_path("path", str(name))
+            arg.add_node("parent", self.vfs.getnode("/"))
 	    exec_type = ["thread", "gui"]
             self.taskmanager.add("local", arg, exec_type)
  

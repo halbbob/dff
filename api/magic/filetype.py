@@ -27,7 +27,6 @@ class FILETYPE():
         self.vfs = vfs.vfs()
         self.env = env.env()
         self.magicClass = False
-        print "magic load"
         try:
           self.mime = magic.Magic(True)
           self.type = magic.Magic(False)
@@ -36,8 +35,9 @@ class FILETYPE():
           self.mime = magic.open(magic.MAGIC_MIME)
           self.type = magic.open(magic.MAGIC_NONE)
           if os.name == "nt":
-            self.mime.load("./api/magic/magic")
-            self.type.load("./api/magic/magic")
+            import sys
+            self.mime.load(sys.path[0] + "./api/magic/magic")
+            self.type.load(sys.path[0] + "./api/magic/magic")
           else:
             self.mime.load()
             self.type.load()

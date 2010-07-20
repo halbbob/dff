@@ -37,7 +37,7 @@ SWIG_ADD_MODULE(FATFS python fatfs.i ${fat_srcs})
 SWIG_LINK_LIBRARIES(FATFS ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv _libvariant)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
-set_target_properties (${SWIG_MODULE_FAT_REAL_NAME} PROPERTIES
+set_target_properties (${SWIG_MODULE_FATFS_REAL_NAME} PROPERTIES
   PREFIX "../"
   SUFFIX ".pyd"
 )

@@ -34,29 +34,26 @@ void				local::frec(const char *name, Node *rfv)
     do {
 	  WLocalNode	*tmp; //= new Node;
 	  std::string	handle;
-		
+	  
 	  if (!strcmp(find.cFileName, ".") || !strcmp(find.cFileName, ".."))
 	    continue ;
 	  nname = name;
 	  nname += "\\";
 	  nname += find.cFileName;
-	  handle += nname; 
+	  handle += nname;
+
 	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 		// Create a virtual directory
-		std::string	fsPath = this->basePath + "/" + rfv->absolute();
-		
 		tmp = new WLocalNode(find.cFileName, 0, rfv, this, WLocalNode::DIR);
-		tmp->setBasePath(&(fsPath));
+		tmp->setBasePath(this->basePath.c_str());
 		this->frec((char *)nname.c_str(), tmp);
 	  }
 	  else {
 		// Create a virtual file
-	    std::string	fsPath = this->basePath + "/" + rfv->absolute();
-		
 		sizeConverter.Low = find.nFileSizeLow;
 		sizeConverter.High = find.nFileSizeHigh;
-		tmp = new WLocalNode(find.cFileName, sizeConverter.ull, NULL, this, WLocalNode::FILE);
-		tmp->setBasePath(&(fsPath));
+		tmp = new WLocalNode(find.cFileName, sizeConverter.ull, rfv, this, WLocalNode::FILE);
+		tmp->setBasePath(this->basePath.c_str());
 	  }
 	} while (FindNextFileA(hd, &find));
     
@@ -96,6 +93,10 @@ void						local::start(argument *arg)
      res->add_const("error", "conf " + e.error);
      return ;
   }
+  while (lpath->path.find('/') != std::string::npos) {
+	lpath->path[lpath->path.find('/')] = '\\';
+  }
+  
   if ((lpath->path.rfind('/') + 1) == lpath->path.length())
     lpath->path.resize(lpath->path.rfind('/'));
   if ((lpath->path.rfind('\\') + 1) == lpath->path.length())
@@ -105,7 +106,6 @@ void						local::start(argument *arg)
     path = path.substr(path.rfind("\\") + 1);
   else 
     path = path.substr(path.rfind("/") + 1);
-  this->basePath = lpath->path.substr(0, lpath->path.rfind('/'));
   if(!GetFileAttributesExA(lpath->path.c_str(), GetFileExInfoStandard, &info))
   {
 	  res->add_const("error", string("error stating file:" + path)); 
@@ -115,7 +115,9 @@ void						local::start(argument *arg)
   {
 	// Create a virtual directory
 	WLocalNode	*__root = new WLocalNode(path, 0, NULL, this, WLocalNode::DIR);
-    __root->setBasePath(&(this->basePath));
+	
+	this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
+    __root->setBasePath(this->basePath.c_str());
     this->_root = __root;
     //recurse
 	this->frec(lpath->path.c_str(), this->_root);
@@ -126,7 +128,9 @@ void						local::start(argument *arg)
 	sizeConverter.Low = info.nFileSizeLow;
 	sizeConverter.High = info.nFileSizeHigh;
 	WLocalNode	*__root = new WLocalNode(path, sizeConverter.ull, NULL, this, WLocalNode::FILE);
-    __root->setBasePath(&(this->basePath));
+
+	this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
+    __root->setBasePath(this->basePath.c_str());
     this->_root = __root;
   }
   this->registerTree(this->parent, this->_root);

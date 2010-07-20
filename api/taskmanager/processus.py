@@ -36,6 +36,7 @@ class Processus(Script):
 
   def launch(self):
     self.state = "exec"
+    #self.exec_flags = []
     try :
       self.start(self.args)
       try :

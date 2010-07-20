@@ -22,7 +22,8 @@
 class WLocalNode: public Node
 {
 protected:
-  std::string	*basePath;
+  std::string	basePath;
+  bool			cleanPath;
   void			wtimeToVtime(FILETIME *, vtime *);
   //struct stat*	localStat();
 
@@ -34,7 +35,7 @@ public:
     };
   WLocalNode(std::string, uint64_t, Node *, mfso *, uint8_t);
   ~WLocalNode();
-  void			setBasePath(std::string *);
+  void			setBasePath(const char *);
   virtual void	extendedAttributes(Attributes *);
   virtual void	modifiedTime(vtime *);
   virtual void	accessedTime(vtime *);
