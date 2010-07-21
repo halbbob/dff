@@ -256,15 +256,16 @@ class VFSItemModel(QAbstractItemModel):
             return QVariant(QIcon(":folder_128.png"))
           if not node.size():
             return QVariant(QIcon(":folder_empty_128.png"))
-          try:
-            attrs = node.staticAttributes()
-            map = attrs.attributes()
-            ftype = str(map["type"])
-          except (IndexError, AttributeError):
-            typeWorker.enqueue(self, index, node)
-            return QVariant(QIcon(":file_temporary.png"))
-          if ftype == "broken":
-            return QVariant(QIcon(":file_broken.png"))
+          if self.imagesthumbnails:
+            try:
+              attrs = node.staticAttributes()
+              map = attrs.attributes()
+              ftype = str(map["type"])
+            except (IndexError, AttributeError):
+              typeWorker.enqueue(self, index, node)
+              return QVariant(QIcon(":file_temporary.png"))
+            if ftype == "broken":
+              return QVariant(QIcon(":file_broken.png"))
             #transparent broken icon (too slow !)	
             #pixmap = QPixmap(":image.png")
             #broken = QPixmap(":file_broken.png")
@@ -272,7 +273,6 @@ class VFSItemModel(QAbstractItemModel):
             #pixmap.setMask(mask)
             #return QVariant(QIcon(pixmap))
             #return QVariant(QIcon(":file_broken.png")) 
-          if self.imagesthumbnails:
             pixmap = pixmapCache.find(str(node.this))
             if pixmap:
               return QVariant(QIcon(pixmap))
