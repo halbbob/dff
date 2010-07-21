@@ -1,1 +1,1 @@
-__all__ = ['viewerimage', 'cat', 'hexedit', 'bindiff']
+__all__ = ['viewerimage', 'cat', 'hexedit', 'bindiff', 'player.py']

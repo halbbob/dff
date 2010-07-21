@@ -19,6 +19,7 @@ add_subdirectory(bindiff)
 set(viewer_srcs
   cat.py
   viewerimage.py
+  player.py
   __init__.py
 )
 
