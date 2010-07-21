@@ -106,6 +106,9 @@ class Extractor(QDialog):
         same = []
         content = os.listdir(self.path)
         for node in self.nodes:
+            if node.isFile() and node.hasChildren():
+                if node.name() + ".bin" in content:
+                    same.append(str(node.name() + ".bin"))
             if node.name() in content:
                 same.append(str(node.name()))
         if len(same) > 0:
