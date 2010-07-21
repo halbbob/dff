@@ -17,7 +17,11 @@
 %module(package="api.variant") libvariant
 
 %include "std_string.i"
+#ifndef WIN32
 %include "stdint.i"
+#else
+%include "wstdint.i"
+#endif
 %include "std_list.i"
 %include "std_map.i"
 %include "windows.i"

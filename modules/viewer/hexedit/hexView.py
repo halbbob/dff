@@ -14,7 +14,7 @@
 # 
 
 from hexItem import *
-from offsetItem import *
+from modules.viewer.hexedit.offsetItem import *
 from asciiItem import *
 
 from scrollbar import hexScrollBar

@@ -17,7 +17,7 @@
 #For long file mode
 #For scrollbar LFMOD
 
-from hexView import *
+from modules.viewer.hexedit.hexView import *
 from bookmark import *
 
 from informations import *

@@ -63,7 +63,11 @@
 %include "std_map.i"
 %include "std_vector.i"
 %include "std_except.i"
+#ifndef WIN32
 %include "stdint.i"
+#else
+%include "wstdint.i"
+#endif
 %include "windows.i"
 %import "../exceptions/libexceptions.i"
 
