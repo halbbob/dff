@@ -35,6 +35,7 @@ class wHex(QWidget):
     def initShape(self):
         self.hbox = QHBoxLayout()
 
+        self.hbox.setContentsMargins(0, 0, 0, 0)
         self.view = hexView(self)
         self.scroll = hexScrollBar(self)
 

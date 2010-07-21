@@ -34,6 +34,7 @@ class informations(QWidget):
 
     def initShape(self):
         self.viewLabel = QHBoxLayout()
+        self.viewLabel.setContentsMargins(0, 0, 0, 0)
 #        self.viewLabel.setSpacing(150)
         self.viewLabel.setAlignment(Qt.AlignLeft)
 

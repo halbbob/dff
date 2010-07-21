@@ -47,13 +47,12 @@ class ViewerHexa(QWidget, Script):
 
     def g_display(self):
         QWidget.__init__(self)
-        self.vlayout = QVBoxLayout(self)
         self.widget = Heditor(self)
-        self.vlayout.addWidget(self.widget)
         node = self.args.get_node("file")
         self.name = "hexedit " + str(node.name())        
         if node.size() > 0:
           self.widget.init(node)
+          self.setLayout(self.widget.vlayout)
         else:
           msg = QMessageBox(QMessageBox.Critical, "Hexadecimal viewer", "Error: File is empty", QMessageBox.Ok)
           msg.exec_()

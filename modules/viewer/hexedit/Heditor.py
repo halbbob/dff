@@ -105,7 +105,6 @@ class Heditor(QWidget):
     def initShape(self):
         #General Layout : Header + View + Footer
         self.vlayout = QVBoxLayout()
-        self.vlayout.setSpacing(1)
 
 
         self.vsplitter = QSplitter()
@@ -138,7 +137,6 @@ class Heditor(QWidget):
         self.vlayout.addWidget(self.vsplitter)
         self.vlayout.addWidget(self.infos)
 
-        self.setLayout(self.vlayout)
 
     def initFooterViews(self):
         self.footab = QTabWidget()
