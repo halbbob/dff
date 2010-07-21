@@ -16,7 +16,7 @@
 
 set(vfsGui_srcs
   __init__.py
-  docknodelist.py
+#  docknodelist.py
 )
 
 install_file(vfsGui ${vfsGui_srcs})

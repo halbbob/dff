@@ -19,7 +19,7 @@ set(dialog_srcs
   applymodule.py
   extractor.py
   property.py
-  selectnodes.py
+#  selectnodes.py
   uiapplymodule.py
   uiproperty.py
   uiselectnodes.py
