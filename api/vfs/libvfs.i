@@ -45,6 +45,7 @@
 {
     if ($error != NULL)
     {
+      
       throw Swig::DirectorMethodException();
     }
 }
@@ -132,13 +133,40 @@
     }
 }
 
-
-%typemap(directorargout) VFile::write(void *buff , unsigned int size)
+%exception read
 {
-   memcpy((char *)buff, PyString_AsString($input) , PyString_Size($input));
+    try
+    {
+  //    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  //    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+      $action
+    //  SWIG_PYTHON_THREAD_END_ALLOW;
+     // SWIG_PYTHON_THREAD_END_BLOCK;
+    }
+    catch (Swig::DirectorException e)
+    {
+        SWIG_fail;
+    }
+    catch (vfsError &e)
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      SWIG_Python_Raise(SWIG_NewPointerObj((new vfsError(static_cast< const vfsError& >(e))),SWIGTYPE_p_vfsError, SWIG_POINTER_OWN), "vfsError", SWIGTYPE_p_vfsError);
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      SWIG_fail;
+    }
+    catch (const std::exception &e)
+    {
+     SWIG_exception(SWIG_RuntimeError, e.what());
+    }
 }
 
-%typemap(out) pdata*  
+%typemap(directorargout) (int32_t fd, void *buff, uint32_t size)
+{
+   memcpy((char *)buff, PyString_AsString($input) , PyString_Size($input));
+   return PyString_Size($input);
+}
+
+%typemap(out) pdata*
 {
   Py_XDECREF($result);
   $result = PyString_FromStringAndSize((const char *)$1->buff, $1->len);
