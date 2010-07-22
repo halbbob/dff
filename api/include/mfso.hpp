@@ -76,11 +76,11 @@ private:
   uint32_t		allocated;
   std::vector<fdinfo*>	fds;
 public:
-  FdManager();
-  ~FdManager();
-  fdinfo*	get(int32_t fd);
-  void		remove(int32_t fd);
-  int32_t	push(fdinfo* fi);
+  EXPORT FdManager();
+  EXPORT ~FdManager();
+  EXPORT fdinfo*	get(int32_t fd);
+  EXPORT void		remove(int32_t fd);
+  EXPORT int32_t	push(fdinfo* fi);
 };
 
 

@@ -48,10 +48,12 @@ class IO(QDockWidget):
 	self.sigerr = "IOERRputtext"
         self.connect(self, SIGNAL(self.sigerr), self.puttexterr)
 	self.redirect = RedirectIO(self)
-	#self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)     
-	#self.cioout.start()
-	#self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)     
-	#self.cioerr.start()
+	if sys.__stdout__.fileno() > 0:
+	  self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)
+	  self.cioout.start()
+	if sys.__stderr__.fileno() > 0:
+	  self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)
+	  self.cioerr.start()
 
    def configure(self):
         self.setAllowedAreas(Qt.AllDockWidgetAreas)

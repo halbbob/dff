@@ -14,9 +14,9 @@
 
 
 set(dependencies_files
-  PyQt-Py2.6-gpl-4.7-1.exe
-  python-2.6.4.msi
-  vcredist_x86.exe
+  PyQt-Py2.6-gpl-4.7.4-1.exe
+  python-2.6.5.msi
+  #vcredist_x86.exe
 )
 
 install_file(dependencies ${dependencies_files})

@@ -33,6 +33,6 @@ class Dialog():
 
   def about(self):
         """ Open a About Dialog """
-        QMessageBox.information(self.parent, "About",   "<b>Digital Forensics Framework</b> (version 0.5)<br><br> If you have any troubles, please visit our <a href=\"http://wiki.digital-forensic.org\"> support page</a><br>IRC channel: freenode #digital-forensic<br>More information: <a href=\"ht\
-tp://www.digital-forensic.org\"> digital-forensic </a><br><br>Software developed by <a href=\"http://arxsys.fr\"> ArxSys</a>")
+        QMessageBox.information(self.parent, "About",   "<b>Digital Forensics Framework</b> (version 0.7)<br><br> If you have any troubles, please visit our <a href=\"http://wiki.digital-forensic.org/\"> support page</a><br>IRC channel: freenode #digital-forensic<br>More information: <a href=\"ht\
+tp://www.digital-forensic.org/\">www.digital-forensic.org</a><br><br>Software developed by <a href=\"http://arxsys.fr\">ArxSys</a>")
  

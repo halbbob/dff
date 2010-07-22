@@ -168,7 +168,7 @@ else(NOT PYTHON_QT4_QSCI_PATH)
 endif(NOT PYTHON_QT4_QSCI_PATH)
 
 ## PyQt resource compiler check, to generate icons
-find_program(PYTHON_QT4_RCC NAMES pyrcc4)
+find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
 if(PYTHON_QT4_RCC)
   message(STATUS "Python Qt4 resource compiler found: ${PYTHON_QT4_RCC}")
 else(PYTHON_QT4_RCC)
@@ -197,7 +197,11 @@ macro(install_file target_name)
     IF (INSTALL)
       add_custom_target("${target_name}.${file}" ALL)
       FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file} DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel})
+      IF(NOT WIN32 AND UNIX)
+		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file} DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel})
+	  ELSE(NOT WIN32 AND UNIX)
+	    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file} DESTINATION /${CMAKE_PROJECT_NAME}/${rel})
+	  ENDIF(NOT WIN32 AND UNIX)
     ENDIF (INSTALL)
   endforeach(file ${ARGN}) 
 endmacro(install_file target_name)
@@ -205,7 +209,11 @@ endmacro(install_file target_name)
 ## Macro to copy lib at install
 macro(install_lib target_name)
   FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-  INSTALL (TARGETS ${target_name} DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel})
+  IF(NOT WIN32 AND UNIX)
+    INSTALL (TARGETS ${target_name} DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel})
+  ELSE(NOT WIN32 AND UNIX)
+	INSTALL (TARGETS ${target_name} DESTINATION /${CMAKE_PROJECT_NAME}/${rel})
+  ENDIF(NOT WIN32 AND UNIX)	
 endmacro(install_lib)
 
 #### Deploying package file and DFF startup files
@@ -251,13 +259,48 @@ SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
 IF(WIN32 AND NOT UNIX)
+## To manage project upgrade :
+##  - Run cpack one time.
+##  - look at generated project.nsi in _CPack_Packages ; find "Function .onInit" and add lines bellow.
+##  - Manually run generator, like that in cmd.exe : "c:/Program Files/NSIS/makensis.exe" "C:/Users/arx/Desktop/dff/_CPack_Packages/win32_all_in_one/NSIS/project.nsi"
+#Function uninstallFirst
+#  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dff" "UninstallString"
+#  StrCmp $R0 "" end
+#  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION "DFF is already installed. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK uninst
+#  Abort
+#  uninst:
+#    ClearErrors
+#    ExecWait '$R0 _?=$INSTDIR'
+#    IfErrors end
+#  end:
+#FunctionEnd
+#
+#Function .onInit
+#  Call uninstallFirst
+#  ; avoid overwrite
+#  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dff" "UninstallString"
+#  StrCmp $R0 "" continue end
+#  end:
+#    Abort
+#  continue:
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
+	DESTINATION /${CMAKE_PROJECT_NAME}
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff-gui.py
+	DESTINATION /${CMAKE_PROJECT_NAME}
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	RENAME dff-gui.pyw)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.ico
+    DESTINATION /${CMAKE_PROJECT_NAME}/ressources/)
+
   SET(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\arxsys.bmp")
   SET(CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\arxsys.bmp")
   SET(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\dff.ico")
-  SET(CPACK_NSIS_MUI_NUIICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\dff.ico")
+  SET(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\dff.ico")
   SET(CPACK_NSIS_DISPLAY_NAME "Digital Forensics Framework")
-  SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.digital-forensic.org")
-  SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.arxsys.fr")
+  SET(CPACK_NSIS_HELP_LINK "http://www.digital-forensic.org/")
+  SET(CPACK_NSIS_URL_INFO_ABOUT "http://www.arxsys.fr/")
   SET(CPACK_NSIS_CONTACT "contact@arxsys.fr")
   SET(CPACK_NSIS_MODIFY_PATH OFF)
   SET(CPACK_NSIS_COMPRESSOR "/SOLID lzma")
@@ -266,10 +309,17 @@ IF(WIN32 AND NOT UNIX)
     "
      SetOutPath \\\"$INSTDIR\\\\dff\\\"
      CreateShortCut \\\"$DESKTOP\\\\DFF (shell).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff.py\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\" 
-     CreateShortCut \\\"$DESKTOP\\\\DFF (gui).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff-gui.py\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
+     CreateShortCut \\\"$DESKTOP\\\\DFF (gui).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff-gui.pyw\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
      CreateShortCut \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (shell).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff.py\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
-     CreateShortCut \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (gui).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff-gui.py\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
+     CreateShortCut \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (gui).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff-gui.pyw\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
     ")
+  SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+    "
+	 Delete \\\"$DESKTOP\\\\DFF (shell).lnk\\\"
+	 Delete \\\"$DESKTOP\\\\DFF (gui).lnk\\\"
+	 Delete \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (shell).lnk\\\"
+	 Delete \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (gui).lnk\\\"
+	")
 
   if (WINALL)
     if (HAVE_64_BIT)
@@ -279,23 +329,25 @@ IF(WIN32 AND NOT UNIX)
     endif(HAVE_64_BIT)
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
       "
-       MessageBox MB_YESNO \\\"Install Python 2.6.4 ? \\\" /SD IDYES IDNO endPython
-        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.6.4.msi\\\" /passive'
+       MessageBox MB_YESNO \\\"Install Python 2.6.5 ? \\\" /SD IDYES IDNO endPython
+        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.6.5.msi\\\" /passive'
         Goto endPython   
        endPython:
-        MessageBox MB_YESNO \\\"Install PyQt 4.7-1 ? \\\" /SD IDYES IDNO endPyQt
-        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.6-gpl-4.7-1.exe\\\"'
+        MessageBox MB_YESNO \\\"Install PyQt 4.7.4-1 ? \\\" /SD IDYES IDNO endPyQt
+        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.6-gpl-4.7.4-1.exe\\\"'
         Goto endPyQt
        endPyQt:
-       MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
-        ExecWait '\\\"Prerequisites\\\\vcredist_x86.exe\\\" /q:a'
-        Goto endVS
-       endVS:
+       #MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
+       # ExecWait '\\\"Prerequisites\\\\vcredist_x86.exe\\\" /q:a'
+       # Goto endVS
+       #endVS:
        RMDir /r \\\"$INSTDIR\\\\dff\\\\Prerequisites\\\"
       ")
   endif(WINALL)
   SET(CPACK_SOURCE_GENERATOR "ZIP")
-
+  
+  SET(CMAKE_INSTALL_PREFIX "/dff/")
+  
 ELSE(WIN32 AND NOT UNIX)
   SET(CPACK_SOURCE_GENERATOR "TGZ")
 #  SET(CPACK_SOURCE_IGNORE_FILES "") 
@@ -319,12 +371,13 @@ IF(NOT WIN32 AND UNIX)
   SET(CPACK_RPM_PACKAGE_GROUP "Applications/System")
   SET(CPACK_RPM_PACKAGE_LICENSE "GPLV2")
   SET(CPACK_RPM_PACKAGE_REQUIRES "python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, qscintilla-python >= 2.2, python-magic >= 4.26")
-  include(CPack)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
     DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 ENDIF(NOT WIN32 AND UNIX)
+
+include(CPack)
 
 if (UNIX)
 # Install binary  launcher, icons, shortcuts.
