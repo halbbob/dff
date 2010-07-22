@@ -60,7 +60,7 @@ Carver::~Carver()
   //delete this->footer;
 }
 
-dff_ui64 Carver::tell()
+uint64_t	Carver::tell()
 {
   return this->ifile->tell();
 }
@@ -228,7 +228,7 @@ void		Carver::createNode(Node *parent, uint64_t start, uint64_t end)
   cn->setOrigin(this->inode);
 }
 
-unsigned int		Carver::createWithoutFooter(Node *parent, vector<dff_ui64> *headers, unsigned int max)
+unsigned int		Carver::createWithoutFooter(Node *parent, vector<uint64_t> *headers, unsigned int max)
 {
   unsigned int	i;
   unsigned int	hlen;
