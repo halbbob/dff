@@ -23,7 +23,6 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 
 set(shm_srcs
   shm.cpp
-  fdmanager.cpp
 )
 
 

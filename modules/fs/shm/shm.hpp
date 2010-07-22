@@ -25,31 +25,43 @@
 #include <list>
 #include <vector>
 #include <map>
+#include "exceptions.hpp"
 #include "type.hpp"
 #include "vfs.hpp"
+#include "vfile.hpp"
+#include "mfso.hpp"
 #include "conf.hpp"
-#include "fdmanager.hpp"
+#include "node.hpp"
 
-using namespace std;
-
-class shm : public fso 
+class ShmNode: public Node
 {
-  private:
-  vector<class data *> 		blist;
-  vector<class fileInfo *> 	handleList;
-  class Node*   		root;
-  public:
-  fdmanager 			*fdm;
-  shm() ;
-  ~shm() {};
-  Node*  addnode(Node* parent, string filename);
-  virtual void 	start(argument* arg);
-  virtual int vopen(Handle* handle);
-  virtual int vread(int fd, void *buff, unsigned int size);
-  virtual int vclose(int fd);
-  virtual dff_ui64 vseek(int fd, dff_ui64 offset, int whence); 
-  virtual int vwrite(int fd, void *buff, unsigned int size);
-  virtual unsigned int status(void);
+private:
+  uint32_t	__id;
+public:
+  ShmNode(std::string name, uint64_t size, Node* parent, mfso* fsobj);
+  ~ShmNode();
+  void		setId(uint32_t id);
+  uint32_t	id();
+};
+
+class Shm: public mfso
+{
+private:
+  vector<pdata *> 		__nodesdata;
+  FdManager*			__fdm;
+  class Node*   		__root;
+public:
+  Shm();
+  ~Shm();
+  Node*			addnode(Node* parent, string filename);
+  virtual void		start(argument* arg);
+  virtual int32_t	vopen(Node* node);
+  virtual int32_t	vread(int32_t fd, void *buff, uint32_t size);
+  virtual int32_t	vwrite(int32_t fd, void *buff, uint32_t size);
+  virtual int32_t	vclose(int32_t fd);
+  virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence); 
+  virtual uint64_t	vtell(int32_t fd);
+  virtual uint32_t	status(void);
 };
 
 #endif 

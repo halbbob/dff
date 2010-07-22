@@ -30,7 +30,7 @@ class TOUCH(Script):
       fname = arg.get_string("filename")
       if self.touch(fname):
         self.res.add_const("result", "SHM create file " + fname)
-      else:        
+      else:
         self.res.add_const("error", "Can't find path")
 
     def touch(self, fname):

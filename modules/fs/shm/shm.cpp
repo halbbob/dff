@@ -16,121 +16,234 @@
 
 #include "shm.hpp"
 
-shm::shm()
+ShmNode::ShmNode(std::string name, uint64_t size, Node* parent, mfso* fsobj): Node(name, size, parent, fsobj)
 {
-  name = "shm";
-  fdm = new fdmanager;
-  fdm->InitFDM();
-  res = new results(name);
+  this->setFile();
 }
 
-void shm::start(argument* arg)
+ShmNode::~ShmNode()
 {
-  Node* parent;
-  string filename;
+} 
 
-  arg->get("parent", &parent);
-  arg->get("filename", &filename);
+void	ShmNode::setId(uint32_t id)
+{
+  this->__id = id;
+}
 
-  addnode(parent, filename);
-  string n = "file " + filename + " created\n";
-  res->add_const("result", n);
- //res->add_const("node", file);
+uint32_t	ShmNode::id()
+{
+  return this->__id;
+}
 
+
+Shm::Shm(): mfso("shm")
+{
+  this->__fdm = new FdManager();
+}
+
+Shm::~Shm()
+{
+}
+
+void	Shm::start(argument* arg)
+{
+  Node*		parent;
+  string	filename;
+  Node*		node;
+
+  try
+    {
+      arg->get("parent", &parent);
+      arg->get("filename", &filename);
+      node = this->addnode(parent, filename);
+      string n = "file " + node->absolute() + " created\n";
+      res->add_const("result", n);
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("Vfile::start(argument* arg) throw\n" + e.error);
+    }
   return ;
 }
 
-Node* shm::addnode(Node* parent, string filename)
+Node*	Shm::addnode(Node* parent, string filename)
 {
-  attrib *attr = new attrib;
-  attr->size = 0;
-
-  fileInfo* fi = new fileInfo;
-  handleList.push_back(fi);
-  attr->handle = new Handle(handleList.size() - 1);
-  Node* node = CreateNodeFile(parent, filename, attr, true);
-  fi->node = node;
- 
+  ShmNode*	node;
+  uint32_t	id;
+  pdata*	data;
+  
+  node = new ShmNode(filename, 0, parent, this);
+  id = this->__nodesdata.size();
+  node->setId(id);
+  data = new pdata;
+  data->buff = NULL;
+  data->len = 0;
+  this->__nodesdata.push_back(data);
   return node;
 }
 
-int shm::vopen(Handle *handle)
+int32_t	Shm::vopen(Node *node)
 {
-  if (handle == NULL)
-     throw vfsError("shm::bad\n"); 
-  fileInfo *fi = handleList[handle->id];
-  if (fi != NULL)
-  {
-    filePos* fd = new filePos(fi); 
-    int i = fdm->AllocFD(fd); 
-    return (i);
-  }
- return (0);
+  fdinfo*	fi;
+  int32_t	fd;
+
+  if (node == NULL)
+    throw vfsError("Shm::bad\n"); 
+  fi = new fdinfo;
+  fi->fm = NULL;
+  fi->node = node;
+  fi->offset = 0;
+  fd = this->__fdm->push(fi);
+  return (fd);
 }
 
-int shm::vread(int fd, void *buff, unsigned int size)
+int32_t		Shm::vread(int32_t fd, void *buff, uint32_t size)
 {
-  filePos* fp = fdm->GetFDInfo(fd);
-  fileInfo* fi = fp->fi;
+  fdinfo*	fi;
+  ShmNode*	node;
+  uint32_t	id;
+  pdata*	data;
+  uint32_t	realsize;
 
-  if (!fi->buff)
-    return (0);
-
-  if ((int)(fi->size - fp->current) <= 0)
-    return (0);
-  if (size >  fi->size - fp->current)
-    size = fi->size - fp->current;
-  memcpy(buff,(char *)fi->buff + fp->current, size);
-  fp->current += size;
-  return (size);
+  try
+    {
+      fi = this->__fdm->get(fd);
+      node = dynamic_cast<ShmNode*>(fi->node);
+      id = node->id();
+      if (id > this->__nodesdata.size())
+	throw vfsError("Shm: cannot read file");
+      data = this->__nodesdata[id];
+      if ((node->size() == 0) || (data->len == 0) || (data->len < fi->offset) || (node->size() < fi->offset))
+	throw vfsError("Shm: cannot read file");
+      if ((data->len - fi->offset) < size)
+	size = data->len - fi->offset;
+      memcpy(buff, (char *)data->buff + fi->offset, size);
+      fi->offset += size;
+      return (size);
+    }
+  catch (const std::exception& e)
+    {
+      throw vfsError("Shm cannot read file\n");
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("Shm cannot read file\n" + e.error);
+    }
 }
 
-int shm::vwrite(int fd, void *buff, unsigned int size) 
+int32_t		Shm::vwrite(int32_t fd, void *buff, uint32_t size) 
 {
-  filePos* fp = fdm->GetFDInfo(fd);
-  fileInfo* fi = fp->fi;
+  fdinfo*	fi;
+  ShmNode*	node;
+  uint32_t	id;
+  pdata*	data;
 
-  if (!fi->size) 
-  {
-     fi->buff = new char[size];
-     fi->size = size;
-  }				
-  else if (fp->current + size > fi->size) 
-  {
-    size = fp->current + size - fi->size;
-    fi->buff = realloc(fi->buff, sizeof(char) * (fi->size + size));
-    fi->size += size;
-  }
-  memcpy((char*)fi->buff + fp->current, buff, size);
-  fp->current += size;
-  fi->node->attr->size = fi->size; 
-
-  return (size); 
+  try
+    {
+      fi = this->__fdm->get(fd);
+      node = dynamic_cast<ShmNode*>(fi->node);
+      id = node->id();
+      if (id > this->__nodesdata.size())
+	throw vfsError("Shm: cannot write file");
+      data = this->__nodesdata[id];
+      if (data->len < fi->offset)
+	throw vfsError("Shm: cannot write file");
+      if (data->len == 0)
+	{
+	  data->buff = new char[size];
+	  data->len = size;
+	}
+      else if (data->len < (fi->offset + size))
+	{
+	  size = (uint32_t)(fi->offset + size - data->len);
+	  data->buff = realloc(data->buff, sizeof(char) * (data->len + size));
+	  data->len += size;
+	}
+      memcpy((char*)data->buff + fi->offset, buff, size);
+      fi->offset += size;
+      node->setSize(data->len);
+      return size;
+    }
+  catch (const std::exception& e)
+    {
+      throw vfsError("Shm cannot write file\n");
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("Shm cannot write file\n" + e.error);
+    }
 }
 
-dff_ui64 shm::vseek(int fd, dff_ui64 offset, int whence)
+uint64_t	Shm::vseek(int32_t fd, uint64_t offset, int32_t whence)
 {
-  filePos* fp = fdm->GetFDInfo(fd);
-  fileInfo* fi = fp->fi;
- 
-  if (whence == 0)
-    fp->current = offset;
-  else if (whence == 1)
-    fp->current += offset;
-  else if (whence == 2)
-    fp->current = fi->size + offset;
-  return (fp->current);
+  fdinfo*	fi;
+  ShmNode*	node;
+  uint32_t	id;
+
+  try
+    {
+      fi = this->__fdm->get(fd);
+      node = dynamic_cast<ShmNode*>(fi->node);
+      id = node->id();
+      if (id > this->__nodesdata.size())
+	throw vfsError("Shm: cannot seek");
+      if (whence == 0)
+	if (offset < node->size())
+	  fi->offset = offset;
+	else
+	  throw vfsError("Shm: cannot seek");
+      else if (whence == 1)
+	if (fi->offset + offset < node->size())
+	  fi->offset += offset;
+	else
+	  throw vfsError("Shm: cannot seek");
+      else if (whence == 2)
+	fi->offset = node->size();
+      return (fi->offset);
+    }
+  catch (const std::exception& e)
+    {
+      throw vfsError("Shm: cannot seek\n");
+    }
+  catch (vfsError e)
+    {
+      throw vfsError("Shm cannot vseek file\n" + e.error);
+    }
 }
 
-int shm::vclose(int fd)
+int32_t		Shm::vclose(int32_t fd)
 {
 //XXX del fp
-  fdm->ClearFD(fd);
-
-  return (0); 
+  try
+    {
+      this->__fdm->remove(fd);
+      return (0);
+    }
+  catch (const std::exception& e)
+    {
+      throw vfsError("Shm: fd already close");
+    }
 }
 
-unsigned int shm::status(void)
+uint64_t	Shm::vtell(int32_t fd)
+{
+  fdinfo*	fi;
+  ShmNode*	node;
+  uint32_t	id;
+
+  try
+    {
+      fi = this->__fdm->get(fd);
+      return (fi->offset);
+    }
+  catch (const std::exception& e)
+    {
+      throw vfsError("Shm: cannot tell");
+    }
+}
+
+uint32_t	Shm::status(void)
 {
   return (0);
 }
+
