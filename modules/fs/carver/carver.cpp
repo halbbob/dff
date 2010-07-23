@@ -152,7 +152,8 @@ void		Carver::mapper()
   int		offset;
   DEvent	*e;
   DEvent	*e1;
-  dff_ui64	total_headers;
+  uint64_t	total_headers;
+  uint64_t	offpos;
 
   e = new DEvent;
   e1 = new DEvent;
@@ -163,6 +164,7 @@ void		Carver::mapper()
   total_headers = 0;
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
     {
+      offpos = this->tell();
       for (i = 0; i != this->ctx.size(); i++)
 	{
 	  offset = this->bm->search((unsigned char*)buffer, bytes_read, this->ctx[i]->descr->header, this->ctx[i]->headerBcs);
@@ -189,6 +191,7 @@ void		Carver::mapper()
 		{
 		  this->ctx[i]->footers.push_back(this->tell() - bytes_read + seek);
 		  seek += ctx[i]->descr->footer->size;
+		  offpos = this->tell();
 		  offset = this->bm->search((unsigned char*)(buffer+seek), bytes_read - seek, this->ctx[i]->descr->footer, this->ctx[i]->footerBcs);
 		  seek += offset;
 		}
@@ -220,7 +223,7 @@ void		Carver::createNode(Node *parent, uint64_t start, uint64_t end)
   char		name[128];
 
   sprintf(name, "0x%llx-0x%llx", start, end);
-  std::cout << this->generateName(start, end) << std::endl;
+  //std::cout << this->generateName(start, end) << std::endl;
 
   cn = new CarvedNode(name, end-start, parent, this);
   cn->setFile();
@@ -329,8 +332,8 @@ int		Carver::createTree()
 	  memset(tmp, 0, 42);
 	  sprintf(tmp, "%d", total);
 	  this->Results += string(ctx->descr->type) + ":" + string(tmp) + " header(s) found\n";
+	  this->registerTree(this->root, parent);
 	}
-      this->registerTree(this->root, parent);
     }
   return 0;
 }

@@ -125,12 +125,14 @@ int	BoyerMoore::search(unsigned char *haystack, unsigned int hslen, pattern *p, 
   hspos = 0;
   while (hspos <= (hslen - p->size))
     {
-      for (ndpos = p->size - 1; ndpos >= 0, this->charMatch(p->needle[ndpos], haystack[hspos+ndpos], p->wildcard); ndpos--)
-	;
-      if (ndpos < 0)
+      for (ndpos = p->size - 1; ndpos != -1; ndpos--)
+	if (this->charMatch(p->needle[ndpos], haystack[hspos+ndpos], p->wildcard) == 0)
+	  break;
+      if (ndpos == -1)
 	return hspos;
       else
 	{
+	  //printf("hslen: %d -- hspos - ndpos: %d - %d = %d\n", hslen, hspos, ndpos, hspos-ndpos);
 	  shift = bcs[(unsigned char)haystack[hspos + ndpos]] - p->size + 1 + ndpos;
 	  if (shift <= 0)
 	    shift = 1;
@@ -150,9 +152,10 @@ list<unsigned int>	*BoyerMoore::search(unsigned char *haystack, unsigned int hsl
   hspos = 0;
   while ((hspos <= (hslen - this->needleSize)) && (*count != 0))
     {
-      for (ndpos = this->needleSize - 1; ndpos >= 0, this->charMatch(this->needle[ndpos], haystack[hspos+ndpos]); ndpos--)
-	;
-      if (ndpos < 0)
+      for (ndpos = this->needleSize - 1; ndpos != -1; ndpos--)
+	if (this->charMatch(this->needle[ndpos], haystack[hspos+ndpos]) == 0)
+	  break;
+      if (ndpos == -1)
 	{
 	  l->push_back(hspos);
 	  if (this->needleSize == 1)
@@ -182,9 +185,10 @@ list<unsigned int>	*BoyerMoore::search(unsigned char *haystack, unsigned int hsl
   hspos = 0;
   while (hspos <= hslen - this->needleSize)
     {
-      for (ndpos = this->needleSize - 1; ndpos >= 0 && this->charMatch(this->needle[ndpos], haystack[hspos+ndpos]); ndpos--)
-	;
-      if (ndpos < 0)
+      for (ndpos = this->needleSize - 1; ndpos != -1; ndpos--)
+	if (this->charMatch(this->needle[ndpos], haystack[hspos+ndpos]) == 0)
+	  break;
+      if (ndpos == -1)
 	{
 	  l->push_back(hspos);
 	  if (this->needleSize == 1)
