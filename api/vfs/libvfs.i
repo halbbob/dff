@@ -160,11 +160,11 @@
     }
 }
 
-%typemap(directorargout) (int32_t fd, void *buff, uint32_t size)
-{
-   memcpy((char *)buff, PyString_AsString($input) , PyString_Size($input));
-   return PyString_Size($input);
-}
+//%typemap(directorargout) (int32_t fd, void *buff, uint32_t size)
+//{
+//   memcpy((char *)buff, PyString_AsString($input) , PyString_Size($input));
+//   return PyString_Size($input);
+//}
 
 %typemap(out) pdata*
 {
