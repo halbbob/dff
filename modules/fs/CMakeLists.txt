@@ -27,7 +27,6 @@ add_subdirectory (shm)
 set(fs_srcs
   __init__.py
   mzipfile.py
-  streamstrings.py
   unzip.py
 )
 
