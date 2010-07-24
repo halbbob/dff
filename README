@@ -49,8 +49,11 @@ This project follows three main goals :
 2.1 Windows
 
 Python and Python QT have to be installed first.
+
+Two packages are provided for Windows, one with those two dependencies add to DFF installer and an other with DFF installer alone.
+
 Web-page where Python should be downloaded :
-http://www.python.org/download/releases/2.6.4/.
+http://www.python.org/download/releases/2.6.5/.
 Web-page where Python QT should be downloaded :
 http://www.riverbankcomputing.co.uk/software/pyqt/download
 

@@ -63,7 +63,10 @@ class complete_raw_input():
            term[6] [termios.VTIME] = timeout
          try :
            termios.tcsetattr(fd, termios.TCSANOW, term)
-           termios.tcsendbreak(fd, 0)
+           import platform
+           if platform.system().find('BSD') == -1:
+# Fix for BSD, avoid sendbreack : termios.error: (25, 'Inappropriate ioctl for device')
+             termios.tcsendbreak(fd, 0)
 	   try :
 	     ch = os.read(fd, 7) 
 	   except OSError:

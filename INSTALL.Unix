@@ -31,6 +31,7 @@ packaging system.
   $~> wget http://fr.archive.ubuntu.com/ubuntu/pool/main/s/swig1.3/swig_1.3.40-2ubuntu1_amd64.deb
   $~> sudo dpkg -i swig_1.3.40-2ubuntu1_amd64.deb
 - cmake
+- python-qt4-dev, pyqt4-dev-tools, qt4-qmake, libqt4-dev : Python Qt4 bindings and development tools, to generate graphical interface (icons)
 - (optional) libfuse-dev. FUSE development files.
 
 ## Run dependencies (if you need the gui)
@@ -39,20 +40,21 @@ packaging system.
 
 ### Building and installing
 
-You first need to run cmake, which will detects the components
-installed on your system and will check for dependancies. It'll also
-generates the Makefile that will actually builds the code and install
-the resulting program.
+You first need to create a directory to build sources.
+$~> mkdir dff-build && cd dff-build
 
-$~> cmake .
+Run cmake, which will detects the components installed on your system
+and will check for dependancies. It'll also generates the Makefile that will actually builds the code and install the resulting program.
+
+$~/dff-build/> cmake $PATH_TO_DFF_SOURCES
 
 Then build the source code :
 
-$~> make -j2
+$~/dff-build/> make -j2
 
 Finally, install it on your system :
 
-$~> sudo make install
+$~/dff-build/> sudo make install
 
 
 ### Running it !
@@ -63,5 +65,5 @@ $~> dff
 If you want to use the wonderfull graphical version :
 $~> dff -g
 
-Or you can just go to you desktop menu, goes into the Accessories
-folder and click on DFF
+Or you can just go to your desktop menu, goes into the Accessories
+folder and click on DFF.
