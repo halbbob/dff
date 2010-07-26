@@ -277,12 +277,6 @@ IF(WIN32 AND NOT UNIX)
 #
 #Function .onInit
 #  Call uninstallFirst
-#  ; avoid overwrite
-#  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dff" "UninstallString"
-#  StrCmp $R0 "" continue end
-#  end:
-#    Abort
-#  continue:
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
 	DESTINATION /${CMAKE_PROJECT_NAME}
@@ -337,10 +331,10 @@ IF(WIN32 AND NOT UNIX)
         ExecWait '\\\"Prerequisites\\\\PyQt-Py2.6-gpl-4.7.4-1.exe\\\"'
         Goto endPyQt
        endPyQt:
-       #MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
-       # ExecWait '\\\"Prerequisites\\\\vcredist_x86.exe\\\" /q:a'
-       # Goto endVS
-       #endVS:
+       MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
+        ExecWait '\\\"Prerequisites\\\\vcredist_x86.exe\\\" /q:a'
+        Goto endVS
+       endVS:
        RMDir /r \\\"$INSTDIR\\\\dff\\\\Prerequisites\\\"
       ")
   endif(WINALL)
