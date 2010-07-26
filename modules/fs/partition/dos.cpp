@@ -14,11 +14,11 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
+#include "dos.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 
-#include "dos.hpp"
 
 char partition_types[256][128] = 
 {

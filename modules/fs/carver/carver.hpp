@@ -18,8 +18,8 @@
 #ifndef __CARVER_HPP__
 #define __CARVER_HPP__
 
-#include "common.hpp"
 #include "node.hpp"
+#include "common.hpp"
 #include "DEventHandler.hpp"
 
 //Let the possibility to modify the matching footer or to dynamically set the window

@@ -16,6 +16,7 @@
 
 #ifndef __MEML_HH__
 #define __MEM_HH__
+#include "mfso.hpp"
 #ifndef WIN32
 #include <dlfcn.h>
 #endif
@@ -29,7 +30,6 @@
 #include "type.hpp"
 #include "vfs.hpp"
 #include "vfile.hpp"
-#include "mfso.hpp"
 #include "conf.hpp"
 #include "node.hpp"
 

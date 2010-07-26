@@ -14,10 +14,10 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
+#include "carver.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include "carver.hpp"
 
 // Next gen: process like scalpel
 //   for each BUFFER

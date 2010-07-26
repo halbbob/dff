@@ -16,6 +16,7 @@
 
 #ifndef __LOCAL_HH__
 #define __LOCAL_HH__
+#include "mfso.hpp"
 #include <string>
 #include <iostream>
 #include <stdio.h>
@@ -29,7 +30,6 @@
 #else
 #include "ulocalnode.hpp"
 #endif
-#include "mfso.hpp"
 
 using namespace std;
 

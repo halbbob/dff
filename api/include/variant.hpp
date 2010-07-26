@@ -17,6 +17,7 @@
 #ifndef __VARIANT_HPP__
 #define __VARIANT_HPP__
 
+#include "node.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else
@@ -27,7 +28,6 @@
 #include <map>
 #include <typeinfo>
 #include "vtime.hpp"
-#include "node.hpp"
 
 class typeId
 {

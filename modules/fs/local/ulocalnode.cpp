@@ -14,10 +14,10 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
+#include "ulocalnode.hpp"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "ulocalnode.hpp"
 
 ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
 {
