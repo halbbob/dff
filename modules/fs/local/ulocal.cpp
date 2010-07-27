@@ -65,7 +65,7 @@ void local::iterdir(std::string dir, Node *parent)
   //res->add_const("nodes created", total);
 }
 
-local::local(): mfso("local")
+local::local(): fso("local")
 {
 }
 
@@ -110,18 +110,16 @@ void local::start(argument* arg)
   }
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
     {
-      ULocalNode* __root = new ULocalNode(path, 0, NULL, this, ULocalNode::DIR);
-      __root->setBasePath(&this->basePath);
-      this->_root = __root;
-      this->iterdir(tpath->path, this->_root);
+      this->__root = new ULocalNode(path, 0, NULL, this, ULocalNode::DIR);
+      this->__root->setBasePath(&this->basePath);
+      this->iterdir(tpath->path, this->__root);
     }
   else
     {
-      ULocalNode* __root = new ULocalNode(path, stbuff.st_size, NULL, this, ULocalNode::FILE);
-      __root->setBasePath(&this->basePath);
-      this->_root = __root;
+      this->__root = new ULocalNode(path, stbuff.st_size, NULL, this, ULocalNode::FILE);
+      this->__root->setBasePath(&this->basePath);
     }
-  this->registerTree(this->parent, this->_root);
+  this->registerTree(this->parent, this->__root);
   return ;
 }
 

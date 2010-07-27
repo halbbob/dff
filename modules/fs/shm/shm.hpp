@@ -16,6 +16,7 @@
 
 #ifndef __MEML_HH__
 #define __MEM_HH__
+
 #include "mfso.hpp"
 #ifndef WIN32
 #include <dlfcn.h>
@@ -38,7 +39,7 @@ class ShmNode: public Node
 private:
   uint32_t	__id;
 public:
-  ShmNode(std::string name, uint64_t size, Node* parent, mfso* fsobj);
+  ShmNode(std::string name, uint64_t size, Node* parent, fso* fsobj);
   ~ShmNode();
   void		setId(uint32_t id);
   uint32_t	id();

@@ -19,7 +19,6 @@
 #include <iomanip>
 #include <sstream>
 
-
 char partition_types[256][128] = 
 {
   "Empty",
@@ -296,7 +295,7 @@ std::string	uint64ToStr(uint64_t ui64)
   return os.str();
 }
 
-DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin):  Node(name, size, parent, fsobj)
+DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, fso* fsobj, Node* origin):  Node(name, size, parent, fsobj)
 {
   this->origin = origin;
   this->setFile();

@@ -33,7 +33,7 @@ public:
       FILE,
       DIR
     };
-  ULocalNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type);
+  ULocalNode(std::string name, uint64_t size, Node* parent, fso* fsobj, uint8_t type);
   ~ULocalNode();
   void				setBasePath(std::string* bp);
   virtual void			extendedAttributes(Attributes* attr);

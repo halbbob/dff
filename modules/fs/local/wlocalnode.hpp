@@ -33,7 +33,7 @@ public:
       FILE,
       DIR
     };
-  WLocalNode(std::string, uint64_t, Node *, mfso *, uint8_t);
+  WLocalNode(std::string, uint64_t, Node *, fso *, uint8_t);
   ~WLocalNode();
   void			setBasePath(const char *);
   virtual void	extendedAttributes(Attributes *);

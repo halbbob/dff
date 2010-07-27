@@ -61,7 +61,7 @@ void				local::frec(const char *name, Node *rfv)
   }
 }
 
-local::local(): mfso("local")
+local::local(): fso("local")
 {
 }
 
@@ -71,10 +71,10 @@ local::~local()
 
 void						local::start(argument *arg)
 {
-  std::string				path;
-  Path						*lpath;
+  std::string			path;
+  Path				*lpath;
   WIN32_FILE_ATTRIBUTE_DATA	info;
-  s_ull						sizeConverter;
+  s_ull				sizeConverter;
   
   try
   {	 
@@ -96,7 +96,6 @@ void						local::start(argument *arg)
   while (lpath->path.find('/') != std::string::npos) {
 	lpath->path[lpath->path.find('/')] = '\\';
   }
-  
   if ((lpath->path.rfind('/') + 1) == lpath->path.length())
     lpath->path.resize(lpath->path.rfind('/'));
   if ((lpath->path.rfind('\\') + 1) == lpath->path.length())
@@ -108,32 +107,28 @@ void						local::start(argument *arg)
     path = path.substr(path.rfind("/") + 1);
   if(!GetFileAttributesExA(lpath->path.c_str(), GetFileExInfoStandard, &info))
   {
-	  res->add_const("error", string("error stating file:" + path)); 
-      return ;
+    res->add_const("error", string("error stating file:" + path)); 
+    return ;
   }
   if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
   {
-	// Create a virtual directory
-	WLocalNode	*__root = new WLocalNode(path, 0, NULL, this, WLocalNode::DIR);
-	
-	this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
-    __root->setBasePath(this->basePath.c_str());
-    this->_root = __root;
+    // Create a virtual directory
+    this->__root = new WLocalNode(path, 0, NULL, this, WLocalNode::DIR);	
+    this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
+    this->__root->setBasePath(this->basePath.c_str());
     //recurse
-	this->frec(lpath->path.c_str(), this->_root);
+    this->frec(lpath->path.c_str(), this->__root);
   }
   else 
   {
 	// Create a virtual file
-	sizeConverter.Low = info.nFileSizeLow;
-	sizeConverter.High = info.nFileSizeHigh;
-	WLocalNode	*__root = new WLocalNode(path, sizeConverter.ull, NULL, this, WLocalNode::FILE);
-
-	this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
-    __root->setBasePath(this->basePath.c_str());
-    this->_root = __root;
+    sizeConverter.Low = info.nFileSizeLow;
+    sizeConverter.High = info.nFileSizeHigh;
+    this->__root = new WLocalNode(path, sizeConverter.ull, NULL, this, WLocalNode::FILE);
+    this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
+    this->__root->setBasePath(this->basePath.c_str());
   }
-  this->registerTree(this->parent, this->_root);
+  this->registerTree(this->parent, this->__root);
   return ;
 }
 
@@ -201,32 +196,3 @@ unsigned int local::status(void)
   return (nfd);
 }
 
-//XXX
-
-
-//extern "C" 
-//{
-//  fso* create(void)
-//  {
-//    return (new local(string("local")));
-//  }
-//    
-//  void destroy(fso *p)
-//  {
-//    delete p;
-//  }
-//
-//  class proxy 
-//  {
-//    public :
-//    proxy()
-//    {
-//     CModule* mod = new CModule("local", create);
-//     mod->conf->add("path", "path");
-//     mod->conf->add("parent", "node");
-//     mod->conf->add_const("mime-type", std::string("data"));
-//	 mod->tags = "fs";
-//    }
-//  };
-//  proxy p;
-//}

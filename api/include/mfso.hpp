@@ -34,6 +34,25 @@
 #include "results.hpp"
 #include "vfile.hpp"
 
+class fso
+{
+public:
+  results*			res;
+  std::string			stateinfo;
+  std::string			name;
+
+  EXPORT fso(std::string name);
+  EXPORT virtual ~fso();
+  EXPORT virtual void		start(argument* args) = 0;
+  EXPORT virtual int32_t 	vopen(class Node *n) = 0;
+  EXPORT virtual int32_t 	vread(int32_t fd, void *rbuff, uint32_t size) = 0;
+  EXPORT virtual int32_t 	vwrite(int32_t fd, void *wbuff, uint32_t size) = 0;
+  EXPORT virtual int32_t 	vclose(int32_t fd) = 0;
+  EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence) = 0;
+  EXPORT virtual uint32_t	status(void) = 0;
+  EXPORT virtual uint64_t	vtell(int32_t fd) = 0;
+  EXPORT void			registerTree(Node* parent, Node* head);
+};
 
 //Cache manager for attributes and list of allocated blocks for files
 // class Cache
@@ -88,7 +107,7 @@ public:
 // - compression
 // - crypto
 // - ...
-class mfso//: //public fso
+class mfso: public fso
 {
 private:
   std::map<Node*, class VFile*>			__origins;
@@ -123,8 +142,6 @@ protected:
 //  EXPORT class Node			*createNode(class Node *parent, Decoder *decoder, uint64_t offset);
   
 public:
-  results*					res;
-  std::string					stateinfo;
   //  EXPORT mfso();
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
@@ -138,10 +155,8 @@ public:
   EXPORT virtual uint64_t	vtell(int32_t fd);
 
 
-  EXPORT void			registerTree(Node* parent, Node* head);
   EXPORT void			setVerbose(bool verbose);
   EXPORT bool			verbose();
-  std::string			name;
   // EXPORT virtual void	pause();
   // EXPORT virtual void	resume();
   // EXPORT virtual void	kill();

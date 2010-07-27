@@ -16,6 +16,7 @@
 
 #ifndef __LOCAL_HH__
 #define __LOCAL_HH__
+
 #include "mfso.hpp"
 #include <string>
 #include <iostream>
@@ -33,13 +34,14 @@
 
 using namespace std;
 
-class local : public mfso
+class local : public fso
 {
 private:
   unsigned int	nfd;
   std::string	basePath;
   int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
+  ULocalNode*	__root;
 
 public:
 #ifndef WIN32

@@ -250,12 +250,12 @@ std::map<std::string, class Variant*>	Attributes::attributes()
 }
 
 
-Node::Node(std::string name, uint64_t size, Node* parent, mfso* fsobj)
+Node::Node(std::string name, uint64_t size, Node* parent, fso* fsobj)
 {
   this->__static_attributes = NULL;
   this->__common_attributes = 0;
   this->__childcount = 0;
-  this->__mfsobj = fsobj;
+  this->__fsobj = fsobj;
   this->__size = size;
   this->__parent = parent;
   if (this->__parent != NULL)
@@ -300,9 +300,9 @@ void		Node::setSize(uint64_t size)
   this->__size = size;
 }
 
-void	Node::setFsobj(mfso *obj)
+void	Node::setFsobj(fso *obj)
 {
-  this->__mfsobj = obj;
+  this->__fsobj = obj;
 }
 
 void		Node::setParent(Node *parent)
@@ -455,9 +455,9 @@ bool				Node::isDeleted()
 }
 
 
-mfso*		Node::fsobj()
+fso*		Node::fsobj()
 {
-  return this->__mfsobj;
+  return this->__fsobj;
 }
 
 Node*		Node::parent()
@@ -500,13 +500,13 @@ VFile*		Node::open()
   int32_t	fd;
   VFile		*temp;
 
-  if (this->__mfsobj == NULL)
+  if (this->__fsobj == NULL)
     throw vfsError("Can't Open file");
   try
     {
-      if ((fd = this->__mfsobj->vopen(this)) >= 0)
+      if ((fd = this->__fsobj->vopen(this)) >= 0)
 	{
-	  temp = new VFile(fd, this->__mfsobj, this);
+	  temp = new VFile(fd, this->__fsobj, this);
 	  return (temp);
 	}
       throw vfsError("Can't Open file");

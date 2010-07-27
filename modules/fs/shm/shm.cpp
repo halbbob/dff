@@ -16,7 +16,7 @@
 
 #include "shm.hpp"
 
-ShmNode::ShmNode(std::string name, uint64_t size, Node* parent, mfso* fsobj): Node(name, size, parent, fsobj)
+ShmNode::ShmNode(std::string name, uint64_t size, Node* parent, fso* fsobj): Node(name, size, parent, fsobj)
 {
   this->setFile();
 }

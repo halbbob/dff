@@ -15,9 +15,9 @@
 
 from api.module.module import Module
 from api.module.script import Script
-from api.vfs.libvfs import FdManager, fdinfo, Node, mfso
+from api.vfs.libvfs import FdManager, fdinfo, Node, fso
 from api.vfs import vfs
-from api.exceptions.libexceptions import vfsError
+from api.exceptions.libexceptions import vfsError, envError
 from api.type.libtype import vtime
 from api.variant.libvariant import Variant
 
@@ -75,15 +75,14 @@ class ZipNode(Node):
         attr.push(key, vval)
 
 
-class UNZIP(mfso):
+class UNZIP(fso):
   def __init__(self):
-    mfso.__init__(self, "unzip")
+    fso.__init__(self, "unzip")
     self.vfs = vfs.vfs()
     self.fdm = FdManager()
     self.origin = None
     self.zipcontent = None
     self.file = None
-    self.opened_fds = {}
     self.mapped_files = {}
 
 
@@ -110,21 +109,11 @@ class UNZIP(mfso):
         filename = zipfile
       parent = self.vfs.getnode(self.origin.absolute() + "/" + path)
       if parent == None:
-        print path
         parent = self.makeDirs(path)
       attr = self.zipcontent.getinfo(zipfile)
       node = ZipNode(filename, attr.file_size, parent, self, zipfile)
       node.__disown__()
-      #  zinfo = zf.getinfo(uzfile)
-      #  print uzfile, dir(zinfo)
-      #  self.shm.addnode(node, uzfile)
-      #  if zinfo.file_size > 0:
-      #    self.shm.addnode(node, uzfile)
-          #dfilename = node.absolute() + "/" + uzfile
-          #dnode = self.touch(dfilename)
-          #dfile = dnode.open()
-          #dfile.write(zf.read(uzfile))
-          #dfile.close()
+
 
   def makeDirs(self, folders):
     sfolders = folders.split("/")
@@ -150,53 +139,82 @@ class UNZIP(mfso):
   def nodeToZipFile(self, node):
     abs = node.absolute()
     orig = self.origin.absolute()
-    print orig, abs
     zipfile = abs.replace(orig, "")[1:]
     return zipfile
 
 
   def vopen(self, node):
-    print node.absolute()
-    try:
-      zipfile = self.nodeToZipFile(node)
-      if zipfile in self.mapped_files.keys():
-      #zipfile = node.
-        buff = self.mapped_files[zipfile]
-      else:
-        buff = self.mappedFile(zipfile)
-        if len(buff) > 0:
-          self.mapped_files[zipfile] = buff
-          fi = fdinfo()
-          fi.thisown = False
-          fi.node = node
-          fi.offset = 0
-          fd = self.fdm.push(fi)
-      return fd
-    except KeyError:
-      formatted_lines = traceback.format_exc().splitlines()
-      e = vfsError("[unzip::vopen] --> file not found\n" + formatted_lines[-1])
-      e.thisown = False
-      raise e
+    zipfile = self.nodeToZipFile(node)
+    if zipfile in self.mapped_files.keys():
+      buff = self.mapped_files[zipfile]["buff"]
+      self.mapped_files[zipfile]["opened"] += 1
+    else:
+      buff = self.mappedFile(zipfile)
+      self.mapped_files[zipfile] = {}
+      self.mapped_files[zipfile]["buff"] = buff
+      self.mapped_files[zipfile]["opened"] = 1
+    fi = fdinfo()
+    fi.thisown = False
+    fi.node = node
+    fi.offset = 0
+    fd = self.fdm.push(fi)
+    return fd
 
 
   def vread(self, fd, buff, size):
-    print "fd", fd
-    try:
-      fi = self.fdm.get(fd)
-      print fi.offset
-      print fi.node.absolute()
-      zipfile = self.nodeToZipFile(fi.node)      
-      return fd
-    except vfsError:
-      formatted_lines = traceback.format_exc().splitlines()
-      raise vfsError("[unzip::vopen] --> file not found\n" + formatted_lines[-1])
+    fi = self.fdm.get(fd)
+    zipfile = self.nodeToZipFile(fi.node)
+    buff = self.mapped_files[zipfile]["buff"]
+    if fi.node.size() < fi.offset + size:
+      size = fi.node.size() - fi.offset
+    if size <= 0:
+      return (0, "")
+    else:
+      res = (size, buff[fi.offset:fi.offset+size])
+      fi.offset += size
+      return res
+
 
   def vseek(self, fd, offset, whence):
-    pass
+    fi = self.fdm.get(fd)
+    if whence == 0:
+      if offset <= fi.node.size():
+        fi.offset = offset
+      else:
+        formatted_lines = traceback.format_exc().splitlines()
+        raise vfsError("[unzip::vseek]" + formatted_lines[-1])
+    if whence == 1:
+      if fi.offset + offset > fi.node.size():
+        fi.offset += offset
+      else:
+        formatted_lines = traceback.format_exc().splitlines()
+        raise vfsError("[unzip::vseek]" + formatted_lines[-1])
+    if whence == 2:
+      fi.offset = fi.node.size()
+    return fi.offset
 
 
   def vclose(self, fd):
-    pass
+    try:
+      fi = self.fdm.get(fd)
+      zipfile = self.nodeToZipFile(fi.node)
+      self.fdm.remove(fd)
+      if self.mapped_files[zipfile]["opened"] == 1:
+        del self.mapped_files[zipfile]
+      else:
+        self.mapped_files[zipfile]["opened"] -= 1
+      return 0
+    except:
+      return 0
+
+
+  def vtell(self, fd):
+    fi = self.fdm.get(fd)
+    return fi.offset
+
+
+  def status(self):
+    return len(self.mapped_files)
 
 
 class unzip(Module):

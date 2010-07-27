@@ -26,7 +26,7 @@
 // implies to preprocess each shift table
 // Test if faster or not
 
-CarvedNode::CarvedNode(std::string name, uint64_t size, Node* parent, mfso* fsobj): Node(name, size, parent, fsobj)
+CarvedNode::CarvedNode(std::string name, uint64_t size, Node* parent, fso* fsobj): Node(name, size, parent, fsobj)
 {
 }
 

@@ -35,7 +35,7 @@ fdinfo*		FdManager::get(int32_t fd)
 
   //  std::cout << "getting info from fd " << fd << std::endl;
   if (fd > this->fds.size())
-    throw("Provided fd is too high");
+    throw(vfsError("fdmanager::get -> Provided fd is too high"));
   else
     {
       fi = this->fds[fd];
@@ -45,7 +45,7 @@ fdinfo*		FdManager::get(int32_t fd)
 	  return fi;
 	}
       else
-	throw("Fd not allocated");
+	throw(vfsError("fdmanager::get -> fd not allocated"));
       //;return NULL;
     }
 }
@@ -57,7 +57,7 @@ int32_t	FdManager::push(fdinfo* fi)
 
   empty = false;
   if (this->allocated == this->fds.size())
-    throw("Fd manager Full");
+    throw(vfsError("fdmanager::push -> there is no room for new fd"));
   else
     {
       i = 0;
@@ -75,7 +75,7 @@ int32_t	FdManager::push(fdinfo* fi)
 	  return i;
 	}
       else
-	throw("Allocation failed");
+	throw(vfsError("fdmanager::push -> new fd allocation failed"));
     }
 }
 
@@ -84,7 +84,10 @@ void		FdManager::remove(int32_t fd)
   fdinfo*	fi;
   
   if (fd > this->fds.size())
-    throw("Provided fd is too high");
+    {
+      std::cout << "fdmanager::remove -> fd not allocated" << std::endl;
+      //throw(vfsError("fdmanager::remove -> fd not allocated"));
+    }
   else
     {
       fi = this->fds[fd];
@@ -97,12 +100,20 @@ void		FdManager::remove(int32_t fd)
     }
 }
 
-mfso::mfso(std::string name)
+fso::fso(std::string name)
 {
   this->name = name;
   this->res = new results(this->name);
-  this->__fdmanager = new FdManager();
   this->stateinfo = "";
+}
+
+fso::~fso()
+{
+}
+
+mfso::mfso(std::string name): fso(name)
+{
+  this->__fdmanager = new FdManager();
   this->__verbose = false;
   //this->root = new Node(NULL, name, 0);
 }
@@ -111,10 +122,10 @@ mfso::~mfso()
 {
 }
 
-void	mfso::registerTree(Node* parent, Node* head)
+void	fso::registerTree(Node* parent, Node* head)
 {
   parent->addChild(head);
-  this->__parent = parent->fsobj();
+  //this->__parent = parent->fsobj();
   VFS::Get().update(head);
 }
 
@@ -302,7 +313,7 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
     }
   catch(...)
     {
-      throw(vfsError("problem while reading file"));
+      //throw(vfsError("problem while reading file"));
     }
 }
 
@@ -330,7 +341,13 @@ int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 
 int32_t 	mfso::vclose(int32_t fd)
 {
-  this->__fdmanager->remove(fd);
+  try
+    {
+      this->__fdmanager->remove(fd);
+    }
+  catch (vfsError e)
+    {
+    }
   return 0;
 }
 

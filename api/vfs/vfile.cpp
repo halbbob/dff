@@ -16,11 +16,11 @@
 
 #include "vfile.hpp"
 
-VFile::VFile(int32_t fd, class mfso *mfsobj, class Node *node) 
+VFile::VFile(int32_t fd, class fso *fsobj, class Node *node) 
 {
   this->__search = new Search();
   this->__fd = fd;
-  this->__mfsobj = mfsobj;
+  this->__fsobj = fsobj;
   this->__node = node;
 };
 
@@ -30,7 +30,7 @@ VFile::~VFile()
     {
       this->close();
     }
-  catch (vfsError e)
+  catch (const vfsError& e)
     {
     }
   delete this->__search;
@@ -53,7 +53,7 @@ pdata* VFile::read(void)
     {
       data->buff = malloc(size);
       memset(data->buff, 0, size);
-      n = this->__mfsobj->vread(this->__fd, (void*)data->buff, size);
+      n = this->__fsobj->vread(this->__fd, (void*)data->buff, size);
       data->len = n;
       return (data);
     }
@@ -76,7 +76,7 @@ pdata* VFile::read(uint32_t size)
       data->buff = malloc(size);
       data->len = size;
       memset(data->buff, 0, size);
-      n = this->__mfsobj->vread(this->__fd, data->buff, size);
+      n = this->__fsobj->vread(this->__fd, data->buff, size);
       data->len = n;
       return (data);
     }
@@ -94,7 +94,7 @@ int VFile::read(void *buff, uint32_t size)
 
   try 
   {
-    n = this->__mfsobj->vread(this->__fd, buff, size);
+    n = this->__fsobj->vread(this->__fd, buff, size);
     return (n);
   }
   catch (vfsError e)
@@ -118,7 +118,7 @@ uint64_t  VFile::seek(uint64_t offset, char *cwhence)
     throw vfsError("VFile::vseek(dff_ui64, char *) error whence not defined ( SET, CUR, END )");
   try
     {
-      return (this->__mfsobj->vseek(this->__fd, offset, wh));
+      return (this->__fsobj->vseek(this->__fd, offset, wh));
     }
   catch (vfsError e)
     {
@@ -132,7 +132,7 @@ uint64_t  VFile::seek(uint64_t offset, int32_t whence)
     throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
   try
     {
-      return (this->__mfsobj->vseek(this->__fd, offset, whence));
+      return (this->__fsobj->vseek(this->__fd, offset, whence));
     }
   catch (vfsError e)
     {
@@ -144,7 +144,7 @@ uint64_t VFile::seek(uint64_t offset)
 {
   try
     {
-      return (this->__mfsobj->vseek(this->__fd, offset, 0));
+      return (this->__fsobj->vseek(this->__fd, offset, 0));
     }
   catch (vfsError e)
     {
@@ -158,7 +158,7 @@ uint64_t  VFile::seek(int32_t offset, int32_t whence)
     throw vfsError("VFile::vseek(offset, whence) error whence not defined ( SET, CUR, END )");
   try
     {
-      return (this->__mfsobj->vseek(this->__fd, (uint64_t)offset, whence));
+      return (this->__fsobj->vseek(this->__fd, (uint64_t)offset, whence));
     }
   catch (vfsError e)
     {
@@ -172,7 +172,7 @@ int32_t VFile::write(std::string buff)
    
   try 
     {
-      n = this->__mfsobj->vwrite(this->__fd, (void *)buff.c_str(), buff.size());
+      n = this->__fsobj->vwrite(this->__fd, (void *)buff.c_str(), buff.size());
       return (n);
     }
   catch (vfsError e)
@@ -187,7 +187,7 @@ int32_t VFile::write(char *buff, uint32_t size)
   
   try
     {
-      n = this->__mfsobj->vwrite(this->__fd, buff, size);
+      n = this->__fsobj->vwrite(this->__fd, buff, size);
       return (n);
     }
   catch (vfsError e)
@@ -199,25 +199,14 @@ int32_t VFile::write(char *buff, uint32_t size)
 int32_t VFile::close(void)
 {
   try 
-  {
-    this->__mfsobj->vclose(this->__fd);
-  }
+    {
+      this->__fsobj->vclose(this->__fd);
+    }
   catch (vfsError e)
-  {
-     throw vfsError("Vfile::close() throw\n" + e.error);
-  }
+    {
+    }
   return 0;
 }
-
-// void		VFile::enableIORecord()
-// {
-//   this->__ioRecord = false;
-// }
-
-// void		VFile::disableIORecord()
-// {
-//   this->__ioRecord = false;
-// }
 
 int32_t  VFile::dfileno()
 {
@@ -228,7 +217,7 @@ uint64_t VFile::tell()
 {  
   try
     {
-      return (this->__mfsobj->vtell(this->__fd));
+      return (this->__fsobj->vtell(this->__fd));
     }
   catch (vfsError e)
     {

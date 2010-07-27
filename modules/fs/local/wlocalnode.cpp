@@ -17,7 +17,7 @@
 #include "wlocalnode.hpp"
 #include <windows.h>
 
-WLocalNode::WLocalNode(std::string Name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
+WLocalNode::WLocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
 {
   switch (type)
     {

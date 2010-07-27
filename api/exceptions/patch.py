@@ -22,7 +22,7 @@ if __name__ == "__main__":
      buff = "import exceptions\n"
      buff += file.read()
      file.close()
-     buff = buff.replace('Error(_object)', 'Error(exceptions.Exception)')
+     buff = buff.replace('Error(object)', 'Error(exceptions.Exception)')
      file = open(sys.argv[1], 'w')
      file.write(buff)
      file.close()

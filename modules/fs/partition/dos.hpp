@@ -73,7 +73,7 @@ private:
   uint8_t	type;
   uint32_t	base;
 public:
-  DosPartitionNode(std::string name, uint64_t size, Node* parent, mfso* fsobj, Node* origin);
+  DosPartitionNode(std::string name, uint64_t size, Node* parent, fso* fsobj, Node* origin);
   ~DosPartitionNode();
   void		setCtx(uint64_t entryoffset, dos_pte* pte, uint8_t type, uint32_t base=0);
   virtual void	fileMapping(class FileMapping* fm);

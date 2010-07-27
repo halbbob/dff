@@ -95,12 +95,12 @@ private:
 
   std::string			__name;
   uint64_t			__size;
-  class mfso*			__mfsobj;
+  class fso*			__fsobj;
   uint64_t			__common_attributes;
   Attributes*			__static_attributes;
 
 public:
-  EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, mfso* fsobj=NULL);
+  EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
   EXPORT virtual ~Node();
 
   EXPORT void				setFile();
@@ -108,7 +108,7 @@ public:
   EXPORT void				setLink();
   EXPORT void				setDeleted();
   EXPORT void				setSize(uint64_t size);
-  EXPORT void				setFsobj(mfso* obj);
+  EXPORT void				setFsobj(fso* obj);
   EXPORT void				setParent(Node* parent);
 
   EXPORT virtual void			fileMapping(FileMapping *);
@@ -136,7 +136,7 @@ public:
   EXPORT bool				isVDir();
   EXPORT bool				isDeleted();
 
-  EXPORT class mfso*			fsobj();
+  EXPORT class fso*			fsobj();
 
   EXPORT Node*				parent();
 

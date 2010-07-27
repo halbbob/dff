@@ -31,7 +31,7 @@ private:
   uint64_t	__start;
   Node*		__origin;
 public:
-  CarvedNode(std::string name, uint64_t size, Node* parent, mfso* fsobj);
+  CarvedNode(std::string name, uint64_t size, Node* parent, fso* fsobj);
   ~CarvedNode();
   void		setStart(uint64_t start);
   void		setOrigin(Node* origin);

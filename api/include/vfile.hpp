@@ -44,13 +44,13 @@ class VFile
 {
 private:
   Search*	__search;
-  class mfso*	__mfsobj;
+  class fso*	__fsobj;
   int32_t	__fd;
   class Node*  	__node;
   bool		__recordUnread;
 
 public:
-  EXPORT VFile(int32_t fd, class mfso *mfsobj, class Node *node);
+  EXPORT VFile(int32_t fd, class fso *fsobj, class Node *node);
   EXPORT ~VFile();
   EXPORT class Node*	node();
   EXPORT pdata*		read(void);

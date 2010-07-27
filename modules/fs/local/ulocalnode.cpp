@@ -19,7 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, mfso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
+ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
 {
   switch (type)
     {
