@@ -27,39 +27,25 @@
 #include "exceptions.hpp"
 #include "type.hpp"
 #include "node.hpp"
+#include "DEventHandler.hpp"
 
+#include <vector>
 #include <deque>
 #include <list>
 #include <set>
 
-typedef void (*CBFUNC) (void *, class Node* pnode);
-
-class CallBack
-{
-  public:
-    CallBack(CBFUNC func, void *data) { cbfunc = func; cbdata = data; };
-    void*	cbdata;	
-    CBFUNC	cbfunc;	
-};
-
-class VFS 
+class VFS: public DEventHandler
 {  
 private:
   EXPORT 	        VFS();
   EXPORT                ~VFS();
   VFS&          operator=(VFS&);
                 VFS(const VFS&);
-  void		postProcessCallback(Node* node);
-  void		recursivePostProcess(Node *node);
-  void		updateCallback(Node* node);
 
 public:
   class Node*           cwd;	
   Node*		        root;
   set<Node*>            Tree;
-  list<CallBack*>       cbl;  
-  list<CallBack*>       cbl_pp; 
-
 
   static VFS&   Get() 
   { 
@@ -67,14 +53,12 @@ public:
     return single; 
   }
 
+  EXPORT virtual void	Event(DEvent *e);
   EXPORT set<Node*>*    GetTree(void);
   EXPORT void 	        cd(Node *);
   EXPORT Node* 	        GetCWD(void);
   EXPORT Node*	        GetNode(string path);
   EXPORT Node*	        GetNode(string path, Node* where);
-  EXPORT void	        SetCallBack(CBFUNC func, void* cbdata, string type);
-  EXPORT void 		addNode(Node *n);
-
-  void			update(Node* head);
 };
+
 #endif

@@ -18,7 +18,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from api.vfs import *
-from api.vfs.libvfs import VFS
+from api.vfs.libvfs import VFS, DEventHandler
 from api.magic.filetype import *
 from api.loader import *
 from api.taskmanager.taskmanager import *
@@ -60,7 +60,7 @@ class SimpleNodeBrowser(QWidget):
     self.setObjectName(self.name)
     self.vfs = vfs.vfs()
 
-    self.model = VFSItemModel(self)
+    self.model = VFSItemModel(self, True)
     self.model.setRootPath(self.vfs.getnode('/'))
     self.model.setThumbnails(True)
 
@@ -71,15 +71,18 @@ class SimpleNodeBrowser(QWidget):
     self.box.addWidget(self.view, 0,0)
     self.setLayout(self.box)
 
-class NodeBrowser(QWidget):
+class NodeBrowser(QWidget, DEventHandler):
   def __init__(self, parent):
     QWidget.__init__(self, parent)
+    DEventHandler.__init__(self)
     self.name = "nodebrowser"
     self.type = "filebrowser"
     self.setObjectName(self.name)
 
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
+    #register to event from vfs
+    self.VFS.connection(self)
     self.ft = FILETYPE()
     self.env = env.env()	
     self.loader = loader.loader()
@@ -97,12 +100,13 @@ class NodeBrowser(QWidget):
     self.addNodeLinkTreeView()
     self.addNodeView()
     self.addOptionsView()
-    self.VFS.set_callback("refresh_tree", self.refresh)
 
-  def refresh(self, node):
-     self.thumbsView.model().sourceModel().emit(SIGNAL("refresh"), None)
-     self.tableView.model().sourceModel().emit(SIGNAL("refresh"), None)
-     self.treeModel.emit(SIGNAL("refresh"), node)	
+
+  def Event(self, e):
+    self.thumbsView.model().sourceModel().emit(SIGNAL("layoutChanged()"))
+    self.tableView.model().sourceModel().emit(SIGNAL("layoutChanged()"))
+    self.treeModel.emit(SIGNAL("layoutChanged()"))
+
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)
@@ -117,7 +121,7 @@ class NodeBrowser(QWidget):
     self.baseLayout.insertWidget(0, self.nodeViewBox)
 
   def addModel(self, path):
-    self.model = VFSItemModel(self)
+    self.model = VFSItemModel(self, True)
     self.model.setRootPath(self.vfs.getnode(path))
 
   def addProxyModel(self):
@@ -125,7 +129,7 @@ class NodeBrowser(QWidget):
     self.proxyModel.setSourceModel(self.model)
 
   def addNodeLinkTreeView(self):
-    self.treeModel = VFSItemModel(self)
+    self.treeModel = VFSItemModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
     self.treeProxyModel = NodeTreeProxyModel()
     self.treeProxyModel.setSourceModel(self.treeModel)

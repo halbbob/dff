@@ -22,30 +22,25 @@
 #include <iomanip>
 #include <vector>
 
-using namespace std;
-
-typedef unsigned long long dff_ui64;
-
 enum event {OPEN = 0, CLOSE = 1, READ = 2, WRITE = 3, SEEK = 4, OTHER = 5};
 
 typedef struct	s_DEvent
 {
   event		type;
-  dff_ui64	seek;
-  //  void		*arg;
+  uint64_t	seek;
 }		DEvent;
 
 class DEventHandler
 {
 private:
-  vector<class DEventHandler *>	watchers;
+  std::vector<class DEventHandler *>	watchers;
 public:
-  DEventHandler();
-  virtual		~DEventHandler() {};
-  virtual void		Event(DEvent *e) = 0;
-  bool				connection(class DEventHandler *obs);
-  bool				deconnection(class DEventHandler *obs);
-  bool				notify(DEvent *e);
+  EXPORT DEventHandler();
+  EXPORT virtual		~DEventHandler() {};
+  EXPORT virtual void		Event(DEvent *e) = 0;
+  EXPORT bool			connection(class DEventHandler *obs);
+  EXPORT bool			deconnection(class DEventHandler *obs);
+  EXPORT bool			notify(DEvent *e);
 };
 
 #endif

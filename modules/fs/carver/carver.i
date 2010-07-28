@@ -16,8 +16,6 @@
 
 %module CARVER
 
-%feature("director") DEventHandler;
-
 %include "std_string.i"
 %include "std_list.i"
 
@@ -59,13 +57,11 @@ else
 
 
 %{
-#include "DEventHandler.hpp"
 #include "carver.hpp"
 #include "common.hpp"
 #include "../../../api/search/pattern.hpp"
 %}
 
-%include "DEventHandler.hpp"
 %include "carver.hpp"
 %include "common.hpp"
 %include "../../../api/search/pattern.hpp"

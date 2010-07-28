@@ -19,8 +19,8 @@
 #define __CARVER_HPP__
 
 #include "node.hpp"
-#include "common.hpp"
 #include "DEventHandler.hpp"
+#include "common.hpp"
 
 //Let the possibility to modify the matching footer or to dynamically set the window
 //representing the carved file.

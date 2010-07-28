@@ -81,7 +81,8 @@ class ApplyModule(QDialog,  UiApplyModule):
         for i in self.valueArgs :
             if not i.optional :
                 if i.type == "node" :
-                    node = self.valueArgs[i].currentNode()
+                    node = self.vfs.getnode(str(self.valueArgs[i].text()))
+                    #node = self.valueArgs[i].currentNode()
                     if node is None :
                         errorArg.append(i)
                 else :
@@ -144,14 +145,14 @@ class ApplyModule(QDialog,  UiApplyModule):
             label.setMaximumSize(QSize(120,  28))
             list = self.env.getValuesInDb(arg.name,  arg.type)
             if arg.type == "node" :
-                value = pathEdit(self)
+                value = QLineEdit()#pathEdit(self)
                 button = browseButton(self.argumentsContainer, value, arg.name, 0)
                 # Check if a node is selected
                 currentNode = self.__mainWindow.nodeBrowser.currentNode()
                 if currentNode != None:
                     value.clear()
                     value.insert(currentNode.absolute())
-                    value.setCurrentNode(currentNode)
+                    #value.setCurrentNode(currentNode)
 
             elif arg.type == "int":
                 value = StringComboBox(self.argumentsContainer)
@@ -206,7 +207,8 @@ class ApplyModule(QDialog,  UiApplyModule):
         self.arg.thisown = 0
         for i in self.valueArgs :
             if i.type == "node" :
-                self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
+                self.arg.add_node(str(i.name), self.vfs.getnode(str(self.valueArgs[i].text())))
+                #self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
             else :
                 value = str(self.valueArgs[i].currentText())
                 if i.type == "path" :
@@ -224,7 +226,7 @@ class ApplyModule(QDialog,  UiApplyModule):
         self.taskmanager = TaskManager()
         modules = self.currentModuleName()
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
-        return self.arg
+        return #self.arg
 
     def openApplyModule(self,  nameModule = None, typeModule = None, nodesSelected = None):
 #        self.deleteAllArguments()
@@ -290,7 +292,7 @@ class browseButton(QPushButton):
                 if node :
                     self.targetResult.clear()
                     self.targetResult.insert(node.absolute())
-                    self.targetResult.setCurrentNode(node)
+                    #self.targetResult.setCurrentNode(node)
                     
 class SimpleNodeBrowser(QWidget):
     def __init__(self, parent):
@@ -320,8 +322,6 @@ class SimpleNodeBrowser(QWidget):
         self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
 
     def select(self, button, node):
-        print button
-        print node.name()
         self.selection = node
 
     def nodeSelected(self):

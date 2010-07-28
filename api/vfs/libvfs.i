@@ -21,6 +21,8 @@
 %feature("director") fso;
 %feature("director") mfso;
 %feature("director") Node;
+%feature("director") DEventHandler;
+
 
 %newobject Node::open();
 %newobject VFile::search();
@@ -470,17 +472,8 @@
   free($1->buff);
 }
 
-%typemap(in) PyObject* pyfunc
-{
-  if (!PyCallable_Check($input))
-  {
-    PyErr_SetString(PyExc_TypeError, "Need a callable object!");
-    return NULL;
-  }
-  $1 = $input;
-}
-
 %{
+  #include "DEventHandler.hpp"
   #include "exceptions.hpp"
   #include "export.hpp"
   #include "vfs.hpp"
@@ -488,43 +481,9 @@
   #include "mfso.hpp"
   #include "vfile.hpp"
   //  #include "../include/variant.hpp"
-
-  static void PythonCallBack(void *data, Node* pnode)
-  {
-    PyObject *func, *arglist;
-    PyObject *result = NULL;
-
-    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    func = (PyObject *) data;
-    PyObject* obj = SWIG_NewPointerObj((void *)pnode, SWIGTYPE_p_Node, 0);
-    arglist = Py_BuildValue("(O)", obj) ;
-
-    result = PyEval_CallObject(func, arglist);
-    fflush(stdout); 
-//  fflush(stderr);
-    Py_DECREF(arglist);
-    SWIG_PYTHON_THREAD_END_BLOCK;
-    Py_XDECREF(result);
-
-    return ;
-  }
-
-
- static PyObject* __CBgetstate__(void* data)
- {
-    PyObject *func, *result = NULL;
-
-    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    func = (PyObject *) data;
-    result = PyEval_CallObject(func, NULL);
-    fflush(stdout); 
-    SWIG_PYTHON_THREAD_END_BLOCK;
-    if (!result)
-      return NULL;   
-    return result;
-  }
 %}
 
+%include "../include/DEventHandler.hpp"
 %include "../include/export.hpp"
 %include "../include/exceptions.hpp"
 %include "../include/vfs.hpp"
@@ -550,13 +509,6 @@ namespace std
 
 %extend VFS
 {
-  void set_callback(string type, PyObject* pyfunc)
-  {
-    self->SetCallBack(PythonCallBack, (void* ) pyfunc, type);
-    Py_INCREF(pyfunc);
-  }
-
-//XXX 64bits !
 #ifdef 64_BITS
   PyObject* getNodeFromPointer(unsigned long pnode)
   {
@@ -574,27 +526,7 @@ namespace std
     return obj;
   }
 #endif
-
-  unsigned int getNodePointer(PyObject *obj)
-  {
-    unsigned int ptr;
-
-    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    SWIG_ConvertPtr(obj, ((void**)&ptr), SWIGTYPE_p_Node, SWIG_POINTER_EXCEPTION);
-    SWIG_PYTHON_THREAD_END_BLOCK;
-    return ptr;
-  }
 };
-
-//%pythoncode
-//%{
-//def init(self, *args):
-//   print "custom Node ctor"
-//   self.__originalinit__(self, *args)
-
-//Node.__originalinit__ = Node.__init__
-//Node.__init__ = init
-//%}
 
 %extend Node
 {

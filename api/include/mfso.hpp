@@ -17,7 +17,6 @@
 #ifndef __MFSO_HPP__
 #define __MFSO_HPP__
 
-#include <Python.h>
 #include <iostream>
 #include <stdio.h>
 #include <list>
@@ -33,9 +32,12 @@
 #include "node.hpp"
 #include "results.hpp"
 #include "vfile.hpp"
+#include "DEventHandler.hpp"
 
 class fso
 {
+private:
+  std::list<Node *>		__update_queue;
 public:
   results*			res;
   std::string			stateinfo;
@@ -51,6 +53,7 @@ public:
   EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence) = 0;
   EXPORT virtual uint32_t	status(void) = 0;
   EXPORT virtual uint64_t	vtell(int32_t fd) = 0;
+  EXPORT std::list<Node *>	updateQueue();
   EXPORT void			registerTree(Node* parent, Node* head);
 };
 
@@ -60,26 +63,6 @@ public:
 // public:
 //   Cache();
 //   ~Cache();
-// };
-
-
-// class FdManager
-// {
-// public:
-//   FdManager();
-//   ~FdManager();
-// };
-
-
-// class IO
-// {
-//   virtual int 		vopen(Node *n) = 0;
-//   virtual int 		vread(int fd, void *buff, unsigned int size) = 0;
-//   virtual int 		vclose(int fd) = 0;
-//   virtual dff_ui64 	vseek(int fd, dff_ui64 offset, int whence) = 0;
-//   virtual int 		vwrite(int fd, void *buff, unsigned int size) { return 0; } = 0;
-//   virtual unsigned int	status(void) = 0;
-//   virtual void		start(argument* ar);
 // };
 
 typedef struct

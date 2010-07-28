@@ -122,11 +122,17 @@ mfso::~mfso()
 {
 }
 
+std::list<Node *>	fso::updateQueue()
+{
+  return this->__update_queue;
+}
+
 void	fso::registerTree(Node* parent, Node* head)
 {
+  DEvent*  e = new DEvent;
+
   parent->addChild(head);
-  //this->__parent = parent->fsobj();
-  VFS::Get().update(head);
+  VFS::Get().notify(e);
 }
 
 // bool		mfso::registerDecoder(std::string name, Decoder&)

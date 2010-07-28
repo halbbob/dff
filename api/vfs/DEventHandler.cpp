@@ -22,12 +22,12 @@ DEventHandler::DEventHandler()
 
 bool    DEventHandler::connection(class DEventHandler *obs)
 {
-  vector<class DEventHandler *>::iterator        it;
+  std::vector<class DEventHandler *>::iterator        it;
 
   for (it = this->watchers.begin(); it != this->watchers.end(); it++)
     if (*it == obs)
       {
-        cout << "already registered" << endl;
+	std::cout << "already registered" << std::endl;
         return false;
       }
   this->watchers.push_back(obs);
@@ -36,7 +36,7 @@ bool    DEventHandler::connection(class DEventHandler *obs)
 
 bool    DEventHandler::deconnection(class DEventHandler *obs)
 {
-  vector<class DEventHandler *>::iterator        it;
+  std::vector<class DEventHandler *>::iterator        it;
 
   for (it = this->watchers.begin(); it != this->watchers.end(), *it != obs; it++)
     ;
@@ -51,10 +51,10 @@ bool    DEventHandler::deconnection(class DEventHandler *obs)
 
 bool    DEventHandler::notify(DEvent *e)
 {
-  vector<class DEventHandler *>::iterator        it;
+  std::vector<class DEventHandler *>::iterator        it;
 
   for (it = this->watchers.begin(); it != this->watchers.end(); it++)
     (*it)->Event(e);
+  //delete e;
   return true;
-  delete e;
 }

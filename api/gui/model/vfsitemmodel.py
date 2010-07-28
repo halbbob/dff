@@ -118,17 +118,20 @@ typeWorker = TypeWorker()
 typeWorker.start()
 
 class VFSItemModel(QAbstractItemModel):
-  def __init__(self, __parent = None):
-    QAbstractItemModel.__init__(self, __parent)	
+  def __init__(self, __parent = None, event=False):
+    QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
     self.VFS = libvfs.VFS.Get()
     self.map = {}
     self.imagesthumbnails = None
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
     self.connect(self, SIGNAL("dataType"), self.setDataType)
-    self.connect(self, SIGNAL("refresh"), self.refresh)
+    #self.connect(self, SIGNAL("refresh"), self.layoutChanged)
     self.fetchedItems = 0
     self.thumbQueued = {}
+
+  #def modelRefresh(self):
+  #  self.emit(SIGNAL("layoutChanged()")) 
 
   def setDataType(self, index, node, type = None):
      self.__parent.currentView().viewport().update()
@@ -137,9 +140,6 @@ class VFSItemModel(QAbstractItemModel):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
      self.__parent.currentView().viewport().update()
-
-  def refresh(self, node):
-    self.emit(SIGNAL("layoutChanged()")) 
 
   def imagesThumbnails(self):
      return self.imagesthumbnails
