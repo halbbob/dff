@@ -17,6 +17,11 @@
 #ifndef __DEVENTHANDLER_HPP__
 #define __DEVENTHANDLER_HPP__
 
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 #include "export.hpp"
 #include <iostream>
 #include <iomanip>
