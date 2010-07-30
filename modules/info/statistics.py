@@ -86,6 +86,13 @@ class STATISTICS(Script, QWidget):
     self.ft = FILETYPE()
 
 
+  def c_display(self):
+    buff = ""
+    for mtype, count in self.typestat.iteritems():
+      buff += mtype + ": " + str(count) + "\n"
+    return buff
+
+
   def g_display(self):
     QWidget.__init__(self)
     self.chart = STATCHART()

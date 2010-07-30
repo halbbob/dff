@@ -84,29 +84,35 @@ class FILETYPE():
       return res
 
   def filetype(self, node):
-	  buff = ""
-          try :
-            attr = node.staticAttributes()
-            map = attr.attributes()
-            map["type"]
-          except (AttributeError, IndexError, KeyError):
-            try:
-              f = node.open()
-              buff = f.read(0x2000)
-              f.close()
-              if not self.magicClass:
-                filetype = self.type.buffer(buff)
-                filemime = self.mime.buffer(buff)
-              else:
-                filetype = self.type.from_buffer(buff)
-                filemime = self.mime.from_buffer(buff)
-              vfiletype = Variant(filetype)
-              vfiletype.thisown = False
-              vfilemime = Variant(filemime)
-              vfilemime.thisown = False
-              node.setStaticAttribute("type", vfiletype)
-              node.setStaticAttribute("mime-type", vfilemime)
-            except vfsError:
-              vdata = Variant("data")
-              node.setStaticAttribute("type", vdata)
-              node.setStaticAttribute("mime-type", vdata)
+    buff = ""
+    res = {"mime-type": "", "type": ""}
+    try :
+      attr = node.staticAttributes()
+      map = attr.attributes()
+      map["type"]
+      res["mime-type"] = str(map["mime-type"])
+      res["type"] = str(map["type"])
+    except (AttributeError, IndexError, KeyError):
+      try:
+        f = node.open()
+        buff = f.read(0x2000)
+        f.close()
+        if not self.magicClass:
+          filetype = self.type.buffer(buff)
+          filemime = self.mime.buffer(buff)
+        else:
+          filetype = self.type.from_buffer(buff)
+          filemime = self.mime.from_buffer(buff)
+        vfiletype = Variant(filetype)
+        vfiletype.thisown = False
+        vfilemime = Variant(filemime)
+        vfilemime.thisown = False
+        node.setStaticAttribute("type", vfiletype)
+        node.setStaticAttribute("mime-type", vfilemime)
+      except vfsError:
+        vdata = Variant("data")
+        node.setStaticAttribute("type", vdata)
+        node.setStaticAttribute("mime-type", vdata)
+      res["mime-type"] = filemime
+      res["type"] = filetype
+    return res
