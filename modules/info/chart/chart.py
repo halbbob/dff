@@ -39,7 +39,6 @@ class PieView(QtGui.QAbstractItemView):
     def __init__(self, parent=None):
         #super(PieView, self).__init__(parent)
         QtGui.QAbstractItemView.__init__(self)
-        print "INIT PIEVIEW"
         self.horizontalScrollBar().setRange(0, 0)
         self.verticalScrollBar().setRange(0, 0)
 
@@ -52,22 +51,17 @@ class PieView(QtGui.QAbstractItemView):
         self.rubberBand = None
 
     def dataChanged(self, topLeft, bottomRight):
-        print "OK OK OK"
         #super(PieView, self).dataChanged(topLeft, bottomRight)
 
         self.validItems = 0
         self.totalValue = 0.0
 
         for row in range(self.model().rowCount(self.rootIndex())):
-            print row
             index = self.model().index(row, 1, self.rootIndex())
             value = self.model().data(index).toInt()[0]
-            print "Value:", value, "Type:", type(value)
             if value is not None and value > 0.0:
                 self.totalValue += value
                 self.validItems += 1
-        print "valid items:", self.validItems
-        print "totalValue:", self.totalValue
         self.viewport().update()
 
 
@@ -290,7 +284,6 @@ class PieView(QtGui.QAbstractItemView):
                 index = self.model().index(row, 1, self.rootIndex())
                 value = self.model().data(index).toInt()[0]
 
-                print value
                 if value > 0.0:
                     angle = 360*value/self.totalValue
 

@@ -85,7 +85,7 @@ class FILETYPE():
 
   def filetype(self, node):
     buff = ""
-    res = {"mime-type": "", "type": ""}
+    res = {"mime-type": "unknown", "type": "unknown"}
     try :
       attr = node.staticAttributes()
       map = attr.attributes()
@@ -109,10 +109,10 @@ class FILETYPE():
         vfilemime.thisown = False
         node.setStaticAttribute("type", vfiletype)
         node.setStaticAttribute("mime-type", vfilemime)
+        res["mime-type"] = filemime
+        res["type"] = filetype
       except vfsError:
         vdata = Variant("data")
         node.setStaticAttribute("type", vdata)
         node.setStaticAttribute("mime-type", vdata)
-      res["mime-type"] = filemime
-      res["type"] = filetype
     return res
