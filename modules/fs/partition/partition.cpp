@@ -156,11 +156,11 @@ void Partition::start(argument* arg)
       arg->get("parent", &this->parent);
       if (this->parent->size() != 0)
 	{
-	  this->_root = new Node("partition");
-	  this->_root->setDir();
-	  this->_root->setFsobj(this);
-	  this->dos->open(this->parent->open(), 0, this->_root, this, this->parent);
-	  this->registerTree(this->parent, this->_root);
+	  this->__root = new Node("partition");
+	  this->__root->setDir();
+	  this->__root->setFsobj(this);
+	  this->dos->open(this->parent->open(), 0, this->__root, this, this->parent);
+	  this->registerTree(this->parent, this->__root);
 	}
     }
   catch(vfsError e)

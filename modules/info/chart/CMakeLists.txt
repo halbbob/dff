@@ -10,13 +10,12 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-add_subdirectory(chart)
-
-set(info_srcs
-  fileinfo.py
-  statistics.py
+set(chart_srcs
+  __init__.py
+  chart.py
+  chart_rc.py
 )
 
-install_file(info ${info_srcs})
+install_file(chart ${chart_srcs})

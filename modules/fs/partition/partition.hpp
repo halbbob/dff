@@ -31,7 +31,7 @@ class Partition : public mfso
 private:
   std::ostringstream		Result;
   Node				*parent;
-
+  Node				*__root;
   DosPartition*			dos;
 //   int				SetResult();
 //   int				getParts();

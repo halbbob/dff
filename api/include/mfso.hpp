@@ -53,6 +53,8 @@ public:
   EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence) = 0;
   EXPORT virtual uint32_t	status(void) = 0;
   EXPORT virtual uint64_t	vtell(int32_t fd) = 0;
+  EXPORT virtual void		setVerbose(bool verbose){}
+  EXPORT virtual bool		verbose(){}
   EXPORT std::list<Node *>	updateQueue();
   EXPORT void			registerTree(Node* parent, Node* head);
 };
@@ -95,7 +97,6 @@ class mfso: public fso
 private:
   std::map<Node*, class VFile*>			__origins;
   FdManager*					__fdmanager;
-  std::string					__name;
   class VFile*					__vfile;
   //std::list<class Node*>			nodeList;
   //std::map<std::string, class Decoder *>	decoders;
@@ -117,7 +118,7 @@ private:
 
 protected:
   //  std::string				name;
-  class Node					*_root;
+  //class Node					*_root;
 //   bool					registerDecoder(std::string name, Decoder&);
 //   bool					unregisterDecoder(std::string name);
 //   virtual	uint64_t		getStartOffset() = 0;
@@ -138,8 +139,8 @@ public:
   EXPORT virtual uint64_t	vtell(int32_t fd);
 
 
-  EXPORT void			setVerbose(bool verbose);
-  EXPORT bool			verbose();
+  EXPORT virtual void		setVerbose(bool verbose);
+  EXPORT virtual bool		verbose();
   // EXPORT virtual void	pause();
   // EXPORT virtual void	resume();
   // EXPORT virtual void	kill();

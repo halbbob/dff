@@ -207,10 +207,10 @@ int32_t 	mfso::vopen(Node *node)
 
 std::string	hexlify(uint64_t val)
 {
-  char		res[32];
-  
-  snprintf(res, 32, "0x%llx", val);
-  return res;
+  ostringstream os;
+
+  os << "0x" << hex << val;
+  return os.str();
 }
 
 void			mfso::setVerbose(bool verbose)
@@ -249,7 +249,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	    {
 	      if (this->__verbose == true)
 		{
-		  std::cout << "[" << this->__name << "] reading " << fi->node->absolute() << std::endl
+		  std::cout << "[" << this->name << "] reading " << fi->node->absolute() << std::endl
 			    << "   " << hexlify(fi->offset) << "-" << hexlify(fi->offset + relativesize)
 			    << " mapped @ " << hexlify(relativeoffset) << "-" << hexlify(relativeoffset + relativesize)
 			    << " in " << current->origin->absolute() << std::endl;
@@ -266,7 +266,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	      memset((uint8_t*)buff+totalread, 0, relativesize);
 	      if (this->__verbose == true)
 		{
-		  std::cout << "[" << this->__name << "] reading " << fi->node->absolute() << std::endl
+		  std::cout << "[" << this->name << "] reading " << fi->node->absolute() << std::endl
 			    << "   " << hexlify(fi->offset) << "-" << hexlify(fi->offset + relativesize)
 			    << " mapped @ " << hexlify(relativeoffset) << "-" << hexlify(relativeoffset + relativesize)
 			    << " in shadow node" << std::endl;

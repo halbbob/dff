@@ -13,43 +13,125 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QWidget
+
 from api.vfs import *
 from api.magic.filetype import *
 from api.module.script import *
 from api.module.module import *
 
-class STATISTICS(Script):
+from chart.chart import PieView
+
+class STATCHART(QWidget):
+  def __init__(self):
+    #super(QWidget, self).__init__()
+    QWidget.__init__(self)
+    self.setupModel()
+    self.setupViews()
+
+  def setupModel(self):
+    self.model = QtGui.QStandardItemModel(8, 2, self)
+    self.model.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Label"))
+    self.model.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Quantity"))
+
+  def setupViews(self):
+    self.vbox = QtGui.QVBoxLayout()
+    self.setLayout(self.vbox)
+    splitter = QtGui.QSplitter()
+    table = QtGui.QTableView()
+    self.pieChart = PieView()
+    splitter.addWidget(table)
+    splitter.addWidget(self.pieChart)
+    splitter.setStretchFactor(0, 0)
+    splitter.setStretchFactor(1, 1)
+    
+    table.setModel(self.model)
+    self.pieChart.setModel(self.model)
+    
+    self.selectionModel = QtGui.QItemSelectionModel(self.model)
+    table.setSelectionModel(self.selectionModel)
+    self.pieChart.setSelectionModel(self.selectionModel)
+    
+    table.horizontalHeader().setStretchLastSection(True)
+    #self.setCentralWidget(splitter)
+    self.vbox.addWidget(splitter)
+    #self.setCentralWidget(splitter)
+
+
+  def decode(self, typestat):
+    self.model.removeRows(0, self.model.rowCount(QtCore.QModelIndex()),
+                          QtCore.QModelIndex())
+
+    row = 0
+    color = 0
+    for mtype, count in typestat.iteritems():
+      self.model.insertRows(row, 1, QtCore.QModelIndex())
+
+      self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
+                         QtCore.QVariant(mtype))
+      self.model.setData(self.model.index(row, 1, QtCore.QModelIndex()),
+                         QtCore.QVariant(float(count)))
+      self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
+                         QtCore.QVariant(QtGui.QColor(color)),
+                         QtCore.Qt.DecorationRole)
+      color += 8000
+      row += 1
+
+
+class STATISTICS(Script, QWidget):
   def __init__(self):
     Script.__init__(self, "statistics")
     self.vfs = vfs.vfs()
-    self.dtype = {}
-    self.ftype = FILETYPE()
+    self.ft = FILETYPE()
+
+
+  def g_display(self):
+    QWidget.__init__(self)
+    self.chart = STATCHART()
+    self.vbox = QtGui.QVBoxLayout()
+    self.setLayout(self.vbox)
+    self.vbox.addWidget(self.chart)
+    #STATCHART.__init__(self)
+    self.chart.decode(self.typestat)
+
+
+  def updateWidget(self):
+    pass
+
 
   def start(self, args):
-    node = args.get_node("parent")    
-    self.getstat(node)
-    res = self.print_stat_result()
-    self.res.add_const("result", res)
+    self.typestat = {}
+    node = args.get_node("parent")
+    if node.size() > 0:
+      self.addEntry(node)
+    if node.hasChildren():
+      self.getstat(node.children())
+    for mtype, count in self.typestat.iteritems():
+      self.res.add_const(mtype, count)
 
-  def getstat(self, node):
-    if node.is_file: 
-      self.ftype.filetype(node) 
-      file_type = node.attr.smap["mime-type"]
-      if file_type not in self.dtype:
-        self.dtype[file_type] = 1
-      else:
-        self.dtype[file_type] += 1
-    list = node.children()
-    buff = ""
-    for i in list:
-        buff +=  self.getstat(i)
-    return buff
 
-  def print_stat_result(self):
-    buff = ""
-    for k, v in self.dtype.iteritems():
-        buff += str(v) + " " + str(k) + "\n"
-    return buff
+  def addEntry(self, node):
+    res = self.ft.filetype(node)
+    mtype = res["mime-type"]
+    idx = mtype.find("; ")
+    if idx != -1:
+      mtype = mtype[:idx]
+    if mtype not in self.typestat:
+      self.typestat[mtype] = 1
+    else:
+      self.typestat[mtype] += 1
+
+
+  def getstat(self, lnodes):
+    folders = []
+    for node in lnodes:
+      if node.size() > 0:
+        self.addEntry(node)
+      if node.hasChildren():
+        folders.append(node)
+    for folder in folders:
+      self.getstat(folder.children())
 
 
 class statistics(Module):
