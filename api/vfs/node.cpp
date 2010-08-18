@@ -250,11 +250,17 @@ std::map<std::string, class Variant*>	Attributes::attributes()
 }
 
 
+Node::Node()
+{
+}
+
 Node::Node(std::string name, uint64_t size, Node* parent, fso* fsobj)
 {
   this->__static_attributes = NULL;
   this->__common_attributes = 0;
   this->__childcount = 0;
+  this->__at = 0;
+  //this->__checkState = 0;
   this->__fsobj = fsobj;
   this->__size = size;
   this->__parent = parent;
@@ -477,6 +483,7 @@ bool		Node::addChild(class Node *child)
 	return false;
   }
   child->setParent(this);
+  child->__at = this->__childcount; 
   this->__children.push_back(child);
   this->__childcount++;
   return true;
@@ -493,6 +500,12 @@ bool            Node::hasChildren()
 uint32_t	Node::childCount()
 {
   return this->__childcount;
+}
+
+
+uint32_t	Node::at()
+{
+  return this->__at;	
 }
 
 VFile*		Node::open()
@@ -516,6 +529,19 @@ VFile*		Node::open()
       throw vfsError("Node::open(void) throw\n" + e.error);
     }
 }
+
+
+void	 	Node::setId(uint32_t id)
+{
+  this->__id = id;
+}
+
+uint32_t	Node::id()
+{
+  return this->__id;
+}
+
+
 
 VfsRoot::VfsRoot(std::string name): Node(name)
 {

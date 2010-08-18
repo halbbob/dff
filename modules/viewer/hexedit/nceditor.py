@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009 ArxSys
+# 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+# 
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
@@ -41,7 +42,7 @@ class HexFF():
       self.node = Node
 #      self.nodePath = nodePath
       self.vfsFile = self.node.open() 
-      self.fileSize = self.node.attr.size
+      self.fileSize = self.node.size()
 
       self.scr = scr
       self.x, self.y = scr.getmaxyx()

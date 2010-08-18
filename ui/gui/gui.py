@@ -30,12 +30,15 @@ class gui():
         """Launch GUI"""
         #translator = Translator()
         self.app = QApplication(sys.argv)
+      
         #app.installTranslator(translator)
+        self.app.setApplicationName("Digital Forensics Framework")
+        self.app.setApplicationVersion("0.5")
         pixmap = QPixmap(":splash.png")
         self.splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
         self.splash.setMask(pixmap.mask()) 
 
-    def launch(self, modPath=None):
+    def launch(self, modPath = None):
         self.splash.show()
         if modPath:
           self.loader = loader()

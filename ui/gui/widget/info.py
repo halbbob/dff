@@ -22,8 +22,11 @@ from api.env import *
 from api.taskmanager.taskmanager import *
 
 from ui.gui.utils.utils import Utils
+from ui.gui.widget.stdio import IO 
 
-class Info(QDockWidget):
+from ui.redirect import RedirectIO
+
+class Info(QWidget):
     def __init__(self, mainWindow):
         super(Info,  self).__init__()
         self.__mainWindow = mainWindow
@@ -37,7 +40,7 @@ class Info(QDockWidget):
         self.Load()
 
     def configure(self):
-        self.setAllowedAreas(Qt.AllDockWidgetAreas)
+#        self.setAllowedAreas(Qt.AllDockWidgetAreas)
         self.setObjectName("dockWidgetBrowser")
         self.setWindowTitle(QApplication.translate("Info", "Info", None, QApplication.UnicodeUTF8))
     
@@ -59,16 +62,24 @@ class Info(QDockWidget):
             self.action.setChecked(False)
         
     def g_display(self):
-        self.Info = QWidget(self)
-        self.layout = QHBoxLayout(self.Info)
-        self.Info.setLayout(self.layout)
+        self.layout = QHBoxLayout()
         self.tabWidget = QTabWidget(self)
         self.tabWidget.setElideMode(Qt.ElideRight)
         self.initTreeProcess()
+
+        self.initSTDIO()
+
         self.initTreeModule()
         self.initTreeEnv()
+
         self.layout.addWidget(self.tabWidget)
-        self.setWidget(self.Info)
+        self.setLayout(self.layout)
+#        self.setWidget(self.Info)
+
+    def initSTDIO(self):
+	self.io = IO()
+        self.tabWidget.addTab(self.io.textOut, QIcon(":info.png"),"std::out")
+        self.tabWidget.addTab(self.io.textErr, QIcon(":cancel.png"),"std::err")
 
     def initCallback(self):
         self.connect(self, SIGNAL("visibilityChanged(bool)"), self.visibilityChanged)
@@ -111,7 +122,7 @@ class Info(QDockWidget):
 	QApplication.translate("Info", "Type", None, QApplication.UnicodeUTF8)]
         self.treeModule.setHeaderLabels(headerLabel)
         self.treeModule.setAlternatingRowColors(True)
-        self.tabWidget.addTab(self.treeModule, "Modules")
+        self.tabWidget.addTab(self.treeModule, QIcon(":blockdevice.png"),"Modules")
         self.itemModuleDic = dict()
 	self.itemListArgDic = dict()
 	self.itemArgDic = dict()
@@ -242,7 +253,7 @@ class Info(QDockWidget):
         QApplication.translate("Info", "Info", None, QApplication.UnicodeUTF8)] 
         self.treeProcess.setHeaderLabels(headerLabel)
         self.treeProcess.setAlternatingRowColors(True)
-        self.tabWidget.addTab(self.treeProcess, "Task Manager")
+        self.tabWidget.addTab(self.treeProcess, QIcon(":exec.png"),"Task Manager")
  	self.connect(self.treeProcess, SIGNAL("itemDoubleClicked(QTreeWidgetItem*,int)"), self.procClicked)
 	self.procItemDic = dict()
         self.procChildItemDic = dict()

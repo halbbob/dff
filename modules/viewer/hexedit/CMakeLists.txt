@@ -36,6 +36,7 @@ set(hexedit_srcs
   selection.py
   textItem.py
   utils.py
+  messagebox.py
 )
 
 install_file(hexedit ${hexedit_srcs})

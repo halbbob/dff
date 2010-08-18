@@ -18,7 +18,7 @@ import sys
 from Queue import *
 
 # Form Custom implementation of MAINWINDOW
-from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget
+from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings
 from PyQt4 import QtCore, QtGui
 
@@ -40,7 +40,7 @@ from ui.gui.ide.actions import IdeActions
 from ui.gui.widget.info import Info
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
-from ui.gui.widget.stdio import IO
+#from ui.gui.widget.stdio import IO
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
@@ -52,7 +52,6 @@ class MainWindow(QMainWindow):
         self.sched = scheduler.sched
         self.vfs = VFS.Get()
 
-#        self.ApplyModule = ApplyModule(self)
         self.dialog = Dialog(self)
 	
 	self.initCallback()
@@ -75,7 +74,6 @@ class MainWindow(QMainWindow):
 	     ["Exit", "Exit", None,  ":exit.png", "Exit"], 
 	     ["Load", "Load", self.dialog.loadDriver, None, None ],
       	     ["About", "?", self.dialog.about, None, None ],
-#	     ["ApplyModule", "ApplyModule", self.ApplyModule.openApplyModule, ":exec.png", "Open With"],
 	     ["List_Files", "List Files", self.addBrowser, ":view_detailed.png", "Open List"]
 	  ] 
 
@@ -86,16 +84,32 @@ class MainWindow(QMainWindow):
 
 	self.addMenu(*["About", ["About"]])
 
+        # Setup AREA
+
+        self.mainArea = Qt.TopDockWidgetArea
+        self.rightArea = Qt.RightDockWidgetArea
+
+        self.mainWidget = Info(self)
+        self.setCentralWidget(self.mainWidget)
+
 	self.nodeBrowser = NodeBrowser(self)
         dockwidget = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
         dockwidget.setAllowedAreas(Qt.AllDockWidgetAreas)
+        dockwidget.setWidget(self.nodeBrowser)
         self.dockWidget["NodeBrowser"] = dockwidget
-        self.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.dockWidget["NodeBrowser"])
         self.connect(dockwidget, SIGNAL("resizeEvent"), self.nodeBrowser.resize)
-        self.addDockWidget(Qt.RightDockWidgetArea, dockwidget)
+        self.connect(dockwidget, SIGNAL("dockLocationChanged(Qt::DockWidgetArea)"), self.markerAreaChanged)
 
-        self.readSettings()
+        self.addNewDockWidgetTab(self.mainArea, self.dockWidget["NodeBrowser"])
+
+#        self.addShell()
+
+#        self.readSettings()
    
+    def markerAreaChanged(self, area):
+        self.mainArea = area
+        self.rightArea = area
+
     def addBrowser(self):
         self.addDockWidgets(NodeBrowser(self)) 
  
@@ -146,37 +160,34 @@ class MainWindow(QMainWindow):
 	   self.dockWidget[name].show()
         except KeyError:
            self.dockWidget[name] = cl(self)
-           self.addNewDockWidgetTab(Qt.RightDockWidgetArea, self.dockWidget[name])
+           self.addNewDockWidgetTab(self.rightArea, self.dockWidget[name])
 
-    def addDock(self, name, cl):
-           self.dockWidget[name] = cl(self)
-           self.addNewDockWidgetTab(Qt.BottomDockWidgetArea, self.dockWidget[name])
+#    def addDock(self, name, cl):
+#        self.dockWidget[name] = cl(self)
+#        self.addNewDockWidgetTab(Qt.BottomDockWidgetArea, self.dockWidget[name])
 
     def addDockWidgets(self, widget):
         dockwidget = DockWidget(self, widget, widget.name)
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
-        self.addNewDockWidgetTab(Qt.RightDockWidgetArea, dockwidget)
+        self.addNewDockWidgetTab(self.mainArea, dockwidget)
   
     def initDockWidgets(self):
         """Init Dock in application and init DockWidgets"""
         widgetPos = [ ( Qt.TopLeftCorner, Qt.LeftDockWidgetArea, QTabWidget.North),
 	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.North), 
+	 (Qt.TopLeftCorner, Qt.TopDockWidgetArea, QTabWidget.North), 
 	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.North) ]
 
         for corner, area, point in widgetPos:
-	   self.setCorner(corner, area)
-           try:
-               self.setTabPosition(area, point)
-           except AttributeError:
-               pass
+            self.setCorner(corner, area)
+            try:
+                self.setTabPosition(area, point)
+            except AttributeError:
+                pass
                
         self.dockWidget = {}
         self.widget = {}
       
-        self.addDock("IO", IO)
-        self.addDock("Info", Info)
-        #self.setCentralWidget(NodeBrowser(self))
- 
     def addNewDockWidgetTab(self, dockArea, dockWidget):
         if dockWidget is None :
             return
@@ -185,7 +196,6 @@ class MainWindow(QMainWindow):
              self.addDockWidget(dockArea, dockWidget)
              self.tabifyDockWidget(dock, dockWidget)
              return
-
         self.addDockWidget(dockArea, dockWidget)
     
     def addToolBars(self, toolbar):
@@ -276,13 +286,13 @@ class MainWindow(QMainWindow):
         for toolbar in self.toolbarList:
 	   self.addToolBars(toolbar)
  
-    def closeEvent(self, e):
-        settings = QSettings("ArxSys", "DFF-0.5")
-	settings.setValue("geometry", self.saveGeometry())
-	settings.setValue("windowState", self.saveState())
+#    def closeEvent(self, e):
+#        settings = QSettings("ArxSys", "DFF-0.5")
+#	settings.setValue("geometry", self.saveGeometry())
+#	settings.setValue("windowState", self.saveState())
 
-    def readSettings(self):
-        return	
-	settings = QSettings("ArxSys", "DFF-0.5")
-	self.restoreGeometry(settings.value("geometry").toByteArray())
-	self.restoreState(settings.value("windowState").toByteArray())
+#    def readSettings(self):
+#	settings = QSettings("ArxSys", "DFF-0.5")
+#	self.restoreGeometry(settings.value("geometry").toByteArray())
+#	self.restoreState(settings.value("windowState").toByteArray())
+

@@ -34,11 +34,10 @@ void local::iterdir(std::string dir, Node *parent)
   ULocalNode*		tmp;
   uint64_t		total;
   string		upath;
-  uint64_t		id;
   
   if ((dfd = opendir(dir.c_str())))
     {
-      while (dp = readdir(dfd))
+      while ((dp = readdir(dfd)))
 	{
 	  if (!strcmp(dp->d_name, ".")  || !strcmp(dp->d_name, ".."))
 	    continue; 
@@ -47,15 +46,15 @@ void local::iterdir(std::string dir, Node *parent)
 	    {
 	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
 		{
-		  tmp = new ULocalNode(dp->d_name, 0, parent, this, ULocalNode::DIR);
-		  tmp->setBasePath(&this->basePath);
+		  tmp = new ULocalNode(dp->d_name, 0, parent, this, ULocalNode::DIR, lpath.size());
+                  lpath.push_back(upath);
 		  total++;
 		  this->iterdir(upath, tmp);
 		}
 	      else
 		{
-		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this, ULocalNode::FILE);
-		  tmp->setBasePath(&this->basePath);
+		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this, ULocalNode::FILE, lpath.size());
+ 		  lpath.push_back(upath);
 		  total++;
 		}
 	    }
@@ -75,11 +74,10 @@ local::~local()
 
 void local::start(argument* arg)
 {
-  string 	path;
+  string 	name;
   Path		*tpath;
   struct stat 	stbuff;
-  Node*		parent;
-  uint64_t	id;
+   
  
   nfd = 0;
   try 
@@ -101,7 +99,7 @@ void local::start(argument* arg)
     }
   if ((tpath->path.rfind('/') + 1) == tpath->path.length())
     tpath->path.resize(tpath->path.rfind('/'));
-  path = tpath->path.substr(tpath->path.rfind("/") + 1);
+  name = tpath->path.substr(tpath->path.rfind("/") + 1);
   this->basePath = tpath->path.substr(0, tpath->path.rfind('/'));
   if (stat(tpath->path.c_str(), &stbuff) == -1)
   {
@@ -110,14 +108,16 @@ void local::start(argument* arg)
   }
   if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
     {
-      this->__root = new ULocalNode(path, 0, NULL, this, ULocalNode::DIR);
-      this->__root->setBasePath(&this->basePath);
+      this->__root = new ULocalNode(name, 0, NULL, this, ULocalNode::DIR, lpath.size());
+      lpath.push_back(tpath->path);
+      
       this->iterdir(tpath->path, this->__root);
     }
   else
     {
-      this->__root = new ULocalNode(path, stbuff.st_size, NULL, this, ULocalNode::FILE);
-      this->__root->setBasePath(&this->basePath);
+      this->__root = new ULocalNode(name, stbuff.st_size, NULL, this, ULocalNode::FILE, lpath.size());
+      lpath.push_back(tpath->path);
+      //this->__root->setRealPath(&(this->basePath));
     }
   this->registerTree(this->parent, this->__root);
   return ;
@@ -129,11 +129,11 @@ int local::vopen(Node *node)
   struct stat 	stbuff;
   std::string	file;
 
-  file = this->basePath + "/" + node->path() + node->name();
+  file = lpath[node->id()];
 #if defined(__FreeBSD__)
   if ((n = open(file.c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)
-    if ((n = open(file.c_str(), O_RDONLY | O_LARGEFILE)) == -1)
+  if ((n = open(file.c_str(), O_RDONLY | O_LARGEFILE)) == -1)
 #endif
       throw vfsError("local::open error can't open file");
   if (stat(file.c_str(), &stbuff) == -1)
@@ -209,7 +209,7 @@ uint64_t local::vseek(int fd, uint64_t offset, int whence)
 #elif defined(__linux__)
  n = lseek64(fd, offset, whence);
 #endif
- if (n == -1)
+ if (n == ((uint64_t)-1))
    {
      throw vfsError("local::vseek can't seek error " + string(strerror(errno)));
    }

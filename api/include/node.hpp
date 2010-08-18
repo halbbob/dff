@@ -82,7 +82,7 @@ public:
 
 class Node
 {
-private:
+protected:
   //uint64_t                    offset;
 
   //XXX parent could be a list of Node. 
@@ -92,16 +92,23 @@ private:
 
   std::vector<class Node *>	__children;
   uint32_t			__childcount;
-
   std::string			__name;
   uint64_t			__size;
   class fso*			__fsobj;
   uint64_t			__common_attributes;
   Attributes*			__static_attributes;
+  //unsigned char			__checkState;
+  uint32_t			__id; //FIX for local and mfso / fso mess in reimplation of vopen 
 
 public:
+  uint32_t			__at;
   EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
-  EXPORT virtual ~Node();
+  EXPORT Node();
+  EXPORT virtual 			~Node();
+
+
+  EXPORT void				setId(uint32_t	id);
+  EXPORT virtual	uint32_t	id();
 
   EXPORT void				setFile();
   EXPORT void				setDir();
@@ -112,8 +119,8 @@ public:
   EXPORT void				setParent(Node* parent);
 
   EXPORT virtual void			fileMapping(FileMapping *);
-  EXPORT void				setStaticAttribute(std::string key, class Variant* value);
-  EXPORT Attributes*			staticAttributes();
+  EXPORT virtual void			setStaticAttribute(std::string key, class Variant* value);
+  EXPORT virtual Attributes*		staticAttributes();
   EXPORT virtual void			extendedAttributes(Attributes *);
 
   EXPORT virtual void			modifiedTime(vtime *);
@@ -121,22 +128,22 @@ public:
   EXPORT virtual void			createdTime(vtime *);
   EXPORT virtual void			changedTime(vtime *);
 
-  EXPORT std::map<std::string, vtime*>	times();
+  EXPORT virtual std::map<std::string, vtime*>	times();
 
 
-  EXPORT uint64_t			size();
+  EXPORT virtual uint64_t		size();
 
   EXPORT std::string			path();
   EXPORT std::string			name();
   EXPORT std::string			absolute();
 
-  EXPORT bool				isFile();
-  EXPORT bool				isDir();
-  EXPORT bool				isLink();
-  EXPORT bool				isVDir();
-  EXPORT bool				isDeleted();
+  EXPORT virtual bool			isFile();
+  EXPORT virtual bool			isDir();
+  EXPORT virtual bool			isLink();
+  EXPORT virtual bool			isVDir();
+  EXPORT virtual bool			isDeleted();
 
-  EXPORT class fso*			fsobj();
+  EXPORT virtual class fso*		fsobj();
 
   EXPORT Node*				parent();
 
@@ -145,7 +152,8 @@ public:
   EXPORT bool				hasChildren();
   EXPORT uint32_t			childCount();
 
-  EXPORT class VFile*			open();
+  EXPORT virtual class VFile*		open();
+  EXPORT uint32_t			at();
 };
 
 class VfsRoot: public Node

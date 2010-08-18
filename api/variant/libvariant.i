@@ -102,6 +102,9 @@ import traceback
         self.__origininit__(*args)
 
     def __repr__(self):
+        #if self.type() in [typeId.Char, typeId.CArray, typeId.String]:
+           #buff = "'" + str(self.value()) + "'"
+        #else:
         buff = str(self.value())
         return buff
 

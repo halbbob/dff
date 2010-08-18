@@ -14,8 +14,6 @@
     <file alias="folder_empty_128.png">icons/filesystem/folder_empty_128.png</file>
 
     <file alias="newlogo.jpg">icons/newlogo.jpg</file>
-    <file alias="newlogo.jpg">icons/newlogo.jpg</file>
-    <file alias="newlogo.jpg">icons/newlogo.jpg</file>
     <file alias="splash.png">icons/splash.png</file>
 
     <file alias="add.png">icons/actions/add.png</file>
@@ -59,6 +57,7 @@
 
     <file alias="top.png">icons/actions/up.png</file>
     <file alias="previous.png">icons/actions/previous.png</file>
+    <file alias="home.png">icons/filesystem/folder_home.png</file>
 
     <file alias="viewer.png">icons/app/imageviewer.png</file>
     <file alias="refresh.png">icons/actions/reload.png</file>
@@ -93,7 +92,6 @@
     <file alias="add_dev.png">icons/actions/add_dev.png</file>    
     <file alias="del_dev.png">icons/actions/del_dev.png</file>    
     <file alias="edit_dev.png">icons/actions/configure.png</file>    
-
 
 
     <file alias="add_dump.png">icons/actions/add.png</file>    

@@ -13,8 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #
 
-from PyQt4.QtGui import QDockWidget, QAction, QApplication, QTextEdit, QWidget, QHBoxLayout, QTabWidget
-from PyQt4.QtCore import Qt, SIGNAL, QThread
+from PyQt4.QtGui import QDockWidget, QAction, QApplication, QTextEdit, QWidget, QHBoxLayout, QTabWidget, QPlainTextEdit
+from PyQt4.QtCore import Qt, SIGNAL, QThread, QObject
 from ui.redirect import RedirectIO
 import os, sys
 
@@ -35,78 +35,37 @@ class CIO(QThread):
           self.ioOut.emit(SIGNAL(self.sig), buff)
         except OSError:
 	  pass
-   
-class IO(QDockWidget):
-   def __init__(self, mainWindow):
-	super(IO, self).__init__()
-	self.__mainWindow = mainWindow
-	self.addAction()
-	self.configure()
-	self.io = self.initIO()
-	self.sigout = "IOOUTputtext"
-        self.connect(self, SIGNAL(self.sigout), self.puttextout)
-	self.sigerr = "IOERRputtext"
-        self.connect(self, SIGNAL(self.sigerr), self.puttexterr)
-	self.redirect = RedirectIO(self)
-	if sys.__stdout__.fileno() > 0:
-	  self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)
-	  self.cioout.start()
-	if sys.__stderr__.fileno() > 0:
-	  self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)
-	  self.cioerr.start()
 
-   def configure(self):
-        self.setAllowedAreas(Qt.AllDockWidgetAreas)
-        self.setObjectName("dockWidgetBrowser")
-        self.setWindowTitle(QApplication.translate("Log", "Log", None, QApplication.UnicodeUTF8))
- 
-   def addAction(self):
-        self.action = QAction(self)
-        self.action.setCheckable(True)
-        self.action.setChecked(True)
-        self.action.setObjectName("actionCoreInformations")
-        self.action.setText(QApplication.translate("MainWindow", "Log", None, QApplication.UnicodeUTF8))
-#        self.__mainWindow.menu["Window"].addAction(self.__action)
-        self.connect(self.action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
-     
-   def changeVisibleInformations(self):
-        if not self.isVisible() :
-            self.setVisible(True)
-            self.action.setChecked(True)
-        else :
-            self.setVisible(False)
-            self.action.setChecked(False)
+class TextOut(QPlainTextEdit):
+   def __init__(self, name):
+     QPlainTextEdit.__init__(self)	
+     self.setReadOnly(1)
+     self.name = name 
 
-   def visibilityChanged(self,  bool):
-        if not self.isVisible() :
-            self.action.setChecked(False)
-        else :
-            self.action.setChecked(True)
+   def puttext(self, text):
+     self.insertPlainText(text)
 
-   def initIO(self):
-        self.iowidget = QWidget(self)        
-        self.layout = QHBoxLayout(self.iowidget)
-        self.iowidget.setLayout(self.layout)
-        self.tabwidget = QTabWidget(self)
-        self.tabwidget.setElideMode(Qt.ElideRight)
+class IO(QObject):
+  def __init__(self):
+    QObject.__init__(self)
+    self.textOut = TextOut("output")
+    self.sigout = "IOOUTputtext"
+    self.connect(self, SIGNAL(self.sigout), self.puttextout)
+    if sys.__stdout__.fileno() >= 0:
+      self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)
+      self.cioout.start()
 
-	self.textOut = QTextEdit(self)
-	self.textOut.setReadOnly(1)
-	self.textOut.name = "output"
-        self.setWidget(self.textOut)
-	self.tabwidget.addTab(self.textOut, "Output")
+    self.textErr = TextOut("error")
+    self.sigerr = "IOERRputtext"
+    self.connect(self, SIGNAL(self.sigerr), self.puttexterr)
+    if sys.__stderr__.fileno() >= 0: 
+      self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)
+      self.cioerr.start()
 
-	self.textErr = QTextEdit(self)
-	self.textErr.setReadOnly(1)
-	self.textErr.name = "error"
-        self.setWidget(self.textErr)
-	self.tabwidget.addTab(self.textErr, "Error")
-	
-	self.layout.addWidget(self.tabwidget)
-        self.setWidget(self.iowidget)
+  def puttextout(self, text):
+    self.textOut.puttext(text)
 
-   def puttextout(self, text):
- 	self.textOut.append(text)
+  def puttexterr(self, text):
+    self.textErr.puttext(text)
 
-   def puttexterr(self, text):
-        self.textErr.append(text)
+

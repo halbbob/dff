@@ -1,9 +1,10 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009 ArxSys
+# 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+# 
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
@@ -48,14 +49,14 @@ class bookmark(QWidget):
         self.rm = QAction(QIcon(":bookmark_rm.png"),  "Remove bookmark",  self.booktool)
         self.booktool.addAction(self.rm)
 
-#        self.edit = QAction(QIcon(":bookmark_toolbar.png"),  "Edit bookmark",  self.booktool)
-#        self.booktool.addAction(self.edit)
+        self.edit = QAction(QIcon(":bookmark_toolbar.png"),  "Edit bookmark",  self.booktool)
+        self.booktool.addAction(self.edit)
 
         #Callbacks
 
         self.add.connect(self.add, SIGNAL("triggered()"), self.addbook)
         self.rm.connect(self.rm, SIGNAL("triggered()"), self.rmbook)
-#        self.edit.connect(self.edit, SIGNAL("triggered()"), self.editbook)
+        self.edit.connect(self.edit, SIGNAL("triggered()"), self.editbook)
         
         self.vbox.addWidget(self.booktool)
         
@@ -88,6 +89,9 @@ class bookmark(QWidget):
         off = add.toULongLong(16)
         if off[1]:
             self.heditor.readOffset(off[0])
+#            self.heditor.selection.offset = off[0]
+#            self.heditor.whex.hexcursor.update()
+#            self.heditor.whex.asciicursor.update()
 
     def getSelectedItemRow(self, address):
         cp = 0
@@ -97,11 +101,12 @@ class bookmark(QWidget):
             cp += 1
         return -1
 
+
     def addbook(self):
         self.dialog.setInformations()
         ret = self.dialog.exec_()
         if ret == 1:
-            #XXXCheck offset
+            #XXXCheck if offsetis present
             item = QTreeWidgetItem(self.tree)
             address = self.dialog.address.text()
             declen = self.dialog.lendec.text()
@@ -129,8 +134,8 @@ class bookmark(QWidget):
                 else:
                     self.selectedItem = self.items[row - 1]
 
-#    def editbook(self):
-#        print "edit"
+    def editbook(self):
+        print "edit"
 
 
 class bookDiag(QDialog):
@@ -259,8 +264,8 @@ class bookDiag(QDialog):
         tolenhex += "%.1X" % len
         self.lenhex.insert(tolenhex)
 
-        hval = self.heditor.readHexValue(self.heditor.selection.startoffset, len)
+        hval = self.heditor.readHexValue(self.heditor.selection.offset, len)
         self.hexvalue.insert(hval)
 
-        aval = self.heditor.readAsciiValue(self.heditor.selection.startoffset, len)
+        aval = self.heditor.readAsciiValue(self.heditor.selection.offset, len)
         self.asciivalue.insert(aval)

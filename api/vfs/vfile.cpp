@@ -215,14 +215,14 @@ int32_t  VFile::dfileno()
 
 uint64_t VFile::tell()
 {  
-  try
-    {
+	//try
+	//{
       return (this->__fsobj->vtell(this->__fd));
-    }
-  catch (vfsError e)
-    {
-      throw vfsError("VFile::tell() throw\n" + e.error);
-    }
+      //}
+      //catch (vfsError e)
+      //{
+      //throw vfsError("VFile::tell() throw\n" + e.error);
+      //}
 }
 
 list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window, uint32_t count)
@@ -268,10 +268,15 @@ list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_
 	}
       else
 	res = this->__search->run(buffer, hslen);
-      for (it = res->begin(); it != res->end(); it++)
-	real->push_back(*it + this->tell() - bytes_read);
-      if (bytes_read == BUFFSIZE)
-	this->seek(this->tell() - len, 0);
+      try  
+      {
+        for (it = res->begin(); it != res->end(); it++)
+	  real->push_back(*it + this->tell() - bytes_read);
+        if (bytes_read == BUFFSIZE)
+	  this->seek(this->tell() - len, 0);
+      }
+      catch (vfsError &e)
+	{}
       delete res;
     }
   free(buffer);

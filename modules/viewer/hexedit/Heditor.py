@@ -18,13 +18,13 @@
 #For scrollbar LFMOD
 
 from modules.viewer.hexedit.hexView import *
-from bookmark import *
+from modules.viewer.hexedit.bookmark import *
 
-from informations import *
+from modules.viewer.hexedit.informations import *
 
-from right import *
+from modules.viewer.hexedit.right import *
 
-from selection import *
+from modules.viewer.hexedit.selection import *
 
 from api.vfs import *
 from api.vfs.libvfs import *
@@ -120,7 +120,6 @@ class Heditor(QWidget):
 
         #INIT SELECTION
         self.selection = selection(self)
-#        self.pageselection = pageSelection(self)
 
         self.lhsplitter.setOrientation(Qt.Vertical)
         self.vsplitter.addWidget(self.lhsplitter)
@@ -130,7 +129,6 @@ class Heditor(QWidget):
 
         self.vsplitter.addWidget(self.right)
 
-#        self.shapeToolBars()
 #        self.lhsplitter.addWidget(self.infos)
 
 #        self.vlayout.addWidget(self.toolbars)
@@ -198,7 +196,7 @@ class Heditor(QWidget):
         #Transform offset to start of its line
         line = offset / self.bytesPerLine
         readoff = line * self.bytesPerLine
-        if readoff >= 0 or readoff < self.filesize:
+        if readoff >= 0 and readoff < self.filesize:
             try:
 #                print "roff: ", readoff
                 self.file.seek(readoff)

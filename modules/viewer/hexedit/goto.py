@@ -1,9 +1,10 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009 ArxSys
+# 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+# 
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
@@ -15,6 +16,8 @@
 
 from PyQt4.QtCore import QString, Qt, SIGNAL, QLineF
 from PyQt4.QtGui import QWidget, QHBoxLayout, QVBoxLayout, QGroupBox, QLabel, QGridLayout, QComboBox, QLineEdit, QPushButton, QCheckBox
+
+from modules.viewer.hexedit.messagebox import *
 
 class goto(QWidget):
     def __init__(self, parent):
@@ -30,13 +33,13 @@ class goto(QWidget):
         self.createGoto()
         self.createOptions()
 
-        #Go button
-        self.gobutton = QPushButton("Go!")
-        self.connect(self.gobutton, SIGNAL('clicked()'), self.go)
-        self.vbox.addWidget(self.gobutton)
-       
         fill = QWidget()
         self.vbox.addWidget(fill)
+        #Go button
+        self.gobutton = QPushButton("Go")
+        self.connect(self.gobutton, SIGNAL('clicked()'), self.go)
+        self.vbox.addWidget(self.gobutton)
+    
         self.setLayout(self.vbox)
 
     def createGoto(self):
@@ -67,8 +70,6 @@ class goto(QWidget):
         self.offgrid.addWidget(offsetlabel, 2, 0)
         self.offgrid.addWidget(self.offset, 2, 1)
 
-#        self.offgrid.addWidget(self.gobutton, 6, 0)
-
         self.offbox.setLayout(self.offgrid)
         self.vbox.addWidget(self.offbox)
 
@@ -90,26 +91,31 @@ class goto(QWidget):
         off = offset.toULongLong(base)
         if off[1]:
             if type == "Offset":
-                if off[1] < self.heditor.filesize:
+                if off[0] < self.heditor.filesize:
                     return off[0]
                 else:
-                    print "Offset too high"
+                    msg = MessageBoxError(self.heditor, "Offset value too high")
+                    msg.exec_()
                     return -1
             elif type == "Page":
-                if off[1] < self.heditor.pages:
+                if off[0] < self.heditor.pages:
                     return off[0]
                 else:
-                    print "Page too high"
+                    msg = MessageBoxError(self.heditor, "Page value too high")
+                    msg.exec_()
                     return -1
             elif type == "Block":
-                if off[1] < self.heditor.blocks:
+                if off[0] < self.heditor.blocks:
                     return off[0]
                 else:
-                    print "Block too high"
+                    msg = MessageBoxError(self.heditor, "Block value too high")
+                    msg.exec_()
                     return -1
             else:
                 return -1
         else:
+            msg = MessageBoxError(self.heditor, "Base conversion Error")
+            msg.exec_()
             return -1
         return -1
 
@@ -171,12 +177,19 @@ class goto(QWidget):
         else:
             offset = self.checkLocation(str(off), 10, type)
 
+        print offset
+
         if offset != -1:
             off = self.getOffset(offset, opt_fromcursor, opt_backwards, type)
+            print off
             if off != -1:
                 self.heditor.readOffset(off)
             else:
-                print "Get Offset ERROR"
-        else:
-            print "Check value error"
+                msg = MessageBoxError(self.heditor, "Problem in offset conversion")
+                msg.exec_()
 
+
+    def keyPressEvent(self, kEvent):
+        key = kEvent.key()
+        if key == Qt.Key_Return or key == Qt.Key_Enter:
+            self.go()

@@ -91,6 +91,28 @@
 %catches(vfsError) FdManager::get(int32_t);
 %catches(vfsError) FdManager::push();
 
+
+
+%exception notify 
+{
+   try
+   {
+     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+     cout << "event notifiy" << endl;
+     //  #SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+       $action
+     //  #SWIG_PYTHON_THREAD_END_ALLOW;
+     SWIG_PYTHON_THREAD_END_BLOCK;
+   }
+   catch (Swig::DirectorException e)
+   {
+     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+     SWIG_fail;
+     SWIG_PYTHON_THREAD_END_BLOCK;
+   }
+}
+
+
 %exception start
 {
    try

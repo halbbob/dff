@@ -54,7 +54,7 @@ public:
   EXPORT virtual uint32_t	status(void) = 0;
   EXPORT virtual uint64_t	vtell(int32_t fd) = 0;
   EXPORT virtual void		setVerbose(bool verbose){}
-  EXPORT virtual bool		verbose(){}
+  EXPORT virtual bool		verbose() { return false; }
   EXPORT std::list<Node *>	updateQueue();
   EXPORT void			registerTree(Node* parent, Node* head);
 };

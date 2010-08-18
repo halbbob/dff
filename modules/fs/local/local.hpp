@@ -41,18 +41,18 @@ private:
   std::string	basePath;
   int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
-  ULocalNode*	__root;
+  class ULocalNode*	__root;
 
 public:
+  std::vector<string>	lpath;
 #ifndef WIN32
-  std::list<string>	lpath;
   void				iterdir(std::string path, Node* parent);
 #else
   void 		frec(const char *, Node *rfv);
 #endif
   local();
   ~local();
-  int32_t	vopen(Node *n);
+  int32_t	vopen(Node* handle);
   int32_t 	vread(int fd, void *buff, unsigned int size);
   int32_t 	vclose(int fd);
   uint64_t 	vseek(int fd, uint64_t offset, int whence);

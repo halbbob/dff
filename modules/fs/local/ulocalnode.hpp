@@ -18,24 +18,22 @@
 #define __ULOCALNODE_HPP__
 
 //#include "variant.hpp"
+#include "local.hpp"
 #include "node.hpp"
 
 class ULocalNode: public Node
 {
-protected:
-  std::string*			basePath;
+private:
   void				utimeToVtime(time_t* t1, vtime* vt);
   struct stat*			localStat();
-
 public:
   enum Type
     {
       FILE,
       DIR
     };
-  ULocalNode(std::string name, uint64_t size, Node* parent, fso* fsobj, uint8_t type);
+  ULocalNode(std::string name, uint64_t size, Node* parent, fso* fsobj, uint8_t type, uint32_t id);
   ~ULocalNode();
-  void				setBasePath(std::string* bp);
   virtual void			extendedAttributes(Attributes* attr);
   virtual void			modifiedTime(vtime* mt);
   virtual void			accessedTime(vtime* at);

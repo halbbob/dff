@@ -18,17 +18,26 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 #from api.gui.widget.nodefilterbox import NodeFilterBox
-from api.gui.widget.propertytable import PropertyTable
 
-class NodeViewBox(QGroupBox):
+from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.widget.propertytable import PropertyTable
+from api.vfs.vfs import vfs, Node, DEvent
+from api.vfs import libvfs
+
+class NodeViewBox(QWidget):
   def __init__(self, parent):
-    QGroupBox.__init__(self, "View")
+    QWidget.__init__(self)
+    self.vfs = vfs()
+    self.VFS = libvfs.VFS.Get()
     self.parent = parent
     self.button = {}
+    
+
     self.gridLayout = QHBoxLayout(self)
     self.gridLayout.setAlignment(Qt.AlignLeft)
     self.addPropertyTable()
     self.createButton("top", self.moveToTop, ":previous.png")
+    self.createButton("root", self.goHome,  ":home.png")
     self.createButton("table", self.tableActivated,  ":view_detailed.png")
     self.createButton("thumb", self.thumbActivated, ":view_icon.png")
     self.createButton("leftTree", self.leftTreeActivated, ":view_choose.png")
@@ -36,6 +45,7 @@ class NodeViewBox(QGroupBox):
     self.createButton("search", self.searchActivated, ":filefind.png")
     self.createThumbSize()
     self.createCheckBoxAttribute()
+    self.createPathEdit()
     self.tableActivated()
     self.setLayout(self.gridLayout)
 
@@ -54,6 +64,10 @@ class NodeViewBox(QGroupBox):
     self.gridLayout.addWidget(self.button[name])
     self.parent.connect(self.button[name], SIGNAL("clicked()"), func)
 
+
+  def goHome(self):
+     self.parent.model.setRootPath(self.vfs.getnode("/"))    
+
   def createThumbSize(self):
     self.thumbSize = QComboBox()
     self.thumbSize.setMaximumWidth(100)
@@ -68,7 +82,7 @@ class NodeViewBox(QGroupBox):
     self.button["thumb"].setEnabled(True)
 
   def createCheckBoxAttribute(self):
-    self.checkboxAttribute = QCheckBox("Show attributes", self)
+    self.checkboxAttribute = QCheckBox("Attributes", self)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.checkboxAttribute.setCheckState(False)
     self.checkboxAttribute.setEnabled(False)
@@ -131,10 +145,58 @@ class NodeViewBox(QGroupBox):
      else:
        self.parent.nodeFilterBox.setVisible(True) 
 
-  def createComboBoxPath(self):
-    #self.comboBoxPath = NodeComboBox(self)
-    #self.comboBoxPath.setMinimumSize(QSize(251,32))
-    #self.comboBoxPath.setMaximumSize(QSize(16777215,32))
-    #self.buttonLayout.addWidget(self.comboBoxPath)
-    #self.initCallback()
-    pass 
+  def createPathEdit(self):
+    self.pathedit = QLineEdit(self)
+
+#    self.connect(self.pathedit, SIGNAL("textChanged(QString)"), self.textChanged)
+
+    self.treemodel = self.parent.treeModel
+    self.model = self.parent.model
+
+    self.connect(self.model, SIGNAL("rootPathChanged"), self.rootpathchanged)
+    
+    self.completer = kompleter(self.pathedit, self.treemodel, self.model)
+    self.pathedit.setCompleter(self.completer)
+
+    rootlabel = QLabel("/")
+    self.gridLayout.addWidget(rootlabel)
+    self.gridLayout.addWidget(self.pathedit)
+
+  def rootpathchanged(self, node):
+    path = node.absolute()
+    if path != "/":
+      path += "/"
+
+    self.pathedit.setCompleter(None)
+    self.pathedit.clear()
+    self.pathedit.insert(path[1:])
+    self.pathedit.setCompleter(self.completer)
+
+class kompleter(QCompleter):
+    def __init__(self, parent, treemodel, model):
+      QCompleter.__init__(self, treemodel) 
+      self.init(parent, model, treemodel)
+
+    def init(self, parent, model, treemodel):
+      self.parent = parent
+      self.model = model
+      self.treemodel = treemodel
+      
+      self.setModel(self.treemodel)
+      self.setCompletionMode(QCompleter.PopupCompletion)
+      self.setCompletionRole(Qt.DisplayRole)
+      self.setCaseSensitivity(Qt.CaseInsensitive)
+
+    def splitPath(self, path):
+      return path.split('/')
+
+    def pathFromIndex(self, modelindex, node = None):
+      if modelindex != None:
+        node = self.treemodel.VFS.getNodeFromPointer(modelindex.internalId())
+      
+        abspath = node.absolute()
+        self.model.setRootPath(node, 1)
+        abspath += "/"
+        return QString(abspath[1:])
+
+

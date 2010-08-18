@@ -1,9 +1,10 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009 ArxSys
+# 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+# 
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
@@ -16,7 +17,8 @@
 from PyQt4.QtCore import QString, Qt, SIGNAL, QLineF, QThread
 from PyQt4.QtGui import QWidget, QVBoxLayout, QCheckBox, QGridLayout, QLabel, QLineEdit, QPushButton, QTabWidget, QComboBox, QTreeWidget, QTreeWidgetItem
 
-from utils import *
+from modules.viewer.hexedit.utils import *
+from modules.viewer.hexedit.messagebox import *
 
 import binascii
 
@@ -36,7 +38,6 @@ class search(QWidget):
         self.search_th = searchThread(self.file)
         #tupple of searched patterns [key:hex(pattern)|value:offsetslist]
         self.searchedPatterns = {}
-#        print self.searchThread
         self.connect(self.search_th, SIGNAL("searchDone()"), self.searchdone)
 
     def initShape(self):
@@ -60,6 +61,7 @@ class search(QWidget):
         self.type = QComboBox()
         self.type.addItem("Hexadecimal")
         self.type.addItem("Character(s)")
+        self.type.addItem("Unicode")
 
         lneedle = QLabel("Pattern:")
         self.needle = QLineEdit()
@@ -98,7 +100,6 @@ class search(QWidget):
 
         self.optgrid.addWidget(lopt, 0, 0)
         self.optgrid.addWidget(self.fromcursor, 0, 1)
-#        self.optgrid.addWidget(self.back, 2, 0)
 
         self.woptions.setLayout(self.optgrid)
         self.vbox.addWidget(self.woptions)
@@ -107,10 +108,7 @@ class search(QWidget):
         self.wresults = QWidget()
         self.resgrid= QGridLayout()
 
-#        lres = QLabel("Results")
         self.resultab = resultab(self)
-
-#        self.resgrid.addWidget(lres, 0, 0)
         self.resgrid.addWidget(self.resultab, 0, 0)
 
         self.wresults.setLayout(self.resgrid)
@@ -120,7 +118,7 @@ class search(QWidget):
         self.wsing = QWidget()
         self.singgrid= QGridLayout()
 
-        self.searchlabel = QLabel("Please launch search")
+        self.searchlabel = QLabel("Launch search")
         self.singgrid.addWidget(self.searchlabel, 0, 0)
 
         self.wsing.setLayout(self.singgrid)
@@ -155,6 +153,17 @@ class search(QWidget):
             raise ValueError, "argument 'str' must be an even number of char"
         return hexStr
 
+    def toUnicode(self, string):
+        res = string.encode("hex")
+        unires = ""
+        cp = 0
+        while cp < len(res):
+           unires += res[cp]
+           if (cp - 1) % 2 == 0 and cp != 0 and cp + 1 != len(res):
+               unires += "00"
+           cp = cp + 1           
+        return unires.decode("hex")
+
 #####################
 #     Search IT     #
 #####################
@@ -162,6 +171,7 @@ class search(QWidget):
     def searchit(self):
         if self.needle.text() != "":
             needle = self.needle.text()
+            err = False
             #check needle
             type = self.type.currentText()
             if type == "Hexadecimal":
@@ -169,37 +179,55 @@ class search(QWidget):
                 try:
                     pattern = self.toHex(str(needle))
                 except ValueError:
-                    print "Wrong Hex pattern"
-            else:
+                    err = True
+                    msg = MessageBoxError(self.heditor, "Required Hexadecimal pattern")
+                    msg.exec_()
+                    return
+            elif type == "Character(s)":
                 self.lastSearchType = 1
                 pattern = str(needle)
-            opt_fromcursor = self.fromcursor.isChecked()
-            spinstart = self.start.value()
-            wild = self.wildcard.text()
-#            opt_back = self.back.isTristate()
-            #From cursor
-            if opt_fromcursor:
-                start = self.heditor.currentSelection
-            elif spinstart > 0:
-                start = spinstart
-            else:
-                start = 0
-            print start
-            self.search_th.setData(pattern, start, wild)
-            self.searchlabel.setText("Searching ...")
+            elif type == "Unicode":
+                self.lastSearchType = 2
+                pattern = self.toUnicode(str(needle))
 
-            self.search_th.start()
+            if  not err:
+                opt_fromcursor = self.fromcursor.isChecked()
+                spinstart = self.start.value()
+                wild = self.wildcard.text()
 
-#            res = self.file.search(pattern, len(pattern), None, start)            
-                     
+                if opt_fromcursor:
+                    start = self.heditor.currentSelection
+                elif spinstart > 0:
+                    start = spinstart
+                else:
+                    start = 0
+                    self.search_th.setData(pattern, start, wild)
+                    self.searchlabel.setText("Searching ...")
+                    
+                    self.search_th.start()
+
     def searchdone(self):
 #            print "Results found: ", nres
         res = self.search_th.getResults()
-        label = "%2.d" % len(res)
-        label += " matchs"
-        self.searchlabel.setText(label)
 
-        self.resultab.addResults(res)
+        if len(res) > 0:
+            label = "%2.d" % len(res)
+            label += " matchs"
+            self.searchlabel.setText(label)
+            self.resultab.buttonCloseTab.setEnabled(True)
+            self.resultab.addResults(res)
+            msg = MessageBoxInfo(self.heditor, label)
+            msg.exec_()
+        else:
+            msg = MessageBoxError(self.heditor, "No results founded")
+            msg.exec_()            
+
+
+    def keyPressEvent(self, kEvent):
+        key = kEvent.key()
+        if key == Qt.Key_Return or key == Qt.Key_Enter:
+            self.searchit()
+        
 
 class searchThread(QThread):
     def __init__(self, file):
@@ -237,7 +265,26 @@ class resultab(QTabWidget):
         self.trees = []
 
     def initShape(self):
+        self.buttonCloseTab = QPushButton("")
+        self.buttonCloseTab.setFixedSize(QSize(24,  24))
+        self.buttonCloseTab.setIcon(QIcon(":cancel.png"))
+        self.buttonCloseTab.setEnabled(False)
+        self.setCornerWidget(self.buttonCloseTab,  Qt.TopRightCorner)
+        self.connect(self.buttonCloseTab, SIGNAL("clicked()"), self.closeTabWidget)
         self.setTabPosition(QTabWidget.North)
+
+
+    def closeTabWidget(self):
+        if self.count() > 0:
+            index = self.currentIndex()
+            currentSearch = self.currentWidget()
+            self.removeTab(index)
+            currentSearch.destroy(True, True)
+
+            if self.count() == 0:
+                self.buttonCloseTab.setEnabled(False)
+
+
 #    def formatHighlightPattern(self, pattern):
 #        res = QString("\\b(")
 #        count = 0
@@ -258,28 +305,29 @@ class resultab(QTabWidget):
         tree.setColumnCount(1)
         header = QString("Offset")
         tree.setHeaderLabel(header)
-        tree.setAlternatingRowColors(True)
-        
+        tree.setAlternatingRowColors(True)            
         self.connect(tree, SIGNAL("itemDoubleClicked(QTreeWidgetItem *, int)"), self.treeClicked)
 
         for res in results:
-#            print hex(res)
+            #            print hex(res)
             item = QTreeWidgetItem(tree)
             off = "0x"
             off += "%.2x" % res
             item.setText(0, str(off))
-        self.trees.append(tree)
-
+            self.trees.append(tree)
+            
         #Add pattern and offsets to tupple
         key = binascii.hexlify(self.search.search_th.pattern)
-#        print "key: ", key
         self.search.searchedPatterns[key] = results
-
+        
         if self.search.lastSearchType == 0:
             p = binascii.hexlify(self.search.search_th.pattern)
-        else:
+        elif self.search.lastSearchType == 1:
             p = self.search.search_th.pattern
-
+        else:
+            p = "u("
+            p += self.search.needle.text()
+            p += ")"
         #Add Ascii hex pattern in searched list for syntaxHighliter
         self.insertTab(len(self.trees), tree, p)
 

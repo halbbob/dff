@@ -48,7 +48,7 @@ class binDiff(QWidget, Script):
         self.vlayout.addWidget(self.widget)
         node1 = self.args.get_node("file1")
         node2 = self.args.get_node("file2")
-        self.name = "binDiff " + str(node1.name) + " | " + str(node2.name)
+        self.name = "binDiff " + str(node1.name()) + " | " + str(node2.name())
         self.widget.init(node1, node2)
         
     def updateWidget(self):

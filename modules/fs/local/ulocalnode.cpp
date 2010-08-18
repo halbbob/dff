@@ -19,8 +19,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
+ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj, uint8_t type, uint32_t id): Node(Name, size, parent, fsobj)
 {
+  this->__id = id;
   switch (type)
     {
     case DIR:
@@ -62,10 +63,6 @@ void			ULocalNode::changedTime(vtime* vt)
     this->utimeToVtime(&(st->st_ctime), vt);
 }
 
-void		ULocalNode::setBasePath(std::string* bp)
-{
-  this->basePath = bp;
-}
 
 void		ULocalNode::utimeToVtime(time_t* tt, vtime* vt)
 {
@@ -94,7 +91,7 @@ struct stat*	ULocalNode::localStat()
   std::string	file;
   struct stat* 	st;
 
-  file = *(this->basePath) + this->path() + this->name();
+  file = ((local*)this->fsobj())->lpath[this->id()];
   st = (struct stat*)malloc(sizeof(struct stat));
   if (lstat(file.c_str(), st) != -1)
     return st;

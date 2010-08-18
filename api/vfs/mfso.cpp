@@ -332,9 +332,10 @@ uint64_t	mfso::vtell(int32_t fd)
       fi = this->__fdmanager->get(fd);
       return fi->offset;
     }
-  catch(...)
+  catch(vfsError e)
     {
-      std::cout << "problem while getting fd information" << std::endl;
+	    //std::cout << "problem while getting fd information" << std::endl;
+	    //throw vfsError("mfso::vtell() throw\n" + e.error);
       return (uint64_t)-1;
     }
 }

@@ -75,6 +75,11 @@ class NodeBrowser(QWidget, DEventHandler):
   def __init__(self, parent):
     QWidget.__init__(self, parent)
     DEventHandler.__init__(self)
+
+    self.mainwindow = parent
+
+    self.getWindowGeometry()
+
     self.name = "nodebrowser"
     self.type = "filebrowser"
     self.setObjectName(self.name)
@@ -99,17 +104,39 @@ class NodeBrowser(QWidget, DEventHandler):
     self.addProxyModel()
     self.addNodeLinkTreeView()
     self.addNodeView()
-    self.addOptionsView()
 
+    self.addOptionsView()
+#    self.browserLayout.addWidget(self.thumbsView)
+#    self.browserLayout.addWidget(self.tableView)
+
+#    self.browserLayout.setOpaqueResize(False)
+
+#    siz = self.mainwindow.width() / 3
+#    sizelist = [siz, siz * 3]
+#    self.browserLayout.setSizes(sizelist)
+#    self.browserLayout.setSizes(sizelist)
+
+#    si = self.browserLayout.sizes()
+#    for s in si:
+#      print s
+
+
+  #def refresh(self, node):
+     #self.thumbsView.model().sourceModel().emit(SIGNAL("refresh"), None)
+     #self.tableView.model().sourceModel().emit(SIGNAL("refresh"), None)
+     #self.treeModel.emit(SIGNAL("refresh"), node)	
+
+  def getWindowGeometry(self):
+    self.winWidth = self.mainwindow.width()
 
   def Event(self, e):
     self.thumbsView.model().sourceModel().emit(SIGNAL("layoutChanged()"))
     self.tableView.model().sourceModel().emit(SIGNAL("layoutChanged()"))
     self.treeModel.emit(SIGNAL("layoutChanged()"))
 
-
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)
+    self.baseLayout.setSpacing(0)
     self.browserLayout = QSplitter(self)
     self.baseLayout.insertWidget(0, self.browserLayout)
     self.baseLayout.setStretchFactor(self.browserLayout, 1)
@@ -117,11 +144,12 @@ class NodeBrowser(QWidget, DEventHandler):
   def addOptionsView(self):
     self.nodeViewBox = NodeViewBox(self)
     self.nodeFilterBox = NodeFilterBox(self)
-    self.baseLayout.insertWidget(0, self.nodeFilterBox)
+    self.baseLayout.insertWidget(0,self.nodeFilterBox)
     self.baseLayout.insertWidget(0, self.nodeViewBox)
 
+
   def addModel(self, path):
-    self.model = VFSItemModel(self, True)
+    self.model = VFSItemModel(self, True, True)
     self.model.setRootPath(self.vfs.getnode(path))
 
   def addProxyModel(self):
@@ -135,11 +163,17 @@ class NodeBrowser(QWidget, DEventHandler):
     self.treeProxyModel.setSourceModel(self.treeModel)
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
+
+#    self.treeView.setMaximumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.treeView)
+
+    self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
+
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
+#    self.connect(self.treeView, SIGNAL("resizeEvent"), self.treeResized)
 
   def addNodeView(self):
-    self.nodeView = QStackedLayout(self.browserLayout)
+#    self.nodeView = QStackedLayout(self.browserLayout)
     self.addTableView()
     self.addThumbsView()
 
@@ -147,7 +181,12 @@ class NodeBrowser(QWidget, DEventHandler):
     self.tableView = NodeTableView(self)
     self.tableView.setModel(self.proxyModel)
     self.tableView.setSortingEnabled(True)
-    self.nodeView.addWidget(self.tableView)
+    self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
+#    self.tableView.setMinimumWidth(self.mainwindow.width() / 3)
+    self.browserLayout.addWidget(self.tableView)
+
+    self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.tableView), 1)
+
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
     #self.model.setImagesThumbnails(True)
@@ -155,7 +194,13 @@ class NodeBrowser(QWidget, DEventHandler):
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
     self.thumbsView.setModel(self.proxyModel) 
-    self.nodeView.addWidget(self.thumbsView)
+    self.thumbsView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
+#    self.thumbsView.setMinimumWidth(self.mainwindow.width() / 3)
+    self.browserLayout.addWidget(self.thumbsView)
+
+    self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.thumbsView), 1)
+
+#    self.nodeView.addWidget(self.thumbsView)
     self.connect(self.thumbsView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.thumbsView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
 

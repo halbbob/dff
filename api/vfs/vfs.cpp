@@ -66,6 +66,8 @@ Node* VFS::GetNode(string path, Node* where)
     return (0);
 }
 
+
+
 Node* VFS::GetNode(string path)
 {
   if (path == "/")

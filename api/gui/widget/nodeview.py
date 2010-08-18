@@ -62,7 +62,7 @@ class NodeThumbsView(QListView, NodeViewEvent):
  
   def setIconSize(self, width, height):
     QListView.setIconSize(self, QSize(width, height))
-    self.setGridSize(QSize(width + 10, height + 20)) 
+    self.setGridSize(QSize(width + 18, height + 20)) 
 
 class NodeLinkTreeView(QTreeView):
   def __init__(self, parent):
