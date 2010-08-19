@@ -28,15 +28,13 @@ void		Fatfs::process()
 	  this->bs->process(this->parent);
 	  this->fat->setContext(this->parent, this->bs);
 	  this->root = new Node("Fat File System", 0, NULL, this);
-	  this->tree->process(this->parent, this, this->root);
-	  //this->createTree(this->root);
 	  this->root->setDir();
-	  this->registerTree(this->parent, this->root);
+	  this->tree->process(this->parent, this, this->root);
 	}
     }
   catch(...)
     {
-      //throw("Fatfs module: error while processing");
+      throw("Fatfs module: error while processing");
     }
   return;
 }
@@ -44,13 +42,23 @@ void		Fatfs::process()
 void		Fatfs::setContext(argument* arg)
 {
   //Node	*tmp;
+  bool	carve_unalloc;
+
   try
     {
       arg->get("parent", &(this->parent));
     }
-  catch(...)
+  catch(envError e)
     {
       throw("Fatfs module: error while setting context");
+    }
+  try
+    {
+      arg->get("carve unallocated clusters", &this->carveunalloc);
+    }
+  catch(envError e)
+    {
+      this->carveunalloc = false;
     }
   return;
 }

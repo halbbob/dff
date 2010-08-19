@@ -25,13 +25,12 @@
 
 class Fatfs : public mfso
 {
-private:
-  Node*			root;
-  
 public:
   Fatfs();
   ~Fatfs();
+  Node*			root;
   Node*			parent;
+  bool			carveunalloc;
   class FatTree*	tree;
   BootSector*		bs;
   FileAllocationTable*	fat;

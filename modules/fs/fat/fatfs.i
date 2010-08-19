@@ -39,6 +39,7 @@ class FATFS(Module):
   def __init__(self):
     Module.__init__(self, 'fatfs', Fatfs)
     self.conf.add("parent", "node", False, "Node containing a FAT file system")
+    self.conf.add("carve unallocated clusters", "bool", True, "carve directories entries in unallocated clusters (more accurate but slower)")
     self.conf.add_const("mime-type", "x86 boot sector")
     self.tags = "file system"
 %}

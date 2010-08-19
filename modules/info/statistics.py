@@ -13,15 +13,18 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtGui import QWidget
-
 from api.vfs import *
 from api.magic.filetype import *
 from api.module.script import *
 from api.module.module import *
 
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtGui import QWidget
+from PyQt4.QtCore import Qt
+
 from chart.chart import PieView
+
+import random
 
 class STATCHART(QWidget):
   def __init__(self):
@@ -30,10 +33,12 @@ class STATCHART(QWidget):
     self.setupModel()
     self.setupViews()
 
+                   
   def setupModel(self):
     self.model = QtGui.QStandardItemModel(8, 2, self)
     self.model.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Label"))
     self.model.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Quantity"))
+
 
   def setupViews(self):
     self.vbox = QtGui.QVBoxLayout()
@@ -54,9 +59,7 @@ class STATCHART(QWidget):
     self.pieChart.setSelectionModel(self.selectionModel)
     
     table.horizontalHeader().setStretchLastSection(True)
-    #self.setCentralWidget(splitter)
     self.vbox.addWidget(splitter)
-    #self.setCentralWidget(splitter)
 
 
   def decode(self, typestat):
@@ -64,8 +67,9 @@ class STATCHART(QWidget):
                           QtCore.QModelIndex())
 
     row = 0
-    color = 0
+    i = 0
     for mtype, count in typestat.iteritems():
+      color = random.randint(0, 0xffffffff)
       self.model.insertRows(row, 1, QtCore.QModelIndex())
 
       self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
@@ -75,7 +79,6 @@ class STATCHART(QWidget):
       self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
                          QtCore.QVariant(QtGui.QColor(color)),
                          QtCore.Qt.DecorationRole)
-      color += 8000
       row += 1
 
 

@@ -237,7 +237,7 @@ void	FatTree::walk_free(Node* parent)
 		    {
 		      if (rootunalloc == NULL)
 			{
-			  rootunalloc = new Node("unallocated clusters", 0, parent, this->fs);
+			  rootunalloc = new Node("unallocated clusters", 0, NULL, this->fs);
 			  rootunalloc->setDir();
 			}
 		      //c->dosname = "nothing";
@@ -261,6 +261,8 @@ void	FatTree::walk_free(Node* parent)
  	    }
 	}
       free(buff);
+      if (rootunalloc != NULL)
+      	this->fs->registerTree(parent, rootunalloc);
     }
   catch(...)
     {
@@ -281,7 +283,10 @@ void	FatTree::process(Node* origin, Fatfs* fs, Node* parent)
 	this->walk(this->fs->bs->rootclust, parent);
       else
 	this->rootdir(parent);
-      this->walk_free(parent);
+      this->fs->registerTree(origin, parent);
+      if (this->fs->carveunalloc)
+	this->walk_free(parent);
+      //this->fs->registerTree(origin, parent);
     }
   catch(...)
     {
