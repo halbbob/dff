@@ -492,6 +492,7 @@
   Py_XDECREF($result);
   $result = PyString_FromStringAndSize((const char *)$1->buff, $1->len);
   free($1->buff);
+  free($1);
 }
 
 %{

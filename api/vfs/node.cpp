@@ -25,6 +25,10 @@ FileMapping::FileMapping()
 
 FileMapping::~FileMapping()
 {
+  uint32_t	i;
+
+  for (i = 0; i != this->__chuncks.size(); i++)
+    delete this->__chuncks[i];
 }
 
 uint32_t		FileMapping::chunckCount()

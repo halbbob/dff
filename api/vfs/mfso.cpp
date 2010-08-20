@@ -33,20 +33,15 @@ fdinfo*		FdManager::get(int32_t fd)
 {
   fdinfo*	fi;
 
-  //  std::cout << "getting info from fd " << fd << std::endl;
   if (fd > this->fds.size())
     throw(vfsError("fdmanager::get -> Provided fd is too high"));
   else
     {
       fi = this->fds[fd];
       if (fi != 0)
-	{
-	  //std::cout << "fd found" << std::endl;
-	  return fi;
-	}
+	return fi;
       else
 	throw(vfsError("fdmanager::get -> fd not allocated"));
-      //;return NULL;
     }
 }
 
@@ -115,7 +110,6 @@ mfso::mfso(std::string name): fso(name)
 {
   this->__fdmanager = new FdManager();
   this->__verbose = false;
-  //this->root = new Node(NULL, name, 0);
 }
 
 mfso::~mfso()
@@ -135,24 +129,6 @@ void	fso::registerTree(Node* parent, Node* head)
   VFS::Get().notify(e);
 }
 
-// bool		mfso::registerDecoder(std::string name, Decoder&)
-// {
-// }
-
-// bool		mfso::unregisterDecoder(std::string name)
-// {
-// }
-
-// Node		*createNode(Node *parent, Decoder *decoder, uint64_t offset)
-// {
-// }
-
-//std::string		mfso::name()
-//{
-//return this->__name;
-//}
-
-
 VFile*		mfso::vfileFromNode(Node* n)
 {
   std::map<Node*, class VFile*>::iterator	it;
@@ -160,18 +136,13 @@ VFile*		mfso::vfileFromNode(Node* n)
 
   it = this->__origins.find(n);
   if (it != this->__origins.end())
-    {
-      //std::cout << "already opened" << std::endl;
-      return it->second;
-    }
+    return it->second;
   else
     {
-      //      std::cout << "Not yet opened" << std::endl;
       vfile = n->open();
       this->__origins[n] = vfile;
       return vfile;
-    }
-    
+    }    
 }
 
 
@@ -348,8 +319,12 @@ int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 
 int32_t 	mfso::vclose(int32_t fd)
 {
+  fdinfo*	fi;
+
   try
     {
+      fi = this->__fdmanager->get(fd);
+      delete fi->fm;
       this->__fdmanager->remove(fd);
     }
   catch (vfsError e)
