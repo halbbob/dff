@@ -270,12 +270,12 @@ public:
       }
       case uint8_t(typeId::List):
       {
-	std::list<Variant*> **l = static_cast<std::list<Variant*>**>(res);
+	std::list<Variant*> *l = static_cast<std::list<Variant*>*>(res);
 	switch (this->_type)
 	  {
 	  case typeId::List:
 	    {
-	      *l = (std::list<Variant*>*)this->__data.ptr;
+	      *l = *((std::list<Variant*>*)this->__data.ptr);
 	      return true;
 	    }
 	  default:
@@ -284,12 +284,12 @@ public:
 	}
       case uint8_t(typeId::Map):
       {
-	std::map<std::string, Variant*> **m = static_cast<std::map<std::string, Variant*>**>(res);
+	std::map<std::string, Variant*> *m = static_cast<std::map<std::string, Variant*>*>(res);
 	switch (this->_type)
 	  {
 	  case typeId::Map:
 	    {
-	      *m = (std::map<std::string, Variant*>*)this->__data.ptr;
+	      *m = *((std::map<std::string, Variant*>*)this->__data.ptr);
 	      return true;
 	    }
 	  default:
@@ -309,7 +309,7 @@ public:
     uint8_t	itype;
     T		t;
 
-    itype = typeId::Get()->getType((char*)typeid(static_cast<T>(0)).name());
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
     if (itype != 0)
       {
 	if (this->convert(itype, &t))

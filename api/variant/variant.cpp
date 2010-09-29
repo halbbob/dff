@@ -21,18 +21,18 @@ typeId *typeId::_instance = 0;
 
 typeId::typeId()
 {
-  this->mapping.insert(std::pair<char*, uint8_t>( (char*)typeid(int16_t).name(), typeId::Int16));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint16_t).name(), typeId::UInt16));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int32_t).name(), typeId::Int32));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint32_t).name(), typeId::UInt32));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int64_t).name(), typeId::Int64));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint64_t).name(), typeId::UInt64));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char).name(), typeId::Char));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char*).name(), typeId::CArray));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(void*).name(), typeId::VoidStar));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::string).name(), typeId::String));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class vtime*).name(), typeId::VTime));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Node*).name(), typeId::Node));
+  this->mapping.insert(std::pair<char*, uint8_t>( (char*)typeid(int16_t*).name(), typeId::Int16));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint16_t*).name(), typeId::UInt16));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int32_t*).name(), typeId::Int32));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint32_t*).name(), typeId::UInt32));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int64_t*).name(), typeId::Int64));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint64_t*).name(), typeId::UInt64));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char*).name(), typeId::Char));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char**).name(), typeId::CArray));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(void**).name(), typeId::VoidStar));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::string *).name(), typeId::String));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class vtime**).name(), typeId::VTime));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Node**).name(), typeId::Node));
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::map<std::string, class Variant*> *).name(), typeId::Map));
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::list<class Variant*> *).name(), typeId::List));
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::vector<class Variant*> *).name(), typeId::List));

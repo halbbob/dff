@@ -82,14 +82,14 @@ import traceback
 %template(__Int64) Variant::value<int64_t>;
 %template(__UInt64) Variant::value<uint64_t>;
 %template(__CArray) Variant::value<char *>;
-//%template(__getValueNode) Variant::value<Node*>;
+%template(__Node) Variant::value<Node*>;
 %template(__VTime) Variant::value<vtime*>;
 
 %template(__String) Variant::value<std::string>;
 %template(VList) std::list<Variant*>;
 %template(VMap) std::map<std::string, Variant*>;
-%template(__VList) Variant::value< std::list<Variant *> *>;
-%template(__VMap) Variant::value< std::map<std::string, Variant *> *>;
+%template(__VList) Variant::value< std::list<Variant *> >;
+%template(__VMap) Variant::value< std::map<std::string, Variant *> >;
 
 %extend Variant
 {
