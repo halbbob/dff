@@ -22,6 +22,7 @@ set(apiguiwidget_srcs
   nodeview.py
   propertytable.py
   textedit.py
+  selectdevices.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

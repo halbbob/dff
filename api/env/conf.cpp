@@ -29,6 +29,8 @@ void	config::add(string name, string type, bool opt, string descr)
   
   if (!strcmp(type.c_str(), "int"))
     v = new v_descr_int(from, name, opt, descr);
+  else if ((!strcmp(type.c_str(), "uint64")))
+    v = new v_descr_uint64(from, name, opt, descr);
   else if (!strcmp(type.c_str(), "string"))
     v = new v_descr_string(from, name, opt, descr);
   else if (!strcmp(type.c_str(), "node"))
@@ -80,6 +82,15 @@ void config::add_const(string name, int val)
    v_val *v;
   
   v = new v_val_int(from, name, val);
+  val_l.push_back(v);
+  km->add_var_val(v); 
+}
+
+void config::add_const(string name, uint64_t val)
+{
+   v_val *v;
+  
+  v = new v_val_uint64(from, name, val);
   val_l.push_back(v);
   km->add_var_val(v); 
 }

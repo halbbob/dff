@@ -33,6 +33,15 @@ void results::add_const(string name, string v)
   km->add_var_val(v_v); 
 }
 
+void results::add_const(string name, uint64_t v)
+{
+   v_val *v_v;
+  
+  v_v = new v_val_uint64(from, name, v);
+  val_m[name] = v_v;
+  km->add_var_val(v_v); 
+}
+
 void results::add_const(string name, int v)
 {
    v_val *v_v;

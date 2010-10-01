@@ -1,0 +1,106 @@
+# DFF -- An Open Source Digital Forensics Framework
+#
+# This program is free software, distributed under the terms of
+# the GNU General Public License Version 2. See the LICENSE file
+# at the top of the source tree.
+# 
+# See http://www.digital-forensic.org for more information about this
+# project. Please do not directly contact any of the maintainers of
+# DFF for assistance; the project provides a web site, mailing lists
+# and IRC channels for your use.
+# 
+# Author(s):
+#  Solal Jacob < sja@arxsys.fr>
+#
+
+from struct import unpack
+
+from api.vfs import *
+from api.module.module import *
+from api.env.libenv import *
+from api.variant.libvariant import Variant, VMap
+from api.vfs.libvfs import *
+from modules.fs.spare import SpareNode
+
+class CatfilesNode(Node):
+   def __init__(self, mfso, parent, virtual, partTable, blockSize):
+      print "init node"
+#     self.ssize = partTable.size * blockSize 
+#     Node.__init__(self, "part_" + str(partTable.name[1:]), self.ssize, parent, mfso)
+#     self.__disown__()
+#     self.virtual = virtual 
+#     self.blockSize = blockSize
+#     self.partTable = partTable
+#     self.setFile()
+#     setattr(self, "extendedAttributes", self.extendedAttributes)
+#     setattr(self, "fileMapping", self.fileMapping)
+
+   def fileMapping(self, fm):
+      print "mapping file"
+#     startOff = (self.partTable.start - 1) * self.blockSize
+#     if (startOff + self.ssize) > self.virtual.size():
+#       leak = (startOff + self.ssize) - self.virtual.size()
+#       leakOff = self.virtual.size() - startOff                
+#       fm.push(0, leakOff, self.virtual, startOff) 
+#       fm.push(leakOff, leak)
+#     else:
+#       fm.push(0, self.ssize, self.virtual, startOff) 
+      
+   def extendedAttributes(self, attr):
+      print "extended attr"
+      attr.thisown = False
+#      fatstart = Variant(self.partTable.start)
+#      fatstart.thisown = False
+#      attr.push("partition start", fatstart)
+#      blocksize = Variant(self.partTable.blocksize)
+#      blocksize.thisown = False
+#      attr.push("blocksize", blocksize)
+#      size = Variant(self.partTable.size)
+#      size.thisown = False
+#      attr.push("size in block", size)
+ 
+
+class catfiles(mfso):
+    def __init__(self):
+       mfso.__init__(self, "catfiles")
+       self.name = "catfiles"
+       self.__disown__()
+
+    def start(self, args):
+       print """i am a python module"""
+#       self.nor = args.get_node('nor')
+#       self.nand = args.get_node('nand')
+#       self.spareSize = args.get_int("spare-size")
+#       self.pageSize = args.get_int("page-size")
+#       if self.pageSize == None or self.pageSize < 0:
+#         self.pageSize = 512
+#       if self.spareSize == None or self.spareSize < 0:
+#         self.spareSize = 16
+
+#       self.k800n = Node("k800")
+#       self.k800n.__disown__()
+#       self.boot = SEBootBlock(self.nor, self.pageSize) 
+#       self.blockSize = self.boot.blockSize
+#       self.nandClean = SpareNode(self, self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
+#       self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
+#       self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot) 
+#      self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
+#       self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
+#       self.tables = Tables(self.fullFs, self.blockSize)
+#       self.virtual = VirtualMap(self, self.k800n, self.fullFs, self.tables, "virtual", self.blockSize)
+#       self.separt =  SEPartitionBlock(self.virtual, self.boot.partitionblock, self.blockSize)
+#       self.createPart()
+#       self.registerTree(self.nand, self.k800n) 
+
+#    def createPart(self):
+#      for part in self.separt.partTable:
+#       if part.start > 0:
+#         p = Partition(self, self.k800n, self.virtual, part, self.blockSize)
+
+class catfiles(Module):
+  """This module is designed to concat 2 files."""
+  def __init__(self):
+    Module.__init__(self, "catfiles", catfiles)
+    self.conf.add("file1", "node", False, "first file")
+    self.conf.add("file2", "node", False, "second file")
+    self.tags = "file system"

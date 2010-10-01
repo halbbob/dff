@@ -17,6 +17,9 @@
     <file alias="splash.png">icons/splash.png</file>
 
     <file alias="add.png">icons/actions/add.png</file>
+    <file alias="add_image.png">icons/actions/add_image.png</file>
+    <file alias="add_device.png">icons/actions/add_device.png</file>
+
     <file alias="anim.gif">icons/anim.gif</file>
     <file alias="exec.png">icons/filesystem/exec.png</file>
 
@@ -106,6 +109,7 @@
 
     <file alias="bookmark.png">icons/actions/bookmark.png</file>
     <file alias="bookmark_add.png">icons/actions/bookmark_add.png</file>
+
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>    
 

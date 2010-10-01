@@ -22,6 +22,7 @@
 #include "fatnodes.hpp"
 #include "vfile.hpp"
 #include "entries.hpp"
+#include "TwoThreeTree.hpp"
 
 // 		      if ((entry[0] != '.') && (memcmp(entry, "\0\0\0\0\0\0\0\0", 8) != 0))
 // 			{
@@ -56,19 +57,29 @@
 // 	    }
 // 	}
 
+typedef struct	s_deletedItems
+{
+  Node*	node;
+  ctx*	c;
+}		deletedItems;
+
 class FatTree
 {
 private:
-  Node*			origin;
-  VFile*		vfile;
-  class Fatfs*		fs;
-  std::list<uint32_t>	recursion;
-  uint32_t		depth;
-  Node*			allocNode(ctx* c, Node* parent);
-  void			walk_free(Node* parent);
-  void			walk(uint32_t cluster, Node* parent);
-  void			rootdir(Node* parent);
-  bool			recurse(uint32_t cluster);
+  Node*				origin;
+  VFile*			vfile;
+  class Fatfs*			fs;
+  std::vector<deletedItems*>	deleted;
+  TwoThreeTree			*allocatedClusters;
+  uint32_t			depth;
+  void				processDeleted();
+  void				walkDeleted(uint32_t cluster, Node* parent);
+  void				updateDeletedItems(ctx* c, Node* parent);
+  void				updateAllocatedClusters(uint32_t cluster);
+  Node*				allocNode(ctx* c, Node* parent);
+  void				walk_free(Node* parent);
+  void				walk(uint32_t cluster, Node* parent);
+  void				rootdir(Node* parent);
 
 public:
   EntriesManager*		emanager;

@@ -121,17 +121,22 @@ class PropertyTable(QTreeWidget):
       itemExtendedAttr = QTreeWidgetItem(self)
       itemExtendedAttr.setText(0, "extended attributes")
       for key, value in map.iteritems():
-        itemAttr = QTreeWidgetItem(itemExtendedAttr)
-        itemAttr.setText(0, str(key))
+        item = QTreeWidgetItem(itemExtendedAttr)
+        item.setText(0, str(key))
         if str(type(value)).find("Variant") != -1:
           if str(type(value.value())).find("VMap") != -1:
-            self.fillMap(itemAttr, value.value())
+            self.fillMap(item, value.value())
           elif str(type(value.value())).find("VList") != -1:
-            self.fillList(itemAttr, value.value())
+            self.fillList(item, value.value())
+          elif str(value).find("vtime") != -1:
+            item.setText(1, str(value.value().get_time()))
           else:
-            itemAttr.setText(1, str(value))
+            item.setText(1, str(value))
         else:
-          itemAttr.setText(1, str(value))
+          if str(value).find("vtime") != -1:
+            item.setText(1, str(value.value().get_time()))
+          else:
+            item.setText(1, str(value))
       self.expandItem(itemExtendedAttr)
 
   
@@ -142,17 +147,22 @@ class PropertyTable(QTreeWidget):
       itemStaticAttr = QTreeWidgetItem(self)
       itemStaticAttr.setText(0, "static attributes")
       for key, value in map.iteritems():
-        itemAttr = QTreeWidgetItem(itemStaticAttr)
-        itemAttr.setText(0, str(key))
+        item = QTreeWidgetItem(itemStaticAttr)
+        item.setText(0, str(key))
         if str(type(value)).find("Variant") != -1:
           if str(type(value.value())).find("VMap") != -1:
-            self.fillMap(itemAttr, value.value())
+            self.fillMap(item, value.value())
           elif str(type(value.value())).find("VList") != -1:
-            self.fillList(itemAttr, value.value())
+            self.fillList(item, value.value())
+          elif str(value).find("vtime") != -1:
+            item.setText(1, str(value.value().get_time()))
           else:
-            itemAttr.setText(1, str(value))
+            item.setText(1, str(value))
         else:
-          itemAttr.setText(1, str(value))
+          if str(value).find("vtime") != -1:
+            item.setText(1, str(value.value().get_time()))
+          else:
+            item.setText(1, str(value))
       self.expandItem(itemStaticAttr)
     except (IndexError, AttributeError):
       pass
@@ -167,16 +177,24 @@ class PropertyTable(QTreeWidget):
           self.fillMap(item, value.value())
         elif str(type(value.value())).find("VList") != -1:
           self.fillList(item, value.value())
+        elif str(value).find("vtime") != -1:
+          item.setText(1, str(value.value().get_time()))
         else:
           item.setText(1, str(value))
       else:
-        item.setText(1, str(value))
+        if str(value).find("vtime") != -1:
+          item.setText(1, str(value.value().get_time()))
+        else:
+          item.setText(1, str(value))
         
 
   def fillList(self, parent, list):
     for i in list:
       item = QTreeWidgetItem(parent)
-      item.setText(1, str(i))
+      if str(i).find("vtime") != -1:
+        item.setText(1, str(i.value().get_time()))
+      else:
+        item.setText(1, str(i))
 
 
   def fill(self, node):

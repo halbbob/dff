@@ -22,6 +22,12 @@
 #include <string>
 #include <iostream>
 #include <list>
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
+
 
 using namespace std;
 class vars
@@ -52,6 +58,12 @@ public:
   EXPORT v_descr_int(string f, string n, bool opt, string description);
   EXPORT v_descr_int(string f, string n, int x, int y, bool opt, string description);
   EXPORT int  check_val(int v);
+};
+
+class v_descr_uint64 : public v_descr
+{
+  public:
+  EXPORT v_descr_uint64(string f, string n, bool opt, string description);
 };
 
 
@@ -94,6 +106,7 @@ class v_val : public vars
 {
 public:
  EXPORT int get_int(void);
+ EXPORT uint64_t get_uint64(void);
  EXPORT string get_string(void);
  EXPORT class Node* get_node(void);
  EXPORT class Path* get_path(void);
@@ -108,6 +121,16 @@ public:
 
   EXPORT v_val_int(string f, string n, int v);
 };
+
+class v_val_uint64 : public v_val
+{
+public:
+  uint64_t	value;		
+
+  EXPORT v_val_uint64(string f, string n, uint64_t v);
+};
+
+
 
 
 class v_val_string : public v_val

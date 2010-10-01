@@ -41,6 +41,7 @@ class argument
 //add_type
 
   EXPORT void 	add_int(string, int);
+  EXPORT void 	add_uint64(string, uint64_t);
   EXPORT void 	add_string(string, string);
   EXPORT void 	add_bool(string, bool);
   EXPORT void 	add_node(string, Node*);
@@ -52,6 +53,7 @@ class argument
 //get( type)
 
   EXPORT void 	get(string name, int *v);
+  EXPORT void 	get(string name, uint64_t *v);
   EXPORT void 	get(string name, bool *v);
   EXPORT void 	get(string name, Node **v);
   EXPORT void 	get(string name, string *v);
@@ -62,6 +64,7 @@ class argument
 //get_type
 
   EXPORT int 		get_int(string name);
+  EXPORT uint64_t 	get_uint64(string name);
   EXPORT bool 		get_bool(string name);
   EXPORT string 	get_string(string name);
   EXPORT Node*  	get_node(string name);

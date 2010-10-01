@@ -40,6 +40,15 @@ void argument::add_int(string name, int v)
   km->add_var_val(v_v);
 }
 
+void argument::add_uint64(string name, uint64_t v)
+{
+  v_val *v_v;
+
+  v_v = new v_val_uint64(from, name, v);
+  val_m[name] = v_v;
+  km->add_var_val(v_v);
+}
+
 void argument::add_string(string name, string v)
 {
   v_val *v_v;
@@ -106,6 +115,17 @@ void argument::add(v_val *v)
 */
 
 /* void get(string name, *val)*/
+
+void argument::get(string name, uint64_t* v)
+{
+  v_val_uint64 *t;
+
+  t = (v_val_uint64 *)val_m[name];
+  if (!t)
+    throw envError("argument " + name + " doesn't exist");
+  else  
+    *v = t->value;
+}
 
 void argument::get(string name, int* v)
 {
@@ -197,6 +217,17 @@ int argument::get_int(string name)
   v_val_int *t;
 
   t = (v_val_int *)val_m[name];
+  if (!t)
+    throw envError("argument " + name + " doesn't exist");
+  else  
+    return t->value;
+}
+
+uint64_t argument::get_uint64(string name)
+{
+  v_val_uint64 *t;
+
+  t = (v_val_uint64 *)val_m[name];
   if (!t)
     throw envError("argument " + name + " doesn't exist");
   else  

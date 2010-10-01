@@ -39,6 +39,15 @@ v_descr_int::v_descr_int(string f, string n, int x, int y, bool opt, string desc
   description = descr;
 }
 
+v_descr_uint64::v_descr_uint64(string f, string n, bool opt, string descr)
+{
+  name = n; 
+  from = f;
+  type = "uint64";
+  optional = opt;
+  description = descr;
+}
+
 v_descr_string::v_descr_string(string f, string n, bool opt, string descr)
 {
   from = f;
@@ -99,6 +108,11 @@ int v_val::get_int(void)
   return (((v_val_int *)this)->value);
 }
 
+uint64_t v_val::get_uint64(void)
+{
+  return (((v_val_uint64 *)this)->value);
+}
+
 bool v_val::get_bool(void)
 {
   return (((v_val_bool *)this)->value);
@@ -132,6 +146,14 @@ v_val_int::v_val_int(string f,string n, int v)
   name = n;
   value = v;
   type = "int";
+}
+
+v_val_uint64::v_val_uint64(string f,string n, uint64_t v)
+{
+  from = f;
+  name = n;
+  value = v;
+  type = "uint64";
 }
 
 v_val_bool::v_val_bool(string f,string n, bool v)

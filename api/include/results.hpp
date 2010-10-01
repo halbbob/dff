@@ -38,6 +38,7 @@ class results : public argument
   EXPORT 	results(string who);
   EXPORT void	add_const(string name, string val);
   EXPORT void 	add_const(string name, int val);
+  EXPORT void 	add_const(string name, uint64_t val);
   EXPORT void 	add_const(string name, Node* val);
   EXPORT void 	add_const(string name, Path* val);
   EXPORT void 	add_const(string name, list<Node *>* val);

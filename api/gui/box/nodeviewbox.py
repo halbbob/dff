@@ -21,7 +21,7 @@ from PyQt4.QtGui import *
 
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.propertytable import PropertyTable
-from api.vfs.vfs import vfs, Node, DEvent
+from api.vfs.vfs import vfs, Node, DEvent, VLink
 from api.vfs import libvfs
 
 class NodeViewBox(QWidget):
@@ -36,29 +36,57 @@ class NodeViewBox(QWidget):
     self.gridLayout = QHBoxLayout(self)
     self.gridLayout.setAlignment(Qt.AlignLeft)
     self.addPropertyTable()
-    self.createButton("top", self.moveToTop, ":previous.png")
-    self.createButton("root", self.goHome,  ":home.png")
-    self.createButton("table", self.tableActivated,  ":view_detailed.png")
-    self.createButton("thumb", self.thumbActivated, ":view_icon.png")
-    self.createButton("leftTree", self.leftTreeActivated, ":view_choose.png")
-    self.createButton("imagethumb", self.imagethumbActivated, ":image.png")
-    self.createButton("search", self.searchActivated, ":filefind.png")
-    self.createThumbSize()
-    self.createCheckBoxAttribute()
+    self.createButton("top", self.moveToTop, "Previous", ":previous.png")
+    self.createButton("root", self.goHome,  "Return to root", ":home.png")
+
     self.createPathEdit()
+
+#    self.createButton("table", self.tableActivated,  ":view_detailed.png")
+#    self.createButton("thumb", self.thumbActivated, ":view_icon.png")
+#    self.createButton("leftTree", self.leftTreeActivated, ":view_choose.png")
+
+    self.createChangeView()
+    self.createCheckBoxAttribute()
+
+    self.createButton("search", self.searchActivated, "Display search engine",":filefind.png")
+#remove bookmark ? remove to bookmark
+    self.createButton("imagethumb", self.imagethumbActivated, "Active thumbnails",":image.png")
+    self.createThumbSize()
+
     self.tableActivated()
+
     self.setLayout(self.gridLayout)
+
+  def createChangeView(self):
+    self.viewbox = QComboBox()
+    self.viewbox.insertItem(0, QIcon(":view_detailed.png"), "List")
+    self.viewbox.insertItem(1, QIcon(":view_icon.png"), "Icons")
+    self.viewbox.insertItem(2, QIcon(":view_choose.png"), "Tree")
+    
+    self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
+
+    self.gridLayout.addWidget(self.viewbox)
+
+  def viewboxChanged(self, index):
+    if index == 0:
+      self.tableActivated()
+    elif index == 1:
+      self.thumbActivated()
+    elif index == 2:
+      self.leftTreeActivated()
+
 
   def addPropertyTable(self):
     self.propertyTable = PropertyTable(self)
-    self.propertyTable.setVisible(False)
+    self.propertyTable.setVisible(True)
     self.propertyTable.setMinimumSize(QSize(150, 300))
     self.parent.browserLayout.addWidget(self.propertyTable)
 
-  def createButton(self, name, func, iconName, iconSize = 32):
+  def createButton(self, name, func, tooltip, iconName, iconSize = 32):
     self.button[name] = QPushButton(self)
     self.button[name].setFixedSize(QSize(iconSize, iconSize))
     self.button[name].setFlat(True)
+    self.button[name].setToolTip(tooltip)
     self.button[name].setIcon(QIcon(iconName))
     self.button[name].setIconSize(QSize(iconSize, iconSize))
     self.gridLayout.addWidget(self.button[name])
@@ -75,27 +103,27 @@ class NodeViewBox(QWidget):
     self.thumbSize.addItem("Medium")
     self.thumbSize.addItem("Large")
     self.thumbSize.setEnabled(False)
-    label = QLabel("Icon size:") 
+#    label = QLabel("Icon size:") 
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
-    self.gridLayout.addWidget(label)
+#    self.gridLayout.addWidget(label)
     self.gridLayout.addWidget(self.thumbSize)
-    self.button["thumb"].setEnabled(True)
+#    self.button["thumb"].setEnabled(True)
 
   def createCheckBoxAttribute(self):
     self.checkboxAttribute = QCheckBox("Attributes", self)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.checkboxAttribute.setCheckState(False)
-    self.checkboxAttribute.setEnabled(False)
+      self.checkboxAttribute.setCheckState(True)
+    self.checkboxAttribute.setEnabled(True)
     self.checkboxAttribute.setTristate(False)
 
     self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged) 
     self.gridLayout.addWidget(self.checkboxAttribute)
-    self.button["table"].setEnabled(False)
+#    self.button["table"].setEnabled(False)
 
   def checkboxAttributeChanged(self, state):
      if state:
-       if self.parent.thumbsView.isVisible():
-         self.propertyTable.setVisible(True)
+#       if self.parent.thumbsView.isVisible():
+       self.propertyTable.setVisible(True)
      else:
         self.propertyTable.setVisible(False)	
 
@@ -121,11 +149,11 @@ class NodeViewBox(QWidget):
   def tableActivated(self):
      self.parent.tableView.setVisible(True)
      self.parent.thumbsView.setVisible(False)
-     self.checkboxAttribute.setEnabled(False)
-     self.propertyTable.setVisible(False)
-     self.button["thumb"].setEnabled(True)
+#     self.checkboxAttribute.setEnabled(False)
+#     self.propertyTable.setVisible(False)
+#     self.button["thumb"].setEnabled(True)
      self.thumbSize.setEnabled(False)
-     self.button["table"].setEnabled(False)
+#     self.button["table"].setEnabled(False)
   
   def thumbActivated(self):
      self.checkboxAttribute.setEnabled(True)
@@ -135,9 +163,9 @@ class NodeViewBox(QWidget):
         self.propertyTable.setVisible(False)
      self.parent.tableView.setVisible(False)
      self.parent.thumbsView.setVisible(True)
-     self.button["thumb"].setEnabled(False)
+#     self.button["thumb"].setEnabled(False)
      self.thumbSize.setEnabled(True)
-     self.button["table"].setEnabled(True)
+#     self.button["table"].setEnabled(True)
 
   def searchActivated(self):
      if self.parent.nodeFilterBox.isVisible():
@@ -158,8 +186,8 @@ class NodeViewBox(QWidget):
     self.completer = kompleter(self.pathedit, self.treemodel, self.model)
     self.pathedit.setCompleter(self.completer)
 
-    rootlabel = QLabel("/")
-    self.gridLayout.addWidget(rootlabel)
+#    rootlabel = QLabel("/")
+#    self.gridLayout.addWidget(rootlabel)
     self.gridLayout.addWidget(self.pathedit)
 
   def rootpathchanged(self, node):

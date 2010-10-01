@@ -23,6 +23,16 @@ class NodeViewEvent():
    self.parent = parent
    self.VFS = VFS.Get()
 
+
+  def keyReleaseEvent(self, e):
+    index = self.currentIndex()
+    index = self.model().mapToSource(index)
+    if index.isValid():
+      node = self.VFS.getNodeFromPointer(index.internalId())
+      self.emit(SIGNAL("nodePressed"), e.key(), node)
+    self.origView.keyReleaseEvent(self, e)
+      
+
   def mouseReleaseEvent(self, e):
      index = self.indexAt(e.pos())
      index = self.model().mapToSource(index)

@@ -26,8 +26,9 @@ BootSector::~BootSector()
 {
 }
 
-void	BootSector::process(Node *origin)
+void	BootSector::process(Node *origin, class Fatfs* fs)
 {
+  this->fs = fs;
   this->origin = origin;
   try
     {
@@ -238,38 +239,29 @@ void	BootSector::fillCtx()
       this->fatsize = this->sectperfat * this->ssize;
       this->fillFatType();
       this->fillExtended();
-      char name[9];
-      memset(name, 0, 9);
-      memcpy(name, this->oemname, 8);
-      printf("oemname: %s\n", name);
-      printf("ssize: %d\n", this->ssize);
-      printf("csize: %d\n", this->csize);
-      printf("reserved: %d\n", this->reserved);
-      printf("numfat: %d\n", this->numfat);
-      printf("numroot: %d\n", this->numroot);
-      printf("prevsect: %d\n", this->prevsect);
-      printf("vol id: %d\n", this->vol_id);
-      char vollab[12];
-      memset(vollab, 0, 12);
-      memcpy(vollab, this->vol_lab, 11);
-      printf("vol lab: %s\n", vollab);
-      char fstype[9];
-      memset(fstype, 0, 9);
-      memcpy(fstype, this->fs_type, 8);
-      printf("fstype: %s\n", fstype);
-      printf("root clust: %d\n", this->rootclust);
-      printf("total data sector: %d\n", this->datasector);
-      printf("total sector: %d\n", this->totalsector);
-      printf("sect per fat: %d\n", this->sectperfat);
-      printf("total cluster: %d\n", this->totalcluster);
-      printf("root dir sector: %d\n", this->rootdirsector);
-      printf("first fat offset: 0x%llx\n", this->firstfatoffset);
-      printf("root dir offset: 0x%llx\n", this->rootdiroffset);
-      printf("root dir size: %d\n", this->rootdirsize);
-      printf("data offset: 0x%llx\n", this->dataoffset);
-      printf("data sector: %d\n", this->datasector);
-      printf("fatsize: %d\n", this->fatsize);
-      printf("total size: %d\n", this->totalsize);
+      this->fs->res->add_const("oemname", this->oemname);
+      this->fs->res->add_const("sector size", this->ssize);
+      this->fs->res->add_const("cluster size", this->csize);
+      this->fs->res->add_const("reserved cluster", this->reserved);
+      this->fs->res->add_const("number of fat", this->numfat);
+      this->fs->res->add_const("number of entries in root directory", this->numroot);
+      //this->fs->res->add_const("number of sectors before FS partition", this->prevsect);
+      //this->fs->res->add_const("volume id", this->vol_id);
+      //this->fs->res->add_const("volume label", this->vollab);
+      //this->fs->res->add_const("FS type", this->fstype);
+      //this->fs->res->add_const("root cluster", this->rootclust);
+      //this->fs->res->add_const("total sectors for data", this->datasector);
+      //this->fs->res->add_const("total sectors", this->totalsector);
+      //this->fs->res->add_const("sectors per fat", this->sectperfat);
+      //this->fs->res->add_const("total clusters", this->totalcluster);
+      //this->fs->res->add_const("first sector of root directory", this->rootdirsector);
+      this->fs->res->add_const("offset of first fat", this->firstfatoffset);
+      this->fs->res->add_const("offset of root directory", this->rootdiroffset);
+      //this->fs->res->add_const("size of root directory", this->rootdirsize);
+      this->fs->res->add_const("start offset of data", this->dataoffset);
+      //this->fs->res->add_const("first sector of data", this->datasector);
+      //this->fs->res->add_const("size of fat", this->fatsize);
+      this->fs->res->add_const("total size", this->totalsize);
     }
 }
 

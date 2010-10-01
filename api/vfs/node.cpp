@@ -405,12 +405,13 @@ std::string	Node::path()
     return "";
   path = "";
   tmp = this->__parent;
-  while (tmp->__parent != tmp)
+  while ((tmp->__parent != tmp) && (tmp->__parent != NULL))
     {
       path = tmp->name() + "/" + path;
       tmp = tmp->parent();
     }
-  path = "/" + path;
+  if (tmp->__parent == tmp)
+    path = "/" + path;
   return path;
 }
 
@@ -556,3 +557,152 @@ VfsRoot::VfsRoot(std::string name): Node(name)
 VfsRoot::~VfsRoot()
 {
 }
+
+uint32_t VLink::id()
+{
+  return this->__linkedNode->id();
+}
+
+
+VLink::VLink(Node* linkedNode, Node* parent, std::string newname)
+{
+  this->__childcount = 0;
+  this->__at = 0;
+  this->__linkedNode = linkedNode;
+  this->__parent = parent;
+  
+  if (newname == "")
+    this->__name = __linkedNode->name(); 
+  else
+    this->__name = newname;
+  this->__parent->addChild(this);
+}
+
+void		VLink::fileMapping(FileMapping *fm)
+{
+  this->__linkedNode->fileMapping(fm);
+}
+
+void		VLink::setStaticAttribute(std::string key, class Variant* value)
+{
+  this->__linkedNode->setStaticAttribute(key, value);
+}
+
+Attributes*	VLink::staticAttributes()
+{
+  return this->__linkedNode->staticAttributes();
+}
+
+void		VLink::extendedAttributes(Attributes *attr)
+{
+  this->__linkedNode->extendedAttributes(attr);
+}
+
+void		VLink::modifiedTime(vtime *t)
+{
+  this->__linkedNode->modifiedTime(t);
+}
+
+void		VLink::accessedTime(vtime *t)
+{
+  this->__linkedNode->accessedTime(t);
+}
+
+void 		VLink::createdTime(vtime *t)
+{
+  this->__linkedNode->createdTime(t);
+}
+
+void		VLink::changedTime(vtime *t)
+{
+  this->__linkedNode->changedTime(t);
+}
+
+std::map<std::string, vtime*> VLink::times()
+{
+  return this->__linkedNode->times();
+}
+
+uint64_t	VLink::size()
+{
+  return this->__linkedNode->size();
+}
+
+std::string 	VLink::linkPath()
+{
+  return this->__linkedNode->path();
+}
+std::string	VLink::linkName()
+{
+  return this->__linkedNode->name();
+}
+
+std::string 	VLink::linkAbsolute()
+{
+  return this->__linkedNode->absolute();
+}
+
+bool 		VLink::isFile()
+{
+  return this->__linkedNode->isFile();
+}
+
+bool 		VLink::isDir()
+{
+  return this->__linkedNode->isDir();
+}
+
+bool		VLink::isVDir()
+{
+  return this->__linkedNode->isVDir();
+}
+
+bool		VLink::isDeleted()
+{
+  return this->__linkedNode->isDeleted();
+}
+
+bool		VLink::isLink()
+{
+  return this->__linkedNode->isLink();
+}
+
+class fso*	VLink::fsobj()
+{
+  return this->__linkedNode->fsobj();
+}
+
+Node*		VLink::linkParent()
+{
+  return this->__linkedNode->parent();
+}
+
+std::vector<class Node*> VLink::linkChildren()
+{
+  return this->__linkedNode->children();
+}
+
+bool		VLink::linkHasChildren()
+{
+  return this->__linkedNode->hasChildren();
+}
+
+uint32_t	VLink::linkChildCount()
+{
+  return this->__linkedNode->childCount();
+}
+
+Node*		VLink::linkNode()
+{
+  return this->__linkedNode;
+}
+
+
+VFile*		VLink::open()
+{
+  return this->__linkedNode->open();
+}
+
+VLink::~VLink()
+{}
+

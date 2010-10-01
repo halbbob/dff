@@ -26,6 +26,7 @@
 #include <sstream>
 #include <errno.h>
 
+
 void local::iterdir(std::string dir, Node *parent)
 {
   struct stat		stbuff; 
@@ -77,8 +78,8 @@ void local::start(argument* arg)
   string 	name;
   Path		*tpath;
   struct stat 	stbuff;
-   
- 
+  uint64_t  	size = 0;
+
   nfd = 0;
   try 
     {
@@ -96,7 +97,19 @@ void local::start(argument* arg)
     {
       //res->add_const("error", "conf " + e.error);
       return ;
+      
     }
+  try
+    {
+       arg->get("size", &size);
+    }
+  catch (envError e)
+    { 
+    }
+
+    
+ 
+
   if ((tpath->path.rfind('/') + 1) == tpath->path.length())
     tpath->path.resize(tpath->path.rfind('/'));
   name = tpath->path.substr(tpath->path.rfind("/") + 1);
@@ -115,7 +128,10 @@ void local::start(argument* arg)
     }
   else
     {
-      this->__root = new ULocalNode(name, stbuff.st_size, NULL, this, ULocalNode::FILE, lpath.size());
+      if (size)
+        this->__root = new ULocalNode(name, size, NULL, this, ULocalNode::FILE, lpath.size());
+      else
+        this->__root = new ULocalNode(name, stbuff.st_size, NULL, this, ULocalNode::FILE, lpath.size());
       lpath.push_back(tpath->path);
       //this->__root->setRealPath(&(this->basePath));
     }

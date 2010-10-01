@@ -32,8 +32,8 @@ public:
   Node*			parent;
   bool			carveunalloc;
   class FatTree*	tree;
-  BootSector*		bs;
-  FileAllocationTable*	fat;
+  class BootSector*	bs;
+  class FileAllocationTable*	fat;
 
   VFile*		vfile;
   virtual void		start(argument *arg);

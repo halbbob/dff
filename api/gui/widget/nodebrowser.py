@@ -187,6 +187,7 @@ class NodeBrowser(QWidget, DEventHandler):
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.tableView), 1)
 
+    self.connect(self.tableView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
     #self.model.setImagesThumbnails(True)
@@ -201,6 +202,7 @@ class NodeBrowser(QWidget, DEventHandler):
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.thumbsView), 1)
 
 #    self.nodeView.addWidget(self.thumbsView)
+    self.connect(self.thumbsView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.thumbsView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.thumbsView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
 
@@ -236,6 +238,23 @@ class NodeBrowser(QWidget, DEventHandler):
      if index.isValid():
 	 index = self.currentProxyModel().mapToSource(index)
          return self.VFS.getNodeFromPointer(index.internalId())
+
+
+  def nodePressed(self, key, node, index = None):
+    if key in [Qt.Key_Up, Qt.Key_Down, Qt.Key_PageUp, Qt.Key_PageDown]:
+      if self.nodeViewBox.propertyTable.isVisible():
+        self.nodeViewBox.propertyTable.fill(node)
+    if key == Qt.Key_Return:
+      if self.currentView().enterInDirectory:
+        if node.hasChildren() or node.isDir():
+          self.currentModel().setRootPath(node)
+        else:
+          self.openDefault(node)
+      else:
+        self.openDefault(node)
+    if key == Qt.Key_Backspace:
+      print node.absolute(), node.parent().absolute()
+      self.currentModel().setRootPath(node.parent().parent())
 
   def nodeClicked(self, mouseButton, node, index = None):
      if mouseButton == Qt.LeftButton:

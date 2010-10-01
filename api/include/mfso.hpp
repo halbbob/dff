@@ -126,7 +126,7 @@ protected:
 //  EXPORT class Node			*createNode(class Node *parent, Decoder *decoder, uint64_t offset);
   
 public:
-  //  EXPORT mfso();
+  ///  EXPORT mfso();
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
   EXPORT virtual void		start(argument* args) = 0;

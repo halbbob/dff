@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.initDockWidgets()
 
 	#menu
-	self.menuList = [ [ "File", [ "New_Dump", "Exit" ] ], 
+	self.menuList = [ [ "File", [ "New_Dump", "New_Device", "Exit" ] ], 
 			  [ "Modules", [ "Load" ] ],
 		#	  [ "About", [ "About" ] ],
 			] 
@@ -66,11 +66,13 @@ class MainWindow(QMainWindow):
 	#icon 
         self.toolbarList = [
              ["New_Dump"],
+             ["New_Device"],
 	     ["List_Files"]
 	]
 
         self.actionList = [
-	     ["New_Dump", "Add Dump", self.dialog.addDumps, ":add.png", "Add Dump"],
+	     ["New_Dump", "Add Dump", self.dialog.addFiles, ":add_image.png", "Add image"],
+	     ["New_Device", "Add device(s)", self.dialog.addDevices, ":add_device.png", "Add device(s)"],
 	     ["Exit", "Exit", None,  ":exit.png", "Exit"], 
 	     ["Load", "Load", self.dialog.loadDriver, None, None ],
       	     ["About", "?", self.dialog.about, None, None ],
@@ -80,6 +82,7 @@ class MainWindow(QMainWindow):
         self.setupUi()
         self.ideActions = IdeActions(self)
 	self.shellActions = ShellActions(self)				
+
 	self.interpreterActions =InterpreterActions(self)				
 
 	self.addMenu(*["About", ["About"]])

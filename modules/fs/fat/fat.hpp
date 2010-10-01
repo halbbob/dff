@@ -30,7 +30,7 @@ class FileAllocationTable
 private:
   VFile*		vfile;
   Node*			origin;
-  BootSector*		bs;
+  class BootSector*	bs;
   //std::vector<uint32_t>	freeclusterscountbyfat;
 
 public:

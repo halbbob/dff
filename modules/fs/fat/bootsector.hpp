@@ -18,6 +18,7 @@
 #define __BOOTSECTOR_HPP__
 
 #include "vfile.hpp"
+#include "fatfs.hpp"
 #include <list>
 #include <string>
 
@@ -130,6 +131,7 @@ private:
   bootsector	bs;
   Node*		origin;
   VFile*	vfile;
+  class Fatfs*	fs;
 
   void		fillSectorSize();
   void		fillClusterSize();
@@ -148,7 +150,8 @@ private:
 public:
   BootSector();
   ~BootSector();
-  void			process(Node* node);
+  void			process(Node* node, class Fatfs* fs);
+  void			addResults();
 };
 
 #endif

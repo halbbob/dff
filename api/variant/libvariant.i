@@ -15,6 +15,228 @@
  */
 
 %module(package="api.variant") libvariant
+%feature("autodoc", 1); //1 = generate type for func proto, no work for typemap
+%feature("docstring");
+
+%feature("docstring") Variant
+"
+    Variants are designed to be a generic template type which can be used to store
+    different type of data. This is useful for example while setting the extended
+    attributes of a node : these attributes can be strings, integers, lists, etc.
+
+    The type of the value is defined while creating the Variant object. To get the
+    value back you just have to use the value() method.
+"
+
+%feature("docstring") Variant::__init__
+"
+        __init__(self) -> Variant
+        __init__(self, string str) -> Variant
+        __init__(self, char carray) -> Variant
+        __init__(self, char c) -> Variant
+        __init__(self, uint16_t us) -> Variant
+        __init__(self, int16_t s) -> Variant
+        __init__(self, uint32_t ui) -> Variant
+        __init__(self, int32_t i) -> Variant
+        __init__(self, int64_t ull) -> Variant
+        __init__(self, uint64_t ll) -> Variant
+        __init__(self, vtime vt) -> Variant
+        __init__(self, Node node) -> Variant
+        __init__(self, VList l) -> Variant
+        __init__(self, VMap m) -> Variant
+        __init__(self, void user) -> Variant
+
+        Variants are designed to be a generic template type which can be used to store
+        different type of data. This is useful for example while setting the extended
+        attributes of a node : these attributes can be strings, integers, lists, etc.
+
+        The type of the value is defined while creating the Variant object. To get the
+        value back you just have to use the value() method.
+
+        You can recursively used Variant. For example, you can create a map of <string, Variant \*>
+        and in each Variant of the map set a list<Variant \*>. You can give a look to the
+        different constructors to see which types are supported by Variants.
+
+        The last constructor overload, which takes a void \* pointer as parameter allows
+        you to use customs data type in Variant.
+"
+
+%feature("docstring") Variant::convert
+"
+        convert(self, uint8_t itype, void res) -> bool
+
+        This method is used to convert the value of the variant from one type to an other.
+        
+        Params :
+                * itype : the Id of the type into which you want to convert the value.
+                * res : the buffer in which you want to store the result.
+"
+
+%feature("docstring") Variant::value
+"
+        Return : the value of the Variant.
+"
+
+%feature("docstring") Variant::toString
+"
+        toString(self) -> string
+
+        Convert the variant value to a string
+
+        Return : a string containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toUInt16
+"
+        toUInt16(self) -> uint16_t
+
+        Convert the variant value to an unsigned integer 16 bits big.
+
+        Return : an uint16_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toInt16
+"
+        toInt16(self) -> int16_t
+
+        Convert the variant value to an integer 16 bits big
+
+        Return : a int16_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toUInt32
+"
+        toUInt32(self) -> uint32_t
+
+        Convert the variant value to an unsigned integer 32 bits big
+        Return : an uint32_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toInt32
+"
+        toInt32(self) -> int32_t
+
+        Convert the variant value to an integer 32 bits big.
+        Return : an int32_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toUInt64
+"
+        toUInt64(self) -> uint64_t
+
+        Convert the variant value to an unsigned integer 64 bits big.
+        Return : an uint64_t  containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toInt64
+"
+        toInt64(self) -> int64_t
+
+        Convert the variant value to an integer 64 bits big.
+
+        Return : an int64_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toBool
+"
+        toBool(self) -> bool
+
+        Convert the variant value to a boolean
+
+        Return : a boolean containing the result of the conversion.
+"
+
+%feature("docstring") Variant::type
+"
+        type(self) -> uint8_t
+
+        Return the type of the value stored in the variant.
+"
+
+%feature("docstring") typeId
+"
+    This class is a singleton used to define the type identifier of the value of a Variant.
+"
+
+%feature("docstring") typeId::Get
+"
+        This method returns a pointer to the instance of THE object typeId. If it
+        is called for the first time, it creates the instance before returning it.
+
+        Return : a pointer to the typeId instance.
+"
+
+%feature("docstring") typeId::getType
+"
+        This method returns the ID of a type accoroding to its name. This is not the
+        \"real\" typeid as defined in <typeinfo> header from the stl, but a typeid
+        defined in th unum Type of the typeId class.
+        
+        Params :
+                * args : the name of the type you want the ID
+
+        Return : the ID of the type passed in parameter.
+"
+
+%feature("docstring") VList
+"
+    A list a Variant. Their use and behaviour is the same as the the std::list from the STL.
+    Most of the code used in this class is generated by SWIG, who \"knows\" the
+    implementation of the std::list from the STL.
+
+    Vlists can be seen as a particular non-templated type of list where the element
+    is necessarly of Variant type.
+
+    They can be instanciated and used as in the following example (the type used for the
+    variant is std::string, but it could be aby types supported by the Variant):
+
+    
+        Variant \* ex = new Variant(\"an example string\")\;
+
+        VList   a_list(ex)\;
+
+        a_list.push_back(new Variant(\"42\"))\; // add a new variant to the list.
+
+        a_list.pop(); // remove the fisrt element of the list
+        a_list.clear(); // empty the list
+
+    You also can use iterators to browse elements of the VList.
+
+    We recommend that you refer to the STL documentation of std::list for a better
+    understanding of how to use the VList container.
+"
+
+%feature("doxstring") VMap
+"
+    A map of string and Variant. 
+
+    This is an associative container where the key is the string and the value
+    a variant.
+
+    Their use and behaviour is the same as the the std::map from the STL.
+    Most of the code used in this class is generated by SWIG, who \"knows\" the
+    implementation of the std::map from the STL.
+
+    VMaps can be seen as a particular non-templated type of map where elements
+    are necessarly a pair of string and Variant.
+
+    They can be instanciated and used as in the following example (the type used for the
+    variant is std::string, but it could be aby types supported by the Variant):
+
+    
+        Variant \* ex = new Variant(\"an example string\")\;
+
+        VList   a_map(\"key1\", ex)\;
+
+        a_map.[\"key2\"] = new Variant(\"42\")\; // add a new variant to the list.
+
+        a_map.clear()\; // empty the map.
+
+    You also can use iterators to browse elements in a VMap.
+
+    We recommend that you refer to the STL documentation of std::map for a better
+    understanding of how to use the VMap container.
+"
 
 %include "std_string.i"
 #ifndef WIN32
@@ -64,7 +286,7 @@ import traceback
                           typeId.UInt64: "_Variant__UInt64",
                           typeId.String: "_Variant__String",
                           typeId.CArray: "_Variant__CArray",
-//                      typeId.Node: "_Variant__Node",
+			  typeId.Node: "_Variant__Node",
                           typeId.VTime: "_Variant__VTime",
 		          typeId.List: "_Variant__VList",
   		          typeId.Map: "_Variant__VMap"}

@@ -21,6 +21,8 @@ from api.vfs import *
 from api.env.env import env
 import threading
 
+import time
+
 class Processus(Script):
   def __init__(self, mod, pid, args, exec_flags):
     self.vfs = vfs.vfs()
@@ -33,10 +35,13 @@ class Processus(Script):
     self.stream = Queue()
     self.event = threading.Event()
     self.env = env()
+    self.timestart = 0
+    self.timeend = 0
 
   def launch(self):
     self.state = "exec"
     #self.exec_flags = []
+    self.timestart = time.time()
     try :
       self.start(self.args)
       try :
@@ -51,7 +56,9 @@ class Processus(Script):
 	pass	
     except :
 	 error = sys.exc_info()
+         self.timeend = time.time()
          self.error(error)
+    self.timeend = time.time()
     self.error()
     self.event.set()
     if not "thread" in self.exec_flags:

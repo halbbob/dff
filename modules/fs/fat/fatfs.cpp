@@ -25,7 +25,7 @@ void		Fatfs::process()
       if (this->parent->size() > 0)
 	{
 	  this->vfile = this->parent->open();
-	  this->bs->process(this->parent);
+	  this->bs->process(this->parent, this);
 	  this->fat->setContext(this->parent, this->bs);
 	  this->root = new Node("Fat File System", 0, NULL, this);
 	  this->root->setDir();
@@ -41,16 +41,13 @@ void		Fatfs::process()
 
 void		Fatfs::setContext(argument* arg)
 {
-  //Node	*tmp;
-  bool	carve_unalloc;
-
   try
     {
       arg->get("parent", &(this->parent));
     }
   catch(envError e)
     {
-      throw("Fatfs module: error while setting context");
+      throw(envError("Fatfs module: error while setting context"));
     }
   try
     {
@@ -72,7 +69,8 @@ void		Fatfs::start(argument* arg)
     }
   catch(...)
     {
-      throw("Fatfs module: creation of new instance failed");
+      return;
+      //throw(vfsError("Fatfs module: creation of new instance failed"));
     }
   return ;
 }

@@ -101,7 +101,7 @@ class EXTRACT(Script):
       if not self.recursive:
         if node.isFile():
           self.extractFile(node, syspath)
-        elif node.isDir():
+        elif node.hasChildren():
           self.makeFolder(node, syspath)
       else:
         if node.isFile():
@@ -111,7 +111,7 @@ class EXTRACT(Script):
             self.recurse(node.children(), node.name() + "/")
           else:
             self.extractFile(node, syspath)
-        if node.isDir():
+        if node.hasChildren():
           self.makeFolder(node, syspath)
           self.recurse(node.children(), node.name() + "/")
 
@@ -123,7 +123,7 @@ class EXTRACT(Script):
         if node.hasChildren() and self.recursive:
           self.total_folders += 1
           self.extractedItemsCount(node.children())
-      if node.isDir():
+      if node.hasChildren():
         self.total_folders += 1
         if node.hasChildren() and self.recursive:
           self.extractedItemsCount(node.children())
@@ -140,7 +140,7 @@ class EXTRACT(Script):
             recnodes.append(node)
         else:
           self.extractFile(node, syspath)
-      if node.isDir():
+      if node.hasChildren():
         if self.makeFolder(node, syspath):
           recnodes.append(node)
 
@@ -178,7 +178,7 @@ class EXTRACT(Script):
         if node.hasChildren() and self.recursive:
           self.ommited_folders += 1
           self.countOmmited(node.children())
-      if node.isDir():
+      if node.hasChildren():
         self.ommited_folders += 1
         if node.hasChildren() and self.recursive:
           self.countOmmited(node.children())      

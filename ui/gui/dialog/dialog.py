@@ -1,11 +1,13 @@
 import os
 
-from PyQt4.QtGui import QFileDialog, QMessageBox 
+from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog 
 
 from api.taskmanager import *
 from api.taskmanager.taskmanager import * 
 from api.loader import *
 from api.vfs import vfs
+from api.devices.devices import Devices
+from api.gui.widget.selectdevices import DevicesDialog 
 
 class Dialog():
   def __init__(self, parent):
@@ -16,6 +18,31 @@ class Dialog():
      self.loader = loader.loader()
 
   def addDumps(self):
+       """Choose to add a device or a file"""
+       items = ["Device", "File"]
+       res = QInputDialog.getItem(self.parent, "Add dump:", "Choose dump type:", items, 0, False) 
+       type = res[0] 
+       ok = res[1]
+       if ok:
+	 if type == "Device":
+	    self.addDevices()
+         elif type == "File":
+	    self.addFiles()
+
+  def addDevices(self):
+       """Open a device list dialog"""
+       dev = DevicesDialog(self.parent)
+       if dev.exec_():
+	 if dev.selectedDevices:
+           arg = self.env.libenv.argument("gui_input")
+           arg.thisown = 0
+	   arg.add_path("path", str(dev.selectedDevices.blockDevice())) 
+           arg.add_node("parent", self.vfs.getnode("/"))
+           arg.add_uint64("size", long(dev.selectedDevices.size())) 
+	   exec_type = ["thread", "gui"]
+           self.taskmanager.add("local", arg, exec_type)
+
+  def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """
         sFileName = QFileDialog.getOpenFileNames(self.parent, "Add Dumps",  os.path.expanduser('~'))
         for name in sFileName:
