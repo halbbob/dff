@@ -17,6 +17,7 @@
 
 #ifndef __TWOTHREETREE_HPP__
 #define __TWOTHREETREE_HPP__
+#include "type.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else
@@ -31,16 +32,16 @@ class TwoThreeTree
 {
 
 public:
-  TwoThreeTree();
-  ~TwoThreeTree();
+  EXPORT	TwoThreeTree();
+  EXPORT	~TwoThreeTree();
 
-  uint32_t		size();
-  bool			insert(uint32_t val);
-  TwoThreeNode *	find(uint32_t val);
-  bool			remove(uint32_t val);
-  void			dump();
-  void			clear();
-  bool			empty();
+  EXPORT	uint32_t		size();
+  EXPORT	bool			insert(uint32_t val);
+  EXPORT	TwoThreeNode *	find(uint32_t val);
+  EXPORT	bool			remove(uint32_t val);
+  EXPORT	void			dump();
+  EXPORT	void			clear();
+  EXPORT	bool			empty();
 
 private:
   TwoThreeNode *	__root;

@@ -24,7 +24,8 @@ from dircache import listdir
 from api.loader import loader
 from api.variant import libvariant
 from api.taskmanager.taskmanager import TaskManager
- 
+from api.tree import libtree
+
 class ApiManager():
    class __ApiManager():
       def __init__(self):

@@ -22,13 +22,18 @@
 #define THREE_NODE	(false)
 
 #include <stdlib.h>
+#if (defined(WIN64) || defined(WIN32))
+#include "wstdint.h"
+#else
 #include <stdint.h>
+#endif
+#include <sstream>
 
 class TwoThreeNode
 {
 public:
   TwoThreeNode(uint32_t val, TwoThreeNode *);
-  TwoThreeNode(uint32_t lval, uint32_t rval, TwoThreeNode * node);
+   TwoThreeNode(uint32_t lval, uint32_t rval, TwoThreeNode * node);
   ~TwoThreeNode();
 
   void			setLeftChild(class TwoThreeNode* lchild);

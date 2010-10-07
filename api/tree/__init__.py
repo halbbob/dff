@@ -10,7 +10,6 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-
-__all__ = ["loader", "env", "vfs", "scheduler", "magic", "module", "utils","type","exceptions", "manager", "gui", "devices", "tree"]
+__all__ ["libtree"]
