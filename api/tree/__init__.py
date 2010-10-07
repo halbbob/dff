@@ -12,4 +12,4 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-__all__ ["libtree"]
+__all__ = ["libtree"]
