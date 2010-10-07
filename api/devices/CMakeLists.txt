@@ -15,7 +15,7 @@
 
 set(Devices_srcs
   __init__.py
-  module.py
+# modules.py
   devices.py
 )
 
