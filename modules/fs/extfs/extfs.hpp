@@ -161,6 +161,10 @@ public:
   template <typename T>
   void	arg_get(argument * all_args, const std::string & name, T arg);
 
+  uint32_t     nb_parsed_inode() const { return __nb_parsed_inode; }
+  void	       for_aiur() { __nb_parsed_inode++; }
+  uint32_t	alloc_inode() { return __alloc_inode; }
+
 private:
   void		__reserved_inodes();
   void		__add_meta_nodes();
@@ -179,6 +183,8 @@ private:
   ExtfsNode *	__orphans_i;
   ExtfsNode *	__suspiscious_i;
   ExtfsNode *	__suspiscious_dir;
+  uint32_t	__nb_parsed_inode;
+  uint32_t	__alloc_inode;
 };
 
 #endif

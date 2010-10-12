@@ -120,6 +120,11 @@ uint8_t		Directory::searchDirEntries(uint64_t content_addr,
 	      continue ;
 	    }
 
+	  std::ostringstream	oss;
+	  oss << _extfs->nb_parsed_inode() << " / " << _extfs->alloc_inode();
+	  _extfs->for_aiur();
+	  _extfs->stateinfo = ("parsed " + oss.str() + " files");
+	  
 	  node = createNewNode(inode_addr, parent, name, inter);
 	  node->set_i_nb(dir_e->inode_value());
 	  if (((inter->file_mode & __IFMT) == __IFDIR)

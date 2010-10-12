@@ -149,6 +149,8 @@ void		Extfs::init(const std::string & sb_check,
   __GD = new GroupDescriptor(__SB, __SB->block_size());
   __GD->init(__SB->block_size(), __vfile, __SB->group_number(),
 	     (!check_alloc.empty() && check_alloc == "yes"));
+  __alloc_inode = __SB->inodesNumber() - __SB->u_inodes_number();
+  __nb_parsed_inode = 0;
 }
 
 void		Extfs::run(uint64_t root_i_nb)
@@ -175,6 +177,7 @@ void		Extfs::run(uint64_t root_i_nb)
   __add_meta_nodes();
   __reserved_inodes();
   //  __root_dir->i_list()->clear();
+  this->stateinfo = "Finished";
 }
 
 void	Extfs::v_seek_read(uint64_t addr, void * buf, uint64_t size)
