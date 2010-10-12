@@ -72,7 +72,7 @@ void    Extfs::start(argument * arg)
   catch (envError & e)
     {
       std::cerr << "Extfs::start() : envError Exception caught : \n\t ->"
-		<< e.error  << std::endl;
+		<< e.error << std::endl;
     }
   catch (vfsError & e)
     {
@@ -105,6 +105,8 @@ void		Extfs::launch(argument * arg)
   arg_get(arg, "SB_addr", &sb_force_addr);
   arg_get(arg, "SB_check", &sb_check);
   arg_get(arg, "check_alloc", &check_alloc);
+
+  sb_check = !sb_check;
 
   // initialization
   this->init((sb_check ? "yes" : "no"),

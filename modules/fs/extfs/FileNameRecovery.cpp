@@ -69,8 +69,7 @@ uint8_t	FileNameRecovery::deletedFileNames(uint8_t * tab,
 	    {
 
 #ifdef DIR_DEBUG
-	      std::cout << "\tdel file : " << parent->path() << "/"
-			<< parent->name() << " " << name << std::endl;
+	      std::cout << "\tdel file : " << name << std::endl;
 #endif
 	      if ((new_node = retrieve_inode(inode_dir, del_dirent, parent, name,
 					     _inter)))
@@ -170,6 +169,8 @@ ExtfsNode *   FileNameRecovery::recovery(uint32_t block_number,
 	  std::vector<uint64_t>::iterator it = addr_list.begin();
 	  uint32_t  nb_i_per_block = dir->SB()->block_size()
 	    / dir->SB()->inodes_struct_size();
+	  bool	found = false;
+
 	  for (; it != addr_list.end(); it++)
 	    {
 	      if (!(*it))
@@ -195,7 +196,10 @@ ExtfsNode *   FileNameRecovery::recovery(uint32_t block_number,
 		  */
 		  node->setDeleted();
 		  node->set_i_nb(dir_e->inode_value());
+		  found = true;
 		}
+	      if (!found)
+		node = dir->createNewNode(0, parent, __name, inode);
 	    }
 	}
       else
