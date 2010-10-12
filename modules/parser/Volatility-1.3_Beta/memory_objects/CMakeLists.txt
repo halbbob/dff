@@ -10,16 +10,6 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-add_subdirectory(hashmod)
-add_subdirectory(Volatility-1.3_Beta)
-
-set(parser_srcs
-  smsdecode.py
-  unxor.py
-  integrity.py
-  __init__.py
-)
-
-install_file(parser ${parser_srcs})
+add_subdirectory(Windows)

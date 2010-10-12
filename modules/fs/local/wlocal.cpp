@@ -164,21 +164,16 @@ uint64_t	local::vseek(int fd, uint64_t offset, int whence)
   PLONG		highSeek = NULL;
   uint32_t	lowSeek;
   
-  // SetFilePointer takes two signed (!) 32bits value to form a 64bit value to seek to
-  // First is the direct, second is a pointer to this value (NULL if 32bit is enought).
-  if (offset > 0xffffffff) {
-	lowSeek = offset & 0x00000000ffffffff;
-	*highSeek = (offset & 0xffffffff00000000) >> 32;
-  }
-  else
-	lowSeek = (uint32_t)offset;
+  s_ull				sizeConverter;
+  sizeConverter.ull = offset;	
+  
   if (whence == 0)
     whence = FILE_BEGIN;
   else if (whence == 1)
     whence = FILE_CURRENT;
   else if (whence == 2)
-    whence = FILE_END;
-  return (SetFilePointer((HANDLE)fd, lowSeek, highSeek, whence)); 
+    whence = FILE_END; 
+  return (SetFilePointer((HANDLE)fd, sizeConverter.Low, ((long*)&sizeConverter.High), whence)); 
 }
 
 uint64_t	local::vtell(int32_t fd)

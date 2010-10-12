@@ -1,4 +1,3 @@
-# DFF -- An Open Source Digital Forensics Framework
 # Copyright (C) 2009-2010 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
@@ -10,16 +9,21 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-add_subdirectory(hashmod)
-add_subdirectory(Volatility-1.3_Beta)
+add_subdirectory(memory_objects)
+add_subdirectory(memory_plugins)
+add_subdirectory(forensics)
+add_subdirectory(thirdparty)
 
-set(parser_srcs
-  smsdecode.py
-  unxor.py
-  integrity.py
-  __init__.py
+set(volatility_files
+  dfwrapper.py
+  setup.py
+  vmodules.py
+  volatility.py
+  vsyms.py
+  vtypes.py
+  vutils.py
 )
 
-install_file(parser ${parser_srcs})
+install_file(_volatility ${volatility_files})

@@ -10,16 +10,26 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-add_subdirectory(hashmod)
-add_subdirectory(Volatility-1.3_Beta)
-
-set(parser_srcs
-  smsdecode.py
-  unxor.py
-  integrity.py
+set(volatility_forensics_win32_files
+  crash_addrspace.py
+  datetime.py 
+  handles.py
+  info.py
+  meta_info.py
+  network.py
+  scan2.py
+  tasks.py
+  xpress.py
+  crashdump.py
+  executable.py
+  hiber_addrspace.py
   __init__.py
+  modules.py
+  registry.py 
+  scan.py
+  vad.py
 )
 
-install_file(parser ${parser_srcs})
+install_file(volatility_forensics_win32 ${volatility_forensics_win32_files})
