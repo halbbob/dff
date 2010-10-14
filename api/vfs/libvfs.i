@@ -766,7 +766,7 @@ Open the node and return a pointer to a VFile instance
 %catches(vfsError) mfso::vclose(int32_t);
 
 %catches(vfsError) FdManager::remove(int32_t);
-%catches(vfsError) FdManager::get(int32_t);
+//%catches(vfsError) FdManager::get(int32_t);
 %catches(vfsError) FdManager::push();
 
 

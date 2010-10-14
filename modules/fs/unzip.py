@@ -50,13 +50,11 @@ class ZipNode(Node):
     Node.__init__(self, name, size, parent, fsobj)
     self.zipfile = zipfile
     self.setFile()
-    #setattr(self, "extendedAttributes", self.extendedAttributes)
-    #setattr(self, "createdTime", self.createdTime)
-    self.fsobj = fsobj
+    self.reader = fsobj
 
 
   def createdTime(self, vt):
-    zipattr = self.fsobj.zipcontent.getinfo(self.zipfile)
+    zipattr = self.reader.zipcontent.getinfo(self.zipfile)
     vt.year = zipattr.date_time[0]
     vt.month = zipattr.date_time[1]
     vt.day = zipattr.date_time[2]
@@ -66,7 +64,7 @@ class ZipNode(Node):
 
 
   def extendedAttributes(self, attr):
-    zipattr = self.fsobj.zipcontent.getinfo(self.zipfile)
+    zipattr = self.reader.zipcontent.getinfo(self.zipfile)
     for key in ZipNode.__slots__:
       val = getattr(zipattr, key)
       if key != "date_time":
