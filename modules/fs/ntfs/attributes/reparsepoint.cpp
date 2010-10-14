@@ -37,8 +37,6 @@ AttributeReparsePoint::~AttributeReparsePoint()
 
 void	AttributeReparsePoint::content()
 {
-  // TODO to test too p264 in pdf
-
   _data = (AttributeReparsePoint_t *)(_readBuffer + _bufferOffset +
 				      _attributeResidentDataHeader->contentOffset);
 

@@ -196,9 +196,6 @@ void		Attribute::setRunList()
   runListIndex = 0;
 }
 
-/**
- * p257 in PDF
- */
 uint16_t	Attribute::_runList(uint16_t runDescOffset)
 {
   uint8_t	*runList = (_readBuffer + runDescOffset);

@@ -703,6 +703,7 @@ void				Ntfs::_parseDirTree(Node *currentDir,
   uint32_t			curMftEntry;
   bool				indexRootOver = false;
   uint64_t			offset;
+  uint32_t			prevEntryOffset = 0;
 
 #if __WORDSIZE == 64
   DEBUG(INFO, "0x%lx\tParsedir tree beginning\n", mftEntryDirOffset);
@@ -761,7 +762,10 @@ void				Ntfs::_parseDirTree(Node *currentDir,
     else {
       curMftEntry = indexRoot->nextMftEntry();
     }
-    
+
+    if (curMftEntry == 0 && prevEntryOffset == entryOffset) {
+      break;
+    }
 #if __WORDSIZE == 64
     DEBUG(INFO, "0x%lx\tcurrent 0x%x end 0x%x mft# %u length entry %u\n", mftEntryDirOffset, entryOffset, relOffsetEndUsed, curMftEntry, indexRoot->currentEntryLength());
 #else
@@ -790,6 +794,8 @@ void				Ntfs::_parseDirTree(Node *currentDir,
       _createLinkedNode(currentDir, dirMftEntry, curMftEntry);
     }
     
+    prevEntryOffset = entryOffset;
+
     _updateTreeWalk(indexRoot, indexAllocation, &entryOffset,
 		    &relOffsetEndUsed, &indexRootOver);
     
@@ -799,7 +805,7 @@ void				Ntfs::_parseDirTree(Node *currentDir,
     DEBUG(INFO, "0x%llx\tend of loop current 0x%x end 0x%x mft# %u\n", mftEntryDirOffset, entryOffset, relOffsetEndUsed, curMftEntry);
 #endif
   }
-  
+
   DEBUG(INFO, "loop...\n");
   //_mftMainFile->dumpDiscoveredEntries();
 }

@@ -31,7 +31,6 @@
 
 /**
  * $INDEX_ROOT attribute
- *  p265 in pdf
  */
 
 #define ATTRIBUTE_INDEXROOT_SIZE	16

@@ -439,9 +439,6 @@ void	MftEntry::dumpAttribute(Attribute *attribute)
   DEBUG(INFO, "\n");
 }
 
-/**
- * p257 in PDF
- */
 uint16_t	MftEntry::_runList(uint16_t runDescOffset)
 {
   uint8_t	*runList = (_readBuffer + runDescOffset);
