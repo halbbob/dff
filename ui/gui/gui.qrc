@@ -60,14 +60,18 @@
 
     <file alias="top.png">icons/actions/up.png</file>
     <file alias="previous.png">icons/actions/previous.png</file>
+    <file alias="next.png">icons/actions/next.png</file>
     <file alias="home.png">icons/filesystem/folder_home.png</file>
 
     <file alias="viewer.png">icons/app/imageviewer.png</file>
     <file alias="refresh.png">icons/actions/reload.png</file>
     <file alias="reload.png">icons/actions/reload.png</file>
 
-    <file alias="zoom-in.png">icons/actions/zoomin.png</file>
-    <file alias="zoom-out.png">icons/actions/zoomout.png</file>
+    <file alias="viewmag+">icons/actions/viewmag+.png</file>
+    <file alias="viewmag-">icons/actions/viewmag-.png</file>
+    <file alias="viewmag1">icons/actions/viewmag1.png</file>
+    <file alias="viewmag">icons/actions/viewmag.png</file>
+    <file alias="viewmagfit">icons/actions/viewmagfit.png</file>
 
     <file alias="rotate-right.png">icons/actions/rotate-right.png</file>
     <file alias="rotate-left.png">icons/actions/rotate-left.png</file>

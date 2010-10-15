@@ -20,6 +20,7 @@ set(viewer_srcs
   cat.py
   viewerimage.py
   player.py
+  EXIF.py
   __init__.py
 )
 
