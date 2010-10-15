@@ -30,6 +30,7 @@ Ntfs::Ntfs() : mfso("ntfs")
 {
   _rootOffset = 0;
   _orphan = NULL;
+  _root = NULL;
   _mftDecode = -1;
   _indexDecode = -1;
   try
@@ -1056,6 +1057,7 @@ void		Ntfs::start(argument *arg)
 #endif
 	{
 	  std::cerr << "No NTFS Boot Sector found" << std::endl;
+	  _setStateInfo(std::string("No NTFS Boot Sector found"));
 	}
 #if __WORDSIZE == 64
       else if (_mftDecode != 0x0UL -1)
@@ -1151,8 +1153,10 @@ void		Ntfs::start(argument *arg)
 	_checkOrphanEntries();
 	_setStateInfo("Done");
       }
-      else
+      else {
 	std::cerr << "No NTFS MFT Entry found" << std::endl;
+	_setStateInfo(std::string("No NTFS MFT Entry found"));
+      }
 
 
       if (_node && _root) {
