@@ -192,7 +192,7 @@ class ImageView(QWidget, Script):
       if self.isImage(child):
         self.images.append(child)
         if child.name() == node.name():
-          self.curIdx = len(self.images)
+          self.curIdx = len(self.images) - 1 
 
 
   def isImage(self, node):
