@@ -45,6 +45,7 @@ class LoadedImage(QLabel):
 
   def load(self, node):
     self.node = node
+    print node.absolute()
     file = self.node.open()
     buff = file.read()
     file.close()
@@ -110,67 +111,81 @@ class LoadedImage(QLabel):
     self.updateTransforms()
 
 
-class Metadata(QTabWidget):
+class Metadata(QWidget):
   def __init__(self):
-    QTabWidget.__init__(self)
-    self.setTabPosition(QTabWidget.East)
+    QWidget.__init__(self)
+    self.tabs = QTabWidget()
+    self.nometa = QLabel("No metadata found")
+    self.box = QHBoxLayout()
+    self.setLayout(self.box)
+    self.box.addWidget(self.tabs)
+    self.box.addWidget(self.nometa)
+    self.nometa.hide()
+    self.tabs.hide()
+    self.tabs.setTabPosition(QTabWidget.East)
 
 
   def process(self, node):
-    for idx in xrange(0, self.count()):
-      widget = self.widget(idx)
+    for idx in xrange(0, self.tabs.count()):
+      widget = self.tabs.widget(idx)
       del widget
-    self.clear()
+    self.tabs.clear()
     self.node = node
     file = self.node.open()
     tags = EXIF.process_file(file)
-    sortedTags = {}
-    for tag in tags.keys():
-      if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
-        spaceidx = tag.find(" ")
-        ifd = tag[:spaceidx].strip()
-        if ifd == "Image":
-          ifd = "IFD 0 (Image)"
-        if ifd == "Thumbnail":
-          ifd = "IFD 1 (Thumbnail)"
-        key = tag[spaceidx:].strip()
-        try:
-          val = str(tags[tag])
-        except:
-          val = "cannot be decoded"
-        if ifd not in sortedTags.keys():
-          sortedTags[ifd] = []
-        sortedTags[ifd].append((key, val))
-    for ifd in sortedTags.keys():
-      table = QTableWidget(len(sortedTags[ifd]), 2)
-      table.setShowGrid(False)
-      table.setAlternatingRowColors(True)
-      table.verticalHeader().hide()
-      table.horizontalHeader().setClickable(False)
-      table.horizontalHeader().setStretchLastSection(True)
-      table.setHorizontalHeaderLabels(["Tag", "Value"])
-      self.addTab(table, ifd)
-      row = 0
-      for res in sortedTags[ifd]:
-        key = QTableWidgetItem(res[0])
-        val = QTableWidgetItem(res[1])
-        table.setItem(row, 0, key)
-        table.setItem(row, 1, val)
-        row += 1
-    if 'JPEGThumbnail' in tags.keys():
-      label = QLabel()
-      img = QImage()
-      img.loadFromData(tags['JPEGThumbnail'])
-      label.setPixmap(QPixmap.fromImage(img))
-      label.setAlignment(Qt.AlignCenter)
-      self.addTab(label, "Embedded Thumbnail")
-    if 'TIFFThumbnail' in tags.keys():
-      label = QLabel()
-      img = QImage()
-      img.loadFromData(tags['TIFFThumbnail'])
-      label.setPixmap(QPixmap.fromImage(img))
-      label.setAlignment(Qt.AlignCenter)
-      self.addTab(label, "Embedded Thumbnail")
+    if len(tags) == 0:
+      self.tabs.hide()
+      self.nometa.show()
+    else:
+      self.tabs.show()
+      self.nometa.hide()
+      sortedTags = {}
+      for tag in tags.keys():
+        if tag not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+          spaceidx = tag.find(" ")
+          ifd = tag[:spaceidx].strip()
+          if ifd == "Image":
+            ifd = "IFD 0 (Image)"
+          if ifd == "Thumbnail":
+            ifd = "IFD 1 (Thumbnail)"
+          key = tag[spaceidx:].strip()
+          try:
+            val = str(tags[tag])
+          except:
+            val = "cannot be decoded"
+          if ifd not in sortedTags.keys():
+            sortedTags[ifd] = []
+          sortedTags[ifd].append((key, val))
+      for ifd in sortedTags.keys():
+        table = QTableWidget(len(sortedTags[ifd]), 2)
+        table.setShowGrid(False)
+        table.setAlternatingRowColors(True)
+        table.verticalHeader().hide()
+        table.horizontalHeader().setClickable(False)
+        table.horizontalHeader().setStretchLastSection(True)
+        table.setHorizontalHeaderLabels(["Tag", "Value"])
+        self.tabs.addTab(table, ifd)
+        row = 0
+        for res in sortedTags[ifd]:
+          key = QTableWidgetItem(res[0])
+          val = QTableWidgetItem(res[1])
+          table.setItem(row, 0, key)
+          table.setItem(row, 1, val)
+          row += 1
+      if 'JPEGThumbnail' in tags.keys():
+        label = QLabel()
+        img = QImage()
+        img.loadFromData(tags['JPEGThumbnail'])
+        label.setPixmap(QPixmap.fromImage(img))
+        label.setAlignment(Qt.AlignCenter)
+        self.tabs.addTab(label, "Embedded Thumbnail")
+      if 'TIFFThumbnail' in tags.keys():
+        label = QLabel()
+        img = QImage()
+        img.loadFromData(tags['TIFFThumbnail'])
+        label.setPixmap(QPixmap.fromImage(img))
+        label.setAlignment(Qt.AlignCenter)
+        self.tabs.addTab(label, "Embedded Thumbnail")
 
 
 class ImageView(QWidget, Script):
@@ -204,14 +219,14 @@ class ImageView(QWidget, Script):
         #XXX temporary patch for windows magic
         self.ft.filetype(node)
         f = str(node.staticAttributes().attributes()["type"])
-    res = self.reg_viewer.match(str(f))
-    if res != None:
-      return True
+      res = self.reg_viewer.match(str(f))
+      if res != None:
+        return True
     return False
 
 
   def next(self):
-    if self.curIdx == len(self.images):
+    if self.curIdx == len(self.images) - 1:
       self.curIdx = 0
     else:
       self.curIdx += 1
@@ -220,7 +235,7 @@ class ImageView(QWidget, Script):
 
   def previous(self):
     if self.curIdx == 0:
-      self.curIdx = len(self.images)
+      self.curIdx = len(self.images) - 1
     else:
       self.curIdx -= 1
     self.setImage(self.images[self.curIdx])
@@ -256,6 +271,7 @@ class ImageView(QWidget, Script):
 
 
   def setImage(self, node):
+    self.imagelabel.setText(str(node.absolute()) + " (" + str(self.curIdx + 1) + " / " + str(len(self.images)) + ")")
     self.loadedImage.load(node)
     self.metadata.process(node)
 
@@ -263,20 +279,29 @@ class ImageView(QWidget, Script):
   def g_display(self):
     QWidget.__init__(self, None)
     self.factor = 1
-    self.vbox = QVBoxLayout()
-    self.setLayout(self.vbox)
-    self.metadata = Metadata()
+    self.box = QHBoxLayout()
+    self.setLayout(self.box)
+
+    self.imagebox = QVBoxLayout()
     self.scrollArea = QScrollArea()
     self.loadedImage = LoadedImage(self.scrollArea)
     self.scrollArea.setWidget(self.loadedImage)
     self.scrollArea.setAlignment(Qt.AlignCenter)
     self.createActions()
-    self.vbox.addWidget(self.actions)
-    self.hbox = QHBoxLayout()
-    self.vbox.addLayout(self.hbox)
-    self.hbox.addWidget(self.scrollArea)
-    self.hbox.addWidget(self.metadata)
-    self.vbox.setAlignment(self.actions, Qt.AlignCenter)
+    self.imagelabel = QLabel()
+    self.imagebox.addWidget(self.actions)
+    self.imagebox.addWidget(self.scrollArea)
+    self.imagebox.setAlignment(self.actions, Qt.AlignCenter)
+    self.imagebox.addWidget(self.imagelabel)
+    self.imagebox.setAlignment(self.imagelabel, Qt.AlignCenter)
+
+    self.databox = QVBoxLayout()
+    self.metadata = Metadata()
+    self.databox.addWidget(self.metadata)
+
+    self.box.addLayout(self.imagebox)
+    self.box.addLayout(self.databox)
+
     self.setImage(self.images[self.curIdx])
 
 
