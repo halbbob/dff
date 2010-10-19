@@ -60,7 +60,7 @@ Options:
   -t      --test=NAME	             start a specific test
   -h,     --help                     display this help message
 """
-   VERSION = "0.5"
+   VERSION = "0.8"
 
    def __init__(self, argv):
      self.argv = argv
