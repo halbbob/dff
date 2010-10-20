@@ -32,7 +32,7 @@ import time
 from predef import predefPattern
 from userdef import userPattern
 
-from utils import QFFSpinBox
+from modules.search.carver.utils import QFFSpinBox
 
 class worker(QThread):
     def __init__(self, **kwargs):

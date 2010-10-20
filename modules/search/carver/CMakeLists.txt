@@ -38,6 +38,7 @@ set_target_properties (${SWIG_MODULE_CARVER_REAL_NAME} PROPERTIES
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
 set(carver_files
+  __init__.py
   CARVER.py
   interface.py
   predef.py
