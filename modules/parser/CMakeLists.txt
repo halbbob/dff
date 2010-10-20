@@ -15,7 +15,6 @@
 add_subdirectory(hashmod)
 
 set(parser_srcs
-  smsdecode.py
   __init__.py
 )
 
