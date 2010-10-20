@@ -11,26 +11,12 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
-
-add_subdirectory (local)
-add_subdirectory (extfs)
-add_subdirectory (fat)
-add_subdirectory (carver)
-add_subdirectory (shm)
-add_subdirectory (ntfs)
-add_subdirectory (dummy)
-add_subdirectory (filescat)
-#if(HAVE_FUSE)
-#  add_subdirectory (fuse)
-#endif(HAVE_FUSE)
-
-set(fs_srcs
+set(statistics_srcs
   __init__.py
-  mzipfile.py
-  unzip.py
-  spare.py
+  fileschart.py
+  chart.py
+  chart_rc.py
 )
 
-install_file(fs ${fs_srcs})
+install_file(statistics ${statistics_srcs})

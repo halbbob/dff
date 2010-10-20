@@ -10,7 +10,7 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 # 
 
 from api.vfs import *
@@ -22,7 +22,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QWidget
 from PyQt4.QtCore import Qt
 
-from chart.chart import PieView
+from chart import PieView
 
 import random
 
@@ -82,9 +82,9 @@ class STATCHART(QWidget):
       row += 1
 
 
-class STATISTICS(Script, QWidget):
+class FILESCHART(Script, QWidget):
   def __init__(self):
-    Script.__init__(self, "statistics")
+    Script.__init__(self, "fileschart")
     self.vfs = vfs.vfs()
     self.ft = FILETYPE()
 
@@ -144,12 +144,12 @@ class STATISTICS(Script, QWidget):
       self.getstat(folder.children())
 
 
-class statistics(Module):
+class fileschart(Module):
   """Show statistics of filetype used for a file or a directory
 ex: statistics /mydump/"""
   def __init__(self):
-    Module.__init__(self, "statistics", STATISTICS)
+    Module.__init__(self, "fileschart", FILESCHART)
     self.conf.add('parent', 'node', False, "Directory or file to get filetype from")
-    self.tags = "information"
+    self.tags = "statistics"
 
 

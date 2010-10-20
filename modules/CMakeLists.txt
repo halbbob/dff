@@ -14,8 +14,9 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
+add_subdirectory (volumes)
+add_subdirectory (fs)
 add_subdirectory (builtins)
-add_subdirectory (fs) 
 add_subdirectory (info)
 add_subdirectory (parser)
 add_subdirectory (process)
@@ -23,6 +24,7 @@ add_subdirectory (search)
 add_subdirectory (viewer)
 add_subdirectory (help)
 add_subdirectory(phone)
+add_subdirectory(statistics)
 
 set(module_srcs
   __init__.py

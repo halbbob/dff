@@ -12,10 +12,4 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-set(chart_srcs
-  __init__.py
-  chart.py
-  chart_rc.py
-)
-
-install_file(chart ${chart_srcs})
+add_subdirectory(partition)

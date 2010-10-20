@@ -12,11 +12,8 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory(chart)
-
 set(info_srcs
   fileinfo.py
-  statistics.py
 )
 
 install_file(info ${info_srcs})
