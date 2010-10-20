@@ -10,8 +10,11 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
+set(k800i_srcs
+  K800i.py
+  K800iRecover.py
+)
 
-__all__ = ['find', 'carver']
+install_file(k800i ${k800i_srcs})

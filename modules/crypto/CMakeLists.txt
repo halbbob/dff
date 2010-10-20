@@ -11,7 +11,10 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
+set(crypto_srcs
+  __init__.py
+  unxor.py
+)
 
-__all__ = ['find', 'carver']
+install_file(crypto ${crypto_srcs})

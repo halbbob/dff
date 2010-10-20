@@ -12,16 +12,15 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-
 add_subdirectory(hexedit)
 add_subdirectory(bindiff)
 
 set(viewer_srcs
+  __init__.py
   cat.py
   viewerimage.py
   player.py
   EXIF.py
-  __init__.py
 )
 
 install_file(viewer ${viewer_srcs})

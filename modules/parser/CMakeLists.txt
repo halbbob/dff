@@ -13,11 +13,9 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 add_subdirectory(hashmod)
-add_subdirectory(Volatility-1.3_Beta)
 
 set(parser_srcs
   smsdecode.py
-  unxor.py
   integrity.py
   __init__.py
 )

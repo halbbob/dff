@@ -13,7 +13,7 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
-from modules.fs.shm.touch import *
+from modules.utils.shm.touch import *
 from api.module import *
 from api.env import *
 from api.exceptions.libexceptions import *

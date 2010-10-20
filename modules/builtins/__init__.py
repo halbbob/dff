@@ -11,7 +11,5 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
-
-__all__ = ['find', 'carver']
+__all__ = ['cd', 'fg', 'history', 'info', 'jobs', 'link', 'load', 'ls', 'open', 'show_cwd', 'show_db']

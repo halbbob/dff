@@ -11,7 +11,5 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
-
-__all__ = ['find', 'carver']
+__all__ = ['unzip', 'mzipfile']

@@ -66,4 +66,4 @@ class volatility(Module):
    self.conf.add("dump", "bool", True, "Dump processus data content")
    self.conf.add("openfiles", "bool", True, "List opened files per processus")
    self.conf.add("connection", "bool", True, "List opened connection per processus")
-   self.tags = "parser"
+   self.tags = "volatile memory"

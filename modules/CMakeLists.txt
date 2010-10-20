@@ -17,14 +17,16 @@
 add_subdirectory (volumes)
 add_subdirectory (fs)
 add_subdirectory (builtins)
-add_subdirectory (info)
 add_subdirectory (parser)
 add_subdirectory (process)
 add_subdirectory (search)
 add_subdirectory (viewer)
-add_subdirectory (help)
-add_subdirectory(phone)
-add_subdirectory(statistics)
+add_subdirectory (phone)
+add_subdirectory (statistics)
+add_subdirectory (crypto)
+add_subdirectory (archives)
+add_subdirectory (mem)
+add_subdirectory (utils)
 
 set(module_srcs
   __init__.py

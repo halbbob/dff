@@ -11,7 +11,11 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory (zip)
 
-__all__ = ['find', 'carver']
+set(archives_srcs
+  __init__.py
+)
+
+install_file(archives ${archives_srcs})

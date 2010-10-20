@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ['fs', 'search', 'viewer']
+__all__ = ['archives', 'crypto', 'search', 'viewer', 'builtins', 'fs', 'phone', 'statistics', 'volumes', 'mem', 'process', 'utils']

@@ -82,4 +82,4 @@ class catfiles(Module):
     Module.__init__(self, "catfiles", CatFiles)
     self.conf.add("file1", "node", False, "first file")
     self.conf.add("file2", "node", False, "second file")
-    self.tags = "file system"
+    self.tags = "utils"

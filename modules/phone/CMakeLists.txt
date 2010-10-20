@@ -12,10 +12,10 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory (k800i)
 
 set(phone_srcs
-  K800i.py
-  K800iRecover.py
+  smsdecode.py
 )
 
 install_file(phone ${phone_srcs})

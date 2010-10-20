@@ -14,4 +14,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ['find', 'carver']
+__all__ = ['K800i', 'K800iRecover']

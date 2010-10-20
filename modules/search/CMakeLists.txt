@@ -13,6 +13,7 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory (carver)
 
 set(search_srcs
   __init__.py

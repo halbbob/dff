@@ -11,7 +11,11 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
+set(zip_srcs
+  __init__.py
+  unzip.py
+  mzipfile.py
+)
 
-__all__ = ['find', 'carver']
+install_file(zip ${zip_srcs})

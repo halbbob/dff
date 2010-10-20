@@ -11,7 +11,5 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
-
-__all__ = ['K800i', 'K800iRecover']
+__all__ = ['smsdecode', 'k800i']

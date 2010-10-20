@@ -113,10 +113,12 @@ class NodeViewBox(QWidget):
     self.checkboxAttribute = QCheckBox("Attributes", self)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.checkboxAttribute.setCheckState(True)
+    else:
+      self.checkboxAttribute.setChecked(True)
     self.checkboxAttribute.setEnabled(True)
     self.checkboxAttribute.setTristate(False)
 
-    self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged) 
+    self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
     self.gridLayout.addWidget(self.checkboxAttribute)
 #    self.button["table"].setEnabled(False)
 
@@ -132,13 +134,13 @@ class NodeViewBox(QWidget):
      self.parent.model.setRootPath(parent)
  
   def imagethumbActivated(self):
-     if self.parent.model.imagesThumbnails():
-       self.parent.model.setImagesThumbnails(False)
-       self.parent.model.reset()
-     else:
+    if self.parent.model.imagesThumbnails():
+      self.parent.model.setImagesThumbnails(False)
+      self.parent.model.reset()
+    else:
       self.parent.model.setImagesThumbnails(True)
       self.parent.model.reset()
-     pass
+
  
   def leftTreeActivated(self):
      if self.parent.treeView.isVisible():

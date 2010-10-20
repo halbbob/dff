@@ -11,11 +11,11 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory (Volatility-1.3_Beta)
 
-set(help_srcs
-  man.py
+set(mem_srcs
+  __init__.py
 )
 
-install_file(help ${help_srcs})
+install_file(mem ${mem_srcs})

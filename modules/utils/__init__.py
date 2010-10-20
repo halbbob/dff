@@ -12,9 +12,4 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-
-set(dumbfd_srcs
-  dumbfs.py
-)
-
-install_file(dumbfs ${dumbfs_srcs})
+__all__ = ['shm', 'filescat', 'fileinfo', 'man']

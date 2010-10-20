@@ -191,4 +191,4 @@ ex: smsdecode /myfile.sms"""
     Module.__init__(self, "smsdecode", SMS)
     self.conf.add("file", "node", False, "SMS file.")
     self.conf.add("header", "bool", True, "Display SMS header detailed informations.")
-    self.tags = "mobile"
+    self.tags = "cellphone"

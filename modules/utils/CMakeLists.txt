@@ -10,10 +10,15 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-set(info_srcs
+add_subdirectory (shm)
+add_subdirectory (filescat)
+
+set(utils_srcs
+  __init__.py
   fileinfo.py
+  man.py
 )
 
-install_file(info ${info_srcs})
+install_file(utils ${utils_srcs})
