@@ -12,4 +12,4 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-__all__ = ['shm', 'filescat', 'fileinfo', 'man']
+__all__ = ['shm', 'filescat', 'fileinfo', 'man', 'integrity']
