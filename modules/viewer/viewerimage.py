@@ -45,7 +45,6 @@ class LoadedImage(QLabel):
 
   def load(self, node):
     self.node = node
-    print node.absolute()
     file = self.node.open()
     buff = file.read()
     file.close()

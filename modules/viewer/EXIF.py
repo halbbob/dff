@@ -1240,6 +1240,8 @@ class IFD_Tag:
 class EXIF_header:
     def __init__(self, file, endian, offset, fake_exif, strict, debug=0):
         self.file = file
+        file.seek(0, 2)
+        self.filesize = file.tell() 
         self.endian = endian
         self.offset = offset
         self.fake_exif = fake_exif
@@ -1252,6 +1254,8 @@ class EXIF_header:
     # start of the EXIF information.  For some cameras that use relative tags,
     # this offset may be relative to some other starting point.
     def s2n(self, offset, length, signed=0):
+        if self.offset + offset > self.filesize:
+            return 0
         self.file.seek(self.offset+offset)
         slice=self.file.read(length)
         if self.endian == 'I':
@@ -1282,8 +1286,11 @@ class EXIF_header:
 
     # return pointer to next IFD
     def next_IFD(self, ifd):
-        entries=self.s2n(ifd, 2)
-        return self.s2n(ifd+2+12*entries, 4)
+        if ifd < self.filesize:
+            entries=self.s2n(ifd, 2)
+            if ifd+2+12*entries < self.filesize:
+                return self.s2n(ifd+2+12*entries, 4)
+        return 0
 
     # return list of IFDs in header
     def list_IFDs(self):
@@ -1296,6 +1303,8 @@ class EXIF_header:
 
     # return list of entries in this IFD
     def dump_IFD(self, ifd, ifd_name, dict=EXIF_TAGS, relative=0, stop_tag='UNDEF'):
+        if ifd > self.filesize:
+            return
         entries=self.s2n(ifd, 2)
         for i in range(entries):
             # entry is index of start of this IFD in the file
@@ -1602,7 +1611,9 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
 
     # by default do not fake an EXIF beginning
     fake_exif = 0
-
+    f.seek(0, 2)
+    filesize = f.tell()
+    f.seek(0)
     # determine whether it's a JPEG or TIFF
     data = f.read(12)
     if data[0:4] in ['II*\x00', 'MM\x00*']:
@@ -1646,21 +1657,22 @@ def process_file(f, stop_tag='UNDEF', details=True, strict=False, debug=False):
             IFD_name = 'IFD %d' % ctr
         if debug:
             print ' IFD %d (%s) at offset %d:' % (ctr, IFD_name, i)
-        hdr.dump_IFD(i, IFD_name, stop_tag=stop_tag)
-        # EXIF IFD
-        exif_off = hdr.tags.get(IFD_name+' ExifOffset')
-        if exif_off:
-            if debug:
-                print ' EXIF SubIFD at offset %d:' % exif_off.values[0]
-            hdr.dump_IFD(exif_off.values[0], 'EXIF', stop_tag=stop_tag)
-            # Interoperability IFD contained in EXIF IFD
-            intr_off = hdr.tags.get('EXIF SubIFD InteroperabilityOffset')
-            if intr_off:
+        if i < filesize:
+            hdr.dump_IFD(i, IFD_name, stop_tag=stop_tag)
+            # EXIF IFD
+            exif_off = hdr.tags.get(IFD_name+' ExifOffset')
+            if exif_off:
                 if debug:
-                    print ' EXIF Interoperability SubSubIFD at offset %d:' \
-                          % intr_off.values[0]
-                hdr.dump_IFD(intr_off.values[0], 'EXIF Interoperability',
-                             dict=INTR_TAGS, stop_tag=stop_tag)
+                    print ' EXIF SubIFD at offset %d:' % exif_off.values[0]
+                hdr.dump_IFD(exif_off.values[0], 'EXIF', stop_tag=stop_tag)
+                # Interoperability IFD contained in EXIF IFD
+                intr_off = hdr.tags.get('EXIF SubIFD InteroperabilityOffset')
+                if intr_off:
+                    if debug:
+                        print ' EXIF Interoperability SubSubIFD at offset %d:' \
+                            % intr_off.values[0]
+                    hdr.dump_IFD(intr_off.values[0], 'EXIF Interoperability',
+                                 dict=INTR_TAGS, stop_tag=stop_tag)
         # GPS IFD
         gps_off = hdr.tags.get(IFD_name+' GPSInfo')
         if gps_off:
