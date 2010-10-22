@@ -200,7 +200,11 @@ int32_t VFile::close(void)
 {
   try 
     {
-      this->__fsobj->vclose(this->__fd);
+      if (this->__fd != -1)
+	{
+	  this->__fsobj->vclose(this->__fd);
+	  this->__fd = -1;
+	}
     }
   catch (vfsError e)
     {
