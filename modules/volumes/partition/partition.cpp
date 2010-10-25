@@ -165,7 +165,8 @@ void Partition::start(argument* arg)
     }
   catch(vfsError e)
     {
-      throw ("partition error");
+      this->res->add_const("error", e.error);
+      return; 
     }
   // if (this->part_count > 1)
   //   this->res->add_const("partitions found", this->Result.str());
@@ -182,6 +183,7 @@ void Partition::start(argument* arg)
 Partition::Partition(): mfso("partition")
 {
   this->dos = new DosPartition();
+  this->res = new results("partition");
 }
 
 Partition::~Partition()

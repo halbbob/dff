@@ -310,7 +310,13 @@ void	DosPartitionNode::fileMapping(FileMapping* fm)
   uint64_t	offset;
 
   offset = ((uint64_t)this->base + this->pte->lba) * 512;
-  fm->push(0, this->size(), this->origin, offset);
+  if (( this->size() - this->origin->size()) > 0)
+  {
+     fm->push(0, this->origin->size(), this->origin, offset);
+     fm->push(this->origin->size(), this->size() - this->origin->size());
+  }
+  else
+    fm->push(0, this->size(), this->origin, offset);
 }
 
 void	DosPartitionNode::extendedAttributes(Attributes* attr)
