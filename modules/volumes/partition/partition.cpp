@@ -183,7 +183,6 @@ void Partition::start(argument* arg)
 Partition::Partition(): mfso("partition")
 {
   this->dos = new DosPartition();
-  this->res = new results("partition");
 }
 
 Partition::~Partition()
