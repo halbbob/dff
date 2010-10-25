@@ -36,13 +36,13 @@ pixmapCache.setCacheLimit(61440)
 
 class ImageThumb():
   def __init__(self):
-    pass
+    self.jpgre = re.compile("jp.?g")
 
   def getImage(self, type, node, index):  
     buff = ""
     tags = None
-    img = QImage() 
-    if type == "image/jpeg":
+    img = QImage()
+    if self.jpgre.search((str(type))):
       try:
         buff = self.getThumb(node)
         load = img.loadFromData(buff, type)
@@ -121,7 +121,7 @@ class TypeWorker(QThread):
          self.ft.filetype(node) #ret plustrapide?
          attrs = node.staticAttributes()
          map = attrs.attributes()
-         ftype = str(map["mime-type"])
+         ftype = str(map["type"])
          if parent.imagesthumbnails and self.isImage(ftype):
            thumb = ImageThumb()
            img = thumb.getImage(ftype, node, index)
@@ -130,7 +130,7 @@ class TypeWorker(QThread):
            else:
              val = Variant("broken " + str(ftype))
              val.thisown = False
-             node.setStaticAttribute("mime-type", val)
+             node.setStaticAttribute("type", val)
 
 typeWorker = TypeWorker()
 typeWorker.start()
@@ -314,7 +314,7 @@ class VFSItemModel(QAbstractItemModel):
             try:
               attrs = node.staticAttributes()
               map = attrs.attributes()
-              mtype = str(map["mime-type"])
+              mtype = str(map["type"])
             except (IndexError, AttributeError):
               typeWorker.enqueue(self, index, node)
               return QVariant(QIcon(":file_temporary.png"))
