@@ -22,7 +22,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QWidget
 from PyQt4.QtCore import Qt
 
-from chart import PieView
+from modules.statistics.chart import PieView
 
 import random
 
