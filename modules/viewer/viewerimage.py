@@ -35,8 +35,10 @@ class LoadedImage(QLabel):
     self.baseImage = QImage()
     self.matrix = QMatrix()
     self.zoomer = 1
+    self.maxsize = 1024*10*10*10*5
     self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored);
-    self.setScaledContents(True);
+    self.setAlignment(Qt.AlignCenter)
+    #self.setScaledContents(True);
     
 
   def setParent(self, parent):
@@ -44,34 +46,46 @@ class LoadedImage(QLabel):
 
 
   def load(self, node):
-    self.node = node
-    file = self.node.open()
-    buff = file.read()
-    file.close()
-    self.baseImage.loadFromData(buff)
-    self.curWidth = self.parent.width() - 10
-    self.curHeight = self.parent.height() - 10
+    self.matrix.reset()
+    self.zoomer = 1
+    if node.size() < self.maxsize:
+       self.node = node
+       file = self.node.open()
+       buff = file.read()
+       file.close()
+       if self.baseImage.loadFromData(buff):
+         self.emit(SIGNAL("available(bool)"), True)
+       else:
+         self.baseImage.load(":file_broken.png")
+         self.emit(SIGNAL("available(bool)"), False)
+    else:
+      self.baseImage.loadFromData("")
+      self.emit(SIGNAL("available(bool)"), False)
     self.adjust()
 
 
   def adjust(self):
     if self.zoomer == 1:
-      self.curWidth = self.parent.width() - 10
-      self.curHeight = self.parent.height() - 10
+      if self.baseImage.width() < self.parent.width() - 10:
+        self.curWidth = self.baseImage.width()
+      else:
+        self.curWidth = self.parent.width() - 10
+      if self.baseImage.height() < self.parent.height() - 10:
+        self.curHeight = self.baseImage.height()
+      else:
+        self.curHeight = self.parent.height() - 10
     self.updateTransforms()
 
 
   def updateTransforms(self):
-    if self.zoomer == 1:
-      if self.curWidth > self.curHeight:
-        self.currentImage = self.baseImage.transformed(self.matrix).scaledToHeight(self.curHeight, Qt.FastTransformation)
-      else:
-        self.currentImage = self.baseImage.transformed(self.matrix).scaledToWidth(self.curWidth, Qt.FastTransformation)
-    else:
+    if not self.baseImage.isNull():
       self.currentImage = self.baseImage.transformed(self.matrix).scaled(QSize(self.curWidth, self.curHeight), Qt.KeepAspectRatio, Qt.FastTransformation)
-    self.setPixmap(QPixmap.fromImage(self.currentImage))
+      self.setPixmap(QPixmap.fromImage(self.currentImage))
+    else:
+      self.clear()
+      self.setText("File is too big to be processed")
     self.adjustSize()
-    
+
 
   def rotateLeft(self):
     self.matrix.rotate(-90)
@@ -99,9 +113,7 @@ class LoadedImage(QLabel):
 
   def fit(self):
     self.zoomer = 1
-    self.curWidth = self.parent.width() - 10
-    self.curHeight = self.parent.height() - 10
-    self.updateTransforms()
+    self.adjust()
 
 
   def normal(self):
@@ -114,13 +126,14 @@ class Metadata(QWidget):
   def __init__(self):
     QWidget.__init__(self)
     self.tabs = QTabWidget()
-    self.nometa = QLabel("No metadata found")
+    self.nometa = QLabel("No EXIF metadata found")
+    self.nometa.setAlignment(Qt.AlignCenter)
     self.box = QHBoxLayout()
     self.setLayout(self.box)
     self.box.addWidget(self.tabs)
     self.box.addWidget(self.nometa)
     self.nometa.hide()
-    self.tabs.hide()
+    self.tabs.show()
     self.tabs.setTabPosition(QTabWidget.East)
 
 
@@ -133,6 +146,7 @@ class Metadata(QWidget):
     file = self.node.open()
     tags = EXIF.process_file(file)
     if len(tags) == 0:
+      self.nometa.setSizePolicy(self.tabs.sizePolicy())
       self.tabs.hide()
       self.nometa.show()
     else:
@@ -194,7 +208,7 @@ class ImageView(QWidget, Script):
     self.icon = None
     self.vfs = vfs.vfs()
     self.ft = FILETYPE()
-    self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+    self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.sceneWidth = 0
 
 
@@ -213,12 +227,12 @@ class ImageView(QWidget, Script):
     if node.size() != 0:
       try:
         #XXX temporary patch for windows magic
-        f = str(node.staticAttributes().attributes()["type"])
+        f = str(node.staticAttributes().attributes()["mime-type"])
       except (IndexError, AttributeError):
         #XXX temporary patch for windows magic
         self.ft.filetype(node)
-        f = str(node.staticAttributes().attributes()["type"])
-      res = self.reg_viewer.match(str(f))
+        f = str(node.staticAttributes().attributes()["mime-type"])
+      res = self.reg_viewer.search(str(f))
       if res != None:
         return True
     return False
@@ -259,6 +273,7 @@ class ImageView(QWidget, Script):
     self.actions.addAction(self.shrinkButton)
     self.actions.addAction(self.fitButton)
     self.actions.addAction(self.normalButton)
+    self.connect(self.loadedImage, SIGNAL("available(bool)"), self.enableActions)
     self.connect(self.previousButton, SIGNAL("triggered()"), self.previous)
     self.connect(self.nextButton, SIGNAL("triggered()"), self.next)
     self.connect(self.rotlButton, SIGNAL("triggered()"), self.loadedImage.rotateLeft)
@@ -267,6 +282,15 @@ class ImageView(QWidget, Script):
     self.connect(self.shrinkButton, SIGNAL("triggered()"), self.loadedImage.shrink)
     self.connect(self.fitButton, SIGNAL("triggered()"), self.loadedImage.fit)
     self.connect(self.normalButton, SIGNAL("triggered()"), self.loadedImage.normal)
+
+
+  def enableActions(self, cond):
+    self.rotlButton.setEnabled(cond)
+    self.rotrButton.setEnabled(cond)
+    self.enlargeButton.setEnabled(cond)
+    self.shrinkButton.setEnabled(cond)
+    self.fitButton.setEnabled(cond)
+    self.normalButton.setEnabled(cond)
 
 
   def setImage(self, node):
@@ -322,5 +346,5 @@ class viewerimage(Module):
     self.conf.add_const("mime-type", "JPEG")
     self.conf.add_const("mime-type", "GIF")
     self.conf.add_const("mime-type", "PNG")
-    self.conf.add_const("mime-type", "BMP")
+    self.conf.add_const("mime-type", "PC bitmap")
     self.tags = "viewer"

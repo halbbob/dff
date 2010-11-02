@@ -14,7 +14,6 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-
 if (UNIX AND NOT WIN32)
   set(magic_srcs
     __init__.py
@@ -23,26 +22,18 @@ if (UNIX AND NOT WIN32)
 endif(UNIX AND NOT WIN32)
 
 if(WIN32 AND NOT UNIX)
-  ADD_CUSTOM_TARGET(magicBin ALL
-      COMMENT "copying magic binaries for win"
-      COMMAND ${CMAKE_COMMAND} -E copy magic.mgc.win magic.mgc
-      )
-  if( HAVE_64_BIT )
-    ADD_CUSTOM_TARGET(magicDll ALL
-      COMMENT "copying magic librairies for win64"
-      COMMAND ${CMAKE_COMMAND} -E copy magic1.dll.win64 magic1.dll
-      COMMAND ${CMAKE_COMMAND} -E copy zlib1.dll.win64 zlib1.dll
-      COMMAND ${CMAKE_COMMAND} -E copy regex2.dll.win64 regex2.dll
-      )
-  else( HAVE_64_BIT )
-    ADD_CUSTOM_TARGET(magicDll ALL
-      COMMENT "copying magic librairies for win32"
-      COMMAND ${CMAKE_COMMAND} -E copy magic1.dll.win32 magic1.dll
-      COMMAND ${CMAKE_COMMAND} -E copy zlib1.dll.win32 zlib1.dll
-      COMMAND ${CMAKE_COMMAND} -E copy regex2.dll.win32 regex2.dll
-      )
-  endif( HAVE_64_BIT )
+  include_directories(${PYTHON_INCLUDE_PATH})
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  add_library (magic SHARED py_magic.c)
+  target_link_libraries (magic magic1 ${PYTHON_LIBRARIES})
 
+  if (CMAKE_GENERATOR MATCHES "Visual Studio")
+	set_target_properties (magic PROPERTIES
+	PREFIX "../"
+	SUFFIX ".pyd"
+	)
+  endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
+  
   set(magic_srcs
     __init__.py
     magic.mgc

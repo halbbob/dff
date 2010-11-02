@@ -20,6 +20,7 @@ from api.env import *
 from api.exceptions.libexceptions import *
 from api.variant.libvariant import Variant
 import os
+import sys
 
 class FILETYPE():
   class __FILETYPE():
@@ -35,9 +36,8 @@ class FILETYPE():
           self.mime = magic.open(magic.MAGIC_MIME)
           self.type = magic.open(magic.MAGIC_NONE)
           if os.name == "nt":
-            import sys
-            self.mime.load(sys.path[0] + "./api/magic/magic")
-            self.type.load(sys.path[0] + "./api/magic/magic")
+            self.mime.load(sys.path[0] + "/api/magic/magic.mgc")
+            self.type.load(sys.path[0] + "/api/magic/magic.mgc")
           else:
             self.mime.load()
             self.type.load()
