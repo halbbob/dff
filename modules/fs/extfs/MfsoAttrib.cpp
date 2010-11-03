@@ -77,24 +77,19 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
 
 vtime *	MfsoAttrib::vtime_from_timestamp(time_t UNIX_timestamp)
 {
- 
-
   time_t tmp = UNIX_timestamp;
   #ifndef WIN32
-  
+
    tm  * t;
    t = gmtime(&tmp);
 
    vtime * at = new vtime(t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
 			 t->tm_hour, t->tm_min, t->tm_sec, 0); 
   
-  
   #else
-    vtime * at = new vtime(0, 0, 0,0, 0, 0, 0); 
-  
+    vtime * at = new vtime(0, 0, 0, 0, 0, 0, 0);
   #endif
 
- 
   return at;
 }
 
