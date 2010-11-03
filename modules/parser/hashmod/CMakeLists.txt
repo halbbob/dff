@@ -15,7 +15,6 @@
 
 set(hash_srcs
   hash.py
-  hdatabase.py
   __init__.py
 )
 
