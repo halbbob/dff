@@ -30,11 +30,13 @@ typedef unsigned long long dff_ui64;
 #include "type.hpp"
 #include "vtime.hpp"
 #include "attrib.hpp"
+#include "Time.h"
 %}
 %include "../include/export.hpp"
 %include "../include/type.hpp"
 %include "../include/vtime.hpp"
 %include "../include/attrib.hpp"
+%include "../include/Time.h"
 
 %extend vtime
 {
