@@ -17,9 +17,15 @@
  */
 
 #ifndef __TIME_H__
-#define __TIME_H_
+#define __TIME_H__
 
-#include <stdint.h>
+
+#ifndef WIN32
+# include <stdint.h>
+#else
+# include "wstdint.h"
+#endif
+
 #include <stdlib.h>
 #include <vector>
 #include <string>
@@ -39,11 +45,11 @@ typedef struct	tm_s
 class	Time
 {
 public:
-  Time(uint64_t timestamp);
-  ~Time();
+  EXPORT Time(uint64_t timestamp);
+  EXPORT ~Time();
 
-  const tm_t *	tm() const;
-  vtime *	Vtime() const;
+  EXPORT const tm_t *	tm() const;
+  EXPORT vtime *	Vtime() const;
 
 private:
   uint32_t	__february(uint32_t years);

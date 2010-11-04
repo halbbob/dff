@@ -16,9 +16,6 @@
  *
  */
 
-#define __USELESS_DEBUG
-
-#include <time.h>
 #include <string.h>
 #include <sstream>
 #include <memory>
@@ -31,7 +28,6 @@
 #include "include/ExtfsShiftNode.h"
 #include "data_structure/includes/Inode.h"
 #include "include/FileNameRecovery.h"
-#include "include/Time.h"
 #include "include/OrphansInodes.h"
 
 Extfs::Extfs()
@@ -53,21 +49,7 @@ void    Extfs::start(argument * arg)
 {
   try
     {
-
-#ifdef __USELESS_DEBUG
-      time_t begin = 0, end = 0;
-    
-      time(&begin);
-#endif
-
       launch(arg);
-
-#ifdef __USELESS_DEBUG
-      time(&end);
-      std::cout << " execution time : " << end - begin
-		<< " seconds" << std::endl;
-#endif
-    
     }
   catch (envError & e)
     {
