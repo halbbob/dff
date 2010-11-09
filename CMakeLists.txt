@@ -238,7 +238,7 @@ macro(install_file target_name)
   endforeach(file ${ARGN}) 
 endmacro(install_file target_name)
 
-## Macro to cop` lib at install
+## Macro to copy lib at install
 macro(install_lib target_name)
   FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
   IF(NOT WIN32 AND UNIX)
