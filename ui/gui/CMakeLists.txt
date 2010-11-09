@@ -34,4 +34,6 @@ set(gui_srcs
   mainwindow.py
 )
 
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gui.py ${CMAKE_CURRENT_BINARY_DIR}/gui.py)
+
 install_file(gui ${gui_srcs})

@@ -205,14 +205,18 @@ SET(CMAKE_INSTALL_PREFIX ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/)
 LIST(APPEND PYC_FILES "")
 macro(install_file target_name)
   foreach(file ${ARGN})
-    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file})
-      # Be carreful, SWiG generate .py files, which sits in builddir,
-      #  so we have to check if file exists in source dir before copying it.
+    # Be carreful:
+    #  - SWiG generate .py files, which sits in builddir, so we have to check
+    # if file exists in source dir before copying it.
+    #  - Several files are configured at the cmake configure step, moving from
+    # source to build dir, mostly to replace versions variables, so we have to
+    # check if file is missing from build dir before copying it at build step.
+    if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file} AND NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${file})
       add_custom_target("builddeploy.${target_name}.${file}" ALL
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different
 	  ${CMAKE_CURRENT_SOURCE_DIR}/${file} ${CMAKE_CURRENT_BINARY_DIR}/${file}
 	)
-    endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+    endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file} AND NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${file})
     IF (INSTALL)
       add_custom_target("${target_name}.${file}" ALL)
       FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
@@ -244,35 +248,10 @@ macro(install_lib target_name)
   ENDIF(NOT WIN32 AND UNIX)	
 endmacro(install_lib)
 
-#### Deploying package file and DFF startup files
-set(dff_scripts
-  __init__.py
-#  dff.py
-#  dff-gui.py
-)
-
-install_file(dff_launch ${dff_scripts})
-
-# Override deployment of launcher to add proper Python binary prefix
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dff.py ${CMAKE_CURRENT_BINARY_DIR}/dff.py)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dff-gui.py ${CMAKE_CURRENT_BINARY_DIR}/dff-gui.py)
-
-# Create launcher. Replace CMake variables in it, used after install.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_CURRENT_BINARY_DIR}/dff)
-
 if (APPLE)
   SET(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
   SET(CMAKE_SHARED_MODULE_SUFFIX ".so")
 endif(APPLE)
-
-#### Subdirectories to recurse
-add_subdirectory (api)
-add_subdirectory (modules)
-add_subdirectory (ui)
-add_subdirectory (ressources)
-if (NOT UNIX AND WINALL)
-  add_subdirectory (Prerequisites)
-endif(NOT UNIX AND WINALL)
 
 SET(CPACK_SET_DESTDIR "ON")
 #### Project install
@@ -281,6 +260,12 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Digital Forensics Framework")
 SET(CPACK_PACKAGE_VENDOR "ArxSys")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT")
+# In order to provide top-level setting of DFF version, three variables bellow
+# must be used in those three files :
+#  ui/gui/dialog/dialog.py
+#  ui/gui/gui.py
+#  ui/ui.py
+# See corresponding CMakeLists.txt for CONFIGURE_FILE.
 SET(CPACK_PACKAGE_VERSION_MAJOR "0") 
 SET(CPACK_PACKAGE_VERSION_MINOR "8")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
@@ -416,3 +401,28 @@ endif(UNIX)
 INCLUDE(CPack)
 ENABLE_TESTING()
 SUBDIRS(testsuite)
+
+#### Deploying package file and DFF startup files
+set(dff_scripts
+  __init__.py
+#  dff.py
+#  dff-gui.py
+)
+
+install_file(dff_launch ${dff_scripts})
+
+# Override deployment of launcher to add proper Python binary prefix
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dff.py ${CMAKE_CURRENT_BINARY_DIR}/dff.py)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dff-gui.py ${CMAKE_CURRENT_BINARY_DIR}/dff-gui.py)
+
+# Create launcher. Replace CMake variables in it, used after install.
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_CURRENT_BINARY_DIR}/dff)
+
+#### Subdirectories to recurse
+add_subdirectory (api)
+add_subdirectory (modules)
+add_subdirectory (ui)
+add_subdirectory (ressources)
+if (NOT UNIX AND WINALL)
+  add_subdirectory (Prerequisites)
+endif(NOT UNIX AND WINALL)

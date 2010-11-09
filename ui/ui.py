@@ -65,7 +65,7 @@ Options:
   -l      --language=LANG            use LANG as interface language
   -h      --help                     display this help message
 """
-   VERSION = "0.8"
+   VERSION = "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
 
    def __init__(self, argv):
      self.argv = argv

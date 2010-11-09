@@ -24,4 +24,6 @@ set(ui_srcs
   ui.py
 )
 
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/ui.py ${CMAKE_CURRENT_BINARY_DIR}/ui.py)
+
 install_file(ui ${ui_srcs})
