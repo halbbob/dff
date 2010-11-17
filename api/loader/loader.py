@@ -29,8 +29,12 @@ class loader():
         def LoadFile(self, module_path):
             filename = module_path[module_path.rfind("/")+1:]
             path = module_path[:module_path.rfind("/")+1]
-            if filename.rfind(".py") != -1:
-                sys.path.append(path)
+# Strict .py check ; avoid .pyc, for example
+            if filename.endswith(".py"):
+#            if filename.rfind(".py") != -1:
+                if path not in sys.path:
+# Append to sys.path only once
+                    sys.path.append(path)
                 self.ModuleImport(module_path, filename[:filename.rfind(".py")])
 
         def LoadDir(self, module_path):
@@ -69,7 +73,7 @@ class loader():
             start = False
             init = False
             type = False
-            
+
 	    if modname == "loader":
 		return 
             f = open(module_path, 'r')
