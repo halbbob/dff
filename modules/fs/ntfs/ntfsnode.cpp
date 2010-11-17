@@ -85,18 +85,22 @@ NtfsNode::~NtfsNode()
 std::map<std::string, class Variant *>	NtfsNode::_headerToAttribute(Attribute *attr)
 {
   std::map<std::string, class Variant *>	headerMap;
+  std::map<std::string, class Variant *>	flagsMap;
   std::ostringstream				stringBuff;
-  bool						flagsInserted;
 
   headerMap.insert(_dataToAttr("Length", attr->attributeHeader()->attributeLength));
   headerMap.insert(_dataToAttr("Is non-resident", attr->attributeHeader()->nonResidentFlag));
   headerMap.insert(_dataToAttr("Name length", attr->attributeHeader()->nameLength));
   headerMap.insert(_dataToAttr("Attribute number", attr->attributeHeader()->attributeIdentifier));
-  stringBuff << attr->attributeHeader()->flags << " (0x" << hex << attr->attributeHeader()->flags << "): ";
-  if (attr->attributeHeader()->flags & ATTRIBUTE_FLAG_COMPRESSED) { stringBuff << "Compressed"; flagsInserted = true; }
-  if (attr->attributeHeader()->flags & ATTRIBUTE_FLAG_ENCRYPTED) { stringBuff << (flagsInserted ? ", " : "") << "Encrypted"; flagsInserted = true; }
-  if (attr->attributeHeader()->flags & ATTRIBUTE_FLAG_SPARSE) { stringBuff << (flagsInserted ? ", " : "") << "Sparse"; flagsInserted = true; }
-  
+
+  flagsMap.insert(std::pair<std::string, class Variant *>("Value", new Variant(attr->attributeHeader()->flags)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Compressed", new Variant((attr->attributeHeader()->flags & ATTRIBUTE_FLAG_COMPRESSED) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Encrypted", new Variant((attr->attributeHeader()->flags & ATTRIBUTE_FLAG_ENCRYPTED) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Sparse", new Variant((attr->attributeHeader()->flags & ATTRIBUTE_FLAG_SPARSE) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Unknown flag present", new Variant((attr->attributeHeader()->flags && !(attr->attributeHeader()->flags & ATTRIBUTE_FLAG_COMPRESSED) && !(attr->attributeHeader()->flags & ATTRIBUTE_FLAG_ENCRYPTED) && !(attr->attributeHeader()->flags & ATTRIBUTE_FLAG_SPARSE)))));
+
+  headerMap.insert(std::pair<std::string, class Variant *>("Flags", new Variant(flagsMap)));
+
   if (attr->attributeHeader()->nonResidentFlag) {
     headerMap.insert(_dataToAttr("Starting VCN", attr->nonResidentDataHeader()->startingVCN));
     headerMap.insert(_dataToAttr("Ending VCN", attr->nonResidentDataHeader()->endingVCN));
@@ -160,35 +164,31 @@ void						NtfsNode::extendedAttributes(Attributes	*attr)
 
 void	NtfsNode::_standardInformation(std::map<std::string, class Variant *> *map, AttributeStandardInformation *nAttr)
 {
-  //  std::map<std::string, class Variant *>	SImap = *map;
-  std::map<std::string, class Variant *>	HeaderMap;
   std::map<std::string, class Variant *>	flagsMap;
-  std::ostringstream				stringBuff;
-  bool						flagsInserted = false;
 
-  flagsInserted = false;
-  stringBuff.str("");
-  stringBuff << nAttr->data()->flags << " (0x" << hex << nAttr->data()->flags << "): ";
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_READ_ONLY) { stringBuff << "Read only"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_HIDDEN) { stringBuff << (flagsInserted ? ", " : "") << "Hidden"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SYSTEM) { stringBuff << (flagsInserted ? ", " : "") << "System"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ARCHIVE) { stringBuff << (flagsInserted ? ", " : "") << "Archive"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_DEVICE) { stringBuff << (flagsInserted ? ", " : "") << "Device"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SHARPNORMAL) { stringBuff << (flagsInserted ? ", " : "") << "#Normal"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_TEMPORARY) { stringBuff << (flagsInserted ? ", " : "") << "Temporary"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SPARSE_FILE) { stringBuff << (flagsInserted ? ", " : "") << "Sparse"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_REPARSE_POINT) { stringBuff << (flagsInserted ? ", " : "") << "Reparse point"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_COMPRESSED) { stringBuff << (flagsInserted ? ", " : "") << "Compressed"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_OFFLINE) { stringBuff << (flagsInserted ? ", " : "") << "Offline"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_CONTENT_NOT_INDEXED) { stringBuff << (flagsInserted ? ", " : "") << "Content is not being indexed for faster searches"; flagsInserted = true; }
-  if (nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ENCRYPTED) { stringBuff << (flagsInserted ? ", " : "") << "Encrypted"; flagsInserted = true; }
-  if (!(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_READ_ONLY) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_HIDDEN) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SYSTEM) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ARCHIVE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_DEVICE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SHARPNORMAL) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_TEMPORARY) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SPARSE_FILE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_REPARSE_POINT) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_COMPRESSED) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_OFFLINE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_CONTENT_NOT_INDEXED) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ENCRYPTED)) { stringBuff << (flagsInserted ? ", " : "") << "unknown"; }
+  flagsMap.insert(std::pair<std::string, class Variant *>("Value", new Variant(nAttr->data()->flags)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Read only", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_READ_ONLY) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Hidden", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_HIDDEN) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("System", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SYSTEM) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Archive", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ARCHIVE) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Device", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_DEVICE) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("#Normal", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SHARPNORMAL) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Temporary", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_TEMPORARY) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Sparse", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SPARSE_FILE) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Reparse point", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_REPARSE_POINT) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Compressed", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_COMPRESSED) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Offline", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_OFFLINE) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Content is not being indexed for faster searches", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_CONTENT_NOT_INDEXED) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Encrypted", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ENCRYPTED) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Directory", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_DIRECTORY) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Index view", new Variant((nAttr->data()->flags & ATTRIBUTE_SI_FLAG_INDEX_VIEW) > 0)));
+  flagsMap.insert(std::pair<std::string, class Variant *>("Unknown flag present", new Variant((nAttr->data()->flags && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_READ_ONLY) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_HIDDEN) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SYSTEM) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ARCHIVE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_DEVICE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SHARPNORMAL) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_TEMPORARY) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_SPARSE_FILE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_REPARSE_POINT) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_COMPRESSED) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_OFFLINE) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_CONTENT_NOT_INDEXED) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_ENCRYPTED) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_DIRECTORY) && !(nAttr->data()->flags & ATTRIBUTE_SI_FLAG_INDEX_VIEW)))));
 
   map->insert(_dataToVTime("Creation time", nAttr->data()->creationTime));
   map->insert(_dataToVTime("File altered time", nAttr->data()->fileAlteredTime));
   map->insert(_dataToVTime("MFT altered time", nAttr->data()->mftAlteredTime));
   map->insert(_dataToVTime("File accessed time", nAttr->data()->fileAccessedTime));
-  map->insert(std::pair<std::string, class Variant *>("Flags", new Variant(stringBuff.str())));
+  map->insert(std::pair<std::string, class Variant *>("Flags", new Variant(flagsMap)));
   map->insert(_dataToAttr("Max number of versions", nAttr->data()->maxNumberOfVersions));
   map->insert(_dataToAttr("Version number", nAttr->data()->versionNumber));
   map->insert(_dataToAttr("Class ID", nAttr->data()->classID));
@@ -200,30 +200,38 @@ void	NtfsNode::_standardInformation(std::map<std::string, class Variant *> *map,
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToAttr(std::string key, uint32_t value)
 {
+  /* Issue #80 : GUI API have to provide it (base convertion)
   std::ostringstream	stringBuff;
   stringBuff << value << " (0x" << hex << value << ")";
-  return std::pair<std::string, class Variant *>(key, new Variant(stringBuff.str()));
+  return std::pair<std::string, class Variant *>(key, new Variant(stringBuff.str()));*/
+  return std::pair<std::string, class Variant *>(key, new Variant(value));
 }
 
 Variant	*NtfsNode::_dataToAttr(uint32_t value)
 {
+  /* Issue #80 : GUI API have to provide it (base convertion)
   std::ostringstream	stringBuff;
   stringBuff << value << " (0x" << hex << value << ")";
-  return new Variant(stringBuff.str());
+  return new Variant(stringBuff.str());*/
+  return new Variant(value);
 }
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToAttr(std::string key, uint64_t value)
 {
+  /* Issue #80 : GUI API have to provide it (base convertion)
   std::ostringstream	stringBuff;
   stringBuff << value << " (0x" << hex << value << ")";
-  return std::pair<std::string, class Variant *>(key, new Variant(stringBuff.str()));
+  return std::pair<std::string, class Variant *>(key, new Variant(stringBuff.str()));*/
+  return std::pair<std::string, class Variant *>(key, new Variant(value));
 }
 
 Variant	*NtfsNode::_dataToAttr(uint64_t value)
 {
+  /* Issue #80 : GUI API have to provide it (base convertion)
   std::ostringstream	stringBuff;
   stringBuff << value << " (0x" << hex << value << ")";
-  return new Variant(stringBuff.str());
+  return new Variant(stringBuff.str());*/
+  return new Variant(value);
 }
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToVTime(std::string key, uint64_t value)
@@ -236,9 +244,11 @@ std::pair<std::string, class Variant *>	NtfsNode::_dataToVTime(std::string key, 
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToAttr(std::string key, uint16_t value)
 {
+  /* Issue #80 : GUI API have to provide it (base convertion)
   std::ostringstream	stringBuff;
   stringBuff << value << " (0x" << hex << value << ")";
-  return std::pair<std::string, class Variant *>(key, new Variant(stringBuff.str()));
+  return std::pair<std::string, class Variant *>(key, new Variant(stringBuff.str()));*/
+  return std::pair<std::string, class Variant *>(key, new Variant(value));
 }
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToAttr(std::string key, uint8_t value)
