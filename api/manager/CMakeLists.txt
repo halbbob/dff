@@ -19,4 +19,6 @@ set(manager_srcs
   manager.py
 )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+
 install_file(manager ${manager_srcs})

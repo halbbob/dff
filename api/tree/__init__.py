@@ -12,4 +12,5 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
+__version__ = "${API_TREE_VERSION}"
 __all__ = ["libtree"]

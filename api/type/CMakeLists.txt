@@ -38,5 +38,7 @@ set(type_srcs
   OS.py
 )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+
 install_file(type ${type_srcs})
 install_lib(${SWIG_MODULE_libtype_REAL_NAME})

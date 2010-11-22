@@ -39,5 +39,8 @@ set(env_srcs
   env.py
   libenv.py
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+
 install_lib(${SWIG_MODULE_libenv_REAL_NAME})
 install_file(env ${env_srcs})

@@ -13,5 +13,5 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-
+__version__ = "${API_ENV_VERSION}"
 __all__ = ["env", "libenv"]

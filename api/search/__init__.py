@@ -12,5 +12,5 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-
+__version__ = "${API_SEARCH_VERSION}"
 __all__ = ["libsearch"]

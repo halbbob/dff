@@ -37,5 +37,7 @@ set(tree_srcs
   __init__.py
 )
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+
 install_lib(${SWIG_MODULE_libtree_REAL_NAME})
 install_file(tree ${tree_srcs})

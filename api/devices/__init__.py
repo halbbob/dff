@@ -12,5 +12,5 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-
+__version__ = "${API_DEVICES_VERSION}"
 __all__ = ["dbushal", "devices"]

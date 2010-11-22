@@ -12,11 +12,12 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-
 set(Devices_srcs
   __init__.py
 # modules.py
   devices.py
 )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 
 install_file(Devices ${Devices_srcs})

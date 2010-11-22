@@ -13,5 +13,5 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-
+__version__ = "${API_VARIANT_VERSION}"
 __all__ = ["libvariant"]
