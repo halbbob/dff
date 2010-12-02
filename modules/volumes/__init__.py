@@ -10,12 +10,6 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Frederic Baguelin <fba@digital-forensic.org>
+#  Christophe Malinge <cma@digital-forensic.org>
 
-add_subdirectory(partition)
-
-set(volumes_srcs
-  __init__.py
-)
-
-install_file(volumes ${volumes_srcs})
+__all__ = ['partition']

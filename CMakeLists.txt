@@ -136,8 +136,9 @@ SET(SIP_EXTRA_OPTIONS ${PYQT4_SIP_FLAGS})
 IF (NOT MSVC)
   ADD_DEFINITIONS(-fPIC)
 ENDIF ()
-FIND_PACKAGE(Qt4 REQUIRED)
-INCLUDE(${QT_USE_FILE})
+# Useless ; only for SIP test
+#FIND_PACKAGE(Qt4 REQUIRED)
+#INCLUDE(${QT_USE_FILE})
 
 #XXX SIP TEST
 
@@ -184,6 +185,7 @@ SET(CMAKE_INSTALL_PREFIX ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/)
 
 ## Main purpose of this macro if to copy Python files at install.
 # It also deploys .py files in build directory if there is one.
+LIST(APPEND PYC_FILES "")
 macro(install_file target_name)
   foreach(file ${ARGN})
     if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file})
@@ -201,12 +203,21 @@ macro(install_file target_name)
 		install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file} DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/${rel})
 	  ELSE(NOT WIN32 AND UNIX)
 	    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${file} DESTINATION /${CMAKE_PROJECT_NAME}/${rel})
+		IF(${file} MATCHES "^.*\\.py$" AND NOT ${rel} STREQUAL "")
+		# Store every .py files in a list, renaming each file to .pyc it
+		# will handle Windows uninstall ; runtime created *.pyc are not
+		# removed by uninstaller.
+			STRING(REPLACE "\\" "\\\\" PYCFILE "${rel}/${file}c")
+			STRING(REPLACE "/" "\\\\" PYCFILE ${PYCFILE})
+			LIST(APPEND PYC_FILES "${PYCFILE}")
+			SET(PYC_FILES "${PYC_FILES}" PARENT_SCOPE)
+		ENDIF(${file} MATCHES "^.*\\.py$" AND NOT ${rel} STREQUAL "")
 	  ENDIF(NOT WIN32 AND UNIX)
     ENDIF (INSTALL)
   endforeach(file ${ARGN}) 
 endmacro(install_file target_name)
 
-## Macro to copy lib at install
+## Macro to cop` lib at install
 macro(install_lib target_name)
   FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
   IF(NOT WIN32 AND UNIX)
@@ -259,25 +270,6 @@ SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
 IF(WIN32 AND NOT UNIX)
-## To manage project upgrade :
-##  - Run cpack one time.
-##  - look at generated project.nsi in _CPack_Packages ; find "Function .onInit" and add lines bellow.
-##  - Manually run generator, like that in cmd.exe : "c:/Program Files/NSIS/makensis.exe" "C:/Users/arx/Desktop/dff/_CPack_Packages/win32_all_in_one/NSIS/project.nsi"
-#Function uninstallFirst
-#  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\dff" "UninstallString"
-#  StrCmp $R0 "" end
-#  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION "DFF is already installed. $\n$\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade." IDOK uninst
-#  Abort
-#  uninst:
-#    ClearErrors
-#    ExecWait '$R0 _?=$INSTDIR'
-#    IfErrors end
-#  end:
-#FunctionEnd
-#
-#Function .onInit
-#  Call uninstallFirst
-
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
 	DESTINATION /${CMAKE_PROJECT_NAME}
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -288,6 +280,8 @@ IF(WIN32 AND NOT UNIX)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.ico
     DESTINATION /${CMAKE_PROJECT_NAME}/ressources/)
 
+  SET(CPACK_MONOLITHIC_INSTALL "ON")
+	
   SET(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\arxsys.bmp")
   SET(CPACK_BUNDLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\arxsys.bmp")
   SET(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\dff.ico")
@@ -299,6 +293,25 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_NSIS_MODIFY_PATH OFF)
   SET(CPACK_NSIS_COMPRESSOR "/SOLID lzma")
   SET(CPACK_GENERATOR "NSIS")
+  SET(CPACK_NSIS_FULL_INSTALL
+    "
+	 ReadRegStr \\\$R0 HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Uninstall\\\\dff\\\" \\\"DisplayVersion\\\"
+	 StrCmp \\\$R0 \\\"\\\" cont
+	 ReadRegStr \\\$R1 HKLM \\\"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Uninstall\\\\dff\\\" \\\"UninstallString\\\"
+     StrCmp \\\$R0 \\\"\\\" cont
+     MessageBox MB_YESNO|MB_ICONQUESTION \\\"Other DFF version \\\$R0 installation found.\\\$\\\\n\\\$\\\\nClick 'YES' to uninstall it first, or 'NO' to overwrite version already installed.\\\" IDYES uninst
+     Goto cont
+	 end:
+	  MessageBox MB_OK|MB_ICONEXCLAMATION \\\"Error uninstalling DFF version \\\$R0.\\\"
+	  Goto cont
+     uninst:
+      ClearErrors
+      ExecWait '$R1 _?=$INSTDIR'
+      IfErrors end
+	  MessageBox MB_OK|MB_ICONINFORMATION \\\"Uninstalling previous DFF version \\\$R0 done, continue with install.\\\"
+     cont:
+	  File /r \\\"\\\${INST_DIR}\\\\*.*\\\"
+	")
   SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS       
     "
      SetOutPath \\\"$INSTDIR\\\\dff\\\"
@@ -307,14 +320,27 @@ IF(WIN32 AND NOT UNIX)
      CreateShortCut \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (shell).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff.py\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
      CreateShortCut \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (gui).lnk\\\" \\\"$INSTDIR\\\\dff\\\\dff-gui.pyw\\\" \\\"\\\" \\\"$INSTDIR\\\\dff\\\\ressources\\\\dff.ico\\\"  
     ")
-  SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+	
+	# *.pyc files are not deleted by installer, because they are created at
+	# runtime. So, below, we force deletion of those files.
+    FOREACH(PYCFILE ${PYC_FILES})
+	  SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
+	  "${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
+	  Delete \\\"$INSTDIR\\\\dff\\\\${PYCFILE}\\\"")
+    ENDFOREACH(PYCFILE ${PYC_FILES})
+  
+	SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS
     "
+	${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS}
 	 Delete \\\"$DESKTOP\\\\DFF (shell).lnk\\\"
 	 Delete \\\"$DESKTOP\\\\DFF (gui).lnk\\\"
 	 Delete \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (shell).lnk\\\"
 	 Delete \\\"$SMPROGRAMS\\\\Digital Forensics Framework\\\\DFF (gui).lnk\\\"
 	")
-
+	
+	#MESSAGE(STATUS ${CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS})
+	
+	
   if (WINALL)
     if (HAVE_64_BIT)
       SET(CPACK_SYSTEM_NAME "win64_all_in_one")
