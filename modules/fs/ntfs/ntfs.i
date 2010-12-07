@@ -43,8 +43,8 @@ class NTFS(Module):
   def __init__(self):
     Module.__init__(self, 'ntfs', Ntfs)
     self.conf.add("parent", "node", False, "File to search NTFS file system in")
-    self.conf.add("mftdecode", "string", True, "Only try to decode mft at this offset")
-    self.conf.add("indexdecode", "string", True, "Only try to decode index records at this offset")
+    self.conf.add("mftdecode", "int", True, "Only try to decode mft at this offset")
+    self.conf.add("indexdecode", "int", True, "Only try to decode index records at this offset")
     self.conf.add_const("mime-type", "x86 boot sector")
     self.tags = "file system"
 %}

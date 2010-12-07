@@ -985,17 +985,17 @@ void		Ntfs::start(argument *arg)
 
   try
     {
-      std::string	sMftDecode;
-      std::stringstream conv;
+      int32_t		tempMftDecode = -1;
 
-      arg->get("mftdecode", &sMftDecode);
-      conv << sMftDecode;
-      conv >> _mftDecode;
+      arg->get("mftdecode", &tempMftDecode);
+      if (tempMftDecode != -1) {
+	_mftDecode = (tempMftDecode >= 0) ? (tempMftDecode) : (-tempMftDecode);
 #if __WORDSIZE == 64
-      DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
+	DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
 #else
-      DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
+	DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
 #endif
+      }
     }
   catch (envError & e)
     {
@@ -1005,17 +1005,17 @@ void		Ntfs::start(argument *arg)
 
   try
     {
-      std::string	sIndexDecode;
-      std::stringstream conv;
+      int32_t		tempIndexDecode = -1;
 
-      arg->get("indexdecode", &sIndexDecode);
-      conv << sIndexDecode;
-      conv >> _indexDecode;
+      arg->get("indexdecode", &tempIndexDecode);
+      if (tempIndexDecode != -1) {
+	_indexDecode = (tempIndexDecode >= 0) ? (tempIndexDecode) : (-tempIndexDecode);
 #if __WORDSIZE == 64
-      DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
+	DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
 #else
-      DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
+	DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
 #endif
+      }
     }
   catch (envError & e)
     {
