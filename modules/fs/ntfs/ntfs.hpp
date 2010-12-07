@@ -83,6 +83,8 @@ private:
   void		_setRootDirectory(uint64_t);
   void		_walkMftMainFile();
   void		_rootSearch();
+  void		_deletedNodeWithADS(uint64_t, uint32_t, uint32_t,
+				    AttributeStandardInformation *);
   void		_createOrphanOrDeleted(AttributeFileName *, bool,
 				       AttributeData *, uint32_t,
 				       AttributeStandardInformation *,
@@ -100,6 +102,9 @@ private:
   void		_updateTreeWalk(AttributeIndexRoot *,
 				AttributeIndexAllocation *, uint32_t *,
 				uint32_t *, bool *);
+  NtfsNode	*_createRegularADSNodes(uint64_t, uint32_t, uint32_t,
+					AttributeStandardInformation *, Node *,
+				       AttributeFileName *);
   void		_createRegularNode(Node *, uint32_t, uint64_t, uint32_t);
   void		_createLinkedNode(Node *, uint32_t, uint32_t);
   void		_parseDirTree(Node *, uint32_t, uint64_t);

@@ -71,6 +71,7 @@ public:
   ~AttributeFileName();
   void		content();
   std::string	getFileName();
+  void		appendToFileName(std::string);
   AttributeFileName_t	*data() { return _data; };
 
 private:

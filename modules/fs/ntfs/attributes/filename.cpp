@@ -65,6 +65,11 @@ std::string	AttributeFileName::getFileName()
   return _filename.str();
 }
 
+void	AttributeFileName::appendToFileName(std::string appendMe)
+{
+  _filename << appendMe;
+}
+
 void	AttributeFileName::content()
 {
   struct tm		*date;

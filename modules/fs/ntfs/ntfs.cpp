@@ -448,6 +448,65 @@ void	Ntfs::_updateTreeWalk(AttributeIndexRoot *indexRoot,
   }
 }
 
+NtfsNode			*Ntfs::_createRegularADSNodes(uint64_t offset,
+							      uint32_t adsAmount,
+							      uint32_t mftID,
+							      AttributeStandardInformation *metaSI,
+							      Node *currentDir,
+							      AttributeFileName *metaFName)
+{
+  AttributeData			**data = new AttributeData *[adsAmount];
+  uint32_t			iADS = 0;
+  Attribute			*attribute;
+  AttributeAttributeList	*attributeList = NULL;
+  uint32_t			extAttrData;
+  NtfsNode			*returnNode = NULL;
+
+  _mftEntry->decode(offset);
+  while ((attribute = _mftEntry->getNextAttribute())) {
+    attribute->readHeader();
+    if (attribute->getType() == ATTRIBUTE_DATA) {
+      data[iADS] = new AttributeData(*attribute);
+      if (!data[iADS]->attributeHeader()->nonResidentFlag) {
+	data[iADS]->offset(data[iADS]->getOffset() + offset + data[iADS]->attributeOffset());
+      }
+      iADS++;
+    }
+    if (attribute->getType() == ATTRIBUTE_ATTRIBUTE_LIST) {
+      attributeList = new AttributeAttributeList(_vfile, *attribute);
+      attributeList->setMftEntry(mftID);
+    }
+  }
+
+  if (attributeList) {
+    extAttrData = attributeList->getExternalAttributeData();
+    if (extAttrData &&
+	_mftEntry->decode(_mftMainFile->data()->offsetFromID(extAttrData))) {
+      while ((attribute = _mftEntry->getNextAttribute())) {
+	attribute->readHeader();
+	if (attribute->getType() == ATTRIBUTE_DATA) {
+	  data[iADS] = new AttributeData(*attribute);
+	  if (!data[iADS]->attributeHeader()->nonResidentFlag) {
+	    data[iADS]->offset(data[iADS]->getOffset() + offset + data[iADS]->attributeOffset());
+	  }
+	  iADS++;
+	}
+      }
+    }
+  }
+
+  for (iADS = 0; iADS < adsAmount; iADS++) {
+    std::ostringstream	name;
+
+    name << metaFName->getFileName() << data[iADS]->getExtName();
+    returnNode = new NtfsNode(name.str(), data[iADS]->getSize(), currentDir, this,
+			      true, metaFName, metaSI, _mftEntry, mftID,
+			      offset);
+    returnNode->data(data[iADS]);
+  }
+
+  return returnNode;
+}
 
 void				Ntfs::_createRegularNode(Node *currentDir,
 							 uint32_t dirMftEntry,
@@ -464,6 +523,7 @@ void				Ntfs::_createRegularNode(Node *currentDir,
   uint64_t			size = 0;
   uint32_t			extAttrData;
   NtfsNode			*newNode = NULL;
+  uint32_t			ads = 0;
 
   while ((attribute = _mftEntry->getNextAttribute())) {
 #if __WORDSIZE == 64
@@ -524,12 +584,14 @@ void				Ntfs::_createRegularNode(Node *currentDir,
       if (!data->attributeHeader()->nonResidentFlag) {
 	data->offset(data->getOffset() + offset + data->attributeOffset());
       }
+      ads++;
     }
     if (attribute->getType() == ATTRIBUTE_ATTRIBUTE_LIST) {
       attributeList = new AttributeAttributeList(_vfile, *attribute);
       attributeList->setMftEntry(curMftEntry);
     }
   }
+
 #if __WORDSIZE == 64
   DEBUG(INFO, "data size before %lu\n", data->getSize());
 #else
@@ -537,7 +599,6 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 #endif
   if (size && !data->getOffset() && attributeList) {
     extAttrData = attributeList->getExternalAttributeData();
-    
     if (extAttrData &&
 	_mftEntry->decode(_mftMainFile->data()->offsetFromID(extAttrData))) {
       while ((attribute = _mftEntry->getNextAttribute())) {
@@ -547,11 +608,13 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 	  if (!data->attributeHeader()->nonResidentFlag) {
 	    data->offset(data->getOffset() + offset + data->attributeOffset());
 	  }
-	  break;
+	  //	  break;
+	  ads++;
 	}
       }
     }
   }
+
 #if __WORDSIZE == 64
   DEBUG(INFO, "data size after %lu\n", data->getSize());
 #else
@@ -565,21 +628,25 @@ void				Ntfs::_createRegularNode(Node *currentDir,
     DEBUG(INFO, "\t\tmftentry %u about to create %s offset 0x%llx\n", curMftEntry, fullFileName->getFileName().c_str(), offset);
 #endif
     
-
     if (curMftEntry != NTFS_ROOT_DIR_MFTENTRY) {
-      newNode = new NtfsNode(fullFileName->getFileName().c_str(),
-			     data->getSize(), currentDir, this, (fileType == 1),
-			     fullFileName, metaSI, _mftEntry, curMftEntry,
-			     offset);
-      newNode->node(_node);
-      
+      if (ads <= 1) {
+	newNode = new NtfsNode(fullFileName->getFileName().c_str(),
+			       data->getSize(), currentDir, this, (fileType == 1),
+			       fullFileName, metaSI, _mftEntry, curMftEntry,
+			       offset);
+	newNode->node(_node);
+	if (fileType == 1 && newNode) {
+	  newNode->data(data);
+	}
+      }
+      else {
+	newNode = _createRegularADSNodes(offset, ads, curMftEntry, metaSI, currentDir, fullFileName);
+      }
+	
       std::vector<Node *>	newVector;
       newVector.push_back(newNode);
       _mftEntryToNode.insert(std::pair<uint32_t, std::vector<Node *> >(curMftEntry, newVector));
-    }
-    if (fileType == 1 && newNode) {
-      newNode->data(data);
-      DEBUG(INFO, "\t\tfile just created and data set for it !\n");
+      
     }
     
     if (fileType == 2 && curMftEntry != NTFS_ROOT_DIR_MFTENTRY && newNode) {
@@ -879,6 +946,56 @@ void		Ntfs::_setRootDirectory(uint64_t mftEntryOffset)
   }
 }
 
+void				Ntfs::_deletedNodeWithADS(uint64_t offset,
+							  uint32_t adsAmount,
+							  uint32_t mftID,
+							  AttributeStandardInformation *metaSI)
+{
+  Attribute			*attribute;
+  AttributeFileName		*metaFileName = NULL;
+  AttributeFileName		*fullFileName = NULL;
+  AttributeData			**data = new AttributeData *[adsAmount];
+  uint8_t			fileType = 0;
+  uint64_t			size = 0;
+  uint32_t			iADS = 0;
+  
+  _mftEntry->decode(offset);
+  while ((attribute = _mftEntry->getNextAttribute())) {
+    attribute->readHeader();
+    if (attribute->getType() == ATTRIBUTE_FILE_NAME) {
+      metaFileName = new AttributeFileName(*attribute);
+      if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
+	  metaFileName->data()->nameSpace == ATTRIBUTE_FN_NAMESPACE_POSIX) {
+	fullFileName = metaFileName;
+      }
+      if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
+	  metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_POSIX) {
+	if (metaFileName->data()->flags & ATTRIBUTE_SI_FLAG_SYSTEM ||
+	    metaFileName->data()->flags & ATTRIBUTE_SI_FLAG_ARCHIVE) {
+	  fileType = 1;
+	}
+      }
+      if (!size)
+	size = metaFileName->data()->realSizeOfFile;
+    }
+    if (attribute->getType() == ATTRIBUTE_DATA) {
+      data[iADS] = new AttributeData(*attribute);
+      if (!size)
+	size = data[iADS]->getSize();
+      if (!data[iADS]->attributeHeader()->nonResidentFlag)
+	data[iADS]->offset(data[iADS]->getOffset() + offset + data[iADS]->attributeOffset());
+      iADS++;
+    }
+  }
+  
+  for (iADS = 0; iADS < adsAmount; iADS++) {
+    fullFileName->appendToFileName(data[iADS]->getExtName());
+    //XXX fullFileName in case of many ADS ?
+    _createOrphanOrDeleted(fullFileName, true, data[iADS], mftID, metaSI, offset);
+  }
+  //XXX done before ? _setStateInfo(_mftMainFile->discoverPercent());
+}
+
 void					Ntfs::_checkOrphanEntries()
 {
   std::map<uint32_t, bool>		entryMap = _mftMainFile->getEntryMap();
@@ -901,6 +1018,7 @@ void					Ntfs::_checkOrphanEntries()
 	  AttributeData			*data = new AttributeData();
 	  uint8_t			fileType = 0;
 	  uint64_t			size = 0;
+	  uint32_t			ads = 0;
 	  
 #if __WORDSIZE == 64
 	  DEBUG(INFO, "Offset is 0x%lx\n", offset);
@@ -919,7 +1037,7 @@ void					Ntfs::_checkOrphanEntries()
 		fullFileName = metaFileName;
 	      }
 	      if (metaFileName->data()->flags & ATTRIBUTE_SI_FLAG_DIRECTORY) {
-	fileType = 2;
+		fileType = 2;
 	      }
 	      else if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
 		  metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_POSIX) {
@@ -937,20 +1055,25 @@ void					Ntfs::_checkOrphanEntries()
 		size = data->getSize();
 	      if (!data->attributeHeader()->nonResidentFlag)
 		data->offset(data->getOffset() + offset + data->attributeOffset());
+	      ads++;
 	    }
 	  }
 	  
-	  if (fileType == 1 && fullFileName) {
-	    _createOrphanOrDeleted(fullFileName, true, data, it->first,
-				   metaSI, offset);
-	    _setStateInfo(_mftMainFile->discoverPercent());
-
+	  if (ads <= 1) {
+	    if (fileType == 1 && fullFileName) {
+	      _createOrphanOrDeleted(fullFileName, true, data, it->first,
+				     metaSI, offset);
+	      _setStateInfo(_mftMainFile->discoverPercent());
+	    }
+	    else if (fileType == 2 && fullFileName) {
+	      _createOrphanOrDeleted(fullFileName, false, data, it->first,
+				     metaSI, offset);
+	      //	    _mftMainFile->entryDiscovered(i);
+	      _setStateInfo(_mftMainFile->discoverPercent());
+	    }
 	  }
-	  else if (fileType == 2 && fullFileName) {
-	    _createOrphanOrDeleted(fullFileName, false, data, it->first,
-				   metaSI, offset);
-	    //	    _mftMainFile->entryDiscovered(i);
-	    _setStateInfo(_mftMainFile->discoverPercent());
+	  else {
+	    _deletedNodeWithADS(offset, ads, it->first, metaSI);
 	  }
 	}
       }

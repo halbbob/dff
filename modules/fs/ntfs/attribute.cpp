@@ -570,6 +570,21 @@ std::string	Attribute::getName()
   return getName(_attributeHeader->attributeTypeIdentifier);
 }
 
+std::string	Attribute::getExtName()
+{
+  std::ostringstream	extName;
+  uint8_t		i = 0;
+  
+  while (i < (_attributeHeader->nameLength * 2)) {
+    extName << (char)*(_readBuffer + _bufferOffset + _attributeHeader->nameOffset + i);
+    i += 2;
+  }
+  if (extName.str().size()) {
+    return std::string(":") + extName.str();
+  }
+  return std::string("");
+}
+
 std::string		Attribute::getFullName()
 {
   std::string		baseName = getName(_attributeHeader->attributeTypeIdentifier);
