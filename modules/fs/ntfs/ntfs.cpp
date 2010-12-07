@@ -1073,6 +1073,11 @@ void		Ntfs::start(argument *arg)
 	if (_mftEntry->decode(_mftDecode)) {
 	  Attribute *attribute;
 	  //_mftEntry->dumpHeader();
+#if __WORDSIZE == 64
+	  printf("Decoding MFT entry at offset 0x%lx\n", _mftDecode);
+#else
+	  printf("Decoding MFT entry at offset 0x%llx\n", _mftDecode);
+#endif
 	  while ((attribute = _mftEntry->getNextAttribute())) {
 	    attribute->readHeader();
 	    attribute->dumpHeader();
@@ -1082,10 +1087,6 @@ void		Ntfs::start(argument *arg)
 	      _data->setRunList();
 	    }
 	    _mftEntry->dumpAttribute(attribute);
-
-	    if (attribute->attributeHeader()->attributeTypeIdentifier == 0x600000)
-	      throw("aie");
-
 	  }
 	}
 	return ;

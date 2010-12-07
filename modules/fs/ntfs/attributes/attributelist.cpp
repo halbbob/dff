@@ -82,7 +82,7 @@ void		AttributeAttributeList::content()
   uint16_t	contentSize;
 
   if (_attributeHeader->nonResidentFlag) {
-    ;
+    return;
   }
   else {
     contentSize = _attributeResidentDataHeader->contentSize;
@@ -96,20 +96,20 @@ void		AttributeAttributeList::content()
       _data = (AttributeAttributeList_t *)(_readBuffer + _bufferOffset + _dataOffset);
     }
 
-    DEBUG(INFO, "\t\tAttribute type 0x%x: %s\n", _data->attributeType, getName(_data->attributeType).c_str());
-    DEBUG(INFO, "\t\tEntry length 0x%x\n", _data->entryLength);
-    DEBUG(INFO, "\t\tLength of name 0x%x\n", _data->nameLength);
-    DEBUG(INFO, "\t\tOffset to name 0x%x\n", _data->nameOffset);
+    printf("\t\tAttribute type 0x%x: %s\n", _data->attributeType, getName(_data->attributeType).c_str());
+    printf("\t\tEntry length 0x%x\n", _data->entryLength);
+    printf("\t\tLength of name 0x%x\n", _data->nameLength);
+    printf("\t\tOffset to name 0x%x\n", _data->nameOffset);
 #if __WORDSIZE == 64
-    DEBUG(INFO, "\t\tStarting VCN in attribute 0x%lx\n", _data->startingVCNInAttribute);
-    DEBUG(INFO, "\t\tFile reference where attribute is located 0x%lx\n", _data->fileReference);
-    DEBUG(INFO, "\t\tMftEntry reference %lu (0x%lx)\n", _data->fileReference & 0xffffffUL, _data->fileReference & 0xffffffUL);
+    printf("\t\tStarting VCN in attribute 0x%lx\n", _data->startingVCNInAttribute);
+    printf("\t\tFile reference where attribute is located 0x%lx\n", _data->fileReference);
+    printf("\t\tMftEntry reference %lu (0x%lx)\n", _data->fileReference & 0xffffffUL, _data->fileReference & 0xffffffUL);
 #else
-    DEBUG(INFO, "\t\tStarting VCN in attribute 0x%llx\n", _data->startingVCNInAttribute);
-    DEBUG(INFO, "\t\tFile reference where attribute is located 0x%llx\n", _data->fileReference);
-    DEBUG(INFO, "\t\tMftEntry reference %llu (0x%llx)\n", _data->fileReference & 0xffffffULL, _data->fileReference & 0xffffffULL);
+    printf("\t\tStarting VCN in attribute 0x%llx\n", _data->startingVCNInAttribute);
+    printf("\t\tFile reference where attribute is located 0x%llx\n", _data->fileReference);
+    printf("\t\tMftEntry reference %llu (0x%llx)\n", _data->fileReference & 0xffffffULL, _data->fileReference & 0xffffffULL);
 #endif
-    DEBUG(INFO, "\t\tAttribute ID 0x%x\n\n", _data->attributeID);
+    printf("\t\tAttribute ID 0x%x\n\n", _data->attributeID);
     _dataOffset += _data->entryLength;
   }
 }

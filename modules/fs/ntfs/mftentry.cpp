@@ -525,29 +525,29 @@ void	MftEntry::dumpChunks(OffsetRun *offsets, uint16_t runListSize) {
   int64_t	prevOffset = 0;
   OffsetRun	*offset;
 
-  DEBUG(CRITICAL, "\t\t\tChunks amount: %u\n", runListSize);
+  printf("\t\t\tChunks amount: %u\n", runListSize);
   while (runListIndex < runListSize) {
     offset = &(offsets[runListIndex]);
-    DEBUG(CRITICAL, "\t\t\t\tChunk #%u\tlength %u (0x%x)\n", runListIndex + 1, offset->runLength - prevLength, offset->runLength - prevLength);
+    printf("\t\t\t\tChunk #%u\tlength %u (0x%x)\n", runListIndex + 1, offset->runLength - prevLength, offset->runLength - prevLength);
 #if __WORDSIZE == 64
     if (offset->runLength - prevLength > 1) {
-      DEBUG(CRITICAL, "\t\t\t\t\t\tcluster %lu (0x%lx) to %lu (0x%lx)\n", offset->runOffset, offset->runOffset, offset->runOffset + (offset->runLength - prevLength) - 1, offset->runOffset + (offset->runLength - prevLength) - 1);
+      printf("\t\t\t\t\t\tcluster %lu (0x%lx) to %lu (0x%lx)\n", offset->runOffset, offset->runOffset, offset->runOffset + (offset->runLength - prevLength) - 1, offset->runOffset + (offset->runLength - prevLength) - 1);
     }
     else {
-      DEBUG(CRITICAL, "\t\t\t\t\t\tcluster %lu (0x%lx)\n", offset->runOffset, offset->runOffset);
+      printf("\t\t\t\t\t\tcluster %lu (0x%lx)\n", offset->runOffset, offset->runOffset);
     }
     if (prevOffset) {
-      DEBUG(CRITICAL, "\t\t\t\t\t\trelative from previous %li (0x%lx)\n", offset->runOffset - prevOffset, offset->runOffset - prevOffset);
+      printf("\t\t\t\t\t\trelative from previous %li (0x%lx)\n", offset->runOffset - prevOffset, offset->runOffset - prevOffset);
     }
 #else
     if (offset->runLength - prevLength > 1) {
-      DEBUG(CRITICAL, "\t\t\t\t\t\tcluster %llu (0x%llx) to %llu (0x%llx)\n", offset->runOffset, offset->runOffset, offset->runOffset + (offset->runLength - prevLength) - 1, offset->runOffset + (offset->runLength - prevLength) - 1);
+      printf("\t\t\t\t\t\tcluster %llu (0x%llx) to %llu (0x%llx)\n", offset->runOffset, offset->runOffset, offset->runOffset + (offset->runLength - prevLength) - 1, offset->runOffset + (offset->runLength - prevLength) - 1);
     }
     else {
-      DEBUG(CRITICAL, "\t\t\t\t\t\tcluster %llu (0x%llx)\n", offset->runOffset, offset->runOffset);
+      printf("\t\t\t\t\t\tcluster %llu (0x%llx)\n", offset->runOffset, offset->runOffset);
     }
     if (prevOffset) {
-      DEBUG(CRITICAL, "\t\t\t\t\t\trelative from previous %lli (0x%llx)\n", prevOffset - offset->runOffset, prevOffset - offset->runOffset);
+      printf("\t\t\t\t\t\trelative from previous %lli (0x%llx)\n", prevOffset - offset->runOffset, prevOffset - offset->runOffset);
     }
 #endif
     prevLength = offset->runLength;
