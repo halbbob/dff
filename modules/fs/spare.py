@@ -22,10 +22,13 @@ from api.variant.libvariant import Variant
 from api.vfs.libvfs import *
 
 class SpareNode(Node):
-   def __init__(self, mfso, parent, name, pageSize = 512, spareSize = 16, lparent = None):
-     self.ssize = parent.size() - ((parent.size() / (pageSize + spareSize)) * spareSize)
+   def __init__(self, mfso, parent, name, pageSize = 512, spareSize = 16, lparent = None, invert = False):
+     self.invert = invert
+     if not self.invert:
+       self.ssize = parent.size() - ((parent.size() / (pageSize + spareSize)) * spareSize)
+     else:
+       self.ssize = ((parent.size() / (pageSize + spareSize)) * spareSize)
      Node.__init__(self, name, self.ssize, lparent, mfso)
-     self.setSize(self.ssize)
      self.setFile()
      self.__disown__()
      self.nparent = parent
@@ -38,10 +41,18 @@ class SpareNode(Node):
       fm.thisown = False
       voffset = 0
       offset = 0
-      while voffset < self.ssize:
-        fm.push(voffset, self.pageSize, self.nparent, offset)
-        offset += (self.spareSize + self.pageSize)
-        voffset  += self.pageSize
+      if not self.invert: #XXX faire 2 node avec le clean + la spare a part ? 
+        while voffset < self.ssize:
+          fm.push(voffset, self.pageSize, self.nparent, offset)
+          offset += (self.spareSize + self.pageSize)
+          voffset  += self.pageSize
+      if self.invert:
+        voffset = 0
+        offset = self.pageSize
+	while voffset < self.ssize:
+	  fm.push(voffset, self.spareSize, self.nparent, offset)
+	  offset += (self.spareSize + self.pageSize)
+          voffset += self.spareSize 
 
    def extendedAttributes(self, attr):
       attr.thisown = False
@@ -62,12 +73,15 @@ class Spare(mfso):
       self.parent = args.get_node("node")
       self.spareSize = args.get_int("spare-size")
       self.pageSize = args.get_int("page-size")
+      self.invert = args.get_bool("invert")
       if self.pageSize == None or self.pageSize < 0:
         self.pageSize = 512
       if self.spareSize == None or self.spareSize == -1:
         self.spareSize = 16
-      self.sparenode = SpareNode(self, self.parent, "spare", self.pageSize, self.spareSize)  
-      self.registerTree(self.parent, self.sparenode)	
+      self.nosparenode = SpareNode(self, self.parent, "no-spare", self.pageSize, self.spareSize, None, False) 
+      if self.invert: 
+        self.sparenode = SpareNode(self, self.parent, "spare", self.pageSize, self.spareSize, self.parent, True)  
+      self.registerTree(self.parent, self.nosparenode)	
 
 class spare(Module):
   """Recreate a dump without spare area. 
@@ -80,4 +94,5 @@ or before applying a file system reconstruction modules."""
      self.conf.add_const("spare-size", 16)
      self.conf.add("page-size", "int", True, "size of a nand page")
      self.conf.add_const("page-size", 512)
+     self.conf.add("invert", "bool", True, "Create a spare only node")
      self.tags = "file system"
