@@ -94,7 +94,8 @@ void		Ntfs::_setMftMainFile(uint64_t mftEntryOffset)
 /**
  * Create a deleted node with its parent, not for an orphan node.
  */
-void					Ntfs::_createDeletedWithParent(std::list<uint64_t> pathRefs,
+void					Ntfs::_createDeletedWithParent(std::string fileNameS,
+								       std::list<uint64_t> pathRefs,
 								       uint32_t mftEntry,
 								       AttributeFileName *fileName,
 								       AttributeData *data, bool file,
@@ -166,22 +167,23 @@ void					Ntfs::_createDeletedWithParent(std::list<uint64_t> pathRefs,
     }
   
   DEBUG(INFO, "%s in %s\n", fileName->getFileName().c_str(), current->name().c_str());
-  if (_ntfsNodeExists(fileName->getFileName(), current) == NULL ||
+  if (_ntfsNodeExists(fileNameS, current) == NULL ||
       !_mftMainFile->isEntryDiscovered(mftEntry)) {
-    newFile = new NtfsNode(fileName->getFileName().c_str(), data->getSize(),
-			   current, this, file, fileName, SI, _mftEntry, mftEntry, offset);
+    newFile = new NtfsNode(fileNameS, data->getSize(), current, this, file,
+			   fileName, SI, _mftEntry, mftEntry, offset);
     DEBUG(INFO, "Created (usual) node : %s in %s\n", fileName->getFileName().c_str(), "tmp");
     newFile->node(_node);
     if (file) {
       newFile->data(data);
-      }
+    }
     DEBUG(INFO, "creating %s as deleted in current2\n", fileName->getFileName().c_str());
     newFile->setDeleted();
   }
 }
 
 
-void	Ntfs::_createOrphanOrDeleted(AttributeFileName *fileName, bool file,
+void	Ntfs::_createOrphanOrDeleted(std::string fileNameS,
+				     AttributeFileName *fileName, bool file,
 				     AttributeData *data, uint32_t mftEntry,
 				     AttributeStandardInformation *SI,
 				     uint64_t offset)
@@ -244,8 +246,8 @@ void	Ntfs::_createOrphanOrDeleted(AttributeFileName *fileName, bool file,
       _orphan = new NtfsNode("$Orphans", 0, _root, this, false, NULL, SI, _mftEntry);
       _orphan->setDeleted();
     }
-    if (_ntfsNodeExists(fileName->getFileName(), _orphan) == NULL || !_mftMainFile->isEntryDiscovered(mftEntry)) {
-      newFile = new NtfsNode(fileName->getFileName().c_str(), data->getSize(), _orphan, this, true, fileName, SI, _mftEntry, mftEntry, offset);
+    if (_ntfsNodeExists(fileNameS, _orphan) == NULL || !_mftMainFile->isEntryDiscovered(mftEntry)) {
+      newFile = new NtfsNode(fileNameS, data->getSize(), _orphan, this, true, fileName, SI, _mftEntry, mftEntry, offset);
       newFile->node(_node);
       newFile->data(data);
       DEBUG(INFO, "creating %s as deleted in orphans\n", fileName->getFileName().c_str());
@@ -253,7 +255,7 @@ void	Ntfs::_createOrphanOrDeleted(AttributeFileName *fileName, bool file,
     }
   }
   else {
-    _createDeletedWithParent(pathRefs, mftEntry, fileName, data, file, SI, offset);
+    _createDeletedWithParent(fileNameS, pathRefs, mftEntry, fileName, data, file, SI, offset);
   }
 
   DEBUG(INFO, "Out from _createOrphanOrDeleted\n");
@@ -989,11 +991,12 @@ void				Ntfs::_deletedNodeWithADS(uint64_t offset,
   }
   
   for (iADS = 0; iADS < adsAmount; iADS++) {
-    fullFileName->appendToFileName(data[iADS]->getExtName());
-    //XXX fullFileName in case of many ADS ?
-    _createOrphanOrDeleted(fullFileName, true, data[iADS], mftID, metaSI, offset);
+    std::ostringstream	name;
+
+    name << fullFileName->getFileName() << data[iADS]->getExtName();
+    _createOrphanOrDeleted(name.str(), fullFileName, true, data[iADS], mftID, metaSI, offset);
   }
-  //XXX done before ? _setStateInfo(_mftMainFile->discoverPercent());
+  //done before: _setStateInfo(_mftMainFile->discoverPercent());
 }
 
 void					Ntfs::_checkOrphanEntries()
@@ -1061,13 +1064,13 @@ void					Ntfs::_checkOrphanEntries()
 	  
 	  if (ads <= 1) {
 	    if (fileType == 1 && fullFileName) {
-	      _createOrphanOrDeleted(fullFileName, true, data, it->first,
-				     metaSI, offset);
+	      _createOrphanOrDeleted(fullFileName->getFileName(), fullFileName,
+				     true, data, it->first, metaSI, offset);
 	      _setStateInfo(_mftMainFile->discoverPercent());
 	    }
 	    else if (fileType == 2 && fullFileName) {
-	      _createOrphanOrDeleted(fullFileName, false, data, it->first,
-				     metaSI, offset);
+	      _createOrphanOrDeleted(fullFileName->getFileName(), fullFileName,
+				     false, data, it->first, metaSI, offset);
 	      //	    _mftMainFile->entryDiscovered(i);
 	      _setStateInfo(_mftMainFile->discoverPercent());
 	    }

@@ -85,11 +85,13 @@ private:
   void		_rootSearch();
   void		_deletedNodeWithADS(uint64_t, uint32_t, uint32_t,
 				    AttributeStandardInformation *);
-  void		_createOrphanOrDeleted(AttributeFileName *, bool,
+  void		_createOrphanOrDeleted(std::string,
+				       AttributeFileName *, bool,
 				       AttributeData *, uint32_t,
 				       AttributeStandardInformation *,
 				       uint64_t);
-  void		_createDeletedWithParent(std::list<uint64_t>, uint32_t,
+  void		_createDeletedWithParent(std::string,
+					 std::list<uint64_t>, uint32_t,
 					 AttributeFileName *,
 					 AttributeData *, bool,
 					 AttributeStandardInformation *,
