@@ -53,6 +53,9 @@ class NodeViewBox(QWidget):
     self.createButton("imagethumb", self.imagethumbActivated, "Active thumbnails",":image.png")
     self.createThumbSize()
 
+    self.createButton("create new category", self.newBookmark, "Create new category",":bookmark_category_add.png")
+    self.createBookmark()
+
     self.tableActivated()
 
     self.setLayout(self.gridLayout)
@@ -201,6 +204,52 @@ class NodeViewBox(QWidget):
     self.pathedit.clear()
     self.pathedit.insert(path[1:])
     self.pathedit.setCompleter(self.completer)
+
+  def createBookmark(self):
+    self.createButton("add to bookmarks", self.bookmark, "Add to bookmarks",":bookmark_add.png")
+    self.bookmarkCombo = QComboBox()
+    self.bookmarkCombo.setMaximumWidth(300)
+    self.bookmarkCombo.setEnabled(False)
+    label = QLabel("Category:") 
+    self.gridLayout.addWidget(label)
+    self.gridLayout.addWidget(self.bookmarkCombo)
+
+  def bookmark(self):
+     if not self.bookmarkCombo.count():
+	if not self.newBookmark():
+	  return
+     selectedBookName = self.bookmarkCombo.currentText()
+     selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName))
+     for (pnode, state) in self.parent.model.checkedNodes:
+       p = self.VFS.getNodeFromPointer(pnode)
+       n = VLink(p, selectedBookmark)
+       n.__disown__()
+       if p.hasChildren and state == 1:
+	 childrenList = p.children()
+	 for child in childrenList:
+	    c = VLink(child, n)
+	    c.__disown__()
+       #selectedBookmark.addChild(n)
+     self.parent.model.checkedNodes.clear()	
+     e = DEvent()
+     self.VFS.notify(e)
+
+  def newBookmark(self):
+      text, ok = QInputDialog.getText(self, "Create category", "Specify a new category name:", QLineEdit.Normal, "") 
+      if ok and text != "":
+	if not self.bookmarkCombo.count():
+	  self.bookmarkCombo.setEnabled(True)
+	  self.bookmarkNode = Node(str('Bookmarks'))
+	  self.bookmarkNode.__disown__()
+	  root = self.vfs.getnode('/')
+	  root.addChild(self.bookmarkNode)
+	newNodeBook = Node(str(text))
+	newNodeBook.__disown__()
+	self.bookmarkCombo.addItem(str(text))
+        self.bookmarkNode.addChild(newNodeBook)
+	return True
+      else:
+	return False
 
 class kompleter(QCompleter):
     def __init__(self, parent, treemodel, model):
