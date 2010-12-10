@@ -113,7 +113,7 @@
 
     <file alias="bookmark.png">icons/actions/bookmark.png</file>
     <file alias="bookmark_add.png">icons/actions/bookmark_add.png</file>
-
+    <file alias="bookmark_category_add.png">icons/actions/bookmark_category_add.png</file>
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>    
 

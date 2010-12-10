@@ -150,6 +150,7 @@ class VFSItemModel(QAbstractItemModel):
     self.thumbQueued = {}
     self.fm = fm
     self.fm = False
+    self.checkedNodes = set() 
     if self.fm == True:
 	setattr(self, "canFetchMore", self.scanFetchMore)
         setattr(self, "fetchMore", self.sfetchMore)
@@ -332,6 +333,17 @@ class VFSItemModel(QAbstractItemModel):
 	    return QVariant(QIcon(":folder_documents_128.png"))
           else:
 	    return QVariant(QIcon(":folder_128.png"))
+    if role == Qt.CheckStateRole:
+      if column == HNAME:
+	if (long(node.this), 0) in self.checkedNodes:
+	  if node.hasChildren():
+	    return Qt.PartiallyChecked
+          else:
+   	    return Qt.Checked
+	elif (long(node.this), 1) in self.checkedNodes:
+   	    return Qt.Checked
+        else:
+	    return Qt.Unchecked
     return QVariant() 
 
   def setImagesThumbnails(self, flag):
@@ -379,3 +391,34 @@ class VFSItemModel(QAbstractItemModel):
     else:
        self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
        return self.parentItem.hasChildren()
+
+  def setData(self, index, value, role):
+     if not index.isValid():
+       return QVariant()
+     if role == Qt.CheckStateRole:
+       column = index.column()
+       if column == HNAME: 	#gere le trisate ici	
+    	 node = self.VFS.getNodeFromPointer(index.internalId())
+         if value == Qt.Unchecked:
+	    if (long(node.this), 0) in self.checkedNodes:
+  	      self.checkedNodes.remove((long(node.this), 0))
+            else:
+	      self.checkedNodes.remove((long(node.this), 1))	
+         elif value == Qt.PartiallyChecked:
+	    self.checkedNodes.add((long(node.this), 0)) 
+         elif value == Qt.Checked:
+	    if node.hasChildren():
+              if (long(node.this), 0) not in self.checkedNodes:
+                self.checkedNodes.add((long(node.this), 0))
+              else:
+                self.checkedNodes.remove((long(node.this), 0))
+                self.checkedNodes.add((long(node.this), 1))
+            else:
+              self.checkedNodes.add((long(node.this) , 1)) 
+         #self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
+	#XXX attention buggy bugger en vue thumbnails et refresh pas la vue tree 
+     #^^^ utiliser pour le refresh du contenue des icons ? au lieu de refresh tous le model pour le thumbnails ? 
+     return True #return true if ok 	
+
+  def flags(self, flag):
+     return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
