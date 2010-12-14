@@ -20,12 +20,16 @@ from api.loader.loader import loader
 from console.console import console
 from gui.gui import *
 from redirect import RedirectIO
-   
-class ui():
+
+interfaceLanguage, extractGlobalPath = 'EN', ''
+
+class ui():  
   def __init__(self, type):
    self.type = type
    RedirectIO()
    self.modPath = sys.path[0] + "/modules/"
+# Configuration
+   global interfaceLanguage, extractGlobalPath
 
   def launch(self):
    if self.type == "gui":
@@ -58,7 +62,8 @@ Options:
   -v      --version                  display current version
   -g      --graphical                launch graphical interface
   -t      --test=NAME	             start a specific test
-  -h,     --help                     display this help message
+  -l      --language=LANG            use LANG as interface language
+  -h      --help                     display this help message
 """
    VERSION = "0.8"
 
@@ -71,7 +76,7 @@ Options:
    def main(self):
     """Check command line argument"""
     try:
-        opts, args = getopt.getopt(self.argv, "vgdht:", [ "version", "graphical",  "debug", "help", "test="])
+        opts, args = getopt.getopt(self.argv, "vgdhtl:", [ "version", "graphical",  "debug", "help", "test=", "language="])
     except getopt.GetoptError:
         self.usage()
     for opt, arg in opts:
@@ -81,6 +86,9 @@ Options:
             self.graphical = 1
         elif opt in ("-t", "--test"):
             self.test = arg
+        elif opt in ("-l", "--language"):
+            global interfaceLanguage
+            interfaceLanguage = arg
         elif opt in ("-v", "--version"):
           print "dff version " + self.VERSION
           sys.exit(1)

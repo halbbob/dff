@@ -1,435 +1,338 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1">
 <context>
-    <name>CaseListModel</name>
+    <name>ApplyModule</name>
     <message>
-        <location filename="CaseListView.py" line="21"/>
-        <source>Name</source>
+        <location filename="applymodule.py" line="93"/>
+        <source>Missing Arguments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CaseListView.py" line="22"/>
-        <source>Size</source>
+        <location filename="applymodule.py" line="93"/>
+        <source>There are missing arguments.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BrowserButton</name>
+    <message>
+        <location filename="applymodule.py" line="277"/>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="applymodule.py" line="283"/>
+        <source>Add Dump</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>Configure</name>
     <message>
-        <location filename="_configure.py" line="67"/>
+        <location filename="_configure.py" line="85"/>
         <source>Configure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_configure.py" line="68"/>
+        <location filename="_configure.py" line="86"/>
         <source>Language :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_configure.py" line="69"/>
+        <location filename="_configure.py" line="87"/>
         <source>Extract Folder :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_configure.py" line="70"/>
+        <location filename="_configure.py" line="88"/>
         <source>Browser</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>_Configure</name>
     <message>
-        <location filename="configure.py" line="29"/>
+        <location filename="configure.py" line="42"/>
         <source>French</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="configure.py" line="28"/>
+        <location filename="configure.py" line="41"/>
         <source>English</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="configure.py" line="40"/>
+        <location filename="configure.py" line="52"/>
         <source>Choose Your Directory For Extraction</source>
+        <translation>Répertoire d&apos;extraction global</translation>
+    </message>
+</context>
+<context>
+    <name>IDE</name>
+    <message>
+        <location filename="dockide.py" line="42"/>
+        <source>IDE</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>InfoVFS</name>
+    <name>Info</name>
     <message>
-        <location filename="InfoVFS.py" line="28"/>
-        <source>Core Informations</source>
+        <location filename="info.py" line="253"/>
+        <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="InfoVFS.py" line="54"/>
+        <location filename="info.py" line="252"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="InfoVFS.py" line="55"/>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="InfoVFS.py" line="73"/>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="InfoVFS.py" line="70"/>
+        <location filename="info.py" line="200"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="InfoVFS.py" line="71"/>
+        <location filename="info.py" line="202"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="info.py" line="201"/>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="info.py" line="203"/>
         <source>From</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="InfoVFS.py" line="106"/>
-        <source>Arguments</source>
+        <location filename="info.py" line="251"/>
+        <source>PID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="InfoVFS.py" line="169"/>
-        <source>values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="InfoVFS.py" line="125"/>
-        <source>parameters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="InfoVFS.py" line="141"/>
-        <source>arguments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="InfoVFS.py" line="149"/>
-        <source>results</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="InfoVFS.py" line="162"/>
-        <source>description</source>
+        <location filename="info.py" line="252"/>
+        <source>State</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>PropertyDialog</name>
+    <name>Interpreter</name>
     <message>
-        <location filename="propertyDialog.py" line="71"/>
-        <source>Folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="propertyDialog.py" line="74"/>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="propertyDialog.py" line="77"/>
-        <source> items, totalling </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="propertyDialog.py" line="79"/>
-        <source>Folders</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="propertyDialog.py" line="81"/>
-        <source>Files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="propertyDialog.py" line="83"/>
-        <source>---</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Dialog</name>
-    <message>
-        <location filename="_xor.py" line="40"/>
-        <source>Xor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_xor.py" line="41"/>
-        <source>Password :</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ListModel</name>
-    <message>
-        <location filename="ListModel.py" line="15"/>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ListModel.py" line="16"/>
-        <source>Size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ListModel.py" line="17"/>
-        <source>Accessed Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ListModel.py" line="18"/>
-        <source>Changed Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ListModel.py" line="19"/>
-        <source>Modified Time</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ListView</name>
-    <message>
-        <location filename="ListView.py" line="41"/>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ThumbsView.py" line="30"/>
-        <source>Extract</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ListView.py" line="49"/>
-        <source>Property</source>
+        <location filename="interpreter.py" line="344"/>
+        <source>Interpreter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="_mainWindow.py" line="130"/>
-        <source>Exit</source>
+        <location filename="actions.py" line="133"/>
+        <source>IDE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_mainWindow.py" line="141"/>
-        <source>Add Dump</source>
+        <location filename="ide.py" line="142"/>
+        <source>open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_mainWindow.py" line="142"/>
-        <source>Configure</source>
+        <location filename="ide.py" line="179"/>
+        <source>Save as</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CaseDirView.py" line="481"/>
-        <source>Open With</source>
+        <location filename="idewizardpages.py" line="123"/>
+        <source>Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dff.py" line="230"/>
-        <source>Information</source>
+        <location filename="info.py" line="52"/>
+        <source>Info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dff.py" line="230"/>
-        <source>Restart your application to complete your change.</source>
+        <location filename="interpreter.py" line="351"/>
+        <source>DFF interpreter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_mainWindow.py" line="125"/>
-        <source>About</source>
+        <location filename="shell.py" line="390"/>
+        <source>Shell</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dff.py" line="239"/>
-        <source>Digital Forensic Framework.&lt;br&gt;&lt;br&gt;More information on www.digital-forensic.org</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="123"/>
-        <source>Digital Forensic Framework </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="124"/>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="126"/>
-        <source>Modules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="127"/>
-        <source>Window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="128"/>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="129"/>
-        <source>toolBar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="131"/>
-        <source>?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="CaseDirView.py" line="482"/>
-        <source>Extract</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="134"/>
-        <source>Apply Driver</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="136"/>
-        <source>Load</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="137"/>
-        <source>Unload</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="138"/>
-        <source>Manage</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="CaseDirView.py" line="625"/>
-        <source>Browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="143"/>
-        <source>Tools</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="144"/>
-        <source>Viewer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="CaseDirView.py" line="484"/>
-        <source>Property</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="147"/>
-        <source>Infos</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_mainWindow.py" line="148"/>
-        <source>Core Informations</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="ThumbsView.py" line="125"/>
-        <source>Choose Your Directory For Extraction</source>
-        <translation type="unfinished"></translation>
+        <location filename="extractor.py" line="87"/>
+        <source>Choose the destination folder for extraction</source>
+        <translation>Choisissez le répertoire de destination pour l&apos;extraction</translation>
     </message>
 </context>
 <context>
     <name>PropertyDialog</name>
     <message>
-        <location filename="_propertyDialog.py" line="103"/>
+        <location filename="property.py" line="85"/>
+        <source>Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="property.py" line="88"/>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="property.py" line="91"/>
+        <source> items, totalling </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="property.py" line="93"/>
+        <source>Folders</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="property.py" line="95"/>
+        <source>Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="property.py" line="97"/>
+        <source>---</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="uiproperty.py" line="130"/>
         <source>Property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_propertyDialog.py" line="104"/>
+        <location filename="uiproperty.py" line="131"/>
         <source>Name :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_propertyDialog.py" line="105"/>
+        <location filename="uiproperty.py" line="132"/>
         <source>Type :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_propertyDialog.py" line="106"/>
+        <location filename="uiproperty.py" line="133"/>
         <source>Location :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_propertyDialog.py" line="107"/>
+        <location filename="uiproperty.py" line="134"/>
         <source>Contents :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_propertyDialog.py" line="108"/>
+        <location filename="uiproperty.py" line="135"/>
         <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Shell</name>
+    <message>
+        <location filename="shell.py" line="383"/>
+        <source>Shell</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>applyModule</name>
     <message>
-        <location filename="_applyModule.py" line="59"/>
+        <location filename="uiapplymodule.py" line="46"/>
         <source>Apply Module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_applyModule.py" line="60"/>
-        <source> Scripts and Drivers :</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="_applyModule.py" line="62"/>
+        <location filename="applymoduletable.py" line="48"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_applyModule.py" line="63"/>
-        <source>Type</source>
+        <location filename="applymoduletable.py" line="52"/>
+        <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>createCase</name>
+    <name>bookmark</name>
     <message>
-        <location filename="waitDialog.py" line="29"/>
-        <source>Wait</source>
+        <location filename="bookmark.py" line="67"/>
+        <source>Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="68"/>
+        <source>Length (dec)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="69"/>
+        <source>Length (hex)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="70"/>
+        <source>Hex value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="71"/>
+        <source>Ascii value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="72"/>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>decodeValues</name>
+    <message>
+        <location filename="decodeValues.py" line="44"/>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="decodeValues.py" line="45"/>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>navigation</name>
+    <message>
+        <location filename="navigation.py" line="52"/>
+        <source>Current</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="navigation.py" line="53"/>
+        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>selectNode</name>
     <message>
-        <location filename="_selectNode.py" line="67"/>
+        <location filename="uiselectnodes.py" line="84"/>
         <source>Select a node</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_selectNode.py" line="68"/>
+        <location filename="uiselectnodes.py" line="85"/>
         <source>Look in :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_selectNode.py" line="69"/>
+        <location filename="uiselectnodes.py" line="86"/>
         <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="_selectNode.py" line="70"/>
+        <location filename="uiselectnodes.py" line="87"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>

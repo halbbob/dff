@@ -16,7 +16,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QTranslator
-# Import Singleton for CONF
+# Import Singleton for CONF, actually unused, conf is global in ui.ui
 from conf import Conf
 
 class Translator(QTranslator):
@@ -33,7 +33,4 @@ class Translator(QTranslator):
         self.loadLanguage()
         
     def loadLanguage(self):
-        if self.Conf.language == "FR" :
-            return self.load(":Dff_fr")
-        else:
-            return self.load(":Dff_en")
+        return self.load(sys.modules['ui.gui'].__path__[0] + "/i18n/Dff_" + sys.modules['ui.ui'].interfaceLanguage.lower()[:2])

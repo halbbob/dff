@@ -168,6 +168,23 @@ else(NOT PYTHON_QT4_QSCI_PATH)
   message(STATUS "Python QScintilla library bindings found: ${PYTHON_QT4_QSCI_PATH}")
 endif(NOT PYTHON_QT4_QSCI_PATH)
 
+## PyQt linguist transalation updater check, to create or update translation
+## files
+find_program(PYTHON_QT4_LANGUAGE NAMES pylupdate4 PATHS	${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+if(PYTHON_QT4_LANGUAGE)
+  message(STATUS "Python Qt4 linguist translation files updater found: ${PYTHON_QT4_LANGUAGE}")
+else(PYTHON_QT4_LANGUAGE)
+  message(STATUS "Python Qt4 linguist translation files updater not found, unable to check for new tranlatable strings.")
+endif(PYTHON_QT4_LANGUAGE)
+
+## QT .ts to .qm compiler, used by translator objects
+find_program(QT_LANGUAGE_COMPILER NAMES lrelease PATHS ${CMAKE_SYSTEM_PROGRAM_PATH})
+if(QT_LANGUAGE_COMPILER)
+  message(STATUS "QT translation compiler found: ${QT_LANGUAGE_COMPILER}")
+else(QT_LANGUAGE_COMPILER)
+  message(ERROR "QT translation compiler not found.")
+endif(QT_LANGUAGE_COMPILER)
+
 ## PyQt resource compiler check, to generate icons
 find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
 if(PYTHON_QT4_RCC)

@@ -116,8 +116,5 @@
     <file alias="bookmark_category_add.png">icons/actions/bookmark_category_add.png</file>
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>    
-
-    <file alias="Dff_en">i18n/Dff_en.qm</file>
-    <file alias="Dff_fr">i18n/Dff_fr.qm</file>
 </qresource>
 </RCC>

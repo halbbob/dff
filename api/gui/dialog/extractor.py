@@ -84,7 +84,7 @@ class Extractor(QDialog):
 
 
     def getExtractFolder(self):
-        dialog = QFileDialog(self, QApplication.translate("MainWindow", "Chose the destination folder for extraction", None, QApplication.UnicodeUTF8),  "/home")
+        dialog = QFileDialog(self, QApplication.translate("MainWindow", "Choose the destination folder for extraction", None, QApplication.UnicodeUTF8),  "/home")
         dialog.setFileMode(QFileDialog.DirectoryOnly)
         dialog.setViewMode(QFileDialog.Detail)
         ret = dialog.exec_()
