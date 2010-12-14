@@ -11,7 +11,7 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
-# 
+#  Jeremy Mounier <jmo@digital-forensic.org> 
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
@@ -32,6 +32,8 @@ class NodeViewBox(QWidget):
     self.parent = parent
     self.button = {}
     
+#    self.bookdiag = bookmarkDialog(self)
+    self.bookmarkCategories = []
 
     self.gridLayout = QHBoxLayout(self)
     self.gridLayout.setAlignment(Qt.AlignLeft)
@@ -41,20 +43,12 @@ class NodeViewBox(QWidget):
 
     self.createPathEdit()
 
-#    self.createButton("table", self.tableActivated,  ":view_detailed.png")
-#    self.createButton("thumb", self.thumbActivated, ":view_icon.png")
-#    self.createButton("leftTree", self.leftTreeActivated, ":view_choose.png")
-
     self.createChangeView()
     self.createCheckBoxAttribute()
-
+    self.createButton("add to bookmarks", self.bookmark, "Add to bookmarks",":bookmark_add.png")
     self.createButton("search", self.searchActivated, "Display search engine",":filefind.png")
-#remove bookmark ? remove to bookmark
     self.createButton("imagethumb", self.imagethumbActivated, "Active thumbnails",":image.png")
     self.createThumbSize()
-
-    self.createButton("create new category", self.newBookmark, "Create new category",":bookmark_category_add.png")
-    self.createBookmark()
 
     self.tableActivated()
 
@@ -95,7 +89,6 @@ class NodeViewBox(QWidget):
     self.gridLayout.addWidget(self.button[name])
     self.parent.connect(self.button[name], SIGNAL("clicked()"), func)
 
-
   def goHome(self):
      self.parent.model.setRootPath(self.vfs.getnode("/"))    
 
@@ -106,11 +99,8 @@ class NodeViewBox(QWidget):
     self.thumbSize.addItem("Medium")
     self.thumbSize.addItem("Large")
     self.thumbSize.setEnabled(False)
-#    label = QLabel("Icon size:") 
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
-#    self.gridLayout.addWidget(label)
     self.gridLayout.addWidget(self.thumbSize)
-#    self.button["thumb"].setEnabled(True)
 
   def createCheckBoxAttribute(self):
     self.checkboxAttribute = QCheckBox("Attributes", self)
@@ -123,11 +113,9 @@ class NodeViewBox(QWidget):
 
     self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
     self.gridLayout.addWidget(self.checkboxAttribute)
-#    self.button["table"].setEnabled(False)
 
   def checkboxAttributeChanged(self, state):
      if state:
-#       if self.parent.thumbsView.isVisible():
        self.propertyTable.setVisible(True)
      else:
         self.propertyTable.setVisible(False)	
@@ -205,51 +193,144 @@ class NodeViewBox(QWidget):
     self.pathedit.insert(path[1:])
     self.pathedit.setCompleter(self.completer)
 
-  def createBookmark(self):
-    self.createButton("add to bookmarks", self.bookmark, "Add to bookmarks",":bookmark_add.png")
-    self.bookmarkCombo = QComboBox()
-    self.bookmarkCombo.setMaximumWidth(300)
-    self.bookmarkCombo.setEnabled(False)
-    label = QLabel("Category:") 
-    self.gridLayout.addWidget(label)
-    self.gridLayout.addWidget(self.bookmarkCombo)
-
   def bookmark(self):
-     if not self.bookmarkCombo.count():
-	if not self.newBookmark():
-	  return
-     selectedBookName = self.bookmarkCombo.currentText()
-     selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName))
-     for (pnode, state) in self.parent.model.checkedNodes:
-       p = self.VFS.getNodeFromPointer(pnode)
-       n = VLink(p, selectedBookmark)
-       n.__disown__()
-       if p.hasChildren and state == 1:
-	 childrenList = p.children()
-	 for child in childrenList:
+    bookdiag = bookmarkDialog(self)
+    iReturn = bookdiag.exec_()
+    if iReturn == 1:
+      selectedCategory = bookdiag.getSelectedCategory()
+      print selectedCategory
+      # Check is is new or existing category
+      try:
+        i = self.bookmarkCategories.index(selectedCategory)
+      except ValueError:
+        if not self.createCategory(selectedCategory):
+          return
+
+      selectedBookName = selectedCategory
+      selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName))
+      for (pnode, state) in self.parent.model.checkedNodes:
+        p = self.VFS.getNodeFromPointer(pnode)
+        n = VLink(p, selectedBookmark)
+        n.__disown__()
+        if p.hasChildren and state == 1:
+          childrenList = p.children()
+          for child in childrenList:
 	    c = VLink(child, n)
 	    c.__disown__()
-       #selectedBookmark.addChild(n)
-     self.parent.model.checkedNodes.clear()	
-     e = DEvent()
-     self.VFS.notify(e)
+      self.parent.model.checkedNodes.clear()	
+      e = DEvent()
+      self.VFS.notify(e)
 
-  def newBookmark(self):
-      text, ok = QInputDialog.getText(self, "Create category", "Specify a new category name:", QLineEdit.Normal, "") 
-      if ok and text != "":
-	if not self.bookmarkCombo.count():
-	  self.bookmarkCombo.setEnabled(True)
-	  self.bookmarkNode = Node(str('Bookmarks'))
-	  self.bookmarkNode.__disown__()
-	  root = self.vfs.getnode('/')
-	  root.addChild(self.bookmarkNode)
-	newNodeBook = Node(str(text))
-	newNodeBook.__disown__()
-	self.bookmarkCombo.addItem(str(text))
-        self.bookmarkNode.addChild(newNodeBook)
-	return True
-      else:
-	return False
+  def createCategory(self, category):
+    if category != "":
+      # Create bookmark node in root directory if first creation
+      if len(self.bookmarkCategories) == 0:
+        self.bookmarkNode = Node(str('Bookmarks'))
+        self.bookmarkNode.__disown__()
+        root = self.vfs.getnode('/')
+        root.addChild(self.bookmarkNode)
+
+      newNodeBook = Node(str(category))
+      newNodeBook.__disown__()
+      self.bookmarkNode.addChild(newNodeBook)
+      self.bookmarkCategories.append(category)
+      return True
+    else:
+      return False
+
+class bookmarkDialog(QDialog):
+  def __init__(self, nodeviewbox):
+    QDialog.__init__(self, nodeviewbox)
+    self.nodeviewbox = nodeviewbox
+    self.categories = self.nodeviewbox.bookmarkCategories
+    self.initShape()
+
+
+  def initShape(self):
+    self.mainLayout = QVBoxLayout()
+    
+    self.setWindowTitle("Add bookmark")
+    self.createDecorator()
+    self.createGroupBoxs()
+#    self.createAddBookmarks()
+    self.createButtons()
+    self.setLayout(self.mainLayout)
+
+  def createDecorator(self):
+    self.head = QHBoxLayout()
+    self.spixmap = QPixmap(":bookmark.png")
+    self.pixmap = self.spixmap.scaled(42, 42)
+    self.lpixmap = QLabel()
+    self.lpixmap.setPixmap(self.pixmap)
+
+    self.headlabel = QLabel("Add a bookmark from the Virtual File System")
+    
+    self.head.addWidget(self.lpixmap)
+    self.head.addWidget(self.headlabel)
+
+    self.container = QWidget()
+    self.container.setLayout(self.head)
+
+    self.mainLayout.addWidget(self.container)
+
+  def createGroupBoxs(self):
+    self.newBox = QGroupBox("Create a new category")
+    self.newBox.setCheckable(True)
+    self.newBox.setChecked(True)
+
+    self.newformLayout = QFormLayout()
+    self.catname = QLineEdit()
+    self.newformLayout.addRow("Category name :", self.catname)
+    self.newBox.setLayout(self.newformLayout)
+    self.connect(self.newBox, SIGNAL("clicked()"), self.createCategoryBack)
+    self.mainLayout.addWidget(self.newBox)
+
+    self.existBox = QGroupBox("Add in an existing category")
+    self.existBox.setCheckable(True)
+    self.existBox.setChecked(False)
+    self.connect(self.existBox, SIGNAL("clicked()"), self.existingCategoryBack)
+    
+    self.existformLayout = QFormLayout()
+    self.catcombo = QComboBox()
+    for cat in self.categories:
+      self.catcombo.addItem(cat)
+    self.existformLayout.addRow("Category name :", self.catcombo)
+    self.existBox.setLayout(self.existformLayout)
+    
+    if len(self.categories) != 0:
+      self.newBox.setChecked(True)
+      self.mainLayout.addWidget(self.existBox)
+
+  def createButtons(self):
+    self.buttonbox = QDialogButtonBox()
+    self.buttonbox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+    self.connect(self.buttonbox, SIGNAL("accepted()"),self.accept)
+    self.connect(self.buttonbox, SIGNAL("rejected()"),self.reject)
+
+    self.mainLayout.addWidget(self.buttonbox)
+
+
+  def getSelectedCategory(self):
+    if self.newBox.isChecked():
+      return self.catname.text()
+    else:
+      return self.catcombo.currentText()
+
+
+  def createCategoryBack(self):
+    if self.existBox.isChecked():
+      self.newBox.setChecked(True)
+      self.existBox.setChecked(False)
+    else:
+      self.newBox.setChecked(True)
+
+  def existingCategoryBack(self):
+    if self.newBox.isChecked():
+      self.existBox.setChecked(True)
+      self.newBox.setChecked(False)
+    else:
+      self.existBox.setChecked(True)
+        
 
 class kompleter(QCompleter):
     def __init__(self, parent, treemodel, model):
