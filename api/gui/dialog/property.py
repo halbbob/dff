@@ -82,19 +82,19 @@ class Property(QDialog,  UiProperty):
                 self.valueSize.setText(str(Utils.formatSize(info['size'])) + " ( "+str(info['size']) + " bytes ) ")
             if types == 1 :
                 # One Directory
-                self.valueType.setText(QApplication.translate("PropertyDialog", "Folder", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(self.tr("PropertyDialog", "Folder"))
             if types == 2 :
                 # One Files
-                self.valueType.setText(QApplication.translate("PropertyDialog", "File", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(self.tr("PropertyDialog", "File"))
             self.addAttr(oneNode)
         else :
-            self.valueSize.setText(str(info['item']) +QApplication.translate("PropertyDialog", " items, totalling ", None,QApplication.UnicodeUTF8) + str(Utils.formatSize(info['size'])))
+            self.valueSize.setText(str(info['item']) + ' ' + self.tr("PropertyDialog", "items, total") + ' ' + str(Utils.formatSize(info['size'])))
             if types == 1 :
-                self.valueType.setText(QApplication.translate("PropertyDialog", "Folders", None,QApplication.UnicodeUTF8))
+                self.valueType.setText(self.tr("PropertyDialog", "Folders"))
             if types == 2 :
-                self.valueType.setText(QApplication.translate("PropertyDialog", "Files", None, QApplication.UnicodeUTF8))
+                self.valueType.setText(self.tr("PropertyDialog", "Files"))
             if types == 0 :
-                self.valueType.setText(QApplication.translate("PropertyDialog", "---", None, QApplication.UnicodeUTF8))
+                self.valueType.setText("---")
         
         self.vboxlayout.addWidget(self.buttonClose)
         qsize = self.vboxlayout.minimumSize()

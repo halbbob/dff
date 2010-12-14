@@ -18,8 +18,9 @@ from PyQt4.QtGui import *
 
 from dockide import DockIde
 
-class IdeActions():
+class IdeActions(QObject):
     def __init__(self, mainwindow, ide = None):
+        QObject.__init__(self)
         self.mainwindow = mainwindow
         self.ide = ide
 
@@ -50,10 +51,10 @@ class IdeActions():
         self.maintoolbar = QToolBar()
         self.maintoolbar.setObjectName('ide action toolbar')
 
-        self.newact = QAction(QIcon(":script-new.png"),  "New Script",  self.maintoolbar)
+        self.newact = QAction(QIcon(":script-new.png"),  self.tr("New script"),  self.maintoolbar)
         self.mainActs.append(self.newact)
 
-        self.openact = QAction(QIcon(":script-open.png"),  "Open Script",  self.maintoolbar)
+        self.openact = QAction(QIcon(":script-open.png"),  self.tr("Open script"),  self.maintoolbar)
         self.mainActs.append(self.openact)
 
     def initMainToolbar(self):
@@ -63,19 +64,19 @@ class IdeActions():
     def initIdeActions(self):
         self.idetoolbar = QToolBar()
 
-        self.saveact = QAction(QIcon(":script-save.png"),  "Save Script",  self.idetoolbar)
+        self.saveact = QAction(QIcon(":script-save.png"),  self.tr("Save script"),  self.idetoolbar)
         self.ideActs.append(self.saveact)
     
-        self.saveasact = QAction(QIcon(":script-save-as.png"),  "Save Script as",  self.idetoolbar)
+        self.saveasact = QAction(QIcon(":script-save-as.png"),  self.tr("Save script as"),  self.idetoolbar)
         self.ideActs.append(self.saveasact)
         
-        self.runact = QAction(QIcon(":script-run.png"),  "Load script",  self.idetoolbar)
+        self.runact = QAction(QIcon(":script-run.png"),  self.tr("Load script"),  self.idetoolbar)
         self.ideActs.append(self.runact)
         
-        self.undoact = QAction(QIcon(":undo.png"),  "Undo",  self.idetoolbar)
+        self.undoact = QAction(QIcon(":undo.png"),  self.tr("Undo"),  self.idetoolbar)
         self.ideActs.append(self.undoact)
         
-        self.redoact = QAction(QIcon(":redo.png"),  "Redo",  self.idetoolbar)
+        self.redoact = QAction(QIcon(":redo.png"),  self.tr("Redo"),  self.idetoolbar)
         self.ideActs.append(self.redoact)
    
     def initIdeToolbar(self):
@@ -130,7 +131,7 @@ class IdeActions():
     def setMenu(self):
         self.menu = QMenu(self.mainwindow.menubar)
         self.menu.setObjectName("menuIde")
-        self.menu.setTitle(QApplication.translate("MainWindow", "IDE", None, QApplication.UnicodeUTF8))
+        self.menu.setTitle(self.tr("IDE"))
 
         self.menu.addAction(self.newact)
         self.menu.addAction(self.openact)

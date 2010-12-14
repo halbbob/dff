@@ -22,9 +22,9 @@ class IdeWizard(QWizard):
     def __init__(self, mainWindow, title):
         super(IdeWizard,  self).__init__(mainWindow)
         self.main = mainWindow
-        self.setWindowTitle("Integrated Development Environment Wizard")
+        self.setWindowTitle(self.tr("Integrated Development Environment Wizard"))
 
-        self.setOrder()        
+        self.setOrder()
         self.setPages()
 
     def setOrder(self):

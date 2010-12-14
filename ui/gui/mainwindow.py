@@ -58,26 +58,24 @@ class MainWindow(QMainWindow):
         self.initDockWidgets()
 
 	#menu
-	self.menuList = [ [ "File", [ "New_Dump", "New_Device", "Exit" ] ], 
-			  [ "Modules", [ "Load" ] ],
-		#	  [ "About", [ "About" ] ],
-			] 
+	self.menuList = [[self.tr("File"), ["New_Dump", "New_Device", "Exit"]],
+                         ["Modules", ["Load"]],
+                         ] 
 
 	#icon 
-        self.toolbarList = [
-             ["New_Dump"],
-             ["New_Device"],
-	     ["List_Files"]
-	]
+        self.toolbarList = [["New_Dump"],
+                            ["New_Device"],
+                            ["List_Files"]
+                            ]
 
         self.actionList = [
-	     ["New_Dump", "Add Dump", self.dialog.addFiles, ":add_image.png", "Add image"],
-	     ["New_Device", "Add device(s)", self.dialog.addDevices, ":add_device.png", "Add device(s)"],
-	     ["Exit", "Exit", None,  ":exit.png", "Exit"], 
-	     ["Load", "Load", self.dialog.loadDriver, None, None ],
-      	     ["About", "?", self.dialog.about, None, None ],
-	     ["List_Files", "List Files", self.addBrowser, ":view_detailed.png", "Open List"]
-	  ] 
+            ["New_Dump", self.tr("Add Dump"), self.dialog.addFiles, ":add_image.png", "Add image"],
+            ["New_Device", self.tr("Add device(s)"), self.dialog.addDevices, ":add_device.png", "Add device(s)"],
+            ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
+            ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
+            ["About", "?", self.dialog.about, None, None ],
+            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"]
+            ] 
 
         self.setupUi()
         self.ideActions = IdeActions(self)
@@ -85,7 +83,7 @@ class MainWindow(QMainWindow):
 
 	self.interpreterActions =InterpreterActions(self)				
 
-	self.addMenu(*["About", ["About"]])
+	self.addMenu(*[self.tr("About"), ["About"]])
 
         # Setup AREA
 

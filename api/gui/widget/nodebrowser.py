@@ -80,7 +80,7 @@ class NodeBrowser(QWidget, DEventHandler):
 
     self.getWindowGeometry()
 
-    self.name = "nodebrowser"
+    self.name = self.tr("nodebrowser")
     self.type = "filebrowser"
     self.setObjectName(self.name)
 

@@ -45,11 +45,11 @@ class ApplyModuleTable(QTableWidget):
         
     def addHeaders(self):
         headerItem = QTableWidgetItem()
-        headerItem.setText(QApplication.translate("applyModule", "Name", None, QApplication.UnicodeUTF8))
+        headerItem.setText(self.tr("applyModule", "Name"))
         self.setHorizontalHeaderItem(0,headerItem)
 
         headerItem1 = QTableWidgetItem()
-        headerItem1.setText(QApplication.translate("applyModule", "Tags", None, QApplication.UnicodeUTF8))
+        headerItem1.setText(self.tr("applyModule", "Tags"))
         self.setHorizontalHeaderItem(1,headerItem1)
     
     def resizeTableModules(self):

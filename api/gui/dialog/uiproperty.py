@@ -127,10 +127,9 @@ class UiProperty(object):
         QtCore.QMetaObject.connectSlotsByName(PropertyDialog)
 
     def retranslateUi(self, PropertyDialog):
-        PropertyDialog.setWindowTitle(QtGui.QApplication.translate("PropertyDialog", "Property", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelName.setText(QtGui.QApplication.translate("PropertyDialog", "Name :", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelType.setText(QtGui.QApplication.translate("PropertyDialog", "Type :", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelPath.setText(QtGui.QApplication.translate("PropertyDialog", "Location :", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelSize.setText(QtGui.QApplication.translate("PropertyDialog", "Contents :", None, QtGui.QApplication.UnicodeUTF8))
-        self.buttonClose.setText(QtGui.QApplication.translate("PropertyDialog", "Close", None, QtGui.QApplication.UnicodeUTF8))
-
+        PropertyDialog.setWindowTitle(self.tr("PropertyDialog", "Property"))
+        self.labelName.setText(self.tr("PropertyDialog", "Name:"))
+        self.labelType.setText(self.tr("PropertyDialog", "Type:"))
+        self.labelPath.setText(self.tr("PropertyDialog", "Location:"))
+        self.labelSize.setText(self.tr("PropertyDialog", "Contents:"))
+        self.buttonClose.setText(self.tr("PropertyDialog", "Close"))

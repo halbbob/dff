@@ -89,9 +89,9 @@ class ApplyModule(QDialog,  UiApplyModule):
                     value = str(self.valueArgs[i].currentText())
                     if value == "" :
                         errorArg.append(i)
-        if len(errorArg) > 0 :
-            QMessageBox.warning(self, QApplication.translate("ApplyModule", "Missing Arguments", None, QApplication.UnicodeUTF8), QApplication.translate("ApplyModule", "There are missing arguments.", None, QApplication.UnicodeUTF8))
-        else :
+        if len(errorArg) > 0:
+            QMessageBox.warning(self, self.tr("ApplyModule", "Missing Arguments"), self.tr("ApplyModule", "There are missing arguments."))
+        else:
             self.accept()
     
     def initAllInformations(self, nameModule, typeModule, nodesSelected):
@@ -274,13 +274,13 @@ class browseButton(QPushButton):
         self.vtype = vtype
 #        self.node = node
         self.setObjectName("Button" + arg_name)
-        self.setText(QApplication.translate("BrowserButton", "Browse", None, QApplication.UnicodeUTF8))
+        self.setText(self.tr("BrowserButton", "Browse"))
         self.setFixedSize(QSize(80,  28))
         self.connect(self,  SIGNAL("clicked()"), self.click)
         
     def click(self):
         if self.vtype == 1:
-            sFileName = QFileDialog.getOpenFileName(self, QApplication.translate("BrowserButton", "Add Dump", None, QApplication.UnicodeUTF8),  "/home")
+            sFileName = QFileDialog.getOpenFileName(self, self.tr("BrowserButton", "Add Dump"),  "/home")
             if (sFileName) :
 #                self.targetResult.clear()
                 self.targetResult.addPathAndSelect(sFileName)

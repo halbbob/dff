@@ -23,27 +23,27 @@ class WIntroPage(QWizardPage):
         self.createShape()
 
     def setInformations(self):
-        self.setTitle("Script Informations")
-        self.setSubTitle("Fill all script information such as name, type and location")
+        self.setTitle(self.tr("Script Informations"))
+        self.setSubTitle(self.tr("Fill all script information such as name, type and saving location"))
 
     def createShape(self):
         self.grid = QGridLayout()
         
         ##
-        lname = QLabel("Script name:")
+        lname = QLabel(self.tr("Script name:"))
         self.name = QLineEdit()
 
         ##
-        ltype = QLabel("Select script type:")
-        self.type_script = QRadioButton("Script")
-        self.type_graphical = QRadioButton("Graphical")
-        self.type_driver = QRadioButton("Driver")
+        ltype = QLabel(self.tr("Select script type:"))
+        self.type_script = QRadioButton(self.tr("Script"))
+        self.type_graphical = QRadioButton(self.tr("Graphical"))
+        self.type_driver = QRadioButton(self.tr("Driver"))
         self.type_script.setChecked(True)
         
         ##
-        lpath = QLabel("Select script location:")
+        lpath = QLabel(self.tr("Select script location:"))
         self.path = QLineEdit()
-        self.brwButton = QPushButton("Browse")
+        self.brwButton = QPushButton(self.tr("Browse"))
         self.connect(self.brwButton, SIGNAL("clicked()"),  self.browseBack)
 
         self.path = QLineEdit()
@@ -72,7 +72,7 @@ class WIntroPage(QWizardPage):
         self.setLayout(self.grid)
 
     def browseBack(self):
-        dirName = QFileDialog.getExistingDirectory(self, QApplication.translate("MainWindow", "Location", None, QApplication.UnicodeUTF8))
+        dirName = QFileDialog.getExistingDirectory(self, self.tr("Location"))
         self.path.setText(dirName)
 
 
@@ -85,21 +85,21 @@ class WAuthorPage(QWizardPage):
         self.setFinalPage(True)
 
     def setInformations(self):
-        self.setTitle("Author Informations")
-        self.setSubTitle("Fill all author's informations in order to complete header")
+        self.setTitle(self.tr("Author Informations"))
+        self.setSubTitle(self.tr("Fill all author's informations in order to complete header"))
 
     def createShape(self):
         self.grid = QGridLayout()
         
         ##
-        lfname = QLabel("Author's first name:")
+        lfname = QLabel(self.tr("Author's first name:"))
         self.auth_fname = QLineEdit()
 
         ##
-        llname = QLabel("Author's last name:")
+        llname = QLabel(self.tr("Author's last name:"))
         self.auth_lname = QLineEdit()
         
-        lmail = QLabel("Author's electronic mail:")
+        lmail = QLabel(self.tr("Author's electronic mail:"))
         self.auth_mail = QLineEdit()
         
         ## Register Fields
@@ -120,5 +120,5 @@ class WAuthorPage(QWizardPage):
         self.setLayout(self.grid)
 
     def browseBack(self):
-        dirName = QFileDialog.getExistingDirectory(self, QApplication.translate("MainWindow", "Location", None, QApplication.UnicodeUTF8))
+        dirName = QFileDialog.getExistingDirectory(self, self.tr("Location"))
         self.path.setText(dirName)

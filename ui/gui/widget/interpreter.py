@@ -55,7 +55,7 @@ class InterpreterView(QTextEdit, InteractiveInterpreter):
 
         self.ps1 = ">>> "
         self.ps2 = "... "
-        self.write('Python Interpreter\n')
+        self.write(self.tr('Python Interpreter\n'))
         self.write(self.ps1)
         self.more = self.runsource("from api.vfs import *; v = vfs.vfs()")
 
@@ -341,14 +341,14 @@ class Interpreter(MDockWidget):
         
     def g_display(self):
         self.setWidget(InterpreterView(self))
-        self.setWindowTitle(QApplication.translate("Interpreter", "Interpreter", None, QApplication.UnicodeUTF8))
+        self.setWindowTitle(self.tr("Interpreter"))
         
     def addAction(self, mainWindow):
         self.__action = QAction(self)
         self.__action.setCheckable(True)
         self.__action.setChecked(True)
         self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(QApplication.translate("MainWindow", "DFF interpreter", None, QApplication.UnicodeUTF8))
+        self.__action.setText(self.tr("DFF interpreter"))
         self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
     
     def changeVisibleInformations(self):
@@ -359,10 +359,11 @@ class Interpreter(MDockWidget):
             self.setVisible(False)
             self.__action.setChecked(False)
 
-class InterpreterActions():
+class InterpreterActions(QObject):
   def __init__(self, mainwindow):
+    QObject.__init__(self)
     self.mainwindow = mainwindow
-    self.mainwindow.addAction(*["Interpreter", "Interpreter", self.create, ":interpreter.png", "Open Interpreter"])
+    self.mainwindow.addAction(*["Interpreter", self.tr("Interpreter"), self.create, ":interpreter.png", self.tr("Open Interpreter")])
     self.mainwindow.addToolBars(["Interpreter"])			
 
   def create(self):

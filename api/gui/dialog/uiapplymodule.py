@@ -43,6 +43,6 @@ class UiApplyModule(object):
         QtCore.QMetaObject.connectSlotsByName(applyModule)
 
     def retranslateUi(self, applyModule):
-        applyModule.setWindowTitle(QtGui.QApplication.translate("applyModule", "Apply Module", None, QtGui.QApplication.UnicodeUTF8))
-#        self.label.setText(QtGui.QApplication.translate("applyModule", " Scripts and Drivers :", None, QtGui.QApplication.UnicodeUTF8))
+        applyModule.setWindowTitle(self.tr("applyModule", "Apply Module"))
+#        self.label.setText(self.tr("applyModule", " Scripts and Drivers:"))
 

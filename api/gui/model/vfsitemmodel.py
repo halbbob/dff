@@ -238,17 +238,17 @@ class VFSItemModel(QAbstractItemModel):
       return QVariant()
     if orientation == Qt.Horizontal:
       if section == HNAME:
-        return QVariant('Name')
+        return QVariant(self.tr('Name'))
       if section == HSIZE:
-        return QVariant('Size')
+        return QVariant(self.tr('Size'))
       if section == HACCESSED:
-        return QVariant('Accessed time')
+        return QVariant(self.tr('Accessed time'))
       if section == HCHANGED:
-        return QVariant('Changed time')
+        return QVariant(self.tr('Changed time'))
       if section == HMODIFIED:
-        return QVariant('Modified time')
+        return QVariant(self.tr('Modified time'))
       if section == HMODULE:
-        return QVariant('Module')
+        return QVariant(self.tr('Module'))
 
   def data(self, index, role):
     #print "getting data"

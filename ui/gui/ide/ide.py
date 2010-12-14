@@ -87,7 +87,7 @@ class Ide(QWidget):
     ######################   
     def newactBack(self):
         #prepare for wizard        
-        self.ideWiz = IdeWizard(self, "New script")
+        self.ideWiz = IdeWizard(self, self.tr("New script"))
 #        self.ideWiz.exec_()
         #XXX cancel 
         ret = self.ideWiz.exec_()
@@ -139,7 +139,7 @@ class Ide(QWidget):
     
     def openactBack(self):
         #POSIX
-        sFileName = QFileDialog.getOpenFileName(self, QApplication.translate("MainWindow", "open", None, QApplication.UnicodeUTF8),"/home")
+        sFileName = QFileDialog.getOpenFileName(self, self.tr("MainWindow", "open"),"/home")
         if sFileName:
             file = open(sFileName,  "r")
             scin = self.createPage("")
@@ -176,7 +176,7 @@ class Ide(QWidget):
         index = self.scripTab.currentIndex()
         title = self.scripTab.tabText(index)
         if title:
-            sFileName = QFileDialog.getSaveFileName(self, QApplication.translate("MainWindow", "Save as", None, QApplication.UnicodeUTF8),title)
+            sFileName = QFileDialog.getSaveFileName(self, self.tr("MainWindow", "Save as"),title)
             page = self.pages[index]
             file = open(str(sFileName),"w")
             file.write(page.text())

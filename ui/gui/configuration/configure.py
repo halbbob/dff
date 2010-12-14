@@ -34,13 +34,8 @@ class ConfigureDialog(QDialog,  UiConfigure):
         self.connect(self.buttonSelectWorkspace,  SIGNAL("clicked()"), self.selectWorkspace)
     
     def initLanguage(self):
-        if self.Conf.language == "FR" :
-            self.LanguageBox.addItem(QApplication.translate("Configure", "French", None, QApplication.UnicodeUTF8))
-            self.LanguageBox.addItem(QApplication.translate("Configure", "English", None, QApplication.UnicodeUTF8))
-        else :
-            self.LanguageBox.addItem(QApplication.translate("Configure", "English", None, QApplication.UnicodeUTF8))
-            self.LanguageBox.addItem(QApplication.translate("Configure", "French", None, QApplication.UnicodeUTF8))
-        
+        pass
+    
     # Get the information about the config
     def getAllInfo(self):
         lParam = []
@@ -49,6 +44,6 @@ class ConfigureDialog(QDialog,  UiConfigure):
         return lParam
         
     def selectWorkspace(self):
-        sDirPath = QFileDialog.getExistingDirectory(self, QApplication.translate("Configure", "Choose Your Directory For Extraction", None, QApplication.UnicodeUTF8),  "/home")
+        sDirPath = QFileDialog.getExistingDirectory(self, self.tr("Configure", "Choose Your Directory For Extraction"),  "/home")
         if (sDirPath) :
             self.valueWorkspace.setText(sDirPath)

@@ -380,14 +380,14 @@ class Shell(MDockWidget):
 
     def g_display(self):
         self.setWidget(ShellView(self))
-        self.setWindowTitle(QApplication.translate("Shell", "Shell", None, QApplication.UnicodeUTF8))
+        self.setWindowTitle(self.tr("Shell", "Shell"))
 
     def addAction(self, mainWindow):
         self.__action = QAction(self)
         self.__action.setCheckable(True)
         self.__action.setChecked(True)
         self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(QApplication.translate("MainWindow", "Shell", None, QApplication.UnicodeUTF8))
+        self.__action.setText(self.tr("MainWindow", "Shell"))
         self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
     
     def changeVisibleInformations(self):

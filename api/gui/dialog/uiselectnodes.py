@@ -81,8 +81,8 @@ class UiSelectNodes(object):
         QtCore.QMetaObject.connectSlotsByName(selectNode)
 
     def retranslateUi(self, selectNode):
-        selectNode.setWindowTitle(QtGui.QApplication.translate("selectNode", "Select a node", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("selectNode", "Look in :", None, QtGui.QApplication.UnicodeUTF8))
-        self.selectButton.setText(QtGui.QApplication.translate("selectNode", "Select", None, QtGui.QApplication.UnicodeUTF8))
-        self.cancelButton.setText(QtGui.QApplication.translate("selectNode", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
+        selectNode.setWindowTitle(self.tr("selectNode", "Select a node"))
+        self.label.setText(self.tr("selectNode", "Look in:"))
+        self.selectButton.setText(self.tr("selectNode", "Select"))
+        self.cancelButton.setText(self.tr("selectNode", "Cancel"))
 

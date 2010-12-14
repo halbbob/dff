@@ -82,8 +82,7 @@ class UiConfigure(object):
         QtCore.QMetaObject.connectSlotsByName(Configure)
 
     def retranslateUi(self, Configure):
-        Configure.setWindowTitle(QtGui.QApplication.translate("Configure", "Configure", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("Configure", "Language :", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelWorkspace.setText(QtGui.QApplication.translate("Configure", "Extract Folder :", None, QtGui.QApplication.UnicodeUTF8))
-        self.buttonSelectWorkspace.setText(QtGui.QApplication.translate("Configure", "Browser", None, QtGui.QApplication.UnicodeUTF8))
-
+        Configure.setWindowTitle(self.tr("Configure", "Configure"))
+        self.label.setText(self.tr("Configure", "Language:"))
+        self.labelWorkspace.setText(self.tr("Configure", "Extract Folder:"))
+        self.buttonSelectWorkspace.setText(self.tr("Configure", "Browser"))

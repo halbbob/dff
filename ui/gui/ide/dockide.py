@@ -39,7 +39,7 @@ class DockIde(QDockWidget):
     def configure(self):
         self.setAllowedAreas(Qt.AllDockWidgetAreas)
         self.setObjectName("IDE")
-        self.setWindowTitle(QApplication.translate("IDE", "IDE", None, QApplication.UnicodeUTF8))
+        self.setWindowTitle(self.tr("IDE", "IDE"))
 
     def g_display(self):
         self.ide = Ide(self)

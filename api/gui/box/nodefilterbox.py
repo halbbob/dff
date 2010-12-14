@@ -41,11 +41,11 @@ class NodeFilterBox(QGroupBox):
     self.filterSyntaxLabel.setBuddy(self.filterSyntaxComboBox)
 
     self.filterColumnComboBox = QComboBox()
-    self.filterColumnComboBox.addItem("Name")
-    self.filterColumnComboBox.addItem("Size")
-    self.filterColumnComboBox.addItem("Date")
+    self.filterColumnComboBox.addItem(self.tr("Name"))
+    self.filterColumnComboBox.addItem(self.tr("Size"))
+    self.filterColumnComboBox.addItem(self.tr("Date"))
     self.filterColumnComboBox.setCurrentIndex(0)
-    self.filterColumnLabel = QLabel("Attribute:")
+    self.filterColumnLabel = QLabel(self.tr("Attribute:"))
     self.filterColumnLabel.setBuddy(self.filterColumnComboBox)
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":

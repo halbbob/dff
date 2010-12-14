@@ -42,14 +42,14 @@ class Info(QWidget):
     def configure(self):
 #        self.setAllowedAreas(Qt.AllDockWidgetAreas)
         self.setObjectName("dockWidgetBrowser")
-        self.setWindowTitle(QApplication.translate("Info", "Info", None, QApplication.UnicodeUTF8))
+        self.setWindowTitle(self.tr("Info"))
     
     def addAction(self):
         self.action = QAction(self)
         self.action.setCheckable(True)
         self.action.setChecked(True)
         self.action.setObjectName("actionCoreInformations")
-        self.action.setText(QApplication.translate("MainWindow", "Info", None, QApplication.UnicodeUTF8))
+        self.action.setText(self.tr("Info"))
 #        self.__mainWindow.menu["Window"].addAction(self.__action)
         self.connect(self.action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
      
@@ -115,14 +115,11 @@ class Info(QWidget):
     def initTreeModule(self):
         self.treeModule = QTreeWidget(self)
         self.treeModule.setColumnCount(3)
-        headerLabel = [QApplication.translate("Info", "Name", None, QApplication.UnicodeUTF8),  
-        QApplication.translate("Info", "Key", None, QApplication.UnicodeUTF8), 
-        QApplication.translate("Info", "Value", None, QApplication.UnicodeUTF8),
-        QApplication.translate("Info", "Info", None, QApplication.UnicodeUTF8),
-	QApplication.translate("Info", "Type", None, QApplication.UnicodeUTF8)]
+        headerLabel = [self.tr("Name"), self.tr("Key"), self.tr("Value"),
+                       self.tr("Info"), self.tr("Type")]
         self.treeModule.setHeaderLabels(headerLabel)
         self.treeModule.setAlternatingRowColors(True)
-        self.tabWidget.addTab(self.treeModule, QIcon(":blockdevice.png"),"Modules")
+        self.tabWidget.addTab(self.treeModule, QIcon(":blockdevice.png"), self.tr("Modules"))
         self.itemModuleDic = dict()
 	self.itemListArgDic = dict()
 	self.itemArgDic = dict()
@@ -197,13 +194,13 @@ class Info(QWidget):
     def initTreeEnv(self):
         self.treeEnv = QTreeWidget(self)
         self.treeEnv.setColumnCount(3)
-        headerLabel = [QApplication.translate("Info", "Key", None, QApplication.UnicodeUTF8), 
-        QApplication.translate("Info", "Type", None, QApplication.UnicodeUTF8), 
-        QApplication.translate("Info", "Value", None, QApplication.UnicodeUTF8), 
-        QApplication.translate("Info", "From", None, QApplication.UnicodeUTF8)]
+        headerLabel = [self.tr("Key"), 
+        self.tr("Type"), 
+        self.tr("Value"), 
+        self.tr("From")]
         self.treeEnv.setHeaderLabels(headerLabel)
         self.treeEnv.setAlternatingRowColors(True)
-        self.tabWidget.addTab(self.treeEnv, "Environment")
+        self.tabWidget.addTab(self.treeEnv, self.tr("Environment"))
 	self.envItemDic = dict()
 	self.envConfKeyDic = dict()
 	self.envValKeyDic = dict()
@@ -248,12 +245,11 @@ class Info(QWidget):
     def initTreeProcess(self):
         self.treeProcess = QTreeWidget(self)
         self.treeProcess.setColumnCount(3)
-        headerLabel = [QApplication.translate("Info", "PID", None, QApplication.UnicodeUTF8),  
-        QApplication.translate("Info", "Name", None, QApplication.UnicodeUTF8), QApplication.translate("Info", "State", None, QApplication.UnicodeUTF8), 
-        QApplication.translate("Info", "Info", None, QApplication.UnicodeUTF8)] 
+        headerLabel = [self.tr("PID"), self.tr("Name"),
+                       self.tr("State"), self.tr("Info")]
         self.treeProcess.setHeaderLabels(headerLabel)
         self.treeProcess.setAlternatingRowColors(True)
-        self.tabWidget.addTab(self.treeProcess, QIcon(":exec.png"),"Task Manager")
+        self.tabWidget.addTab(self.treeProcess, QIcon(":exec.png"), self.tr("Task Manager"))
  	self.connect(self.treeProcess, SIGNAL("itemDoubleClicked(QTreeWidgetItem*,int)"), self.procClicked)
 	self.procItemDic = dict()
         self.procChildItemDic = dict()

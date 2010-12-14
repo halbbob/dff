@@ -41,8 +41,8 @@ class decodeValues(QWidget):
         self.decodeTree = QTreeWidget()
         self.decodeTree.setColumnCount(2)
         
-        headerLabels = [QApplication.translate("decodeValues", "Type", None, QApplication.UnicodeUTF8),
-                       QApplication.translate("decodeValues", "Value", None, QApplication.UnicodeUTF8)]
+        headerLabels = [self.tr("decodeValues", "Type"),
+                        self.tr("decodeValues", "Value")]
         
         self.decodeTree.setHeaderLabels(headerLabels)
         self.decodeTree.setAlternatingRowColors(True)

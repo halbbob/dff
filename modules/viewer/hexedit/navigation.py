@@ -49,8 +49,8 @@ class navigation(QWidget):
         self.navtree = QTreeWidget()
         self.navtree.setColumnCount(2)
         
-        headerLabels = [QApplication.translate("navigation", "Current", None, QApplication.UnicodeUTF8),
-                       QApplication.translate("navigation", "Value", None, QApplication.UnicodeUTF8)]
+        headerLabels = [self.tr("navigation", "Current"),
+                        self.tr("navigation", "Value")]
         
         self.navtree.setHeaderLabels(headerLabels)
         self.navtree.setAlternatingRowColors(True)
