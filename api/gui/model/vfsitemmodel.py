@@ -26,7 +26,7 @@ from Queue import *
 
 HNAME = 0
 HSIZE = 1
-HACCESSED = 2 
+HACCESSED = 2
 HCHANGED = 3
 HMODIFIED = 4
 HMODULE = 5
@@ -38,17 +38,17 @@ class ImageThumb():
   def __init__(self):
     pass
 
-  def getImage(self, type, node, index):  
+  def getImage(self, type, node, index):
     buff = ""
     tags = None
-    img = QImage() 
+    img = QImage()
     if type == "image/jpeg":
       try:
         buff = self.getThumb(node)
         load = img.loadFromData(buff, type)
 	if load == False:
-	 buff = "" 
-      except VFSError: 
+	 buff = ""
+      except VFSError:
         buff = ""
     if not len(buff):
       f = node.open()
@@ -73,7 +73,6 @@ class ImageThumb():
        file.close()
      return buff
 
-
 class TypeWorker(QThread):
   def __init__(self, *args):
     QThread.__init__(self)
@@ -81,13 +80,13 @@ class TypeWorker(QThread):
     self.typeQueue = Queue()
     self.regImage = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.typeQueue = []
-    self.setUniq = set() 
+    self.setUniq = set()
     self.qmutex = QMutex()
     self.qsem = QSemaphore()
 
   def enqueue(self, parent, index, node):
     self.qmutex.lock()
-    if long(node.this) not in self.setUniq: 
+    if long(node.this) not in self.setUniq:
        self.typeQueue.insert(0, (parent, index, node))
        self.setUniq.add(long(node.this))
        self.qsem.release()
@@ -96,9 +95,9 @@ class TypeWorker(QThread):
   def clear(self):
     #print "clea() " #!!!! si plusieur browser va clear la liste des autres
     self.qmutex.lock()
-    self.typeQueue = [] 
+    self.typeQueue = []
     self.setUniq.clear()
-    self.qsem.acquire(self.qsem.available()) 
+    self.qsem.acquire(self.qsem.available())
     self.qmutex.unlock()
 
   def get(self):
@@ -138,6 +137,7 @@ typeWorker.start()
 class VFSItemModel(QAbstractItemModel):
   #numberPopulated = QtCore.pyqtSignal(int)
   def __init__(self, __parent = None, event=False, fm = False):
+    pass
     QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
     self.VFS = libvfs.VFS.Get()
@@ -150,17 +150,17 @@ class VFSItemModel(QAbstractItemModel):
     self.thumbQueued = {}
     self.fm = fm
     self.fm = False
-    self.checkedNodes = set() 
+    self.checkedNodes = set()
     if self.fm == True:
 	setattr(self, "canFetchMore", self.scanFetchMore)
         setattr(self, "fetchMore", self.sfetchMore)
   #def modelRefresh(self):
-  #  self.emit(SIGNAL("layoutChanged()")) 
+  #  self.emit(SIGNAL("layoutChanged()"))
 
   #def setDataType(self, index, node, type = None):
      #self.__parent.currentView().viewport().update()
      #self.__parent.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
- 
+
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
@@ -176,7 +176,7 @@ class VFSItemModel(QAbstractItemModel):
     #self.rootChildCount = node.childCount()
     ##typeWorker.clearQueue()
     #self.fetchedItems = 0
-    #self.reset()  
+    #self.reset()
 
   def setRootPath(self, node, kompleter = None):
     self.rootItem = node
@@ -186,8 +186,8 @@ class VFSItemModel(QAbstractItemModel):
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
 
-    self.reset()  
-# 
+    self.reset()
+ 
   def scanFetchMore(self, parent):
     print "can fetch more"
     if not parent.isValid():
@@ -199,13 +199,13 @@ class VFSItemModel(QAbstractItemModel):
         return True
     #print "can't fetchmore"
     return False
-#
+
   def qMin(self, x, y):
     if x < y:
       return x
     else:
       return y
-#
+
   def sfetchMore(self, parent):
      print "fetch moore"
      if not parent.isValid():
@@ -223,7 +223,7 @@ class VFSItemModel(QAbstractItemModel):
      self.fetchedItems += itemsToFetch
      self.endInsertRows()
      self.numberPopulated.emit(itemsToFetch)
-      
+
   def rowCount(self, parent):
     if self.fm == True:
 	return self.fetchedItems
@@ -231,7 +231,7 @@ class VFSItemModel(QAbstractItemModel):
 	parentItem = self.rootItem
     else:
         parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    return parentItem.childCount()	
+    return parentItem.childCount()
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
@@ -289,7 +289,7 @@ class VFSItemModel(QAbstractItemModel):
           else:
             return QVariant()
       except IndexError:
-        return QVariant() 
+        return QVariant()
       if column == HMODULE:
         fsobj = node.fsobj()
         if (fsobj != None):
@@ -344,7 +344,7 @@ class VFSItemModel(QAbstractItemModel):
    	    return Qt.Checked
         else:
 	    return Qt.Unchecked
-    return QVariant() 
+    return QVariant()
 
   def setImagesThumbnails(self, flag):
     self.imagesthumbnails = flag
@@ -356,7 +356,6 @@ class VFSItemModel(QAbstractItemModel):
      #print "getting index"
      if not self.hasIndex(row, column, parent):
        return QModelIndex()
-     
      if parent.isValid():
        parentItem = self.VFS.getNodeFromPointer(parent.internalId())
      else:
@@ -367,7 +366,7 @@ class VFSItemModel(QAbstractItemModel):
 
   def parent(self, index):
      #print "getting parent"
-     if not index.isValid(): 
+     if not index.isValid():
        return QModelIndex()
      childItem = self.VFS.getNodeFromPointer(index.internalId())
      parentItem = childItem.parent()
@@ -422,3 +421,29 @@ class VFSItemModel(QAbstractItemModel):
 
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
+
+
+class VfsSearchItemModel(QAbstractItemModel):
+  #numberPopulated = QtCore.pyqtSignal(int)
+  def __init__(self, node_list, __parent = None, event=False, fm = False):
+    self.__node_list = node_list
+
+  def data(self, index, role):
+    if not index.isValid():
+      return QVariant()
+    if index.row() >= self.__node_list.size():
+      return QVariant()
+    return QVariant()
+
+  def columnCount(self, parent = QModelIndex()):
+     return 6
+
+  def rowCount(self, parent = QModelIndex()):
+     return self.__node_list.count()
+
+  def index(self, row, column, parent = QModelIndex()):
+     return index
+
+  def parent(self, index):
+     return index
+

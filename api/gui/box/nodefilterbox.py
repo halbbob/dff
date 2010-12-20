@@ -98,3 +98,26 @@ class NodeFilterBox(QGroupBox):
           self.parent.currentProxyModel().setSortCaseSensitivity(caseSensitivity)
 
 
+class NodeSearchBox(QGroupBox):
+  def __init__(self, parent):
+    QGroupBox.__init__(self, "Search file")
+    self.parent = parent
+
+    self.searchInIndexBox = QCheckBox("Index")
+    self.filterPatternLineEdit = QLineEdit()
+    self.searchButton = QPushButton("Search")
+
+    QtCore.QObject.connect(self.searchButton, SIGNAL("clicked(bool)"), self.searchText)
+
+    self.searchInIndexBox.setChecked(True)
+
+    proxyLayout = QGridLayout()
+    proxyLayout.addWidget(self.filterPatternLineEdit, 0, 0)
+    proxyLayout.addWidget(self.searchInIndexBox, 0, 1)
+    proxyLayout.addWidget(self.searchButton, 0, 2)
+    self.setLayout(proxyLayout)
+
+    self.setVisible(False)
+
+  def searchText(self, checked):
+    pass

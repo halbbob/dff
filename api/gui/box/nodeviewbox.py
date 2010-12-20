@@ -32,7 +32,7 @@ class NodeViewBox(QWidget):
     self.parent = parent
     self.button = {}
     
-#    self.bookdiag = bookmarkDialog(self)
+    # self.bookdiag = bookmarkDialog(self)
     self.bookmarkCategories = []
 
     self.gridLayout = QHBoxLayout(self)
@@ -158,13 +158,13 @@ class NodeViewBox(QWidget):
      self.parent.thumbsView.setVisible(True)
 #     self.button["thumb"].setEnabled(False)
      self.thumbSize.setEnabled(True)
-#     self.button["table"].setEnabled(True)
+ #     self.button["table"].setEnabled(True)
 
   def searchActivated(self):
-     if self.parent.nodeFilterBox.isVisible():
-       self.parent.nodeFilterBox.setVisible(False) 
+     if self.parent.nodeSearchBox.isVisible():
+       self.parent.nodeSearchBox.setVisible(False) 
      else:
-       self.parent.nodeFilterBox.setVisible(True) 
+       self.parent.nodeSearchBox.setVisible(True) 
 
   def createPathEdit(self):
     self.pathedit = QLineEdit(self)
