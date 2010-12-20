@@ -108,8 +108,12 @@ class NodeSearchBox(QGroupBox):
     self.searchButton = QPushButton("Search")
 
     QtCore.QObject.connect(self.searchButton, SIGNAL("clicked(bool)"), self.searchText)
+    QtCore.QObject.connect(self.filterPatternLineEdit, SIGNAL("textChanged(QString)"),
+                           self.filterRegExpChanged)
+    QtCore.QObject.connect(self.searchInIndexBox, SIGNAL("toggled(bool)"),
+                           self.filterRegExpChanged)
 
-    self.searchInIndexBox.setChecked(True)
+    self.searchInIndexBox.setChecked(False)
 
     proxyLayout = QGridLayout()
     proxyLayout.addWidget(self.filterPatternLineEdit, 0, 0)
@@ -120,4 +124,17 @@ class NodeSearchBox(QGroupBox):
     self.setVisible(False)
 
   def searchText(self, checked):
-    pass
+    if not self.searchInIndexBox.isChecked() :
+      self.filterRegExpChanged()
+    else:
+      print "I have no desire to fullfill your useless request"
+
+  def filterRegExpChanged(self):
+    if not self.searchInIndexBox.isChecked() :
+      caseSensitivity = Qt.CaseInsensitive
+      regExp = QRegExp(self.filterPatternLineEdit.text(), caseSensitivity)
+      regExp.setPatternSyntax(QtCore.QRegExp.FixedString)
+      if self.parent.currentProxyModel():
+        self.parent.currentProxyModel().setFilterRegExp(regExp)
+    else:
+      print "I dont want to search anything for you, jerk"
