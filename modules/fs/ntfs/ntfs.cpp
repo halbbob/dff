@@ -94,7 +94,8 @@ void		Ntfs::_setMftMainFile(uint64_t mftEntryOffset)
 /**
  * Create a deleted node with its parent, not for an orphan node.
  */
-void					Ntfs::_createDeletedWithParent(std::list<uint64_t> pathRefs,
+void					Ntfs::_createDeletedWithParent(std::string fileNameS,
+								       std::list<uint64_t> pathRefs,
 								       uint32_t mftEntry,
 								       AttributeFileName *fileName,
 								       AttributeData *data, bool file,
@@ -166,22 +167,23 @@ void					Ntfs::_createDeletedWithParent(std::list<uint64_t> pathRefs,
     }
   
   DEBUG(INFO, "%s in %s\n", fileName->getFileName().c_str(), current->name().c_str());
-  if (_ntfsNodeExists(fileName->getFileName(), current) == NULL ||
+  if (_ntfsNodeExists(fileNameS, current) == NULL ||
       !_mftMainFile->isEntryDiscovered(mftEntry)) {
-    newFile = new NtfsNode(fileName->getFileName().c_str(), data->getSize(),
-			   current, this, file, fileName, SI, _mftEntry, mftEntry, offset);
+    newFile = new NtfsNode(fileNameS, data->getSize(), current, this, file,
+			   fileName, SI, _mftEntry, mftEntry, offset);
     DEBUG(INFO, "Created (usual) node : %s in %s\n", fileName->getFileName().c_str(), "tmp");
     newFile->node(_node);
     if (file) {
       newFile->data(data);
-      }
+    }
     DEBUG(INFO, "creating %s as deleted in current2\n", fileName->getFileName().c_str());
     newFile->setDeleted();
   }
 }
 
 
-void	Ntfs::_createOrphanOrDeleted(AttributeFileName *fileName, bool file,
+void	Ntfs::_createOrphanOrDeleted(std::string fileNameS,
+				     AttributeFileName *fileName, bool file,
 				     AttributeData *data, uint32_t mftEntry,
 				     AttributeStandardInformation *SI,
 				     uint64_t offset)
@@ -244,8 +246,8 @@ void	Ntfs::_createOrphanOrDeleted(AttributeFileName *fileName, bool file,
       _orphan = new NtfsNode("$Orphans", 0, _root, this, false, NULL, SI, _mftEntry);
       _orphan->setDeleted();
     }
-    if (_ntfsNodeExists(fileName->getFileName(), _orphan) == NULL || !_mftMainFile->isEntryDiscovered(mftEntry)) {
-      newFile = new NtfsNode(fileName->getFileName().c_str(), data->getSize(), _orphan, this, true, fileName, SI, _mftEntry, mftEntry, offset);
+    if (_ntfsNodeExists(fileNameS, _orphan) == NULL || !_mftMainFile->isEntryDiscovered(mftEntry)) {
+      newFile = new NtfsNode(fileNameS, data->getSize(), _orphan, this, true, fileName, SI, _mftEntry, mftEntry, offset);
       newFile->node(_node);
       newFile->data(data);
       DEBUG(INFO, "creating %s as deleted in orphans\n", fileName->getFileName().c_str());
@@ -253,7 +255,7 @@ void	Ntfs::_createOrphanOrDeleted(AttributeFileName *fileName, bool file,
     }
   }
   else {
-    _createDeletedWithParent(pathRefs, mftEntry, fileName, data, file, SI, offset);
+    _createDeletedWithParent(fileNameS, pathRefs, mftEntry, fileName, data, file, SI, offset);
   }
 
   DEBUG(INFO, "Out from _createOrphanOrDeleted\n");
@@ -448,6 +450,65 @@ void	Ntfs::_updateTreeWalk(AttributeIndexRoot *indexRoot,
   }
 }
 
+NtfsNode			*Ntfs::_createRegularADSNodes(uint64_t offset,
+							      uint32_t adsAmount,
+							      uint32_t mftID,
+							      AttributeStandardInformation *metaSI,
+							      Node *currentDir,
+							      AttributeFileName *metaFName)
+{
+  AttributeData			**data = new AttributeData *[adsAmount];
+  uint32_t			iADS = 0;
+  Attribute			*attribute;
+  AttributeAttributeList	*attributeList = NULL;
+  uint32_t			extAttrData;
+  NtfsNode			*returnNode = NULL;
+
+  _mftEntry->decode(offset);
+  while ((attribute = _mftEntry->getNextAttribute())) {
+    attribute->readHeader();
+    if (attribute->getType() == ATTRIBUTE_DATA) {
+      data[iADS] = new AttributeData(*attribute);
+      if (!data[iADS]->attributeHeader()->nonResidentFlag) {
+	data[iADS]->offset(data[iADS]->getOffset() + offset + data[iADS]->attributeOffset());
+      }
+      iADS++;
+    }
+    if (attribute->getType() == ATTRIBUTE_ATTRIBUTE_LIST) {
+      attributeList = new AttributeAttributeList(_vfile, *attribute);
+      attributeList->setMftEntry(mftID);
+    }
+  }
+
+  if (attributeList) {
+    extAttrData = attributeList->getExternalAttributeData();
+    if (extAttrData &&
+	_mftEntry->decode(_mftMainFile->data()->offsetFromID(extAttrData))) {
+      while ((attribute = _mftEntry->getNextAttribute())) {
+	attribute->readHeader();
+	if (attribute->getType() == ATTRIBUTE_DATA) {
+	  data[iADS] = new AttributeData(*attribute);
+	  if (!data[iADS]->attributeHeader()->nonResidentFlag) {
+	    data[iADS]->offset(data[iADS]->getOffset() + offset + data[iADS]->attributeOffset());
+	  }
+	  iADS++;
+	}
+      }
+    }
+  }
+
+  for (iADS = 0; iADS < adsAmount; iADS++) {
+    std::ostringstream	name;
+
+    name << metaFName->getFileName() << data[iADS]->getExtName();
+    returnNode = new NtfsNode(name.str(), data[iADS]->getSize(), currentDir, this,
+			      true, metaFName, metaSI, _mftEntry, mftID,
+			      offset);
+    returnNode->data(data[iADS]);
+  }
+
+  return returnNode;
+}
 
 void				Ntfs::_createRegularNode(Node *currentDir,
 							 uint32_t dirMftEntry,
@@ -464,6 +525,7 @@ void				Ntfs::_createRegularNode(Node *currentDir,
   uint64_t			size = 0;
   uint32_t			extAttrData;
   NtfsNode			*newNode = NULL;
+  uint32_t			ads = 0;
 
   while ((attribute = _mftEntry->getNextAttribute())) {
 #if __WORDSIZE == 64
@@ -524,12 +586,14 @@ void				Ntfs::_createRegularNode(Node *currentDir,
       if (!data->attributeHeader()->nonResidentFlag) {
 	data->offset(data->getOffset() + offset + data->attributeOffset());
       }
+      ads++;
     }
     if (attribute->getType() == ATTRIBUTE_ATTRIBUTE_LIST) {
       attributeList = new AttributeAttributeList(_vfile, *attribute);
       attributeList->setMftEntry(curMftEntry);
     }
   }
+
 #if __WORDSIZE == 64
   DEBUG(INFO, "data size before %lu\n", data->getSize());
 #else
@@ -537,7 +601,6 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 #endif
   if (size && !data->getOffset() && attributeList) {
     extAttrData = attributeList->getExternalAttributeData();
-    
     if (extAttrData &&
 	_mftEntry->decode(_mftMainFile->data()->offsetFromID(extAttrData))) {
       while ((attribute = _mftEntry->getNextAttribute())) {
@@ -547,11 +610,13 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 	  if (!data->attributeHeader()->nonResidentFlag) {
 	    data->offset(data->getOffset() + offset + data->attributeOffset());
 	  }
-	  break;
+	  //	  break;
+	  ads++;
 	}
       }
     }
   }
+
 #if __WORDSIZE == 64
   DEBUG(INFO, "data size after %lu\n", data->getSize());
 #else
@@ -565,21 +630,25 @@ void				Ntfs::_createRegularNode(Node *currentDir,
     DEBUG(INFO, "\t\tmftentry %u about to create %s offset 0x%llx\n", curMftEntry, fullFileName->getFileName().c_str(), offset);
 #endif
     
-
     if (curMftEntry != NTFS_ROOT_DIR_MFTENTRY) {
-      newNode = new NtfsNode(fullFileName->getFileName().c_str(),
-			     data->getSize(), currentDir, this, (fileType == 1),
-			     fullFileName, metaSI, _mftEntry, curMftEntry,
-			     offset);
-      newNode->node(_node);
-      
+      if (ads <= 1) {
+	newNode = new NtfsNode(fullFileName->getFileName().c_str(),
+			       data->getSize(), currentDir, this, (fileType == 1),
+			       fullFileName, metaSI, _mftEntry, curMftEntry,
+			       offset);
+	newNode->node(_node);
+	if (fileType == 1 && newNode) {
+	  newNode->data(data);
+	}
+      }
+      else {
+	newNode = _createRegularADSNodes(offset, ads, curMftEntry, metaSI, currentDir, fullFileName);
+      }
+	
       std::vector<Node *>	newVector;
       newVector.push_back(newNode);
       _mftEntryToNode.insert(std::pair<uint32_t, std::vector<Node *> >(curMftEntry, newVector));
-    }
-    if (fileType == 1 && newNode) {
-      newNode->data(data);
-      DEBUG(INFO, "\t\tfile just created and data set for it !\n");
+      
     }
     
     if (fileType == 2 && curMftEntry != NTFS_ROOT_DIR_MFTENTRY && newNode) {
@@ -879,6 +948,57 @@ void		Ntfs::_setRootDirectory(uint64_t mftEntryOffset)
   }
 }
 
+void				Ntfs::_deletedNodeWithADS(uint64_t offset,
+							  uint32_t adsAmount,
+							  uint32_t mftID,
+							  AttributeStandardInformation *metaSI)
+{
+  Attribute			*attribute;
+  AttributeFileName		*metaFileName = NULL;
+  AttributeFileName		*fullFileName = NULL;
+  AttributeData			**data = new AttributeData *[adsAmount];
+  uint8_t			fileType = 0;
+  uint64_t			size = 0;
+  uint32_t			iADS = 0;
+  
+  _mftEntry->decode(offset);
+  while ((attribute = _mftEntry->getNextAttribute())) {
+    attribute->readHeader();
+    if (attribute->getType() == ATTRIBUTE_FILE_NAME) {
+      metaFileName = new AttributeFileName(*attribute);
+      if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
+	  metaFileName->data()->nameSpace == ATTRIBUTE_FN_NAMESPACE_POSIX) {
+	fullFileName = metaFileName;
+      }
+      if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
+	  metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_POSIX) {
+	if (metaFileName->data()->flags & ATTRIBUTE_SI_FLAG_SYSTEM ||
+	    metaFileName->data()->flags & ATTRIBUTE_SI_FLAG_ARCHIVE) {
+	  fileType = 1;
+	}
+      }
+      if (!size)
+	size = metaFileName->data()->realSizeOfFile;
+    }
+    if (attribute->getType() == ATTRIBUTE_DATA) {
+      data[iADS] = new AttributeData(*attribute);
+      if (!size)
+	size = data[iADS]->getSize();
+      if (!data[iADS]->attributeHeader()->nonResidentFlag)
+	data[iADS]->offset(data[iADS]->getOffset() + offset + data[iADS]->attributeOffset());
+      iADS++;
+    }
+  }
+  
+  for (iADS = 0; iADS < adsAmount; iADS++) {
+    std::ostringstream	name;
+
+    name << fullFileName->getFileName() << data[iADS]->getExtName();
+    _createOrphanOrDeleted(name.str(), fullFileName, true, data[iADS], mftID, metaSI, offset);
+  }
+  //done before: _setStateInfo(_mftMainFile->discoverPercent());
+}
+
 void					Ntfs::_checkOrphanEntries()
 {
   std::map<uint32_t, bool>		entryMap = _mftMainFile->getEntryMap();
@@ -901,6 +1021,7 @@ void					Ntfs::_checkOrphanEntries()
 	  AttributeData			*data = new AttributeData();
 	  uint8_t			fileType = 0;
 	  uint64_t			size = 0;
+	  uint32_t			ads = 0;
 	  
 #if __WORDSIZE == 64
 	  DEBUG(INFO, "Offset is 0x%lx\n", offset);
@@ -919,7 +1040,7 @@ void					Ntfs::_checkOrphanEntries()
 		fullFileName = metaFileName;
 	      }
 	      if (metaFileName->data()->flags & ATTRIBUTE_SI_FLAG_DIRECTORY) {
-	fileType = 2;
+		fileType = 2;
 	      }
 	      else if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
 		  metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_POSIX) {
@@ -937,20 +1058,25 @@ void					Ntfs::_checkOrphanEntries()
 		size = data->getSize();
 	      if (!data->attributeHeader()->nonResidentFlag)
 		data->offset(data->getOffset() + offset + data->attributeOffset());
+	      ads++;
 	    }
 	  }
 	  
-	  if (fileType == 1 && fullFileName) {
-	    _createOrphanOrDeleted(fullFileName, true, data, it->first,
-				   metaSI, offset);
-	    _setStateInfo(_mftMainFile->discoverPercent());
-
+	  if (ads <= 1) {
+	    if (fileType == 1 && fullFileName) {
+	      _createOrphanOrDeleted(fullFileName->getFileName(), fullFileName,
+				     true, data, it->first, metaSI, offset);
+	      _setStateInfo(_mftMainFile->discoverPercent());
+	    }
+	    else if (fileType == 2 && fullFileName) {
+	      _createOrphanOrDeleted(fullFileName->getFileName(), fullFileName,
+				     false, data, it->first, metaSI, offset);
+	      //	    _mftMainFile->entryDiscovered(i);
+	      _setStateInfo(_mftMainFile->discoverPercent());
+	    }
 	  }
-	  else if (fileType == 2 && fullFileName) {
-	    _createOrphanOrDeleted(fullFileName, false, data, it->first,
-				   metaSI, offset);
-	    //	    _mftMainFile->entryDiscovered(i);
-	    _setStateInfo(_mftMainFile->discoverPercent());
+	  else {
+	    _deletedNodeWithADS(offset, ads, it->first, metaSI);
 	  }
 	}
       }
@@ -985,17 +1111,17 @@ void		Ntfs::start(argument *arg)
 
   try
     {
-      std::string	sMftDecode;
-      std::stringstream conv;
+      int32_t		tempMftDecode = -1;
 
-      arg->get("mftdecode", &sMftDecode);
-      conv << sMftDecode;
-      conv >> _mftDecode;
+      arg->get("mftdecode", &tempMftDecode);
+      if (tempMftDecode != -1) {
+	_mftDecode = (tempMftDecode >= 0) ? (tempMftDecode) : (-tempMftDecode);
 #if __WORDSIZE == 64
-      DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
+	DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
 #else
-      DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
+	DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
 #endif
+      }
     }
   catch (envError & e)
     {
@@ -1005,17 +1131,17 @@ void		Ntfs::start(argument *arg)
 
   try
     {
-      std::string	sIndexDecode;
-      std::stringstream conv;
+      int32_t		tempIndexDecode = -1;
 
-      arg->get("indexdecode", &sIndexDecode);
-      conv << sIndexDecode;
-      conv >> _indexDecode;
+      arg->get("indexdecode", &tempIndexDecode);
+      if (tempIndexDecode != -1) {
+	_indexDecode = (tempIndexDecode >= 0) ? (tempIndexDecode) : (-tempIndexDecode);
 #if __WORDSIZE == 64
-      DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
+	DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
 #else
-      DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
+	DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
 #endif
+      }
     }
   catch (envError & e)
     {
@@ -1073,6 +1199,11 @@ void		Ntfs::start(argument *arg)
 	if (_mftEntry->decode(_mftDecode)) {
 	  Attribute *attribute;
 	  //_mftEntry->dumpHeader();
+#if __WORDSIZE == 64
+	  printf("Decoding MFT entry at offset 0x%lx\n", _mftDecode);
+#else
+	  printf("Decoding MFT entry at offset 0x%llx\n", _mftDecode);
+#endif
 	  while ((attribute = _mftEntry->getNextAttribute())) {
 	    attribute->readHeader();
 	    attribute->dumpHeader();
@@ -1082,10 +1213,6 @@ void		Ntfs::start(argument *arg)
 	      _data->setRunList();
 	    }
 	    _mftEntry->dumpAttribute(attribute);
-
-	    if (attribute->attributeHeader()->attributeTypeIdentifier == 0x600000)
-	      throw("aie");
-
 	  }
 	}
 	return ;

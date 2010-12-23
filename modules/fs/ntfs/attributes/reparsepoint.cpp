@@ -40,11 +40,11 @@ void	AttributeReparsePoint::content()
   _data = (AttributeReparsePoint_t *)(_readBuffer + _bufferOffset +
 				      _attributeResidentDataHeader->contentOffset);
 
-  DEBUG(INFO, "\t\tFlags: 0x%x\n", _data->flags);
-  DEBUG(INFO, "\t\tReparse data size: 0x%x\n", _data->reparseDataSize);
-  DEBUG(INFO, "\t\tUnused: 0x%x\n", _data->unused);
-  DEBUG(INFO, "\t\tOffset to target name: 0x%x\n", _data->targetNameOffset);
-  DEBUG(INFO, "\t\tLength of target name: 0x%x\n", _data->targetNameLength);
-  DEBUG(INFO, "\t\tOffset to print name of target: 0x%x\n", _data->targetPrintNameOffset);
-  DEBUG(INFO, "\t\tLength of print name: 0x%x\n", _data->targetPrintNameLength);
+  printf("\t\tFlags: 0x%x\n", _data->flags);
+  printf("\t\tReparse data size: 0x%x\n", _data->reparseDataSize);
+  printf("\t\tUnused: 0x%x\n", _data->unused);
+  printf("\t\tOffset to target name: 0x%x\n", _data->targetNameOffset);
+  printf("\t\tLength of target name: 0x%x\n", _data->targetNameLength);
+  printf("\t\tOffset to print name of target: 0x%x\n", _data->targetPrintNameOffset);
+  printf("\t\tLength of print name: 0x%x\n", _data->targetPrintNameLength);
 }

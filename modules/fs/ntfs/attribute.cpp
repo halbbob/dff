@@ -87,60 +87,56 @@ void	Attribute::readHeader()
 
 void	Attribute::dumpHeader()
 {
-  DEBUG(CRITICAL, "\tAttribute HEADER in 0x%x : %s\n", _attributeOffset, getFullName().c_str());
-  DEBUG(CRITICAL, "\t\tattributeTypeIdentifier 0x%x\n", getType());
-  DEBUG(CRITICAL, "\t\tattributeLength 0x%x\n", _attributeHeader->attributeLength);
-  DEBUG(CRITICAL, "\t\tnonResidentFlag 0x%x\n", _attributeHeader->nonResidentFlag);
-  DEBUG(CRITICAL, "\t\tnameLength 0x%x\n", _attributeHeader->nameLength);
-  DEBUG(CRITICAL, "\t\tnameOffset 0x%x\n", _attributeHeader->nameOffset);
-  DEBUG(CRITICAL, "\t\tFlags 0x%x\n", _attributeHeader->flags);
+  printf("Attribute %s Header in 0x%x:\n", getFullName().c_str(), _attributeOffset);
+  printf("\tattributeTypeIdentifier 0x%x\n", getType());
+  printf("\tattributeLength 0x%x\n", _attributeHeader->attributeLength);
+  printf("\tnonResidentFlag 0x%x\n", _attributeHeader->nonResidentFlag);
+  printf("\tnameLength 0x%x\n", _attributeHeader->nameLength);
+  printf("\tnameOffset 0x%x\n", _attributeHeader->nameOffset);
+  printf("\tFlags 0x%x\n", _attributeHeader->flags);
   if (_attributeHeader->flags & ATTRIBUTE_FLAG_COMPRESSED) {
-    DEBUG(CRITICAL, "\t\t\tis compressed\n");
-    ;
+    printf("\t\tis compressed\n");
   }
   if (_attributeHeader->flags & ATTRIBUTE_FLAG_ENCRYPTED) {
-    DEBUG(CRITICAL, "\t\t\tis encrypted\n");
-    ;
+    printf("\t\tis encrypted\n");
   }
   if (_attributeHeader->flags & ATTRIBUTE_FLAG_SPARSE) {
-    DEBUG(CRITICAL, "\t\t\tis sparse\n");
-    ;
+    printf("\t\tis sparse\n");
   }
   if (!(_attributeHeader->flags & ATTRIBUTE_FLAG_COMPRESSED)
       && !(_attributeHeader->flags & ATTRIBUTE_FLAG_ENCRYPTED)
       && !(_attributeHeader->flags & ATTRIBUTE_FLAG_SPARSE)) {
-    DEBUG(CRITICAL, "\t\t\tunknown\n");
-    ;
+    printf("\t\tunknown\n");
   }
 
-  DEBUG(CRITICAL, "\t\tattributeIdentifier 0x%x\n", _attributeHeader->attributeIdentifier);
+  printf("\tattributeIdentifier 0x%x\n", _attributeHeader->attributeIdentifier);
   if (_attributeHeader->nonResidentFlag) {
-    DEBUG(CRITICAL, "\t\tNon-resident data header:\n");
+    printf("\tNon-resident data header:\n");
 #if __WORDSIZE == 64
-    DEBUG(CRITICAL, "\t\t\tStarting VCN\t0x%.16lx\n", _attributeNonResidentDataHeader->startingVCN);
-    DEBUG(CRITICAL, "\t\t\tEnding VCN\t0x%.16lx\n", _attributeNonResidentDataHeader->endingVCN);
+    printf("\t\tStarting VCN\t0x%.16lx\n", _attributeNonResidentDataHeader->startingVCN);
+    printf("\t\tEnding VCN\t0x%.16lx\n", _attributeNonResidentDataHeader->endingVCN);
 #else 
-    DEBUG(CRITICAL, "\t\t\tStarting VCN 0x%.16llx\n", _attributeNonResidentDataHeader->startingVCN);
-    DEBUG(CRITICAL, "\t\t\tEnding VCN 0x%.16llx\n", _attributeNonResidentDataHeader->endingVCN);
+    printf("\t\tStarting VCN 0x%.16llx\n", _attributeNonResidentDataHeader->startingVCN);
+    printf("\t\tEnding VCN 0x%.16llx\n", _attributeNonResidentDataHeader->endingVCN);
 #endif
-    DEBUG(CRITICAL, "\t\t\tRun list offset 0x%x\n", _attributeNonResidentDataHeader->runListOffset);
-    DEBUG(CRITICAL, "\t\t\tCompression unit size 0x%x\n", _attributeNonResidentDataHeader->compressionUnitSize);
-    DEBUG(CRITICAL, "\t\t\tUnused 0x%x\n", _attributeNonResidentDataHeader->unused);
+    printf("\t\tRun list offset 0x%x\n", _attributeNonResidentDataHeader->runListOffset);
+    printf("\t\tCompression unit size 0x%x\n", _attributeNonResidentDataHeader->compressionUnitSize);
+    printf("\t\tUnused 0x%x\n", _attributeNonResidentDataHeader->unused);
 #if __WORDSIZE == 64
-    DEBUG(CRITICAL, "\t\t\tAttribute content allocated size\t%lu bytes\n", _attributeNonResidentDataHeader->attributeContentAllocatedSize);
-    DEBUG(CRITICAL, "\t\t\tAttribute content actual size\t\t%lu bytes\n", _attributeNonResidentDataHeader->attributeContentActualSize);
-    DEBUG(CRITICAL, "\t\t\tAttribute content initialized size\t%lu bytes\n", _attributeNonResidentDataHeader->attributeContentInitializedSize);
+    printf("\t\tAttribute content allocated size\t%lu bytes\n", _attributeNonResidentDataHeader->attributeContentAllocatedSize);
+    printf("\t\tAttribute content actual size\t\t%lu bytes\n", _attributeNonResidentDataHeader->attributeContentActualSize);
+    printf("\t\tAttribute content initialized size\t%lu bytes\n", _attributeNonResidentDataHeader->attributeContentInitializedSize);
 #else
-    DEBUG(CRITICAL, "\t\t\tAttribute content allocated size\t%llu bytes\n", _attributeNonResidentDataHeader->attributeContentAllocatedSize);
-    DEBUG(CRITICAL, "\t\t\tAttribute content actual size\t\t%llu bytes\n", _attributeNonResidentDataHeader->attributeContentActualSize);
-    DEBUG(CRITICAL, "\t\t\tAttribute content initialized size\t%llu bytes\n", _attributeNonResidentDataHeader->attributeContentInitializedSize);
+    printf("\t\tAttribute content allocated size\t%llu bytes\n", _attributeNonResidentDataHeader->attributeContentAllocatedSize);
+    printf("\t\tAttribute content actual size\t\t%llu bytes\n", _attributeNonResidentDataHeader->attributeContentActualSize);
+    printf("\t\tAttribute content initialized size\t%llu bytes\n", _attributeNonResidentDataHeader->attributeContentInitializedSize);
 #endif
   }
   else {
-    DEBUG(CRITICAL, "\t\tResident data header:\n");
-    DEBUG(CRITICAL, "\t\t\tContent size %u bytes (0x%x)\n", _attributeResidentDataHeader->contentSize, _attributeResidentDataHeader->contentSize);
-    DEBUG(CRITICAL, "\t\t\tContent offset 0x%x\n", _attributeResidentDataHeader->contentOffset);
-    DEBUG(CRITICAL, "\t\tContent:\n");    
+    printf("\tResident data header:\n");
+    printf("\t\tContent size %u bytes (0x%x)\n", _attributeResidentDataHeader->contentSize, _attributeResidentDataHeader->contentSize);
+    printf("\t\tContent offset 0x%x\n", _attributeResidentDataHeader->contentOffset);
+    printf("Attribute Content:\n");    
   }
 }
 
@@ -572,6 +568,21 @@ uint64_t	Attribute::getFixupOffset(uint8_t fixupIndex)
 std::string	Attribute::getName()
 {
   return getName(_attributeHeader->attributeTypeIdentifier);
+}
+
+std::string	Attribute::getExtName()
+{
+  std::ostringstream	extName;
+  uint8_t		i = 0;
+  
+  while (i < (_attributeHeader->nameLength * 2)) {
+    extName << (char)*(_readBuffer + _bufferOffset + _attributeHeader->nameOffset + i);
+    i += 2;
+  }
+  if (extName.str().size()) {
+    return std::string(":") + extName.str();
+  }
+  return std::string("");
 }
 
 std::string		Attribute::getFullName()

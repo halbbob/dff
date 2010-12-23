@@ -272,6 +272,7 @@ public:
   uint64_t	getFixupOffset(uint8_t);
 
   std::string	getName();
+  std::string	getExtName();
   std::string	getFullName();
   std::string	getName(uint32_t);
 

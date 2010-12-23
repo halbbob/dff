@@ -144,19 +144,19 @@ uint32_t	AttributeIndexRoot::nextMftEntry()
 void	AttributeIndexRoot::content()
 {
 
-  DEBUG(CRITICAL, "\t\t\tType of attribute in index 0x%x: %s\n", _data->attributeInIndexType, getName(_data->attributeInIndexType).c_str());
-  DEBUG(CRITICAL, "\t\t\tCollation sorting rule 0x%x\n", _data->collationSortingRule);
-  DEBUG(CRITICAL, "\t\t\tSize of each index record in bytes 0x%x\n", _data->indexRecordSizeBytes);
+  printf("\tType of attribute in index 0x%x: %s\n", _data->attributeInIndexType, getName(_data->attributeInIndexType).c_str());
+  printf("\tCollation sorting rule 0x%x\n", _data->collationSortingRule);
+  printf("\tSize of each index record in bytes 0x%x\n", _data->indexRecordSizeBytes);
 
-  DEBUG(CRITICAL, "\t\t\tSize of each index record in clusters 0x%x\n", _data->indexRecordSizeClusters);
-  DEBUG(CRITICAL, "\t\t\tUnused 0x%.2x%.2x%.2x\n", _data->unused[0], _data->unused[1], _data->unused[2]);
+  printf("\tSize of each index record in clusters 0x%x\n", _data->indexRecordSizeClusters);
+  printf("\tUnused 0x%.2x%.2x%.2x\n", _data->unused[0], _data->unused[1], _data->unused[2]);
 
 
-  DEBUG(CRITICAL, "\t\t\trelOffsetStart 0x%x\n", _nodeHeader->relOffsetStart);
-  DEBUG(CRITICAL, "\t\t\trelOffsetEndUsed 0x%x\n", _nodeHeader->relOffsetEndUsed);
-  DEBUG(CRITICAL, "\t\t\trelOffsetEndAlloc 0x%x\n", _nodeHeader->relOffsetEndAlloc);
+  printf("\trelOffsetStart 0x%x\n", _nodeHeader->relOffsetStart);
+  printf("\trelOffsetEndUsed 0x%x\n", _nodeHeader->relOffsetEndUsed);
+  printf("\trelOffsetEndAlloc 0x%x\n", _nodeHeader->relOffsetEndAlloc);
   if (_nodeHeader->flags == ENTRY_CHILD_NODE_EXIST) {
-    DEBUG(CRITICAL, "\t\t\tflags 0x%x: child node exist\n", _nodeHeader->flags);
+    printf("\tflags 0x%x: child node exist\n", _nodeHeader->flags);
   }
 
   if (_data->attributeInIndexType == ATTRIBUTE_FILE_NAME) {
@@ -168,22 +168,18 @@ void	AttributeIndexRoot::content()
     while (currentOffset < _nodeHeader->relOffsetEndAlloc) {
       indexEntry = (IndexEntry *)(_readBuffer + currentOffset + baseOffset);
 
-      DEBUG(CRITICAL, "\t\t\tEntry at index 0x%x:\n", currentOffset);
-      DEBUG(CRITICAL, "\t\t\t\tentryLength: 0x%x\n", indexEntry->entryLength);
-      DEBUG(CRITICAL, "\t\t\t\tcontentLength: 0x%x\n", indexEntry->contentLength);
+      printf("\tEntry at index 0x%x:\n", currentOffset);
+      printf("\t\tentryLength: 0x%x\n", indexEntry->entryLength);
+      printf("\t\tcontentLength: 0x%x\n", indexEntry->contentLength);
       if (indexEntry->flags & ENTRY_CHILD_NODE_EXIST)
-	DEBUG(CRITICAL, "\t\t\t\tHas child\n");
+	printf("\t\tHas child\n");
       if (indexEntry->flags & ENTRY_LAST_ONE)
-	DEBUG(CRITICAL, "\t\t\t\tIs the last entry\n");
+	printf("\t\tIs the last entry\n");
       currentOffset += indexEntry->entryLength;
       
     }
-    
   }
-  else {
-    DEBUG(CRITICAL, "TODOOOOO\n");
-  }
-  DEBUG(CRITICAL, "\n");
+  printf("\n");
 }
 
 uint32_t	AttributeIndexRoot::indexRecordSizeBytes()

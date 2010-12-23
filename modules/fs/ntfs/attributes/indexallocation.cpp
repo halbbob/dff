@@ -379,11 +379,10 @@ void		AttributeIndexAllocation::content()
   while ((currentOffset = nextOffset())) {
     //    currentOffset *= 1024;
 #if __WORDSIZE == 64
-    DEBUG(INFO, "currentOffset indexAllocation: 0x%lx\n", currentOffset);
+    printf("currentOffset indexAllocation: 0x%lx\n", currentOffset);
 #else
-    DEBUG(INFO, "currentOffset indexAllocation: 0x%llx\n", currentOffset);
+    printf("currentOffset indexAllocation: 0x%llx\n", currentOffset);
 #endif
-    ;
   }
 }
 

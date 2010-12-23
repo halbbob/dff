@@ -76,7 +76,7 @@ void			AttributeBitmap::content()
   uint32_t		i = 0;
   std::ostringstream	bitmap;
 
-   bitmap.str("");
+  bitmap.str("");
   while (i < _size) {
     bitmap << std::hex << std::setw(2) << std::setfill('0') << (uint16_t)(*(uint8_t *)(_readBuffer + _attributeOffset + _offset + i));
     if (i % 2) {
@@ -84,7 +84,7 @@ void			AttributeBitmap::content()
     }
     i++;
   }
-  DEBUG(CRITICAL, "\t\t%s\n", bitmap.str().c_str());
+  printf("\t%s\n", bitmap.str().c_str());
   bitmap.str("");
   i = 0;
   while (i < _size) {
@@ -94,10 +94,10 @@ void			AttributeBitmap::content()
     uint8_t val = (uint8_t)(*(uint8_t *)(_readBuffer + _attributeOffset + _offset + i));
     bin(val, bitmap);
     if (i % 2) {
-      bitmap << std::endl;
+      bitmap << std::endl << "\t";
     }
     i++;
   }
-  DEBUG(CRITICAL, "\t\t%s\n", bitmap.str().c_str());
+  printf("\t%s\n", bitmap.str().c_str());
 }
 
