@@ -246,7 +246,8 @@ class Info(QWidget):
         self.treeProcess = QTreeWidget(self)
         self.treeProcess.setColumnCount(3)
         headerLabel = [self.tr("PID"), self.tr("Name"),
-                       self.tr("State"), self.tr("Info")]
+                       self.tr("State"), self.tr("Info"),
+                       self.tr("Exec Time")]
         self.treeProcess.setHeaderLabels(headerLabel)
         self.treeProcess.setAlternatingRowColors(True)
         self.tabWidget.addTab(self.treeProcess, QIcon(":exec.png"), self.tr("Task Manager"))

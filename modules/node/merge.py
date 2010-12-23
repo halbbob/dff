@@ -81,4 +81,4 @@ class merge(Module):
     Module.__init__(self, "merge", MERGE)
     self.conf.add("file1", "node", False, "first file")
     self.conf.add("file2", "node", False, "second file")
-    self.tags = "utils"
+    self.tags = "node"
