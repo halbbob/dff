@@ -40,6 +40,19 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
     QSortFilterProxyModel.__init__(self, parent)
     self.VFS = VFS.Get()  
 
+  def data(self, index, role):
+    if index.isValid():
+      if role == Qt.CheckStateRole:
+        return QVariant()
+      else:
+        origindex = self.mapToSource(index)
+        if origindex.isValid():
+          return self.sourceModel().data(origindex, role)
+        else:
+          return QVariant()
+    else:
+      return QVariant()
+
   def filterAcceptsRow(self, row, parent):
      index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():

@@ -62,22 +62,22 @@
         <translation>Choisissez le type d&apos;image :</translation>
     </message>
     <message>
-        <location filename="dialog.py" line="49"/>
+        <location filename="dialog.py" line="53"/>
         <source>Add Dumps</source>
         <translation>Ajouter des images</translation>
     </message>
     <message>
-        <location filename="dialog.py" line="59"/>
+        <location filename="dialog.py" line="63"/>
         <source>Load module</source>
         <translation>Charger un module</translation>
     </message>
     <message>
-        <location filename="dialog.py" line="65"/>
+        <location filename="dialog.py" line="69"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="dialog.py" line="65"/>
+        <location filename="dialog.py" line="69"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version 0.8)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
         <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version 0.8)&lt;br&gt;&lt;br&gt; Au moindre problème, veuillez s&apos;il vous plaît visiter notre &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;page de support&lt;/a&gt;.&lt;br&gt;Salon de discussion IRC : &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; sur le réseau Freenode.&lt;br&gt;Plus d&apos;informations : &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Logiciel développé par &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; et &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la communauté DFF&lt;/a&gt;.</translation>
     </message>
