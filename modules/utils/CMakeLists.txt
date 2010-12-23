@@ -13,7 +13,6 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 
 add_subdirectory (shm)
-add_subdirectory (filescat)
 
 set(utils_srcs
   __init__.py

@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
+add_subdirectory (local)
+
 set(connector_srcs
   ewf.py
 )
