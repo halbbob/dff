@@ -22,7 +22,7 @@ from api.variant.libvariant import Variant, VMap
 from api.vfs.libvfs import *
 from modules.fs.spare import SpareNode
 
-class CatfilesNode(Node):
+class MergeNode(Node):
    def __init__(self, name, size, parent, mfso, file1, file2):
       Node.__init__(self, name, file1.size() + file2.size(), parent, mfso)
       self.file1 = file1
@@ -61,10 +61,9 @@ class CatfilesNode(Node):
 #      attr.push("size in block", size)
  
 
-class CatFiles(mfso):
+class MERGE(mfso):
     def __init__(self):
-       mfso.__init__(self, "catfiles")
-       self.name = "catfiles"
+       mfso.__init__(self, "merge")
        self.__disown__()
 
     def start(self, args):
@@ -72,14 +71,14 @@ class CatFiles(mfso):
        self.file2 = args.get_node('file2')
        name = self.file1.name() + "-" + self.file2.name()
        size = self.file1.size() + self.file2.size()
-       self.cat_node = CatfilesNode(name, size, None, self, self.file1, self.file2)
-       self.cat_node.__disown__()
-       self.registerTree(self.file1.parent(), self.cat_node)
+       self.merge_node = MergeNode(name, size, None, self, self.file1, self.file2)
+       self.merge_node.__disown__()
+       self.registerTree(self.file1.parent(), self.merge_node)
 
-class catfiles(Module):
+class merge(Module):
   """This module is designed to concat 2 files."""
   def __init__(self):
-    Module.__init__(self, "catfiles", CatFiles)
+    Module.__init__(self, "merge", MERGE)
     self.conf.add("file1", "node", False, "first file")
     self.conf.add("file2", "node", False, "second file")
     self.tags = "utils"

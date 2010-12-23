@@ -306,7 +306,7 @@
 <context>
     <name>NodeBrowser</name>
     <message>
-        <location filename="nodebrowser.py" line="83"/>
+        <location filename="nodebrowser.py" line="96"/>
         <source>nodebrowser</source>
         <translation>Navigateur de nœuds</translation>
     </message>
