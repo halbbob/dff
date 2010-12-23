@@ -83,14 +83,14 @@ class loader():
 
             '''
             if line.startswith(__module_prepend__) and line.find(__module_append__) != -1:
-                m = re.search('^' + __module_prepend__ + '([a-zA-Z]+)' + __module_append__ + '\s*=\s*[\'\"]([ab0-9\.]+)[\'\"]$', line)
+                m = re.search('^' + __module_prepend__ + '([a-zA-Z]+)' + __module_append__ + '\s*=\s*[\'\"]([ab0-9\.]+)[\'\"]\s*$', line)
                 if m and len(m.groups()) == 2:
                     return (__module_prepend__, [m.group(1), m.group(2)])
             if not line.startswith(__api_version_prepend__):
                 return None
             for oneComponent in __api_components__:
                 if line.startswith(__api_version_prepend__ + oneComponent + __api_version_append__):
-                    m = re.search('^' + __api_version_prepend__ + oneComponent + __api_version_append__ + '\s*=\s*[\'\"]([ab0-9\.]+)[\'\"]$', line)
+                    m = re.search('^' + __api_version_prepend__ + oneComponent + __api_version_append__ + '\s*=\s*[\'\"]([ab0-9\.]+)[\'\"]\s*$', line)
                     if m and len(m.groups()) == 1:
                         return (oneComponent, m.group(1))
             return None
