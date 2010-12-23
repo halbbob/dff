@@ -14,9 +14,12 @@
 
 
 add_subdirectory (local)
+if (WIN32)
+ add_subdirectory(windevices)
+endif (WIN32)
 
 set(connector_srcs
   ewf.py
 )
 
-install_file(ewf ${ewf_srcs})
+install_file(connector ${connector_srcs})
