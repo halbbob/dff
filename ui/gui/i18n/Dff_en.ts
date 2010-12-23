@@ -224,8 +224,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="info.py" line="252"/>
+        <location filename="info.py" line="253"/>
         <source>Task Manager</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="info.py" line="250"/>
+        <source>Exec Time</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

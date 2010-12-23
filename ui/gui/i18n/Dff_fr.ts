@@ -224,9 +224,14 @@
         <translation>État</translation>
     </message>
     <message>
-        <location filename="info.py" line="252"/>
+        <location filename="info.py" line="253"/>
         <source>Task Manager</source>
         <translation>Gestionnaire des tâches</translation>
+    </message>
+    <message>
+        <location filename="info.py" line="250"/>
+        <source>Exec Time</source>
+        <translation>Temps d'execution</translation>
     </message>
 </context>
 <context>
