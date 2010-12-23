@@ -46,13 +46,13 @@ class SelectDevices(QTableWidget):
      self.setHorizontalHeaderItem(1, QTableWidgetItem(QString("Device"))) 
      self.setHorizontalHeaderItem(2, QTableWidgetItem(QString("Model"))) 
      self.setHorizontalHeaderItem(3, QTableWidgetItem(QString("Size"))) 
- 
+
      for n in range(0, len(self.devices)):
-       item = QTableWidgetItem
+       item = QTableWidgetItem 
        self.setItem(n, 0, self.item(self.devices[n].serialNumber()))
        self.setItem(n, 1, self.item(self.devices[n].blockDevice())) 
        self.setItem(n, 2, self.item(self.devices[n].model()))
-       self.setItem(n, 3, self.item(str(self.devices[n].size())))
+       self.setItem(n, 3, self.item(QString(str(self.devices[n].size()))))
 
      self.horizontalHeader().setStretchLastSection(True)
      self.resizeColumnsToContents()

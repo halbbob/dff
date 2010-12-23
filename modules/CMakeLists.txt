@@ -27,6 +27,8 @@ add_subdirectory (crypto)
 add_subdirectory (archives)
 add_subdirectory (mem)
 add_subdirectory (utils)
+add_subdirectory (node)
+add_subdirectory (connector)
 
 set(module_srcs
   __init__.py

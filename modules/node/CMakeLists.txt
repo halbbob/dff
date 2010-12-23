@@ -13,4 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["devices", "libdevices"]
+set(node_srcs
+  cut.py
+)
+
+install_file(node ${node_srcs})

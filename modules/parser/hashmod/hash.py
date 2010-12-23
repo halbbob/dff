@@ -75,12 +75,16 @@ class HASH(Script):
             return ""
         h = self.getHash(algorithm)
         buff = f.read(8192)
+	total = len(buff) 
         while len(buff) > 0:
+	    self.stateinfo = "%d" % ((total / float(node.size())) * 100) + "%" 
             h.update(buff)
             try :
                 buff = f.read(8192)
+		total += len(buff)
             except vfsError:
                 pass
+	self.stateinfo = "%d" % ((total / float(node.size())) * 100) + "%" 
         f.close()
         return h.hexdigest()
 

@@ -42,7 +42,11 @@ class Dialog(QObject):
            arg.add_node("parent", self.vfs.getnode("/"))
            arg.add_uint64("size", long(dev.selectedDevices.size())) 
 	   exec_type = ["thread", "gui"]
-           self.taskmanager.add("local", arg, exec_type)
+           if os.name == "nt":
+             arg.add_string("name", str(dev.selectedDevices.model()))	   
+             self.taskmanager.add("windevices", arg, exec_type)	
+           else:	   
+             self.taskmanager.add("local", arg, exec_type)
 
   def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """

@@ -12,12 +12,52 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-set(Devices_srcs
+FIND_PACKAGE(SWIG REQUIRED)
+INCLUDE(${SWIG_USE_FILE})
+
+#FIND_PACKAGE(PythonLibs)
+
+INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+INCLUDE_DIRECTORIES(../include)
+
+if (UNIX)
+  set (libdevices_srcs
+       device.cpp
+     )
+else (UNIX)
+   set (libdevices_srcs
+       device.cpp
+       wmidev.cpp	
+     )
+endif(UNIX)
+
+SET_SOURCE_FILES_PROPERTIES(libdevices.i PROPERTIES CPLUSPLUS ON)
+SWIG_ADD_MODULE(libdevices python libdevices.i ${libdevices_srcs})
+SWIG_LINK_LIBRARIES(libdevices ${PYTHON_LIBRARIES})
+
+
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+set_target_properties (${SWIG_MODULE_libdevices_REAL_NAME} PROPERTIES
+  PREFIX "../"
+  SUFFIX ".pyd"
+)
+endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
+if (UNIX)
+set(libdevices_files
   __init__.py
-# modules.py
+  libdevices.py
+  devices.py
+  dbushaldev.py
+)
+else (UNIX)
+set(libdevices_files
+  __init__.py
+  libdevices.py
   devices.py
 )
+endif(UNIX)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+install_lib(${SWIG_MODULE_libdevices_REAL_NAME})
+install_file(libdevices ${libdevices_files})
 
-install_file(Devices ${Devices_srcs})

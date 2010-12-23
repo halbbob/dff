@@ -13,4 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["devices", "libdevices"]
+set(connector_srcs
+  ewf.py
+)
+
+install_file(ewf ${ewf_srcs})
