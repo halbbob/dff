@@ -15,7 +15,7 @@
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex
 
 # CORE
@@ -86,9 +86,12 @@ class ApplyModule(QDialog,  UiApplyModule):
                     if node is None :
                         errorArg.append(i)
                 else :
-                    value = str(self.valueArgs[i].currentText())
-                    if value == "" :
-                        errorArg.append(i)
+                    if i.type != "int":
+                        value = str(self.valueArgs[i].currentText())
+                        if value == "" :
+                            errorArg.append(i)
+                    else:
+                        value = self.valueArgs[i].value()
         if len(errorArg) > 0:
             QMessageBox.warning(self, self.tr("ApplyModule", "Missing Arguments"), self.tr("ApplyModule", "There are missing arguments."))
         else:
@@ -155,10 +158,11 @@ class ApplyModule(QDialog,  UiApplyModule):
                     #value.setCurrentNode(currentNode)
 
             elif arg.type == "int":
-                value = StringComboBox(self.argumentsContainer)
-                value.setEditable(True)
-                for i in range(0, len(list)) :
-                    value.addPath(str(list[i]))
+                value = QSpinBox()
+                value.setRange(-(2**31), (2**31)-1)
+#                value.setEditable(True)
+#                for i in range(0, len(list)) :
+#                    value.addPath(str(list[i]))
                 button = None
             
             elif arg.type == "string":
@@ -210,19 +214,22 @@ class ApplyModule(QDialog,  UiApplyModule):
                 self.arg.add_node(str(i.name), self.vfs.getnode(str(self.valueArgs[i].text())))
                 #self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
             else :
-                value = str(self.valueArgs[i].currentText())
                 if i.type == "path" :
+                    value = str(self.valueArgs[i].currentText())
                     self.arg.add_path(str(i.name), str(value))
                 elif i.type == "int" :
-                    self.arg.add_int(str(i.name), int(value))
+                    value = self.valueArgs[i].value()
+                    print "TEST INT : ", value
+                    self.arg.add_int(str(i.name), value)
                 elif i.type == "string" :
-                    self.arg.add_string(str(i.name), value)            
+                    value = str(self.valueArgs[i].currentText())
+                    self.arg.add_string(str(i.name), value)       
                 elif i.type == "bool" :
                     if value == "True" :
                         value = 1
                     else :
                         value = 0
-                    self.arg.add_bool(str(i.name), int(value))
+                    self.arg.add_bool(str(i.name), int(value, 10))
         self.taskmanager = TaskManager()
         modules = self.currentModuleName()
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
