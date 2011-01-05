@@ -34,7 +34,6 @@ SuperBlock::~SuperBlock()
 void    SuperBlock::init(uint64_t fs_size, VFile * vfile, results * res,
                          const std::string & sb_check,
                          const std::string & sb_force_addr)
-  throw(vfsError)
 {
   //seek and read boot code : 1024 bytes
   read(vfile, __BOOT_CODE_SIZE);
@@ -112,7 +111,8 @@ bool    SuperBlock::sigfind(uint64_t fs_size, VFile * vfile)
 
       vfile->seek(_offset);
       vfile->read((void *)sig, read_size);
-
+      if (read_size < 1024)
+	return possible_sb_found;
       for (uint8_t i = 0; i < (read_size / 1024); ++i)
         {
 	  if (sig[i].signature == __SB_SIG)
