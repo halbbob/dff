@@ -19,31 +19,19 @@ class Dialog(QObject):
      self.taskmanager = TaskManager()
      self.loader = loader.loader()
 
-  def addDumps(self):
-       """Choose to add a device or a file"""
-       items = [self.tr("Device"), self.tr("File")]
-       res = QInputDialog.getItem(self.parent, self.tr("Add dump:"), self.tr("Choose dump type:"), items, 0, False) 
-       type = res[0] 
-       ok = res[1]
-       if ok:
-	 if type == self.tr("Device"):
-	    self.addDevices()
-         elif type == self.tr("File"):
-	    self.addFiles()
-
   def addDevices(self):
        """Open a device list dialog"""
        dev = DevicesDialog(self.parent)
        if dev.exec_():
-	 if dev.selectedDevices:
+	 if dev.selectedDevice:
            arg = self.env.libenv.argument("gui_input")
            arg.thisown = 0
-	   arg.add_path("path", str(dev.selectedDevices.blockDevice())) 
+	   arg.add_path("path", str(dev.selectedDevice.blockDevice())) 
            arg.add_node("parent", self.vfs.getnode("/"))
-           arg.add_uint64("size", long(dev.selectedDevices.size())) 
+           arg.add_uint64("size", long(dev.selectedDevice.size())) 
 	   exec_type = ["thread", "gui"]
            if os.name == "nt":
-             arg.add_string("name", str(dev.selectedDevices.model()))	   
+             arg.add_string("name", str(dev.selectedDevice.model()))	   
              self.taskmanager.add("windevices", arg, exec_type)	
            else:	   
              self.taskmanager.add("local", arg, exec_type)
