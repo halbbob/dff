@@ -31,7 +31,6 @@ class DevicesDialog(QDialog):
         # Get devices and add in combobox
     self.devices = Devices()
     for n in range(0, len(self.devices)):
-      print "N : ", n
       self.combodevice.addItem(self.devices[n].model())
       self.listdevices[n] = self.devices[n]
 

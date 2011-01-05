@@ -40,7 +40,6 @@ class Dialog(QObject):
         """ Open a Dialog for select a file and add in VFS """
         edialog = evidenceDialog(self.parent)
         ir = edialog.exec_()
-        print ir
         if ir > 0:
           dtype = edialog.comboformat.currentText()
           # RAW files # EWF files # Local directory
