@@ -56,9 +56,7 @@ class Processus(Script):
 	pass	
     except :
 	 error = sys.exc_info()
-         self.timeend = time.time()
          self.error(error)
-    self.timeend = time.time()
     self.error()
     self.event.set()
     if not "thread" in self.exec_flags:
@@ -101,6 +99,7 @@ class Processus(Script):
     if "gui" in self.exec_flags and "gui" in self.mod.flags:
       self.state = "wait"
     else:
+      self.timeend = time.time()
       self.state = "finish"
 
   def __getattr__(self, attr):
