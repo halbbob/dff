@@ -270,7 +270,7 @@ bool	TwoThreeTree::remove(uint32_t val)
   TwoThreeNode *	leaf_node;
   bool			empty = false;
 
-  std::cout << "removing " << val << std::endl;
+ // std::cout << "removing " << val << std::endl;
   node = this->find(val);
   if (node)
     {
@@ -279,8 +279,9 @@ bool	TwoThreeTree::remove(uint32_t val)
       dump();
       if (!leaf_node)
 	{
-	  std::cout << "done NULL " << val << std::endl;
-	  return leaf_node;
+	
+		//std::cout << "done NULL " << val << std::endl;
+	  return false;
 	}
       if (leaf_node->leftVal() == val)
 	{
@@ -311,23 +312,23 @@ bool	TwoThreeTree::remove(uint32_t val)
 	    {
 	      delete __root;
 	      __root = node;
-	      std::cout << "done root" << val << std::endl;
+	//      std::cout << "done root" << val << std::endl;
 	      return true;
 	    }
 	  else
 	    {
 	      bool	b = remove(leaf_node, val);
-	      std::cout << "done " << val << std::endl;
+	  //    std::cout << "done " << val << std::endl;
 	      return b;
 	    }
 	}
     }
   else
     {
-      std::cout << "done false" << val << std::endl;
+   //   std::cout << "done false" << val << std::endl;
       return false;
     }
-  std::cout << "done end " << val << std::endl;
+  //std::cout << "done end " << val << std::endl;
   return true;
 }
 
