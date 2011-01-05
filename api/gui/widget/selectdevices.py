@@ -57,6 +57,7 @@ class DevicesDialog(QDialog):
     self.formLayout.addRow("Select device :", self.combodevice)
     self.formLayout.addRow("Block device :", self.blockdevice)
     self.formLayout.addRow("Model :", self.model)
+    self.formLayout.addRow("Serial :", self.serial)
     self.formLayout.addRow("Size :", self.size)
 
     self.dcontainer.setLayout(self.formLayout)
