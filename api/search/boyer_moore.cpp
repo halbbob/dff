@@ -31,8 +31,7 @@ BoyerMoore::BoyerMoore(unsigned char *needle, unsigned int needlesize, unsigned 
     this->wildcard = wildcard;
   else
     this->wildcard = 0x00;
-  if (this->computeBcs() == -1)
-    ;
+  this->computeBcs();
 }
 
 BoyerMoore::~BoyerMoore()
