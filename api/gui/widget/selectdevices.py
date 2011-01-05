@@ -41,6 +41,7 @@ class DevicesDialog(QDialog):
     self.selectedDevice = self.devices[0]
 
     self.header = QHBoxLayout()
+    self.header.setAlignment(Qt.AlignLeft)
     self.pix = QPixmap(":dev_hd.png")
     self.pixlabel = QLabel()
     self.pixlabel.setPixmap(self.pix.scaledToWidth(48))
