@@ -599,7 +599,7 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 #else
   DEBUG(INFO, "data size before %llu\n", data->getSize());
 #endif
-  if (size && !data->getOffset() && attributeList) {
+  if (attributeList && size && !data->getOffset()) {
     extAttrData = attributeList->getExternalAttributeData();
     if (extAttrData &&
 	_mftEntry->decode(_mftMainFile->data()->offsetFromID(extAttrData))) {
@@ -1006,14 +1006,14 @@ void					Ntfs::_checkOrphanEntries()
   uint64_t				offset;
   Attribute				*attribute;
   uint32_t				i = 0;
+  uint32_t				mftAmountOfRecords = _mftMainFile->getNumberOfRecords();
 
-  while (i < _mftMainFile->getNumberOfRecords()) {
-    DEBUG(INFO, "Checking for id %u map: %u, end: %u\n", i, it->first, entryMap.end()->first);
-    if (i != it->first) {
-      DEBUG(INFO, "Checking id %u\n", i);
+  while (i < mftAmountOfRecords) {
+    if (it == entryMap.end() || i != it->first) {
+      DEBUG(CRITICAL, "Checking id 0x%x\n", i);
       _mftMainFile->entryDiscovered(i);
       if ((offset = _mftMainFile->data()->offsetFromID(i))) {
-	DEBUG(INFO, "Parsing id %u\n", i);
+	DEBUG(CRITICAL, "Parsing id 0x%x\n", i);
 	if (_mftEntry->decode(offset)) {
 	  AttributeFileName		*metaFileName = NULL;
 	  AttributeFileName		*fullFileName = NULL;
@@ -1024,9 +1024,9 @@ void					Ntfs::_checkOrphanEntries()
 	  uint32_t			ads = 0;
 	  
 #if __WORDSIZE == 64
-	  DEBUG(INFO, "Offset is 0x%lx\n", offset);
+	  DEBUG(CRITICAL, "Offset is 0x%lx\n", offset);
 #else
-	  DEBUG(INFO, "Offset is 0x%llx\n", offset);
+	  DEBUG(CRITICAL, "Offset is 0x%llx\n", offset);
 #endif
 	  while ((attribute = _mftEntry->getNextAttribute())) {
 	    attribute->readHeader();
@@ -1061,27 +1061,28 @@ void					Ntfs::_checkOrphanEntries()
 	      ads++;
 	    }
 	  }
-	  
+	 
 	  if (ads <= 1) {
 	    if (fileType == 1 && fullFileName) {
 	      _createOrphanOrDeleted(fullFileName->getFileName(), fullFileName,
-				     true, data, it->first, metaSI, offset);
+				     true, data, i, metaSI, offset);
 	      _setStateInfo(_mftMainFile->discoverPercent());
 	    }
 	    else if (fileType == 2 && fullFileName) {
 	      _createOrphanOrDeleted(fullFileName->getFileName(), fullFileName,
-				     false, data, it->first, metaSI, offset);
-	      //	    _mftMainFile->entryDiscovered(i);
+				     false, data, i, metaSI, offset);
 	      _setStateInfo(_mftMainFile->discoverPercent());
 	    }
 	  }
-	  else {
-	    _deletedNodeWithADS(offset, ads, it->first, metaSI);
+	  // FIXME metaSI can be null ?
+	  else if (metaSI) {
+	    _deletedNodeWithADS(offset, ads, i, metaSI);
 	  }
 	}
       }
     }
-    if (i == it->first && it != entryMap.end()) {
+    if (it != entryMap.end() && i == it->first) {
+	  DEBUG(CRITICAL, "inc it\n");
       it++;
     }
     i++;
@@ -1108,22 +1109,20 @@ void		Ntfs::start(argument *arg)
 {
   uint64_t	offset = 0;
   uint16_t	mftEntryNumber;
+  int		tmpDecode;
 
   try
     {
-      int32_t		tempMftDecode = -1;
+      arg->get("mftdecode", &tmpDecode);
+      _mftDecode = (uint64_t)tmpDecode;
 
-      arg->get("mftdecode", &tempMftDecode);
-      if (tempMftDecode != -1) {
-	_mftDecode = (tempMftDecode >= 0) ? (tempMftDecode) : (-tempMftDecode);
 #if __WORDSIZE == 64
-	DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
+      DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
 #else
-	DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
+      DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
 #endif
-      }
     }
-  catch (envError & e)
+  catch (envError)
     {
       _mftDecode = -1;
       DEBUG(INFO, "no mft decode offset provided\n");
@@ -1131,19 +1130,15 @@ void		Ntfs::start(argument *arg)
 
   try
     {
-      int32_t		tempIndexDecode = -1;
-
-      arg->get("indexdecode", &tempIndexDecode);
-      if (tempIndexDecode != -1) {
-	_indexDecode = (tempIndexDecode >= 0) ? (tempIndexDecode) : (-tempIndexDecode);
+      arg->get("indexdecode", &tmpDecode);
+      _indexDecode = (uint64_t)tmpDecode;
 #if __WORDSIZE == 64
-	DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
+      DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
 #else
-	DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
+      DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
 #endif
-      }
     }
-  catch (envError & e)
+  catch (envError)
     {
       _indexDecode = -1;
       DEBUG(INFO, "no index decode offset provided\n");
@@ -1191,13 +1186,16 @@ void		Ntfs::start(argument *arg)
       else if (_mftDecode != 0x0ULL - 1)
 #endif
 	{
+	  std::ostringstream	result;
+
 	// switching to mft decode only, usefull for DC3 2k10 
 	_mftEntry->clusterSize(4096);
 	_mftEntry->indexRecordSize(4096);
 	_mftEntry->sectorSize(512);
 	_mftEntry->mftEntrySize(1024);
 	if (_mftEntry->decode(_mftDecode)) {
-	  Attribute *attribute;
+	  Attribute		*attribute;
+
 	  //_mftEntry->dumpHeader();
 #if __WORDSIZE == 64
 	  printf("Decoding MFT entry at offset 0x%lx\n", _mftDecode);
@@ -1214,7 +1212,12 @@ void		Ntfs::start(argument *arg)
 	    }
 	    _mftEntry->dumpAttribute(attribute);
 	  }
+	  result << "MFT entry at offset " << _mftDecode << " (0x" << std::hex << _mftDecode << ") decoded, see std::out";
 	}
+	else {
+	  result << "Unable to decode MFT entry at offset " << _mftDecode << " (0x" << std::hex << _mftDecode << ")";
+	}
+	_setStateInfo(std::string(result.str()));
 	return ;
       }
 #if __WORDSIZE == 64
@@ -1225,10 +1228,13 @@ void		Ntfs::start(argument *arg)
 	{
 	  // switching to index decode only
 	  AttributeIndexAllocation	*content = new AttributeIndexAllocation(_vfile, _indexDecode);
+	  std::ostringstream		result;
 	  
 	  content->dumpNodeHeader();
 	  content->dumpEntries();
-	  
+
+	  result << "Index record entry at offset " << _indexDecode << " (0x" << std::hex << _indexDecode << ") decoded, see std::out";
+	  _setStateInfo(std::string(result.str()));
 	  return ;
 	}
       
@@ -1293,7 +1299,7 @@ void		Ntfs::start(argument *arg)
   catch (vfsError & e)
     {
       std::cerr << "Exception vfsError caught in module Ntfs method start(): " << e.error << std::endl;
-      _setStateInfo(e.error);
+      _setStateInfo(std::string(e.error));
       //throw e;
     }
   catch (envError & e)
@@ -1309,3 +1315,4 @@ void		Ntfs::start(argument *arg)
       //throw e;
     }
 }
+

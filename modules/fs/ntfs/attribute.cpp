@@ -464,8 +464,9 @@ uint64_t	Attribute::nextMftOffset()
 
 void		Attribute::setDateToString(uint64_t value, struct tm **date, std::string *dateString, bool usecond)
 {
-  uint64_t	origValue;
 #if (!defined(WIN32) && !defined(WIN64))
+  uint64_t	origValue;
+
   if (value > 0) {
     value -= NANOSECS_1601_TO_1970;
     origValue = value;
@@ -500,12 +501,12 @@ void		Attribute::setDateToString(uint64_t value, struct tm **date, std::string *
 
 bool		Attribute::setDateToVTime(uint64_t value, vtime *setMe)
 {
-  struct tm	*date;
-
   if (value > 0) {
     value -= NANOSECS_1601_TO_1970;
     value /= 10000000;
 #if (!defined(WIN32) && !defined(WIN64))
+    struct tm	*date;
+
     date = gmtime((time_t *)&value);
     setMe->year = date->tm_year + 1900;
     setMe->month = date->tm_mon + 1;
