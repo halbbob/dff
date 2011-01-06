@@ -30,7 +30,8 @@ public :
 
   void		setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
 			 uint64_t i_addr);
-  vtime *	vtime_from_timestamp(time_t UNIX_timestamp);
+  vtime *	vtime_from_timestamp(time_t UNIX_timestamp, vtime * v = NULL);
+  
 
 private :
   void		__add_acl(Inode * inode, Attributes * attr);

@@ -292,6 +292,7 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
     {
       //throw(vfsError("problem while reading file"));
     }
+  return 0;
 }
 
 uint64_t	mfso::vtell(int32_t fd)

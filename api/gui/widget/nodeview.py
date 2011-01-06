@@ -12,6 +12,7 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 # 
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -23,7 +24,6 @@ class NodeViewEvent():
    self.parent = parent
    self.VFS = VFS.Get()
 
-
   def keyReleaseEvent(self, e):
     index = self.currentIndex()
     index = self.model().mapToSource(index)
@@ -31,7 +31,6 @@ class NodeViewEvent():
       node = self.VFS.getNodeFromPointer(index.internalId())
       self.emit(SIGNAL("nodePressed"), e.key(), node)
     self.origView.keyReleaseEvent(self, e)
-      
 
   def mouseReleaseEvent(self, e):
      index = self.indexAt(e.pos())
@@ -51,7 +50,7 @@ class NodeViewEvent():
 
   def setEnterInDirectory(self, flag):
      self.enterInDirectory = flag  
- 
+
 class NodeThumbsView(QListView, NodeViewEvent):
   def __init__(self, parent):
      QListView.__init__(self, parent)
@@ -59,7 +58,7 @@ class NodeThumbsView(QListView, NodeViewEvent):
      NodeViewEvent.__init__(self, parent)
      width = 64
      height = 64
-     self.setIconSize(width,  height)       
+     self.setIconSize(width, height)
      self.setLayoutMode(QListView.SinglePass)
      self.setViewMode(QListView.IconMode)
      self.setUniformItemSizes(False)
@@ -69,10 +68,10 @@ class NodeThumbsView(QListView, NodeViewEvent):
      self.setMovement(QListView.Static)
      self.setSelectionMode(QAbstractItemView.ExtendedSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectRows)
- 
+
   def setIconSize(self, width, height):
     QListView.setIconSize(self, QSize(width, height))
-    self.setGridSize(QSize(width + 18, height + 20)) 
+    self.setGridSize(QSize(width + 18, height + 20))
 
 class NodeLinkTreeView(QTreeView):
   def __init__(self, parent):
@@ -80,8 +79,8 @@ class NodeLinkTreeView(QTreeView):
      self.VFS = VFS.Get()
      self.setSelectionMode(QAbstractItemView.SingleSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectItems)
-     self.setUniformRowHeights(True)   
- 
+     self.setUniformRowHeights(True)
+
   def mousePressEvent(self, e):
      index = self.indexAt(e.pos())
      if index.isValid():
@@ -95,7 +94,7 @@ class NodeLinkTreeView(QTreeView):
 class NodeTreeView(QTreeView, NodeViewEvent):
   def __init__(self, parent):
      QTreeView.__init__(self, parent)
-     NodeViewEvent.__init__(self, parent) 
+     NodeViewEvent.__init__(self, parent)
      self.origView = QTreeView
      self.setSelectionMode(QAbstractItemView.SingleSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectItems)
@@ -113,6 +112,4 @@ class NodeTableView(QTableView, NodeViewEvent):
       self.setAlternatingRowColors(True)
       self.setSelectionMode(QAbstractItemView.ExtendedSelection)
       self.setSelectionBehavior(QAbstractItemView.SelectRows)
-#changer les font ? 
-
-
+#changer les font ?

@@ -14,13 +14,16 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-%module  SHM 
+%module SHM 
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
 %include "std_map.i"
 %include "windows.i"
+
+%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
+
 %{
 #include "shm.hpp"
 //#include "../../../api/include/exceptions.hpp"
@@ -29,11 +32,6 @@
 %include "shm.hpp"
 //%include "../../../api/include/exceptions.hpp"
 
-
-namespace std
-{
-  %template(ListString)         list<string>;
-};
 
 %pythoncode
 %{

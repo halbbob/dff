@@ -21,6 +21,7 @@ from api.exceptions.libexceptions import vfsError, envError
 from api.type.libtype import vtime
 from api.variant.libvariant import Variant
 
+import os
 from ctypes import CDLL, c_char_p, c_int, pointer, c_ulonglong, c_ulong, create_string_buffer, byref, pointer
 from ctypes.util import find_library
 from binascii import hexlify
@@ -65,23 +66,25 @@ class EWF(fso):
 
   def start(self, args):
     try:
-      file = args.get_path('file').path
+      efile = args.get_path('file').path
     except (envError, vfsError):
       formatted_lines = traceback.format_exc().splitlines()
       self.res.add_const("error", formatted_lines[-1])
       return
-    if file[-4] == ".":
-      file = file[:-2]
-    self.files = glob(file + '*')
+    if efile[-4] == ".":
+      efile = efile[:-2]
+    self.files = glob(efile + '*')
     self.files.sort()
     filesok = ()
-    for file in self.files:
-	if libewf.libewf_check_file_signature(file) == 1:
-          filesok += (file,)
-    self.files =  filesok
+    for efile in self.files:
+      try:	
+	if libewf.libewf_check_file_signature(efile) == 1:
+          filesok += (efile,)
+      except WindowsError:
+	   pass
+    self.files = filesok
     self.volume_array = c_char_p * len(self.files)
-    self.ghandle = libewf.libewf_open(self.volume_array(*self.files), c_int(len(self.files)),
-                                         c_int(1))
+    self.ghandle = libewf.libewf_open(self.volume_array(*self.files), c_int(len(self.files)), c_int(1))
     if self.ghandle == 0:
        raise RuntimeError("Unable to open ewf file " + self.files)
     size_p = pointer(c_ulonglong(0))
@@ -119,7 +122,7 @@ class EWF(fso):
     buf = create_string_buffer(size)
     fi = self.fdm.get(fd)
     retsize = libewf.libewf_read_random(fi.id, buf, c_ulong(size), c_ulonglong(fi.offset))
-    if retsize < 0:
+    if retsize <= 0:
        return (0, "")
     else :
       fi.offset += retsize
@@ -152,19 +155,22 @@ class EWF(fso):
   def status(self):
     return len(self.mapped_files)
 
-
 libewf = None
-
 
 class ewf(Module):
   """EWF connector modules"""
   def __init__(self):
     Module.__init__(self, "ewf", EWF)
     global libewf
-    lib = find_library('ewf')
-    if lib:
-      libewf = CDLL(lib)
-    if not lib or not libewf._name:
+    if os.name == "nt":
+      ewfpath = "modules\\connector\\libewf\\libewf.dll"	    
+      zlibpath = "modules\\connector\\libewf\\zlib.dll"	  
+      zlib = CDLL(zlibpath)
+    else:
+      ewfpath = find_library('ewf')
+    if ewfpath:
+      libewf = CDLL(ewfpath)
+    if not libewf._name:
        raise Exception('loading modules', 'ewf') 
     self.conf.add('file', 'path', False, "First EWF file to open")
     self.tags = "connector"

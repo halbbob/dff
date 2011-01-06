@@ -75,7 +75,7 @@ public:
     */
     void    init(uint64_t fs_size, VFile * vfile, results * res,
                  const std::string & sb_check,
-                 const std::string & sb_force_addr) throw(vfsError);
+                 const std::string & sb_force_addr);
 
     void    force_addr(VFile * vfile, const std::string & addr);
 

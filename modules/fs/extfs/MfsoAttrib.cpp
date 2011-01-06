@@ -77,25 +77,19 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
     __symlink_path(inode, attr);
 }
 
-vtime *	MfsoAttrib::vtime_from_timestamp(time_t UNIX_timestamp)
+vtime *	MfsoAttrib::vtime_from_timestamp(time_t UNIX_timestamp, vtime * v)
 {
+  if (!v)
+    {
+      time_t tmp = UNIX_timestamp;
+      Time * t = new Time(tmp);
+      return t->Vtime();
+    }
   time_t tmp = UNIX_timestamp;
   Time * t = new Time(tmp);
-  return t->Vtime();
-
-#ifndef WIN32
-  /*
-   tm  * t;
-   t = gmtime(&tmp);
-
-   vtime * at = new vtime(t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-   t->tm_hour, t->tm_min, t->tm_sec, 0); */
-  
-#else
-  //    vtime * at = new vtime(0, 0, 0, 0, 0, 0, 0);
-#endif
-
-    //  return at;
+  t->setVtime(v);
+  delete t;
+  return v;
 }
 
 void	MfsoAttrib::__add_xtd_attr(Inode * inode, Attributes * attr)
