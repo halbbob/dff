@@ -61,13 +61,13 @@ class Dialog(QObject):
                   arg.add_path("path", str(name))
                   arg.add_node("parent", self.vfs.getnode("/"))
                   self.taskmanager.add("local", arg, exec_type)
-          else:
-            arg = self.env.libenv.argument("gui_input")
-            arg.thisown = 0
-            exec_type = ["thread", "gui"]
-            arg.add_path("path", str(sFiles))
-            arg.add_node("parent", self.vfs.getnode("/"))
-            self.taskmanager.add("local", arg, exec_type)
+            else:
+              arg = self.env.libenv.argument("gui_input")
+              arg.thisown = 0
+              exec_type = ["thread", "gui"]
+              arg.add_path("path", str(sFiles))
+              arg.add_node("parent", self.vfs.getnode("/"))
+              self.taskmanager.add("local", arg, exec_type)
  
   def loadDriver(self):
         sFileName = QFileDialog.getOpenFileName(self.parent, self.tr("Load module"),  os.path.expanduser('~'),  "Modules(*.py)")
