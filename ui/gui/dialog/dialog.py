@@ -48,21 +48,19 @@ class Dialog(QObject):
           elif dtype == "EWF files" or dtype == "RAW files":
             sFiles = QFileDialog.getOpenFileNames(self.parent, self.tr("Add evidence files"),  os.path.expanduser('~'))
 
-        print len(sFiles)
-
-        if len(sFiles) > 0:
-          if dtype != "Local directory":
-            for name in sFiles:
-              arg = self.env.libenv.argument("gui_input")
-              arg.thisown = 0
-              exec_type = ["thread", "gui"]
-              if dtype == "EWF files":
-                arg.add_path("file", str(name))
-                self.taskmanager.add("ewf", arg, exec_type)
-              else:
-                arg.add_path("path", str(name))
-                arg.add_node("parent", self.vfs.getnode("/"))
-                self.taskmanager.add("local", arg, exec_type)
+          if len(sFiles) > 0:
+            if dtype != "Local directory":
+              for name in sFiles:
+                arg = self.env.libenv.argument("gui_input")
+                arg.thisown = 0
+                exec_type = ["thread", "gui"]
+                if dtype == "EWF files":
+                  arg.add_path("file", str(name))
+                  self.taskmanager.add("ewf", arg, exec_type)
+                else:
+                  arg.add_path("path", str(name))
+                  arg.add_node("parent", self.vfs.getnode("/"))
+                  self.taskmanager.add("local", arg, exec_type)
           else:
             arg = self.env.libenv.argument("gui_input")
             arg.thisown = 0
