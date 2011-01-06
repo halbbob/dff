@@ -94,12 +94,11 @@ class ApplyModule(QDialog,  UiApplyModule):
 
         infolayout.addRow("Module", QLabel(nameModule))
         infolayout.addRow("Type", QLabel(typeModule))
-        infolayout.addRow("Description", QLabel(str(self.loader.modules[str(nameModule)].conf.description)))
+        infolayout.addRow("Description", QLabel(self.loader.modules[str(nameModule)].conf.description))
         self.infoContainer.setLayout(infolayout)
 
         args = Utils.getArgs(str(nameModule))
         self.createArgShape(args)
-        # Set argument description
     
     def createArgShape(self, args):
         self.argslayout = QHBoxLayout()
@@ -136,7 +135,6 @@ class ApplyModule(QDialog,  UiApplyModule):
 
     def argChanged(self, curitem, previtem):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
-#        print "HOHO", curitem.text()
 
     def getWidgetFromType(self, arg):
         list = self.env.getValuesInDb(arg.name, arg.type)
@@ -185,15 +183,13 @@ class ApplyModule(QDialog,  UiApplyModule):
             self.valueArgs[arg] = widget
             return widget
 
-    # XXX check if optional is checked
     def getArguments(self):
         self.arg = self.env.libenv.argument("gui_input")
         self.arg.thisown = 0
         for i in self.valueArgs :
-            if not i.optional and self.valueArgs[i].isEnabled():
+            if not i.optional or self.valueArgs[i].isEnabled():
                 if i.type == "node" :
                     self.arg.add_node(str(i.name), self.vfs.getnode(str(self.valueArgs[i].text())))
-                #self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
                 else :
                     if i.type == "path" :
                         value = str(self.valueArgs[i].currentText())
@@ -213,7 +209,7 @@ class ApplyModule(QDialog,  UiApplyModule):
         self.taskmanager = TaskManager()
         modules = self.currentModuleName()
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
-        return #self.arg
+        return
 
     def openApplyModule(self,  nameModule = None, typeModule = None, nodesSelected = None):
         if(self.isVisible()):
@@ -261,7 +257,6 @@ class browseButton(QPushButton):
         QPushButton.__init__(self,  parent)
         self.targetResult = targetResult
         self.vtype = vtype
-#        self.node = node
         self.setObjectName("Button" + arg_name)
         self.setText(self.tr("Browse", "Browse"))
         self.setFixedSize(QSize(80,  28))
@@ -271,7 +266,6 @@ class browseButton(QPushButton):
         if self.vtype == 1:
             sFileName = QFileDialog.getOpenFileName(self, self.tr("BrowserButton", "Add Dump"),  "/home")
             if (sFileName) :
-#                self.targetResult.clear()
                 self.targetResult.addPathAndSelect(sFileName)
         else:
             BrowseVFSDialog = VFSDialog()
@@ -281,7 +275,6 @@ class browseButton(QPushButton):
                 if node :
                     self.targetResult.clear()
                     self.targetResult.insert(node.absolute())
-                    #self.targetResult.setCurrentNode(node)
                     
 class SimpleNodeBrowser(QWidget):
     def __init__(self, parent):
