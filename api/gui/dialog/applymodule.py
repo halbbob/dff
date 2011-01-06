@@ -147,12 +147,10 @@ class ApplyModule(QDialog,  UiApplyModule):
             if currentNode != None:
                 widget.clear()
                 widget.insert(currentNode.absolute())
-            w = QWidget()
             wl = QHBoxLayout()
             wl.addWidget(widget)
             wl.addWidget(button)
-            w.setLayout(wl)
-            return w
+            return wl
         elif arg.type == "int":
             widget = QSpinBox()
             widget.setRange(-(2**31), (2**31)-1)
@@ -172,12 +170,10 @@ class ApplyModule(QDialog,  UiApplyModule):
                 widget.addPath(list[i])
             self.valueArgs[arg] = widget
             button = browseButton(self.argumentsContainer,  widget, arg.name, 1)
-            w = QWidget()
             wl = QHBoxLayout()
             wl.addWidget(widget)
             wl.addWidget(button)
-            w.setLayout(wl)
-            return w
+            return wl
         elif arg.type == "bool" :
             widget = BoolComboBox(self.argumentsContainer)
             self.valueArgs[arg] = widget
