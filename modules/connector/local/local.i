@@ -20,17 +20,17 @@
 %include "std_set.i"
 %include "std_map.i"
 %include "windows.i"
+
+%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
-//%import "../../../api/variant/libvariant.i"
+
 %{
 #include "../include/export.hpp"
 #include "local.hpp"
-//#include "../../../api/include/exceptions.hpp"
 %}
 
 %include "../include/export.hpp"
 %include "local.hpp"
-//%include "../../../api/include/exceptions.hpp"
 
 
 namespace std

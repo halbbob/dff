@@ -20,7 +20,10 @@
 %include "std_set.i"
 %include "std_map.i"
 %include "windows.i"
+
+%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
+
 %{
 #include "shm.hpp"
 //#include "../../../api/include/exceptions.hpp"

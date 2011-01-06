@@ -15,17 +15,18 @@
  */
 
 %module  FATFS
+
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
 %include "std_map.i"
 %include "std_vector.i"
 %include "windows.i"
+
+%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
-%import "../../../api/exceptions/libexceptions.i"
 
 %{
-//#include "../../../api/include/exceptions.hpp"
 #include "fatfs.hpp"
 %}
 

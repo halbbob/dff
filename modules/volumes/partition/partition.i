@@ -18,6 +18,8 @@
 %include "std_list.i"
 %include "std_map.i"
 %include "windows.i"
+
+%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
 
 %{
