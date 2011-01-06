@@ -86,8 +86,7 @@ void		Extfs::launch(argument * arg)
   arg_get(arg, "parent", &__node);
   arg_get(arg, "SB_addr", &sb_force_addr);
   arg_get(arg, "SB_check", &sb_check);
-  arg_get(arg, "check_alloc", &check_alloc);
-
+  //  arg_get(arg, "check_alloc", &check_alloc);
   sb_check = !sb_check;
 
   // initialization
