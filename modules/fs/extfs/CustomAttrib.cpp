@@ -32,6 +32,7 @@ void    CustomAttrib::setTime(Inode * _inode)
   setTime("accessed", (time_t)_inode->access_time());
   setTime("changed", (time_t)_inode->change_time());
   setTime("modified", (time_t)_inode->modif_time());
+  setTime("created", (time_t)0);
 
 #ifndef WIN32
   if (_inode->delete_time())

@@ -98,3 +98,43 @@ class NodeFilterBox(QGroupBox):
           self.parent.currentProxyModel().setSortCaseSensitivity(caseSensitivity)
 
 
+class NodeSearchBox(QGroupBox):
+  def __init__(self, parent):
+    QGroupBox.__init__(self, "Search file")
+    self.parent = parent
+
+    self.searchInIndexBox = QCheckBox("Index")
+    self.filterPatternLineEdit = QLineEdit()
+    self.searchButton = QPushButton("Search")
+
+    QtCore.QObject.connect(self.searchButton, SIGNAL("clicked(bool)"), self.searchText)
+    QtCore.QObject.connect(self.filterPatternLineEdit, SIGNAL("textChanged(QString)"),
+                           self.filterRegExpChanged)
+    QtCore.QObject.connect(self.searchInIndexBox, SIGNAL("toggled(bool)"),
+                           self.filterRegExpChanged)
+
+    self.searchInIndexBox.setChecked(False)
+
+    proxyLayout = QGridLayout()
+    proxyLayout.addWidget(self.filterPatternLineEdit, 0, 0)
+    proxyLayout.addWidget(self.searchInIndexBox, 0, 1)
+    proxyLayout.addWidget(self.searchButton, 0, 2)
+    self.setLayout(proxyLayout)
+
+    self.setVisible(False)
+
+  def searchText(self, checked):
+    if not self.searchInIndexBox.isChecked() :
+      self.filterRegExpChanged()
+    else:
+      print "I have no desire to fullfill your useless request"
+
+  def filterRegExpChanged(self):
+    if not self.searchInIndexBox.isChecked() :
+      caseSensitivity = Qt.CaseInsensitive
+      regExp = QRegExp(self.filterPatternLineEdit.text(), caseSensitivity)
+      regExp.setPatternSyntax(QtCore.QRegExp.FixedString)
+      if self.parent.currentProxyModel():
+        self.parent.currentProxyModel().setFilterRegExp(regExp)
+    else:
+      print "I dont want to search anything for you, jerk"

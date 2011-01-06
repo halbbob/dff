@@ -148,12 +148,12 @@ void		ExtfsNode::modifiedTime(vtime * t)
   Inode	*	inode = read_inode();
 
   if (!inode)
-    return ;
-
-  delete t;
+    {
+      setTimeToNull(t);
+      return ;
+    }
   MfsoAttrib * c_attr = new MfsoAttrib;
-  t = c_attr->vtime_from_timestamp(inode->modif_time());
-
+  c_attr->vtime_from_timestamp(inode->modif_time(), t);
   delete inode->inode();
   delete inode;
 }
@@ -163,12 +163,13 @@ void		ExtfsNode::accessedTime(vtime * t)
   Inode	*	inode = read_inode();
 
   if (!inode)
-    return ;
+    {
+      setTimeToNull(t);
+      return ;
+    }
 
-  delete t;
   MfsoAttrib * c_attr = new MfsoAttrib;
-  t = c_attr->vtime_from_timestamp(inode->access_time());
-
+  c_attr->vtime_from_timestamp(inode->access_time(), t);
   delete inode->inode();
   delete inode;
 }
@@ -177,8 +178,11 @@ void		ExtfsNode::createdTime(vtime * t)
 {
   Inode * inode = read_inode();
   if (!inode)
-    return ;
-  delete t;
+    {
+      setTimeToNull(t);
+      return ;
+    }
+  
   if (inode->SB()->inodes_struct_size() > sizeof(inodes_t))
     {
       uint8_t * tab = (uint8_t *)operator new(sizeof(__inode_reminder_t));
@@ -186,8 +190,10 @@ void		ExtfsNode::createdTime(vtime * t)
 
       inode->extfs()->vfile()->read(tab, sizeof(__inode_reminder_t));
       MfsoAttrib * c_attr = new MfsoAttrib;
-      t = c_attr->vtime_from_timestamp(i_reminder->creation_time);
+      t = c_attr->vtime_from_timestamp(i_reminder->creation_time, t);
     }
+  else
+    setTimeToNull(t);
   delete inode->inode();
   delete inode;
   
@@ -198,12 +204,13 @@ void		ExtfsNode::changedTime(vtime * t)
   Inode	*	inode = read_inode();
 
   if (!inode)
-    return ;
+    {
+      setTimeToNull(t);
+      return ;
+    }
 
-  delete t;
   MfsoAttrib * c_attr = new MfsoAttrib;
-  t = c_attr->vtime_from_timestamp(inode->change_time());
-
+  c_attr->vtime_from_timestamp(inode->change_time(), t);
   delete inode->inode();
   delete inode;
 }
@@ -248,4 +255,18 @@ Inode *	ExtfsNode::read_inode()
       return NULL;
     }
   return inode;
+}
+
+void	ExtfsNode::setTimeToNull(vtime * t)
+{
+  t->year=
+  t->month=	
+  t->day=	
+  t->hour=	
+  t->minute=	
+  t->second=	
+  t->usecond= 
+  t->wday=
+    t->yday=	
+    t->dst=0;
 }

@@ -50,6 +50,7 @@ public:
 
   EXPORT const tm_t *	tm() const;
   EXPORT vtime *	Vtime() const;
+  EXPORT void		setVtime(vtime * t);
 
 private:
   uint32_t	__february(uint32_t years);

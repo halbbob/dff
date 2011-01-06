@@ -24,7 +24,7 @@ from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.env import *
 
-from api.gui.box.nodefilterbox import NodeFilterBox
+from api.gui.box.nodefilterbox import NodeFilterBox, NodeSearchBox
 from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.dialog.property import Property
 from api.gui.dialog.applymodule import ApplyModule
@@ -160,9 +160,10 @@ class NodeBrowser(QWidget, DEventHandler):
   def addOptionsView(self):
     self.nodeViewBox = NodeViewBox(self)
     self.nodeFilterBox = NodeFilterBox(self)
+    self.nodeSearchBox = NodeSearchBox(self)
     self.baseLayout.insertWidget(0,self.nodeFilterBox)
+    self.baseLayout.insertWidget(0,self.nodeSearchBox)
     self.baseLayout.insertWidget(0, self.nodeViewBox)
-
 
   def addModel(self, path):
     self.model = VFSItemModel(self, True, True)
@@ -171,6 +172,11 @@ class NodeBrowser(QWidget, DEventHandler):
   def addProxyModel(self):
     self.proxyModel = QSortFilterProxyModel(self)
     self.proxyModel.setSourceModel(self.model)
+
+  ###### View searhing #####
+  def addSearchView(self):
+    self.search_model = VfsSearchItemModel(self, True)
+    self.treeModel.setRootPath(self.vfs.getnode("/"))
 
   def addNodeLinkTreeView(self):
     self.treeModel = VFSItemModel(self, True)
@@ -255,7 +261,6 @@ class NodeBrowser(QWidget, DEventHandler):
 	 index = self.currentProxyModel().mapToSource(index)
          return self.VFS.getNodeFromPointer(index.internalId())
 
-
   def nodePressed(self, key, node, index = None):
     if key in [Qt.Key_Up, Qt.Key_Down, Qt.Key_PageUp, Qt.Key_PageDown]:
       if self.nodeViewBox.propertyTable.isVisible():
@@ -321,7 +326,6 @@ class NodeBrowser(QWidget, DEventHandler):
      except IndexError: 
        arg.add_node("file", node)
        self.taskmanager.add("hexedit", arg, ["thread", "gui"])       
-
  
   def createSubMenu(self):
      self.extractor = Extractor(self.parent)

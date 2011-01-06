@@ -125,3 +125,13 @@ uint32_t	Time::__calc_year()
     }
   return year + 1970;
 }
+
+void		Time::setVtime(vtime * t)
+{
+  t->year = __vtime->year;
+  t->month = __vtime->month;
+  t->day = __vtime->day;
+  t->hour = __vtime->hour;
+  t->minute = __vtime->minute;
+  t->second = __vtime->second;
+}
