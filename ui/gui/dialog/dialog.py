@@ -44,30 +44,32 @@ class Dialog(QObject):
           dtype = edialog.comboformat.currentText()
           # RAW files # EWF files # Local directory
           if dtype == "Local directory":
-            sFiles = QFileDialog.getExistingDirectory(self.parent, self.tr("Add evidence directory"),  os.path.expanduser('~'))
-
+            sFiles = QFileDialog.getExistingDirectory(self.parent, self.tr("Add evidence directory"), os.path.expanduser('~'))
           elif dtype == "EWF files" or dtype == "RAW files":
             sFiles = QFileDialog.getOpenFileNames(self.parent, self.tr("Add evidence files"),  os.path.expanduser('~'))
 
-        if dtype != "Local directory":
-          for name in sFiles:
+        print len(sFiles)
+
+        if len(sFiles) > 0:
+          if dtype != "Local directory":
+            for name in sFiles:
+              arg = self.env.libenv.argument("gui_input")
+              arg.thisown = 0
+              exec_type = ["thread", "gui"]
+              if dtype == "EWF files":
+                arg.add_path("file", str(name))
+                self.taskmanager.add("ewf", arg, exec_type)
+              else:
+                arg.add_path("path", str(name))
+                arg.add_node("parent", self.vfs.getnode("/"))
+                self.taskmanager.add("local", arg, exec_type)
+          else:
             arg = self.env.libenv.argument("gui_input")
             arg.thisown = 0
             exec_type = ["thread", "gui"]
-            if dtype == "EWF files":
-              arg.add_path("file", str(name))
-              self.taskmanager.add("ewf", arg, exec_type)
-            else:
-              arg.add_path("path", str(name))
-              arg.add_node("parent", self.vfs.getnode("/"))
-              self.taskmanager.add("local", arg, exec_type)
-        else:
-          arg = self.env.libenv.argument("gui_input")
-          arg.thisown = 0
-          exec_type = ["thread", "gui"]
-          arg.add_path("path", str(sFiles))
-          arg.add_node("parent", self.vfs.getnode("/"))
-          self.taskmanager.add("local", arg, exec_type)
+            arg.add_path("path", str(sFiles))
+            arg.add_node("parent", self.vfs.getnode("/"))
+            self.taskmanager.add("local", arg, exec_type)
  
   def loadDriver(self):
         sFileName = QFileDialog.getOpenFileName(self.parent, self.tr("Load module"),  os.path.expanduser('~'),  "Modules(*.py)")
