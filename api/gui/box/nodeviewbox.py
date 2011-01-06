@@ -161,10 +161,10 @@ class NodeViewBox(QWidget):
  #     self.button["table"].setEnabled(True)
 
   def searchActivated(self):
-     if self.parent.nodeSearchBox.isVisible():
-       self.parent.nodeSearchBox.setVisible(False) 
+     if self.parent.nodeFilterBox.isVisible():
+       self.parent.nodeFilterBox.setVisible(False) 
      else:
-       self.parent.nodeSearchBox.setVisible(True) 
+       self.parent.nodeFilterBox.setVisible(True) 
 
   def createPathEdit(self):
     self.pathedit = QLineEdit(self)
