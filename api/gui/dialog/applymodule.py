@@ -197,11 +197,12 @@ class ApplyModule(QDialog,  UiApplyModule):
                         value = str(self.valueArgs[i].currentText())
                         self.arg.add_string(str(i.name), value)       
                     elif i.type == "bool" :
+			value = str(self.valueArgs[i].currentText())
                         if value == "True" :
                             value = 1
                         else :
                             value = 0
-                        self.arg.add_bool(str(i.name), int(value, 10))
+                        self.arg.add_bool(str(i.name), value)
         self.taskmanager = TaskManager()
         modules = self.currentModuleName()
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
