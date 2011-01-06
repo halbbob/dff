@@ -14,7 +14,7 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-%module  SHM 
+%module SHM 
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
@@ -29,11 +29,6 @@
 %include "shm.hpp"
 //%include "../../../api/include/exceptions.hpp"
 
-
-namespace std
-{
-  %template(ListString)         list<string>;
-};
 
 %pythoncode
 %{

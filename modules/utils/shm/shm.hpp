@@ -14,7 +14,7 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#ifndef __MEML_HH__
+#ifndef __MEM_HH__
 #define __MEM_HH__
 
 #include "mfso.hpp"
@@ -45,7 +45,7 @@ public:
   uint32_t	id();
 };
 
-class Shm: public mfso
+class Shm: public fso
 {
 private:
   vector<pdata *> 		__nodesdata;
