@@ -39,37 +39,38 @@ class FatTests(DffUnittest):
         self.ui.cmd('local --path ' + self.testFile + ' --parent /')
         self.ui.cmd('unzip ' + os.path.basename(self.testFile))
 
-        precOutput = sys.stdout.getvalue()
-        
+        if not self.debugTest:
+            precOutput = sys.stdout.getvalue()
+
         # launch command
-        self.ui.cmd('fat ' + self.vfsTestFilePath[:-1])
-        
-        try:
-            # This call must throw UserWarning because vfsTestFilePath minus
-            #  last character is non-existant
-            resultArrayString = self._getResultsArrayByProcName('fat')
-        except UserWarning:
-            # No result ; VFS module path not found
-            expectedOutput = 'Value error: node < ' + self.vfsTestFilePath[:-1] + ' > doesn\'t exist\n'
+        self.ui.cmd('fatfs ' + self.vfsTestFilePath[:-1])
+       
+        # This call must throw UserWarning because vfsTestFilePath minus
+        #  last character is non-existant
+#        resultArrayString = self._getResultsArrayByProcName('fat')
+        self.assertRaises(UserWarning, lambda: self._getResultsArrayByProcName('fatfs'))
+
+        # No result ; VFS module path not found
+        expectedOutput = 'Value error: node < ' + self.vfsTestFilePath[:-1] + ' > doesn\'t exist\n'
+        if not self.debugTest:
             self.assertEqual(sys.stdout.getvalue()[len(precOutput):], expectedOutput)
             self.assertFalse(sys.stderr.getvalue())
-
 
     def test02_LoadDump(self):
         """ #02 Load a FAT dump and validate filesystem metadata
         """
-        precOutput = sys.stdout.getvalue()
+        if not self.debugTest:
+            precOutput = sys.stdout.getvalue()
         # avoid output from driver loading in current stdout/stderr
         self._hook_streams(sys.__stdout__.fileno(), sys.__stderr__.fileno())
         
         # launch command
-        self.ui.cmd('fat ' + self.vfsTestFilePath)
-        
+        self.ui.cmd('fatfs ' + self.vfsTestFilePath)
+
         # get command line output
         driverStdout, driverStderr = self._restore_streams()
-
         # get framework result from taskmanager
-        resultArrayString = self._getResultsArrayByProcName('fat')
+        resultArrayString = self._getResultsArrayByProcName('Fat File System')
         # read expected output from text file
         expectedArrayString = self._readExpectedOutputAsArray(self.expectedLoadOutput)
         
@@ -80,17 +81,18 @@ class FatTests(DffUnittest):
             i += 1
 
         # validate console output
-        expectedOut = 'Logging enable\n\n'
         # strangely modules loading appears here, so [-len(expectedOut):] on output
-        self.assertEqual(driverStdout[-len(expectedOut):], expectedOut)
-        self.assertFalse(driverStderr)
-        self.assertFalse(sys.stderr.getvalue())
+        if not self.debugTest:
+            self.assertFalse(driverStdout)
+            self.assertFalse(driverStderr)
+            self.assertFalse(sys.stderr.getvalue())
 
 
     def test03_RecurseListing(self):
         """ #03 Recurse list content of the FAT dump
         """
-        precOutput = sys.stdout.getvalue()
+        if not self.debugTest:
+            precOutput = sys.stdout.getvalue()
         
         # launch command
         self.ui.cmd('ls --recursive')
@@ -125,7 +127,6 @@ class FatTests(DffUnittest):
             self.assertEqual(expectedArrayString[i], oneLine)
             i += 1
         self.assertFalse(sys.stderr.getvalue())
-
 
 
 suite = unittest.TestSuite()

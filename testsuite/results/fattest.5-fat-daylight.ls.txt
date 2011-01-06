@@ -4,11 +4,6 @@ COPYING-GNU.txt
 daylight.dd/
 index.html
 readme.txt
-Fat/
-Slack
-Base-Tree/
-Deleted-Items
-WINTER.TXT.slack
-WINTER.TXT
-SUMMER.TXT.slack
-SUMMER.TXT
+Fat File System/
+winter.txt
+summer.txt
