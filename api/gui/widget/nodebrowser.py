@@ -142,10 +142,13 @@ class NodeBrowser(QWidget, DEventHandler):
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
 
+
   def Event(self, e):
-    self.thumbsView.model().sourceModel().emit(SIGNAL("layoutChanged()"))
-    self.tableView.model().sourceModel().emit(SIGNAL("layoutChanged()"))
+    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.model.emit(SIGNAL("layoutChanged()"))
+    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()"))
     self.treeModel.emit(SIGNAL("layoutChanged()"))
+
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)

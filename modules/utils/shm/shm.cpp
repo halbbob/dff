@@ -36,7 +36,7 @@ uint32_t	ShmNode::id()
 }
 
 
-Shm::Shm(): mfso("shm")
+Shm::Shm(): fso("shm")
 {
   this->__fdm = new FdManager();
 }

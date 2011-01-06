@@ -69,8 +69,8 @@ class MainWindow(QMainWindow):
                             ]
 
         self.actionList = [
-            ["New_Dump", self.tr("Add Dump"), self.dialog.addFiles, ":add_image.png", "Add image"],
-            ["New_Device", self.tr("Add device(s)"), self.dialog.addDevices, ":add_device.png", "Add device(s)"],
+            ["New_Dump", self.tr("open evidence file(s)"), self.dialog.addFiles, ":add_image.png", "Add image"],
+            ["New_Device", self.tr("open local device"), self.dialog.addDevices, ":add_device.png", "Add device(s)"],
             ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
             ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
             ["About", "?", self.dialog.about, None, None ],
