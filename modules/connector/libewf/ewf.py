@@ -163,8 +163,8 @@ class ewf(Module):
     Module.__init__(self, "ewf", EWF)
     global libewf
     if os.name == "nt":
-      ewfpath = "C:\\dff-oss\\modules\\connector\\libewf.dll"	    
-      zlibpath = "C:\\dff-oss\\modules\\connector\\zlib.dll"	  
+      ewfpath = "modules\\connector\\libewf\\libewf.dll"	    
+      zlibpath = "modules\\connector\\libewf\\zlib.dll"	  
       zlib = CDLL(zlibpath)
     else:
       ewfpath = find_library('ewf')
