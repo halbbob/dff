@@ -409,11 +409,13 @@ void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, 
 	}
       catch (vfsError e)
 	{
-	  throw vfsError("Mbr::Mbr() Cannot open node" + e.error);
+	  throw vfsError("[PARTITION] Error while processing MBR\n" + e.error);
 	}
     }
   else
-    throw("provided node is NULL");
+    {
+      throw vfsError("[PARTITION] provided vfile is NULL, can't read\n");
+    }
 }
 
 dos_pte*	DosPartition::toPte(uint8_t* buff)
@@ -461,7 +463,9 @@ void	DosPartition::readMbr(uint64_t offset)
       if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
 	{
 	  if (record.signature != 0x55AA)
-	    ;//this->mbr_bad_magic = true;
+	    {
+	      throw vfsError("[PARTITION] Not a valid MBR, Signature (0x55AA) does not match\n");
+	    }
 	  for (i = 0; i != 4; i++)
 	    {
 	      pte = this->toPte(record.partitions+(i*16));
@@ -481,7 +485,7 @@ void	DosPartition::readMbr(uint64_t offset)
     }
   catch(vfsError e)
     {
-      throw("error while reading partition" + e.error);
+      throw vfsError("[PARTITION] error while reading MBR\n" + e.error);
     }
 }
 
@@ -520,6 +524,6 @@ void	DosPartition::readEbr(uint32_t cur, uint32_t shift)
     }
   catch(vfsError e)
     {
-      throw("error while reading partition" + e.error);
+      throw vfsError("[PARTITION] error while reading EBR\n" + e.error);
     }
 }

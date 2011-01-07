@@ -19,8 +19,8 @@
 %include "std_string.i"
 %include "std_list.i"
 
-%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
+
 
 %typemap(in) unsigned char *
 {

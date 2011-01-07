@@ -39,7 +39,7 @@ class ShmNode: public Node
 private:
   uint32_t	__id;
 public:
-  ShmNode(std::string name, uint64_t size, Node* parent, fso* fsobj);
+  ShmNode(std::string name, uint64_t size, fso* fsobj);
   ~ShmNode();
   void		setId(uint32_t id);
   uint32_t	id();

@@ -686,7 +686,6 @@ Open the node and return a pointer to a VFile instance
         Push the fdinfo `fi` into the list of opened file descriptors.
 "
 
-%include "../exceptions/libexceptions.i"
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
@@ -709,7 +708,6 @@ Open the node and return a pointer to a VFile instance
 
 %newobject Node::open();
 %newobject VFile::search();
-
 
 %feature("director:except") fso
 {
@@ -743,30 +741,7 @@ Open the node and return a pointer to a VFile instance
     }
 }
 
-%exception
-{
-  try
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      $action;
-      SWIG_PYTHON_THREAD_END_BLOCK;
-    }
-  catch (Swig::DirectorException e)
-    {
-      SWIG_fail;
-    }
-  catch (vfsError &e)
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      SWIG_Python_Raise(SWIG_NewPointerObj((new vfsError(static_cast< const vfsError& >(e))),SWIGTYPE_p_vfsError, SWIG_POINTER_OWN), "vfsError", SWIGTYPE_p_vfsError);
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      SWIG_fail;
-    }
-  catch (const std::exception &e)
-    {
-      SWIG_exception(SWIG_RuntimeError, e.what());
-    }
-}
+%import "../exceptions/libexceptions.i"
 
 
 %typemap(directorargout) (int32_t fd, void *rbuff, uint32_t size)

@@ -16,7 +16,7 @@
 
 #include "shm.hpp"
 
-ShmNode::ShmNode(std::string name, uint64_t size, Node* parent, fso* fsobj): Node(name, size, parent, fsobj)
+ShmNode::ShmNode(std::string name, uint64_t size, fso* fsobj): Node(name, size, NULL, fsobj)
 {
   this->setFile();
 }
@@ -61,7 +61,11 @@ void	Shm::start(argument* arg)
     }
   catch (vfsError e)
     {
-      throw vfsError("Vfile::start(argument* arg) throw\n" + e.error);
+      throw vfsError("[SHM] start() error\n" + e.error);
+    }
+  catch (envError e)
+    {
+      throw envError("[SHM] start() error with provided arguments\n" + e.error);
     }
   return ;
 }
@@ -72,13 +76,14 @@ Node*	Shm::addnode(Node* parent, string filename)
   uint32_t	id;
   pdata*	data;
   
-  node = new ShmNode(filename, 0, parent, this);
+  node = new ShmNode(filename, 0, this);
   id = this->__nodesdata.size();
   node->setId(id);
   data = new pdata;
   data->buff = NULL;
   data->len = 0;
   this->__nodesdata.push_back(data);
+  this->registerTree(parent, node);
   return node;
 }
 
@@ -88,7 +93,7 @@ int32_t	Shm::vopen(Node *node)
   int32_t	fd;
 
   if (node == NULL)
-    throw vfsError("Shm::bad\n"); 
+    throw vfsError("[SHM] vopen() provided node is NULL\n"); 
   fi = new fdinfo;
   fi->fm = NULL;
   fi->node = node;
@@ -104,6 +109,7 @@ int32_t		Shm::vread(int32_t fd, void *buff, uint32_t size)
   uint32_t	id;
   pdata*	data;
   uint32_t	realsize;
+  std::string	err;
 
   try
     {
@@ -111,10 +117,10 @@ int32_t		Shm::vread(int32_t fd, void *buff, uint32_t size)
       node = dynamic_cast<ShmNode*>(fi->node);
       id = node->id();
       if (id > this->__nodesdata.size())
-	throw vfsError("Shm: cannot read file");
+	throw vfsError("[SHM] vread() node id does not exist\n");
       data = this->__nodesdata[id];
       if ((node->size() == 0) || (data->len == 0) || (data->len < fi->offset) || (node->size() < fi->offset))
-	throw vfsError("Shm: cannot read file");
+	throw vfsError("[SHM] vread() either file size is 0 or offset is too high\n");
       if ((data->len - fi->offset) < size)
 	size = data->len - fi->offset;
       memcpy(buff, (char *)data->buff + fi->offset, size);
@@ -123,11 +129,12 @@ int32_t		Shm::vread(int32_t fd, void *buff, uint32_t size)
     }
   catch (const std::exception& e)
     {
-      throw vfsError("Shm cannot read file\n");
+      err = std::string("[SHM] vread() cannot read file\n") + e.what();
+      throw vfsError(err);
     }
   catch (vfsError e)
     {
-      throw vfsError("Shm cannot read file\n" + e.error);
+      throw vfsError("[SHM] vread() cannot read file\n" + e.error);
     }
 }
 
@@ -137,6 +144,7 @@ int32_t		Shm::vwrite(int32_t fd, void *buff, uint32_t size)
   ShmNode*	node;
   uint32_t	id;
   pdata*	data;
+  std::string	err;
 
   try
     {
@@ -144,10 +152,10 @@ int32_t		Shm::vwrite(int32_t fd, void *buff, uint32_t size)
       node = dynamic_cast<ShmNode*>(fi->node);
       id = node->id();
       if (id > this->__nodesdata.size())
-	throw vfsError("Shm: cannot write file");
+	throw vfsError("[SHM] vwrite() node id does not exist\n");
       data = this->__nodesdata[id];
       if (data->len < fi->offset)
-	throw vfsError("Shm: cannot write file");
+	throw vfsError("[SHM] vwrite() offset is too high\n");
       if (data->len == 0)
 	{
 	  data->buff = new char[size];
@@ -166,11 +174,12 @@ int32_t		Shm::vwrite(int32_t fd, void *buff, uint32_t size)
     }
   catch (const std::exception& e)
     {
-      throw vfsError("Shm cannot write file\n");
+      err = std::string("[SHM] vwrite() cannot write file\n") + e.what();
+      throw vfsError(err);
     }
   catch (vfsError e)
     {
-      throw vfsError("Shm cannot write file\n" + e.error);
+      throw vfsError("[SHM] vwrite() cannot write file\n" + e.error);
     }
 }
 
@@ -179,6 +188,7 @@ uint64_t	Shm::vseek(int32_t fd, uint64_t offset, int32_t whence)
   fdinfo*	fi;
   ShmNode*	node;
   uint32_t	id;
+  std::string	err;
 
   try
     {
@@ -186,34 +196,36 @@ uint64_t	Shm::vseek(int32_t fd, uint64_t offset, int32_t whence)
       node = dynamic_cast<ShmNode*>(fi->node);
       id = node->id();
       if (id > this->__nodesdata.size())
-	throw vfsError("Shm: cannot seek");
+	throw vfsError("[SHM] vseek() node id does not exist\n");
       if (whence == 0)
 	if (offset < node->size())
 	  fi->offset = offset;
 	else
-	  throw vfsError("Shm: cannot seek");
+	  throw vfsError("[SHM] vseek() offset is too high\n");
       else if (whence == 1)
 	if (fi->offset + offset < node->size())
 	  fi->offset += offset;
 	else
-	  throw vfsError("Shm: cannot seek");
+	  throw vfsError("[SHM] vseek() offset is too high\n");
       else if (whence == 2)
 	fi->offset = node->size();
       return (fi->offset);
     }
   catch (const std::exception& e)
     {
-      throw vfsError("Shm: cannot seek\n");
+      err = std::string("[SHM]: vseek() cannot seek\n") + e.what();
+      throw vfsError(err);
     }
   catch (vfsError e)
     {
-      throw vfsError("Shm cannot vseek file\n" + e.error);
+      throw vfsError("[SHM] vseek() cannot seek\n" + e.error);
     }
 }
 
 int32_t		Shm::vclose(int32_t fd)
 {
-//XXX del fp
+  std::string err;
+
   try
     {
       this->__fdm->remove(fd);
@@ -221,7 +233,8 @@ int32_t		Shm::vclose(int32_t fd)
     }
   catch (const std::exception& e)
     {
-      throw vfsError("Shm: fd already close");
+      err = std::string("[SHM] vclose() error while closing fd\n") + e.what();
+      throw vfsError(err);
     }
 }
 
@@ -230,6 +243,7 @@ uint64_t	Shm::vtell(int32_t fd)
   fdinfo*	fi;
   ShmNode*	node;
   uint32_t	id;
+  std::string	err;
 
   try
     {
@@ -238,7 +252,8 @@ uint64_t	Shm::vtell(int32_t fd)
     }
   catch (const std::exception& e)
     {
-      throw vfsError("Shm: cannot tell");
+      err = std::string("[SHM] vtell() can not tell offset\n") + e.what();
+      throw vfsError(err);
     }
 }
 

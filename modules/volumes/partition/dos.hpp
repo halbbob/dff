@@ -17,6 +17,7 @@
 #ifndef __DOS_HPP__
 #define __DOS_HPP__
 
+#include "exceptions.hpp"
 #include "vfile.hpp"
 #include "node.hpp"
 
