@@ -1230,6 +1230,11 @@ void		Ntfs::start(argument *arg)
 	  AttributeIndexAllocation	*content = new AttributeIndexAllocation(_vfile, _indexDecode);
 	  std::ostringstream		result;
 	  
+#if __WORDSIZE == 64
+	  printf("Decoding Index entry at offset 0x%lx\n", _indexDecode);
+#else
+	  printf("Decoding Index entry at offset 0x%llx\n", _indexDecode);
+#endif
 	  content->dumpNodeHeader();
 	  content->dumpEntries();
 

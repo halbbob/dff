@@ -402,11 +402,11 @@ void		AttributeIndexAllocation::dumpHeader()
 
 void		AttributeIndexAllocation::dumpNodeHeader()
 {
-  DEBUG(INFO, "Node header:\n");
-  DEBUG(INFO, "\trelOffsetStart: 0x%x\n", _nodeHeader->relOffsetStart);
-  DEBUG(CRITICAL, "\trelOffsetEndUsed: 0x%x\n", _nodeHeader->relOffsetEndUsed);
-  DEBUG(CRITICAL, "\trelOffsetEndAlloc: 0x%x\n", _nodeHeader->relOffsetEndAlloc);
-  DEBUG(INFO, "\tflags: 0x%x\n", _nodeHeader->flags);
+  printf("Node header:\n");
+  printf("\trelOffsetStart: 0x%x\n", _nodeHeader->relOffsetStart);
+  printf("\trelOffsetEndUsed: 0x%x\n", _nodeHeader->relOffsetEndUsed);
+  printf("\trelOffsetEndAlloc: 0x%x\n", _nodeHeader->relOffsetEndAlloc);
+  printf("\tflags: 0x%x\n", _nodeHeader->flags);
 }
 
 void			AttributeIndexAllocation::dumpEntries()
@@ -421,21 +421,21 @@ void			AttributeIndexAllocation::dumpEntries()
 
   while (_entryOffset < _indexRecordSize) {
     current = (DirectoryIndexEntry *)(_contentBuffer + _entryOffset);
-    DEBUG(INFO, "Entry at offset 0x%x\n", _entryOffset);
+    printf("Entry at offset 0x%x\n", _entryOffset);
     if (current->fileNameMFTFileReference & 0xffffffUL) {
 #if __WORDSIZE == 64
-      DEBUG(CRITICAL, "\tmftEntry %lu\n", current->fileNameMFTFileReference & 0xffffffUL);
+      printf("\tmftEntry %lu\n", current->fileNameMFTFileReference & 0xffffffUL);
 #else
-      DEBUG(CRITICAL, "\tmftEntry %llu\n", current->fileNameMFTFileReference & 0xffffffUL);
+      printf("\tmftEntry %llu\n", current->fileNameMFTFileReference & 0xffffffUL);
 #endif
     }
-    DEBUG(INFO, "\tentryLength 0x%x\n", current->entryLength);
-    DEBUG(INFO, "\tfileNameLength 0x%x\n", current->fileNameLength);
+    printf("\tentryLength 0x%x\n", current->entryLength);
+    printf("\tfileNameLength 0x%x\n", current->fileNameLength);
 
     filename.str("");
     attrFileName = (AttributeFileName_t *)(_contentBuffer + _entryOffset + DIRECTORY_INDEX_ENTRY_SIZE);
-    DEBUG(INFO, "\tFilename attribute:\n");
-    DEBUG(INFO, "\t\tattributeFileNameLength: 0x%x\n", attrFileName->nameLength);
+    printf("\tFilename attribute:\n");
+    printf("\t\tattributeFileNameLength: 0x%x\n", attrFileName->nameLength);
     name = (_contentBuffer + _entryOffset + DIRECTORY_INDEX_ENTRY_SIZE + ATTRIBUTE_FN_SIZE);
     for (i = 0; i < (uint32_t)(attrFileName->nameLength * 2); i++) {
       if (!(i % 2)) {
@@ -448,22 +448,22 @@ void			AttributeIndexAllocation::dumpEntries()
     }
     
 #if __WORDSIZE == 64
-    DEBUG(INFO, "\t\tparent fileref: 0x%.16lx\n", attrFileName->parentDirectoryFileReference);
-    DEBUG(INFO, "\t\t\tseqNumber: 0x%.16lx,  mftEntry:  %lu (0x%.16lx)\n", (attrFileName->parentDirectoryFileReference & 0xffff000000000000UL) >> 0x30, attrFileName->parentDirectoryFileReference & 0x0000ffffffffffffUL, attrFileName->parentDirectoryFileReference & 0x0000ffffffffffffUL);
-    DEBUG(INFO, "\t\trealSizeOfFile: %lu (0x%lx\n)", attrFileName->realSizeOfFile, attrFileName->realSizeOfFile);
+    printf("\t\tparent fileref: 0x%.16lx\n", attrFileName->parentDirectoryFileReference);
+    printf("\t\t\tseqNumber: 0x%.16lx,  mftEntry:  %lu (0x%.16lx)\n", (attrFileName->parentDirectoryFileReference & 0xffff000000000000UL) >> 0x30, attrFileName->parentDirectoryFileReference & 0x0000ffffffffffffUL, attrFileName->parentDirectoryFileReference & 0x0000ffffffffffffUL);
+    printf("\t\trealSizeOfFile: %lu (0x%lx\n)", attrFileName->realSizeOfFile, attrFileName->realSizeOfFile);
 #else
-    DEBUG(INFO, "\t\tparent fileref: 0x%.16llx\n", attrFileName->parentDirectoryFileReference);
-    DEBUG(INFO, "\t\t\tseqNumber: 0x%.16llx,  mftEntry:  0x%.16llx\n", (attrFileName->parentDirectoryFileReference & 0xffff000000000000ULL) >> 0x30, attrFileName->parentDirectoryFileReference & 0x0000ffffffffffffULL);
-    DEBUG(INFO, "\t\trealSizeOfFile: 0x%llx\n", attrFileName->realSizeOfFile);
+    printf("\t\tparent fileref: 0x%.16llx\n", attrFileName->parentDirectoryFileReference);
+    printf("\t\t\tseqNumber: 0x%.16llx,  mftEntry:  0x%.16llx\n", (attrFileName->parentDirectoryFileReference & 0xffff000000000000ULL) >> 0x30, attrFileName->parentDirectoryFileReference & 0x0000ffffffffffffULL);
+    printf("\t\trealSizeOfFile: 0x%llx\n", attrFileName->realSizeOfFile);
 #endif
-    DEBUG(INFO, "\t\tfilename: %s\n", filename.str().c_str());
-    DEBUG(INFO, "\t\tflags: 0x%x\n", attrFileName->flags);
+    printf("\t\tfilename: %s\n", filename.str().c_str());
+    printf("\t\tflags: 0x%x\n", attrFileName->flags);
     
     if (current->flags & ENTRY_CHILD_NODE_EXIST) {
-      DEBUG(INFO, "\t\t Has child\n");
+      printf("\t\t Has child\n");
     }
     if (current->flags & ENTRY_LAST_ONE) {
-      DEBUG(INFO, "\t\t Is the last entry\n");
+      printf("\t\t Is the last entry\n");
       break;
     }
 
