@@ -13,6 +13,11 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
+FILE(RELATIVE_PATH rel ${CMAKE_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+set(DFF_DOC_PATH "${CMAKE_INSTALL_PREFIX}${rel}/help.qhc")
+
+message(STATUS "doc path is ${DFF_DOC_PATH}")
+
 
 add_subdirectory(configuration)
 add_subdirectory(i18n)
@@ -32,8 +37,14 @@ set(gui_srcs
   gui.py
   gui_rc.py
   mainwindow.py
+# Only for release because so huge file for versionning
+#  help.qhc
+#  help.qch
 )
 
+
+
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gui.py ${CMAKE_CURRENT_BINARY_DIR}/gui.py)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mainwindow.py ${CMAKE_CURRENT_BINARY_DIR}/mainwindow.py)
 
 install_file(gui ${gui_srcs})

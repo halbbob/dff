@@ -19,7 +19,7 @@ from Queue import *
 
 # Form Custom implementation of MAINWINDOW
 from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit
-from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile
+from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString
 from PyQt4 import QtCore, QtGui
 
 from api.type import *
@@ -49,7 +49,7 @@ from ui.gui.widget.help import Help
 try:
     from api.settings import DOC_PATH
 except:
-    DOC_PATH = ""
+    DOC_PATH = "@DFF_DOC_PATH@"
 
 
 class MainWindow(QMainWindow):
@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
             dialog.exec_()
             return
 
-        self.addDockWidgets(Help(self))
+        self.addDockWidgets(Help(self, path=path))
 
     def addBrowser(self):
         self.addDockWidgets(NodeBrowser(self)) 

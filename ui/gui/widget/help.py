@@ -29,19 +29,12 @@ from ui.gui.widget.stdio import IO
 
 from ui.redirect import RedirectIO
 
-try:
-    from api.settings import DOC_PATH
-except:
-    DOC_PATH = ""
-
 class Help(QDockWidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, path=None):
         QDockWidget.__init__(self, parent)
         self.name = "Help"
         self.setFloating(False)
         self.setFeatures(QDockWidget.NoDockWidgetFeatures)
-
-        path = DOC_PATH
 
         self.__mainWidget = QSplitter(Qt.Horizontal)
         self.__uname = QWidget()
@@ -50,7 +43,7 @@ class Help(QDockWidget):
         mainWidgetLayout.setContentsMargins(0, 0, 0, 0)
 
         # create helper + search engine
-        self.__helper = QHelpEngine(DOC_PATH, self)
+        self.__helper = QHelpEngine(path, self)
 
         if not self.__helper.setupData() is True:
             dialog = QMessageBox()
