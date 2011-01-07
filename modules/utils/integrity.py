@@ -185,7 +185,7 @@ class integrity(Module):
     Module.__init__(self, "integrity", INTEGRITY)
     self.conf.add("original_content", "node", False, "Original content.")
     self.conf.add("content_to_compare", "node", False, "Content to conpare.")
-    self.conf.add("algorithm", "string", True, "Choose the hash algorithm")
+    self.conf.add("algorithm", "string", False, "Choose the hash algorithm")
     self.conf.add_const("algorithm",  "md5")
     self.conf.add_const("algorithm",  "sha1")
     self.conf.add_const("algorithm",  "sha224")
