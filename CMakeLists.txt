@@ -35,7 +35,7 @@ if(UNIX)
     message(STATUS "Will use -g for debugging -- yes")
   else(ENABLE_DEBUG)
 #change flag here
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2)
     message(STATUS "Will use -g for debugging -- no")
   endif(ENABLE_DEBUG)
 endif(UNIX)
