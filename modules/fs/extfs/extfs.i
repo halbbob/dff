@@ -71,5 +71,5 @@ class EXTFS(Module):
     self.conf.add_const("SB_addr", 1024)
     self.conf.add_const("root_inode", 2)
     self.conf.add_const("fsstat", False)
-    self.tags = "file system"
+    self.tags = "File systems"
 %}
