@@ -46,7 +46,9 @@ namespace std
 %{
 from api.module.module import *
 class EXTFS(Module):
+  """ This module parses extented file system and try to recover deleted data."""
   def __init__(self):
+
     Module.__init__(self, 'extfs', Extfs)
     self.conf.add("parent", "node", False, "The file will be added as son.")
 
