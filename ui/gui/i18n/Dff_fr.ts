@@ -40,6 +40,49 @@
     </message>
 </context>
 <context>
+    <name>DevicesDialog</name>
+    <message>
+        <location filename="selectdevices.py" line="17"/>
+        <source>Select Device</source>
+        <translation>Sélectionnez un périphérique</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="23"/>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="25"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="57"/>
+        <source>Select device:</source>
+        <translation>Sélectionnez un périphérique :</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="58"/>
+        <source>Block device:</source>
+        <translation>Périphérique :</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="59"/>
+        <source>Model:</source>
+        <translation>Modèle :</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="60"/>
+        <source>Serial:</source>
+        <translation>Numéro de série :</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="61"/>
+        <source>Size:</source>
+        <translation>Taille :</translation>
+    </message>
+</context>
+<context>
     <name>Dialog</name>
     <message>
         <location filename="dialog.py" line="73"/>
@@ -735,7 +778,7 @@
         <location filename="applymodule.py" line="258"/>
         <source>Browse</source>
         <comment>Browse</comment>
-        <translation type="unfinished">Parcourir</translation>
+        <translation>Parcourir</translation>
     </message>
 </context>
 <context>

@@ -40,6 +40,49 @@
     </message>
 </context>
 <context>
+    <name>DevicesDialog</name>
+    <message>
+        <location filename="selectdevices.py" line="17"/>
+        <source>Select Device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="23"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="25"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="57"/>
+        <source>Select device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="58"/>
+        <source>Block device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="59"/>
+        <source>Model:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="60"/>
+        <source>Serial:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="61"/>
+        <source>Size:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Dialog</name>
     <message>
         <location filename="dialog.py" line="73"/>

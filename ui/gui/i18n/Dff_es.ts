@@ -44,17 +44,42 @@
     <message>
         <location filename="selectdevices.py" line="23"/>
         <source>OK</source>
-        <translation type="obsolete">OK</translation>
+        <translation>OK</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="27"/>
+        <location filename="selectdevices.py" line="25"/>
         <source>Cancel</source>
-        <translation type="obsolete">Cancelar</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="21"/>
+        <location filename="selectdevices.py" line="17"/>
         <source>Select Device</source>
-        <translation type="obsolete">Seleccionar dispositivo</translation>
+        <translation>Seleccionar dispositivo</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="57"/>
+        <source>Select device:</source>
+        <translation>Seleccionar dispositivo:</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="58"/>
+        <source>Block device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="59"/>
+        <source>Model:</source>
+        <translation>Modelo:</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="60"/>
+        <source>Serial:</source>
+        <translation>Nro. Serie:</translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="61"/>
+        <source>Size:</source>
+        <translation>Tamaño:</translation>
     </message>
 </context>
 <context>
@@ -479,7 +504,7 @@
     <message>
         <location filename="propertytable.py" line="105"/>
         <source>default times</source>
-        <translation type="unfinished">fechas y horas por omisión</translation>
+        <translation>fechas y horas por omisión</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="122"/>
@@ -665,17 +690,17 @@
     <message>
         <location filename="vfsitemmodel.py" line="245"/>
         <source>Accessed time</source>
-        <translation type="unfinished">Fecha accedido</translation>
+        <translation>Fecha accedido</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="247"/>
         <source>Changed time</source>
-        <translation type="unfinished">Fecha cambiado</translation>
+        <translation>Fecha cambiado</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="249"/>
         <source>Modified time</source>
-        <translation type="unfinished">Fecha modificado</translation>
+        <translation>Fecha modificado</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="251"/>
@@ -826,7 +851,7 @@
         <location filename="applymodule.py" line="258"/>
         <source>Browse</source>
         <comment>Browse</comment>
-        <translation type="unfinished">Navegar</translation>
+        <translation>Navegar</translation>
     </message>
 </context>
 <context>
