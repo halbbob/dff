@@ -60,6 +60,7 @@ void    Extfs::start(argument * arg)
     {
       std::cerr << "Extfs::start() :  vfsError exeption caught :"
 		<< std::endl << "\t -> " << e.error << std::endl;
+      throw e;
     }
   catch (std::exception & e)
     {
@@ -86,9 +87,8 @@ void		Extfs::launch(argument * arg)
   arg_get(arg, "parent", &__node);
   arg_get(arg, "SB_addr", &sb_force_addr);
   arg_get(arg, "SB_check", &sb_check);
-  arg_get(arg, "check_alloc", &check_alloc);
-
-  sb_check = !sb_check;
+  //  arg_get(arg, "check_alloc", &check_alloc);
+  //  sb_check = !sb_check;
 
   // initialization
   this->init((sb_check ? "yes" : "no"),
