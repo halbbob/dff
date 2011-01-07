@@ -80,7 +80,8 @@ class ApplyModule(QDialog,  UiApplyModule):
                         if value == "" :
                             errorArg.append(i)
                     else:
-                        value = self.valueArgs[i].value()
+                        v = self.valueArgs[i].currentText().toInt()
+                        value = v[0]
         if len(errorArg) > 0:
             QMessageBox.warning(self, self.tr("ApplyModule", "Missing Arguments"), self.tr("ApplyModule", "There are missing arguments."))
         else:
@@ -168,9 +169,9 @@ class ApplyModule(QDialog,  UiApplyModule):
             widget = QComboBox()
             widget.setEditable(True)
             widget.setValidator(QIntValidator())
-#            widget.setRange(-(2**31), (2**31)-1)
             for i in range(0, len(list)) :
-                widget.addItem(str(list[i]))
+                if widget.findText(str(list[i])) == -1:
+                    widget.addItem(str(list[i]))
             self.valueArgs[arg] = widget
             return widget
 
