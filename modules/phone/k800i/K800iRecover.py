@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-#
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -12,6 +12,7 @@
 # Author(s):
 #  Solal Jacob < sja@arxsys.fr>
 #
+
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread, SLOT, QSignalMapper
 from PyQt4.QtGui import QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QTableWidget, QTableWidgetItem, QComboBox, QInputDialog, QLineEdit, QSplitter, QMessageBox
@@ -152,8 +153,8 @@ class K800iRecover(Module):
     Module.__init__(self, "K800i-Recover", K800IRec)
     self.conf.add("nor", "node", False, "K800i nor dump")
     self.conf.add("nand", "node", False, "K800i nand dump")
-    self.conf.add("spare-size", "int", True, "Size of nand spare")
+    self.conf.add("spare-size", "int", False, "Size of nand spare")
     self.conf.add_const("spare-size", 16)
-    self.conf.add("page-size", "int", True, "Size of nand page")
+    self.conf.add("page-size", "int", False, "Size of nand page")
     self.conf.add_const("page-size", 512)
     self.tags = "Mobile"

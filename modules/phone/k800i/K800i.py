@@ -1,16 +1,16 @@
 # DFF -- An Open Source Digital Forensics Framework
-#
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-# 
+#  
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob < sja@arxsys.fr>
+#  Solal Jacob <sja@digital-forensic.org>
 #
 
 from struct import unpack
@@ -438,8 +438,8 @@ class K800i(Module):
     Module.__init__(self, "k800i", K800I)
     self.conf.add("nor", "node", False, "K800i nor dump")
     self.conf.add("nand", "node", False, "K800i nand dump")
-    self.conf.add("spare-size", "int", True, "Size of nand spare")
+    self.conf.add("spare-size", "int", False, "Size of nand spare")
     self.conf.add_const("spare-size", 16)
-    self.conf.add("page-size", "int", True, "Size of nand page")
+    self.conf.add("page-size", "int", False, "Size of nand page")
     self.conf.add_const("page-size", 512)
     self.tags = "Mobile"
