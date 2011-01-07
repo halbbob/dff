@@ -57,6 +57,7 @@
 
     <file alias="shell.png">icons/devices/chardevice.png</file>
     <file alias="interpreter.png">icons/devices/interpreter.png</file>
+    <file alias="help.png">icons/actions/help.png</file>
 
     <file alias="top.png">icons/actions/up.png</file>
     <file alias="previous.png">icons/actions/previous.png</file>

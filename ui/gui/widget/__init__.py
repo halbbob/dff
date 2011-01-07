@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["info", "interpreter", "redirect", "shell"]
+__all__ = ["info", "interpreter", "redirect", "shell", "help"]

@@ -15,6 +15,7 @@
 
 set(widget_srcs
   __init__.py
+  help.py
   info.py
   interpreter.py
   shell.py
