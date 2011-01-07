@@ -120,11 +120,6 @@
         <translation>Acerca de</translation>
     </message>
     <message>
-        <location filename="dialog.py" line="65"/>
-        <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version 0.8)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
-        <translation type="obsolete">&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version 0.8)&lt;br&gt;&lt;br&gt; si tiene problemas, por favor visite nuestra &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;página de soporte&lt;/a&gt;.&lt;br&gt;Canal IRC: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; en la red Freenode.&lt;br&gt;Más información: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software desarrollado por &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; y &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la comunidad DFF&lt;/a&gt;.</translation>
-    </message>
-    <message>
         <location filename="dialog.py" line="47"/>
         <source>Add evidence directory</source>
         <translation type="unfinished"></translation>
@@ -136,8 +131,8 @@
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
-        <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version 0.9)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
+        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; si tiene problemas, por favor visite nuestra &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;página de soporte&lt;/a&gt;.&lt;br&gt;Canal IRC: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; en la red Freenode.&lt;br&gt;Más información: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software desarrollado por &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; y &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la comunidad DFF&lt;/a&gt;.</translation>
     </message>
 </context>
 <context>
