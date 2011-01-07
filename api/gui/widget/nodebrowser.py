@@ -338,7 +338,7 @@ class NodeBrowser(QWidget, DEventHandler):
      self.submenuFile.addAction(QIcon(":hexedit.png"), "Hex viewer", self.launchHexedit, "Hex viewer")
      self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
      self.submenuFile.addSeparator()
-     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
+#     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
 
   def launchHexedit(self):
      nodes = self.currentNodes()
