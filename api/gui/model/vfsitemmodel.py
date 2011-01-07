@@ -48,13 +48,16 @@ class ImageThumb():
         load = img.loadFromData(buff, type)
 	if load == False:
 	 buff = ""
-      except VFSError:
+      except IOError:
         buff = ""
     if not len(buff):
-      f = node.open()
-      buff = f.read()
-      f.close()
-      load = img.loadFromData(buff)
+      try:
+        f = node.open()
+        buff = f.read()
+        f.close()
+        load = img.loadFromData(buff)
+      except IOError:
+        load = False
     if load:
       img = img.scaled(QSize(128, 128), Qt.KeepAspectRatio, Qt.FastTransformation)
       return img
@@ -63,14 +66,17 @@ class ImageThumb():
   def getThumb(self, node):
      buff = ""
      if node.size() > 6:
-       file = node.open()
-       head = file.find("\xff\xd8\xff", 3, "", 3)
-       if head > 0 and head < node.size():
-         foot = file.find("\xff\xd9", 2, "", long(head))
-         if foot > 0 and foot < node.size():
-           file.seek(head)
-           buff = file.read(foot + 2 - head)
-       file.close()
+       try:
+         file = node.open()
+         head = file.find("\xff\xd8\xff", 3, "", 3)
+         if head > 0 and head < node.size():
+           foot = file.find("\xff\xd9", 2, "", long(head))
+           if foot > 0 and foot < node.size():
+             file.seek(head)
+             buff = file.read(foot + 2 - head)
+         file.close()
+       except IOError:
+         return ""
      return buff
 
 class TypeWorker(QThread):

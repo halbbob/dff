@@ -26,7 +26,7 @@ class IODevice(QIODevice):
      try :
        self.file = self.node.open()
        self.setOpenMode(QIODevice.ReadOnly | QIODevice.Unbuffered)
-       return True	
+       return True
      except AttributeError:
        return False 
 

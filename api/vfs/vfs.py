@@ -37,11 +37,11 @@ class vfs():
 
     def open(self, path):
 	if type(path) == type(""):
-          node = self.getnode(path)
+            node = self.getnode(path)
         if node: #and node.is_file:
-	   return node.open()
+            return node.open()
         else:
-	   return
+            return
 
     def gettree(self):
         return self.libvfs.GetTree()

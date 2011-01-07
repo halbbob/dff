@@ -71,24 +71,19 @@ class Processus(Script):
 
   def error(self, trace = None):
     if trace:
-	 err_type, err_value, err_traceback = trace 
-	 if issubclass(err_type, envError):
-	    self.res.add_const("error", err_value.error)
-            return
-         elif issubclass(err_type, vfsError):
-	    self.res.add_const("error", err_value.error)
-	    return
- 	 self.res.add_const("error", "Error in execution")
-         err_typval = traceback.format_exception_only(err_type, err_value)
-	 res = ""
-         for err in err_typval:
-            res += err
-	 self.res.add_const("error type", err)
+	 err_type, err_value, err_traceback = trace
+	 res = "\n\nWhat:\n"
+         res +=  "----------\n"
+         err_typeval = traceback.format_exception_only(err_type, err_value)
+         for err in err_typeval:
+           res += err
+         res += "\nWhere:\n"
+         res += "-----------\n"
 	 err_trace =  traceback.format_tb(err_traceback)
          for err in err_trace:
-	   res += err
-	   self.res.add_const("error trace", res)
-           self.state = "fail"
+           res += err
+         self.res.add_const("error", res)
+         self.state = "fail"
          return
     try :
        if self.AddNodes():
