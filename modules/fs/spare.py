@@ -73,7 +73,10 @@ class Spare(mfso):
       self.parent = args.get_node("node")
       self.spareSize = args.get_int("spare-size")
       self.pageSize = args.get_int("page-size")
-      self.invert = args.get_bool("invert")
+      try :
+        self.invert = args.get_bool("invert")
+      except KeyError:
+        self.invert = False
       if self.pageSize == None or self.pageSize < 0:
         self.pageSize = 512
       if self.spareSize == None or self.spareSize == -1:
@@ -90,9 +93,9 @@ or before applying a file system reconstruction modules."""
   def __init__(self):
      Module.__init__(self, 'spare', Spare)
      self.conf.add("node", "node", False, "Delete spare of this node.")
-     self.conf.add("spare-size", "int", True, "size of a nand spare")
+     self.conf.add("spare-size", "int", False, "size of a nand spare")
      self.conf.add_const("spare-size", 16)
-     self.conf.add("page-size", "int", True, "size of a nand page")
+     self.conf.add("page-size", "int", False, "size of a nand page")
      self.conf.add_const("page-size", 512)
      self.conf.add("invert", "bool", True, "Create a spare only node")
      self.tags = "Node"
