@@ -24,13 +24,13 @@ class HISTORY(Script):
     self.h = hist.history()
 
   def start(self, args):
-    try :	
+    try :
       if args.get_bool("clear"):
          self.h.clear()
       else :	
         for i in xrange(0, len(self.h.hist)):
   	  print (str(i) + '\t' + self.h.hist[i]).strip('\n')
-    except envError:
+    except KeyError:
        pass	
 
 class history(Module):

@@ -99,5 +99,5 @@ class man(Module):
     def __init__(self):
         Module.__init__(self, "man", MAN)
         self.conf.description = "man display help on other module"
-        self.conf.add("module", "string", True, "corresponds to the module you want help")
+        self.conf.add("module", "string", False, "corresponds to the module you want help")
         self.tags = "builtins"

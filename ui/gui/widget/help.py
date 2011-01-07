@@ -43,15 +43,6 @@ class Help(QDockWidget):
 
         path = DOC_PATH
 
-        file = QFile(path)
-        if not file.exists(path):
-            dialog = QMessageBox()
-            dialog.setText(DOC_PATH + " : No such file.\nYou can check on-line help at http://wiki.digital-forensic.org")
-            dialog.setIcon(QMessageBox.Warning)
-            dialog.setWindowTitle("Error while loading help")
-            dialog.exec_()
-            return
-
         self.__mainWidget = QSplitter(Qt.Horizontal)
         self.__uname = QWidget()
 

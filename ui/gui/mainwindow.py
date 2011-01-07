@@ -19,7 +19,7 @@ from Queue import *
 
 # Form Custom implementation of MAINWINDOW
 from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit
-from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings
+from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile
 from PyQt4 import QtCore, QtGui
 
 from api.type import *
@@ -45,6 +45,12 @@ from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
 from ui.gui.widget.help import Help
+# Documentation
+try:
+    from api.settings import DOC_PATH
+except:
+    DOC_PATH = ""
+
 
 class MainWindow(QMainWindow):
     def __init__(self,  app, debug = False):
@@ -115,6 +121,16 @@ class MainWindow(QMainWindow):
         self.rightArea = area
 
     def addHelpWidget(self):
+        path = DOC_PATH
+        file = QFile(path)
+        if not file.exists(path):
+            dialog = QMessageBox()
+            dialog.setText(DOC_PATH + " : No such file.\nYou can check on-line help at http://wiki.digital-forensic.org")
+            dialog.setIcon(QMessageBox.Warning)
+            dialog.setWindowTitle("Error while loading help")
+            dialog.exec_()
+            return
+
         self.addDockWidgets(Help(self))
 
     def addBrowser(self):

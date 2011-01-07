@@ -28,10 +28,13 @@ class SMS(Script):
 
    def start(self, args): 
       self.unpack(args)
-      if not args.get_bool("header"):
-        res = self.info()
-      else:
-        res = self.header()
+      try :
+        if args.get_bool("header"):
+          res = self.info()
+        else:
+          res = self.header()
+      except KeyError:
+	 res = self.info()
       self.res.add_const("result", res) 
 
    def unpack(self, args):
@@ -190,5 +193,5 @@ ex: smsdecode /myfile.sms"""
   def __init__(self):
     Module.__init__(self, "smsdecode", SMS)
     self.conf.add("file", "node", False, "SMS file.")
-    self.conf.add("header", "bool", True, "Display SMS header detailed informations.")
+    self.conf.add("header", "bool", True, "Do not display SMS header detailed informations.")
     self.tags = "Mobile"

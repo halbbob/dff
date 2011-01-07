@@ -32,7 +32,10 @@ class EXTRACT(Script):
     path = args.get_path('syspath').path
     if path[-1] != "/":
       path += "/"
-    recursive = args.get_bool('recursive')
+    try :
+      recursive = args.get_bool('recursive')
+    except KeyError:
+      recursive = None
     #for node in self.nodes:
     #  if node.isFile():
     #    self.total += 1
