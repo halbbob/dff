@@ -44,6 +44,7 @@ from ui.gui.widget.interpreter import InterpreterActions
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
+from ui.gui.widget.help import Help
 
 class MainWindow(QMainWindow):
     def __init__(self,  app, debug = False):
@@ -65,7 +66,8 @@ class MainWindow(QMainWindow):
 	#icon 
         self.toolbarList = [["New_Dump"],
                             ["New_Device"],
-                            ["List_Files"]
+                            ["List_Files"],
+                            ["help"]
                             ]
 
         self.actionList = [
@@ -74,7 +76,8 @@ class MainWindow(QMainWindow):
             ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
             ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
             ["About", "?", self.dialog.about, None, None ],
-            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"]
+            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"],
+            ["help", "Help", self.addHelpWidget, ":help.png", "Open Help"]
             ] 
 
         self.setupUi()
@@ -110,6 +113,9 @@ class MainWindow(QMainWindow):
     def markerAreaChanged(self, area):
         self.mainArea = area
         self.rightArea = area
+
+    def addHelpWidget(self):
+        self.addDockWidgets(Help(self))
 
     def addBrowser(self):
         self.addDockWidgets(NodeBrowser(self)) 
