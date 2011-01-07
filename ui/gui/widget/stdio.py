@@ -46,19 +46,19 @@ class TextOut(QPlainTextEdit):
      self.insertPlainText(text)
 
 class IO(QObject):
-  def __init__(self):
+  def __init__(self, debug = False):
     QObject.__init__(self)
     self.textOut = TextOut("output")
     self.sigout = "IOOUTputtext"
     self.connect(self, SIGNAL(self.sigout), self.puttextout)
-    if sys.__stdout__.fileno() >= 0:
+    if sys.__stdout__.fileno() >= 0 and not debug:
       self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)
       self.cioout.start()
 
     self.textErr = TextOut("error")
     self.sigerr = "IOERRputtext"
     self.connect(self, SIGNAL(self.sigerr), self.puttexterr)
-    if sys.__stderr__.fileno() >= 0: 
+    if sys.__stderr__.fileno() >= 0 and not debug: 
       self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)
       self.cioerr.start()
 

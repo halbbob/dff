@@ -77,15 +77,17 @@ class RedirectWrite(QThread):
 
 class RedirectIO():
    class __RedirectIO():
-     def __init__(self, IOout = None):
+     def __init__(self, IOout = None, debug = False):
+       self.lparent = []
+       self.debug = debug
        self.oldstdout = sys.__stdout__
        self.oldstderr = sys.__stderr__
-       self.lparent = []
        self.ioOut = IOout
        self.tm = TaskManager()
        self.loader = loader.loader()
-       sys.stdout = RedirectWrite(self, 'out')
-       sys.stderr = RedirectWrite(self, 'err')
+       if not self.debug:
+         sys.stdout = RedirectWrite(self, 'out')
+         sys.stderr = RedirectWrite(self, 'err')
        self.write = sys.stdout.write      
  
      def addparent(self, nparent, lframe, ismod = False):
@@ -93,9 +95,9 @@ class RedirectIO():
 
    __instance = None
    
-   def __init__(self, IOout = None):
+   def __init__(self, IOout = None, debug = False):
      if RedirectIO.__instance is None:
-	RedirectIO.__instance = RedirectIO.__RedirectIO(IOout)
+	RedirectIO.__instance = RedirectIO.__RedirectIO(IOout, debug)
      if IOout:
 	RedirectIO.__instance.ioOut = IOout    
  

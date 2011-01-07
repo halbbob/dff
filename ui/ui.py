@@ -24,16 +24,17 @@ from redirect import RedirectIO
 interfaceLanguage, extractGlobalPath = 'EN', ''
 
 class ui():  
-  def __init__(self, type):
+  def __init__(self, type, debug = False):
+   self.debug = debug
    self.type = type
-   RedirectIO()
+   RedirectIO(None, self.debug)
    self.modPath = sys.path[0] + "/modules/"
 # Configuration
    global interfaceLanguage, extractGlobalPath
 
   def launch(self):
    if self.type == "gui":
-     self.g = gui()
+     self.g = gui(self.debug)
      try:
        self.c
        self.g.launch()
@@ -64,13 +65,15 @@ Options:
   -t      --test=NAME	             start a specific test
   -l      --language=LANG            use LANG as interface language
   -h      --help                     display this help message
+  -d 	  --debug		     redirect IO to system console
 """
-   VERSION = "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
+   VERSION = "0.9.0"
 
    def __init__(self, argv):
      self.argv = argv
      self.graphical = 0
      self.test = ""
+     self.debug = False
      self.main()
 
    def main(self):
@@ -92,6 +95,8 @@ Options:
         elif opt in ("-v", "--version"):
           print "dff version " + self.VERSION
           sys.exit(1)
+        elif opt in ("-d", "--debug"):
+           self.debug = True
     return
 
    def usage(self):

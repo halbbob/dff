@@ -46,7 +46,7 @@ from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
 
 class MainWindow(QMainWindow):
-    def __init__(self,  app):
+    def __init__(self,  app, debug = False):
         super(MainWindow,  self).__init__()
         self.app = app
         self.sched = scheduler.sched
@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         self.mainArea = Qt.TopDockWidgetArea
         self.rightArea = Qt.RightDockWidgetArea
 
-        self.mainWidget = Info(self)
+        self.mainWidget = Info(self, debug)
         self.setCentralWidget(self.mainWidget)
 
 	self.nodeBrowser = NodeBrowser(self)
