@@ -23,9 +23,18 @@ class LS(Script):
     self.vfs = vfs.vfs()
 
   def start(self, args):
-    self.node = args.get_node('node')
-    self.long = args.get_bool('long')
-    self.rec = args.get_bool('recursive')
+    try :
+      self.node = args.get_node('node')
+    except KeyError:
+      self.node = None
+    try :
+      self.long = args.get_bool('long')
+    except KeyError:
+      self.long = None
+    try :
+      self.rec = args.get_bool('recursive')
+    except KeyError:
+      self.rec = None
     if self.node == None:
       self.node = self.vfs.getcwd()
     self._res = self.launch()
