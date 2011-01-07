@@ -56,19 +56,19 @@ class selection():
     def setData(self):
         startoff = self.heditor.currentOffset + ((self.ystart * self.heditor.bytesPerLine) + self.xstart)
         endoff = self.heditor.currentOffset + ((self.yend * self.heditor.bytesPerLine) + self.xend)
-        len = endoff - startoff
-        if len < 0:
-            len = len * -1
-            self.offset = startoff - len
+        selen = endoff - startoff
+        if selen < 0:
+            selen = selen * -1
+            self.offset = startoff - selen
             self.startoffset = self.offset
             self.xinit = self.xend
             self.yinit = self.yend
         else:
-            self.offset = startoff + len
+            self.offset = startoff + selen
             self.startoffset = startoff
             self.xinit = self.xstart
             self.yinit = self.ystart
-        self.length = len
+        self.length = selen
 
     def setCount(self):
         self.ycount = self.length / self.heditor.bytesPerLine
@@ -110,18 +110,18 @@ class selection():
             startrange = self.offset - self.heditor.currentOffset
 
         if startrange < 0:
-            len = self.length - (startrange * -1)
-            if len < 0:
-                len = 0
+            selen = self.length - (startrange * -1)
+            if selen < 0:
+                selen = 0
             startrange = 0
         else:
-            len = self.length
+            selen = self.length
 
         self.yinit = startrange / self.heditor.bytesPerLine
         self.xinit = startrange % self.heditor.bytesPerLine
 
-        self.ycount = len / self.heditor.bytesPerLine
-        self.xcount = len % self.heditor.bytesPerLine
+        self.ycount = selen / self.heditor.bytesPerLine
+        self.xcount = selen % self.heditor.bytesPerLine
 
     def colorize(self):
         #Get hex cursor
@@ -204,3 +204,120 @@ class selection():
         self.toolbar.addAction(self.copy)
 
         
+class pageSelection():
+    def __init__(self, parent):
+        self.init(parent)
+        self.initBrush()
+
+    def init(self, parent):
+        self.heditor = parent
+        self.pview = self.heditor.wpage.view
+
+        self.items = self.pview.pageItems
+
+        self.pageoffset = 0
+        self.blockoffset = 0
+
+        self.startid = 0
+        self.endid = 0
+
+        self.startcount = 0
+        self.endcount = 0
+
+        self.length = 0
+
+        # 0: click | 1: selection
+        self.mode = 0
+        self.way = 0
+
+    def initBrush(self):
+        self.hcolor = QColor(Qt.green)
+        self.hbrush = QBrush(self.hcolor, Qt.SolidPattern)
+#        self.setBrush(self.brush)
+
+    def initPen(self):
+        self.pen = QPen(QColor(Qt.black))
+        self.setPen(self.pen)
+
+
+    def selectPage(self, offset):
+        if self.length == 0:
+            self.pageoffset = offset
+
+    def select(self, id, startBlockOffset, mode):
+        if mode == 0:
+            self.startid = id
+            self.startcount = id
+
+            self.endid = id
+            self.endcount = id
+            self.length = 0
+#            inblock = id / self.heditor.pagesPerBlock
+#            startoffset = startBlockOffset + (inblock * (self.heditor.pageSize * self.heditor.pagesPerBlock))
+#            self.blockoffset = startBlockOffset
+
+            self.pageoffset = self.heditor.startBlockOffset + (id * self.heditor.pageSize)
+            self.heditor.readOffset(self.pageoffset)
+#            #Update Hexview scrollbar
+            value = self.heditor.whex.offsetToValue(self.pageoffset)
+            self.heditor.whex.scroll.setValue(value)
+            self.colorizePages()
+            self.mode = 1
+        else:
+            self.endid = id
+            
+            if self.endid < self.startid:
+                self.startcount = self.endid
+                self.endcount = self.startid
+                self.length = self.startid - self.endid
+                self.way = 0
+            else:
+                self.startcount = self.startid
+                self.endcount = self.endid
+                self.length = self.endid - self.startid
+                self.way = 1
+
+            self.pageoffset = self.heditor.startBlockOffset + (self.startcount * self.heditor.pageSize)
+            self.colorizePages()
+
+    def colorizePages(self):
+        self.pview.resetSelection()
+        if self.length == 0 and (self.startcount < len(self.items)):
+#            print "len items : ", len(self.items), ": ", self.startcount
+            self.items[self.startcount].setBrush(self.hbrush)
+        else:
+#            print "len items : ", len(self.items), ": ", self.startcount
+            if (self.startcount  < len(self.items)) or (self.endcount < len(self.items)):
+                for item in self.items[self.startcount:self.endcount + 1]:
+                    item.setBrush(self.hbrush)
+
+    def update(self):
+        ret = self.initStartPosition()
+        if ret == 0:
+            self.pview.resetSelection()
+            return 0
+        else:
+            self.colorizePages()
+            return 1
+
+    def initStartPosition(self):
+        endzone = self.heditor.startBlockOffset + (self.pview.lines * (self.heditor.pageSize * self.heditor.pagesPerBlock))
+        endoffset = self.pageoffset + (self.length * self.heditor.pageSize)
+
+#        if (self.pageoffset >= self.heditor.startBlockOffset) and  (self.pageoffset < endzone):
+        if (endoffset >= self.heditor.startBlockOffset) and (endoffset < endzone):
+#            print "start page offset: ", self.heditor.startBlockOffset
+            startblockid = (self.pageoffset - self.heditor.startBlockOffset) / self.heditor.pageSize
+            endblockid = ((self.pageoffset - self.heditor.startBlockOffset) + (self.length * self.heditor.pageSize)) / self.heditor.pageSize
+#            print "========"
+#            print "sblockid: ", startblockid
+#            print "eblockid: ", endblockid
+#            print "mode: ", self.mode
+#            print "way: ", self.way
+            self.startcount = startblockid
+            self.endcount = endblockid
+
+            if self.startcount < 0:
+                self.startcount = 0
+        else:
+            return 0

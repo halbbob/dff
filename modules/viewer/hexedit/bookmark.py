@@ -64,12 +64,12 @@ class bookmark(QWidget):
         self.tree = QTreeWidget()
         self.tree.setColumnCount(5)
         
-        headerLabels = [self.tr("bookmark", "Address"),
-                        self.tr("bookmark", "Length (dec)"),
-                        self.tr("bookmark", "Length (hex)"),
-                        self.tr("bookmark", "Hex value"),
-                        self.tr("bookmark", "Ascii value"),
-                        self.tr("bookmark", "Description")]
+        headerLabels = [QApplication.translate("bookmark", "Address", None, QApplication.UnicodeUTF8),
+                       QApplication.translate("bookmark", "Length (dec)", None, QApplication.UnicodeUTF8),
+                       QApplication.translate("bookmark", "Length (hex)", None, QApplication.UnicodeUTF8),
+                       QApplication.translate("bookmark", "Hex value", None, QApplication.UnicodeUTF8),
+                       QApplication.translate("bookmark", "Ascii value", None, QApplication.UnicodeUTF8),
+                        QApplication.translate("bookmark", "Description", None, QApplication.UnicodeUTF8)]
         
         self.tree.setHeaderLabels(headerLabels)
         self.tree.setAlternatingRowColors(True)

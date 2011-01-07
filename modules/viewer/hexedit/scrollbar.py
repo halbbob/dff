@@ -1,9 +1,10 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009 ArxSys
+# 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+# 
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
@@ -166,3 +167,126 @@ class hexScrollBar(QScrollBar):
                     offset = value * self.heditor.bytesPerLine
                 self.heditor.readOffset(offset)
 
+class pageScrollBar(QScrollBar):
+    def __init__(self, wpage):
+        QScrollBar.__init__(self)
+        self.wpage = wpage
+        self.pageview = wpage.view
+        self.heditor = wpage.heditor
+        self.initCallBacks()
+        self.initValues()
+        self.setValues()
+        #LFMOD
+
+    def initCallBacks(self):
+        self.connect(self, SIGNAL("sliderMoved(int)"), self.moved) 
+        self.connect(self, SIGNAL("actionTriggered(int)"), self.triggered)
+
+    def initValues(self):
+        self.min = 0
+        self.max = self.pageview.lines - 5
+        self.page = self.pageview.lines / self.heditor.pagesPerBlock
+
+    def refreshValues(self, len, pagesize):
+        self.pageview.lines = self.heditor.filesize / (len * pagesize)
+        self.min = 0
+        self.max = self.pageview.lines - 5
+#        print "max line refresh: ", self.pageview.lines
+        self.page = self.pageview.lines / len
+        self.setValues()
+
+    def setValues(self):
+        self.setMinimum(0)
+        self.setMaximum(self.max)
+        self.setSingleStep(1)
+        self.setPageStep(self.page)
+        self.setRange(0, self.max)
+
+    def valueToOffset(self, value):
+        return (value * (self.heditor.pagesPerBlock * self.heditor.pageSize))
+
+    def offsetToValue(self, offset):
+        return (offset / (self.heditor.pagesPerBlock * self.heditor.pageSize))
+
+    def triggered(self, action):
+        offset = self.heditor.startBlockOffset
+        #######################
+        #        LINE         #
+        #######################
+        #LINE DOWN
+        addOffset = self.heditor.pagesPerBlock * self.heditor.pageSize
+        if action == QAbstractSlider.SliderSingleStepAdd:
+            if offset + addOffset <= (self.pageview.filesize - 5 * addOffset):
+                self.pageview.refreshOffsetItems(offset + addOffset)
+                self.pageview.refreshPageItems(offset + addOffset)
+        elif action == QAbstractSlider.SliderSingleStepSub:
+            if offset - addOffset >= 0:
+                self.pageview.refreshOffsetItems(offset - addOffset)
+                self.pageview.refreshPageItems(offset - addOffset)
+
+    def moved(self, value):
+        if value < self.max:
+            offset = self.valueToOffset(value)
+            if offset < self.heditor.filesize and offset >= 0:
+                self.pageview.refreshOffsetItems(offset)
+                self.pageview.refreshPageItems(offset)
+        else:
+            self.pageview.refreshOffsetItems(self.pageview.filesize)
+            self.pageview.refreshPageItems(self.pageview.filesize)
+
+####################################
+#            PIXEL VIEW            #
+####################################
+
+class byteScrollBar(QScrollBar):
+    def __init__(self, wpixel):
+        QScrollBar.__init__(self)
+        self.initCallBacks()
+        self.initValues(wpixel)
+        self.setValues()
+
+    def initCallBacks(self):
+        self.connect(self, SIGNAL("sliderMoved(int)"), self.moved) 
+        self.connect(self, SIGNAL("actionTriggered(int)"), self.triggered)     
+
+    def initValues(self, wpixel):
+        self.wpixel = wpixel
+        self.bview = wpixel.view
+        self.min = 0
+        self.max = self.bview.hmax
+        self.page = self.bview.w * 16
+
+    def refreshValues(self):
+        #mode: rgb | index | mono
+        if self.bview.format > 1:
+            self.min = 0
+            self.max = self.bview.filesize / (self.bview.w * 4)
+            self.page = self.bview.w * 16
+        else:
+            self.min = 0
+            self.max = self.bview.filesize / self.bview.w
+            self.page = self.bview.w * 16
+        self.setValues()
+
+    def setValues(self):
+        self.setMinimum(0)
+        self.setMaximum(self.max)
+        self.setSingleStep(1)
+        self.setPageStep(self.page)
+        self.setRange(0, self.max)
+
+    def triggered(self, action):
+        pass
+
+    def moved(self, value):
+        if value != self.max:
+            if self.bview.format < 2:
+                self.bview.read_image(value * self.bview.w)
+            else:
+                self.bview.read_image(value * (self.bview.w * 4))
+        else:
+            if self.bview.format < 2:
+                self.bview.read_image((value - 32) * self.bview.w)
+            else:
+                self.bview.read_image((value - 32) * (self.bview.w * 4))
+#        self.setValue(value)

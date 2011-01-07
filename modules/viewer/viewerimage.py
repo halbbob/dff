@@ -181,7 +181,9 @@ class Metadata(QWidget):
         row = 0
         for res in sortedTags[ifd]:
           key = QTableWidgetItem(res[0])
+          key.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)
           val = QTableWidgetItem(res[1])
+          val.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)
           table.setItem(row, 0, key)
           table.setItem(row, 1, val)
           row += 1

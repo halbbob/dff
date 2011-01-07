@@ -323,7 +323,7 @@ class NodeBrowser(QWidget, DEventHandler):
        self.taskmanager.add(mod, arg, ["thread", "gui"])       
      except IndexError: 
        arg.add_node("file", node)
-       self.taskmanager.add("hexedit", arg, ["thread", "gui"])       
+       self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])       
  
   def createSubMenu(self):
      self.extractor = Extractor(self.parent)
@@ -334,7 +334,7 @@ class NodeBrowser(QWidget, DEventHandler):
      self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
      self.submenuFile.addSeparator()
-     self.submenuFile.addAction(QIcon(":hexedit.png"), "Hexeditor", self.launchHexedit, "Hexedit")
+     self.submenuFile.addAction(QIcon(":hexedit.png"), "Hex viewer", self.launchHexedit, "Hex viewer")
      self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
      self.submenuFile.addSeparator()
      self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
@@ -345,7 +345,7 @@ class NodeBrowser(QWidget, DEventHandler):
         arg = self.env.libenv.argument("gui_input")
         arg.thisown = 0
         arg.add_node("file", node)
-        self.taskmanager.add("hexedit", arg, ["thread", "gui"])
+        self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
 
   def launchProperty(self, node = None):
        if not node:
