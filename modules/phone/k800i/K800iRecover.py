@@ -153,8 +153,8 @@ class K800iRecover(Module):
     Module.__init__(self, "K800i-Recover", K800IRec)
     self.conf.add("nor", "node", False, "K800i nor dump")
     self.conf.add("nand", "node", False, "K800i nand dump")
-    self.conf.add("spare-size", "int", True, "Size of nand spare")
+    self.conf.add("spare-size", "int", False, "Size of nand spare")
     self.conf.add_const("spare-size", 16)
-    self.conf.add("page-size", "int", True, "Size of nand page")
+    self.conf.add("page-size", "int", False, "Size of nand page")
     self.conf.add_const("page-size", 512)
     self.tags = "Mobile"
