@@ -1,6 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009 ArxSys
-# 
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -13,7 +12,6 @@
 # Author(s):
 #  Jeremy Mounier <jmo@digital-forensic.org>
 # 
-
 
 #For long file mode
 #For scrollbar LFMOD
