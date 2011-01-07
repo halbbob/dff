@@ -49,7 +49,7 @@ from ui.gui.widget.help import Help
 try:
     from api.settings import DOC_PATH
 except:
-    DOC_PATH = "@DFF_DOC_PATH@"
+    DOC_PATH = "./ui/gui/help.qhc"
 
 
 class MainWindow(QMainWindow):
