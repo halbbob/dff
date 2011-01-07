@@ -36,19 +36,19 @@ class Volatility(mfso):
     self.node = args.get_node('file')
     try:
       self.meta = args.get_bool("meta")
-    except :
+    except KeyError:
       self.meta = None
     try :
       self.dump = args.get_bool("dump") #XXX dump mem / dump disk !
-    except :
+    except KeyError:
       self.dump = None
     try :
       self.connections = args.get_bool("connection") #XXX dump mem / dump disk !
-    except :
+    except KeyError:
       self.connections = None
     try :
       self.openfiles = args.get_bool("openfiles")
-    except :
+    except KeyError:
       self.openfiles = None
     self.root = Node("volatility")
     self.root.__disown__()
