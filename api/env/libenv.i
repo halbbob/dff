@@ -214,21 +214,21 @@ This singleton class contains a map of all key by name.
 %include "windows.i"
 %import  "../exceptions/libexceptions.i"
 
-%catches(envError) argument::get_int(string name);
-%catches(envError) argument::get_uint64(string name);
-%catches(envError) argument::get_string(string name);
-%catches(envError) argument::get_bool(string name);
-%catches(envError) argument::get_node(string name);
-%catches(envError) argument::get_path(string name);
-%catches(envError) argument::get_lnode(string name);
+/* %catches(envError) argument::get_int(string name); */
+/* %catches(envError) argument::get_uint64(string name); */
+/* %catches(envError) argument::get_string(string name); */
+/* %catches(envError) argument::get_bool(string name); */
+/* %catches(envError) argument::get_node(string name); */
+/* %catches(envError) argument::get_path(string name); */
+/* %catches(envError) argument::get_lnode(string name); */
 
-%catches(envError) v_val::get_int(void);
-%catches(envError) v_val::get_uint64(void);
-%catches(envError) v_val::get_string(void);
-%catches(envError) v_val::get_bool(void);
-%catches(envError) v_val::get_node(void);
-%catches(envError) v_val::get_path(void);
-%catches(envError) v_val::get_lnode(void);
+/* %catches(envError) v_val::get_int(void); */
+/* %catches(envError) v_val::get_uint64(void); */
+/* %catches(envError) v_val::get_string(void); */
+/* %catches(envError) v_val::get_bool(void); */
+/* %catches(envError) v_val::get_node(void); */
+/* %catches(envError) v_val::get_path(void); */
+/* %catches(envError) v_val::get_lnode(void); */
 
 %{
 #include "../include/export.hpp"
