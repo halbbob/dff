@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -15,7 +15,7 @@
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString
 
 # CORE
@@ -163,15 +163,22 @@ class ApplyModule(QDialog,  UiApplyModule):
             wl.addWidget(widget)
             wl.addWidget(button)
             return wl
+
         elif arg.type == "int":
-            widget = QSpinBox()
-            widget.setRange(-(2**31), (2**31)-1)
+            widget = QComboBox()
+            widget.setEditable(True)
+            widget.setValidator(QIntValidator())
+#            widget.setRange(-(2**31), (2**31)-1)
+            for i in range(0, len(list)) :
+                widget.addItem(str(list[i]))
             self.valueArgs[arg] = widget
             return widget
+
         elif arg.type == "string":
             widget = StringComboBox(self.argumentsContainer)
             widget.setEditable(True)
             for i in range(0, len(list)) :
+                print type(list[i])
                 widget.addPath(list[i])
             self.valueArgs[arg] = widget
             return widget
@@ -203,8 +210,8 @@ class ApplyModule(QDialog,  UiApplyModule):
                         value = str(self.valueArgs[i].currentText())
                         self.arg.add_path(str(i.name), str(value))
                     elif i.type == "int" :
-                        value = self.valueArgs[i].value()
-                        self.arg.add_int(str(i.name), value)
+                        value = self.valueArgs[i].currentText().toInt()
+                        self.arg.add_int(str(i.name), value[0])
                     elif i.type == "string" :
                         value = str(self.valueArgs[i].currentText())
                         self.arg.add_string(str(i.name), value)       
