@@ -1,9 +1,9 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
-#  
+# 
 # See http://www.digital-forensic.org for more information about this
 # project. Please do not directly contact any of the maintainers of
 # DFF for assistance; the project provides a web site, mailing lists
@@ -13,11 +13,14 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 # 
 
-
 #For long file mode
 #For scrollbar LFMOD
 
 from modules.viewer.hexedit.hexView import *
+from modules.viewer.hexedit.pageView import *
+from modules.viewer.hexedit.pixelView import *
+from modules.viewer.hexedit.string import stringView
+
 from modules.viewer.hexedit.bookmark import *
 
 from modules.viewer.hexedit.informations import *
@@ -120,6 +123,7 @@ class Heditor(QWidget):
 
         #INIT SELECTION
         self.selection = selection(self)
+        self.pageselection = pageSelection(self)
 
         self.lhsplitter.setOrientation(Qt.Vertical)
         self.vsplitter.addWidget(self.lhsplitter)
@@ -136,14 +140,32 @@ class Heditor(QWidget):
         self.vlayout.addWidget(self.infos)
 
 
+    def shapeToolBars(self):
+        self.htoolbox = QHBoxLayout()
+        self.toolbars = QWidget()
+
+        self.createToolBar()
+        self.htoolbox.addWidget(self.hextoolbar)
+        self.htoolbox.addWidget(self.book.booktool)
+
+        self.toolbars.setLayout(self.htoolbox)
+
     def initFooterViews(self):
         self.footab = QTabWidget()
 
         self.footab.setTabPosition(QTabWidget.South)
+        #Views
+        self.wpage = wPage(self)
+        self.wpixel = wPixel(self)
+        self.wstring = stringView(self)
+        
         #Bookmark
         self.book = bookmark(self)
 
-        self.footab.insertTab(0, self.book, QIcon(":bookmark.png"), "Bookmarks")
+        self.footab.insertTab(0, self.wpage, QIcon(":hex_page.png"),"Pages")
+        self.footab.insertTab(1, self.wpixel, "Pixel")
+        self.footab.insertTab(2, self.book, QIcon(":bookmark.png"), "Bookmarks")
+        self.footab.insertTab(3, self.wstring, QIcon(":hex_page.png"),"String")
         
         self.lhsplitter.addWidget(self.footab)
 
@@ -161,6 +183,7 @@ class Heditor(QWidget):
         self.pageSpare = spare
         self.pageSize = self.pageHead + size + self.pageSpare
         self.pagesPerBlock = len
+        self.wpage.view.lines = self.filesize / (self.pagesPerBlock * self.pageSize)
 
 
     def updateHexItems(self, buffer, offset, first = None):
@@ -187,6 +210,42 @@ class Heditor(QWidget):
         y = (range / self.bytesPerLine)
         x = range % self.bytesPerLine
 
+    def createToolBar(self):
+        self.hextoolbar = QToolBar()
+
+        self.gohome = QAction(QIcon(":gohome_small.png"),  "Go to start",  self.hextoolbar)
+        self.hextoolbar.addAction(self.gohome)
+
+        self.goselection = QAction(QIcon(":goselection_small.png"),  "Go to selection",  self.hextoolbar)
+        self.hextoolbar.addAction(self.goselection)
+
+        self.gosearch = QAction(QIcon(":hex_search.png"),  "Search",  self.hextoolbar)
+        self.hextoolbar.addAction(self.gosearch)
+
+        self.goopt = QAction(QIcon(":hex_opt.png"),  "Options",  self.hextoolbar)
+        self.hextoolbar.addAction(self.goopt)
+
+        self.gohome.connect(self.gohome, SIGNAL("triggered()"), self.gohome_act)
+        self.goselection.connect(self.goselection, SIGNAL("triggered()"), self.goselection_act)
+        self.gosearch.connect(self.gosearch, SIGNAL("triggered()"), self.gosearch_act)
+        self.goopt.connect(self.goopt, SIGNAL("triggered()"), self.goopt_act)
+
+##########################################
+#             TOOLBAR CALLBACK           #
+##########################################
+
+    def gohome_act(self):
+        pass
+
+    def goselection_act(self):
+        pass
+
+    def gosearch_act(self):
+        pass
+
+    def goopt_act(self):
+        pass
+
 
 ##########################################
 #             READ OPERATIONS            #
@@ -209,6 +268,18 @@ class Heditor(QWidget):
                 self.infos.update()
                 self.whex.hexcursor.update()
                 self.whex.asciicursor.update()
+#                if self.linkmode:
+                    #read pixel
+#                    self.wpixel.view.read_image(readoffset)
+                    #read page
+#                    print "readoff: ", readoffset, " Plus: ", self.startBlockOffset + (self.wpage.view.displayLines * (self.pageSize * self.pagesPerBlock))
+#                    if readoffset > (self.startBlockOffset + (self.wpage.view.displayLines * (self.pageSize * self.pagesPerBlock))):
+#                        self.wpage.view.refreshOffsetItems(readoffset)
+#                        self.wpage.view.refreshPageItems(readoffset)
+                self.pageselection.selectPage(self.currentPage * self.pageSize)
+                self.pageselection.update()
+#                value = self.whex.offsetToValue(readoff)
+#                print "value: ", value
 
             except vfsError,  e:
                 print "Read error"

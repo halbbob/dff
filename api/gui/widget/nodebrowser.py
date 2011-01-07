@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -200,6 +200,7 @@ class NodeBrowser(QWidget, DEventHandler):
   def addTableView(self): 
     self.tableView = NodeTableView(self)
     self.tableView.setModel(self.proxyModel)
+    self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
 #    self.tableView.setMinimumWidth(self.mainwindow.width() / 3)
@@ -323,7 +324,7 @@ class NodeBrowser(QWidget, DEventHandler):
        self.taskmanager.add(mod, arg, ["thread", "gui"])       
      except IndexError: 
        arg.add_node("file", node)
-       self.taskmanager.add("hexedit", arg, ["thread", "gui"])       
+       self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])       
  
   def createSubMenu(self):
      self.extractor = Extractor(self.parent)
@@ -334,10 +335,10 @@ class NodeBrowser(QWidget, DEventHandler):
      self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
      self.submenuFile.addSeparator()
-     self.submenuFile.addAction(QIcon(":hexedit.png"), "Hexeditor", self.launchHexedit, "Hexedit")
+     self.submenuFile.addAction(QIcon(":hexedit.png"), "Hex viewer", self.launchHexedit, "Hex viewer")
      self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
      self.submenuFile.addSeparator()
-     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
+#     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
 
   def launchHexedit(self):
      nodes = self.currentNodes()
@@ -345,7 +346,7 @@ class NodeBrowser(QWidget, DEventHandler):
         arg = self.env.libenv.argument("gui_input")
         arg.thisown = 0
         arg.add_node("file", node)
-        self.taskmanager.add("hexedit", arg, ["thread", "gui"])
+        self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
 
   def launchProperty(self, node = None):
        if not node:

@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -37,11 +37,11 @@ class vfs():
 
     def open(self, path):
 	if type(path) == type(""):
-          node = self.getnode(path)
+            node = self.getnode(path)
         if node: #and node.is_file:
-	   return node.open()
+            return node.open()
         else:
-	   return
+            return
 
     def gettree(self):
         return self.libvfs.GetTree()

@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -35,7 +35,7 @@ if(UNIX)
     message(STATUS "Will use -g for debugging -- yes")
   else(ENABLE_DEBUG)
 #change flag here
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -O2)
     message(STATUS "Will use -g for debugging -- no")
   endif(ENABLE_DEBUG)
 endif(UNIX)
@@ -370,12 +370,12 @@ IF(WIN32 AND NOT UNIX)
     endif(HAVE_64_BIT)
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
       "
-       MessageBox MB_YESNO \\\"Install Python 2.6.5 ? \\\" /SD IDYES IDNO endPython
-        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.6.5.msi\\\" /passive'
+       MessageBox MB_YESNO \\\"Install Python 2.7.1 ? \\\" /SD IDYES IDNO endPython
+        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.7.1.msi\\\" /passive'
         Goto endPython   
        endPython:
-        MessageBox MB_YESNO \\\"Install PyQt 4.7.4-1 ? \\\" /SD IDYES IDNO endPyQt
-        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.6-gpl-4.7.4-1.exe\\\"'
+        MessageBox MB_YESNO \\\"Install PyQt 4.8.2-1 ? \\\" /SD IDYES IDNO endPyQt
+        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.2-1.exe\\\"'
         Goto endPyQt
        endPyQt:
        MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS

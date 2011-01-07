@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread
-from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem
+from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem, QAbstractItemView
 
 from api.vfs import *
 from api.module.module import *
@@ -177,11 +177,14 @@ class Metadata(QWidget):
         table.horizontalHeader().setClickable(False)
         table.horizontalHeader().setStretchLastSection(True)
         table.setHorizontalHeaderLabels(["Tag", "Value"])
+        table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabs.addTab(table, ifd)
         row = 0
         for res in sortedTags[ifd]:
           key = QTableWidgetItem(res[0])
+          key.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)
           val = QTableWidgetItem(res[1])
+          val.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)
           table.setItem(row, 0, key)
           table.setItem(row, 1, val)
           row += 1

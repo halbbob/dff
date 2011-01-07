@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -232,4 +232,4 @@ class extract(Module):
     self.conf.add("files", "lnode", False, "Files or directories list to extract.")
     self.conf.add("syspath", "path", False, "Local file system path where to extract files.") 
     self.conf.add("recursive", "bool", True, "Extract recursivly each files in all in sub-directories.")
-    self.tags = "Process"
+    self.tags = "Node"

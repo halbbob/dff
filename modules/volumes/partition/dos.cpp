@@ -1,6 +1,6 @@
 /*
  * DFF -- An Open Source Digital Forensics Framework
- * Copyright (C) 2009-2010 ArxSys
+ * Copyright (C) 2009-2011 ArxSys
  * This program is free software, distributed under the terms of
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
@@ -462,10 +462,11 @@ void	DosPartition::readMbr(uint64_t offset)
       this->vfile->seek(offset);
       if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
 	{
-	  if (record.signature != 0x55AA)
-	    {
-	      throw vfsError("[PARTITION] Not a valid MBR, Signature (0x55AA) does not match\n");
-	    }
+	  if (record.signature != 0xAA55)
+	    ;
+	  // {
+	  //     throw vfsError("[PARTITION] Not a valid MBR, Signature (0x55AA) does not match\n");
+	  //   }
 	  for (i = 0; i != 4; i++)
 	    {
 	      pte = this->toPte(record.partitions+(i*16));

@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2010 ArxSys
+# Copyright (C) 2011 ArxSys
 # 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
@@ -26,7 +26,7 @@ class IODevice(QIODevice):
      try :
        self.file = self.node.open()
        self.setOpenMode(QIODevice.ReadOnly | QIODevice.Unbuffered)
-       return True	
+       return True
      except AttributeError:
        return False 
 

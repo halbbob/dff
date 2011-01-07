@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -14,8 +14,8 @@
 
 
 set(dependencies_files
-  PyQt-Py2.6-gpl-4.7.4-1.exe
-  python-2.6.5.msi
+  PyQt-Py2.7-x86-gpl-4.8.2-1.exe
+  python-2.7.1.msi
   vcredist_x86.exe
 )
 
