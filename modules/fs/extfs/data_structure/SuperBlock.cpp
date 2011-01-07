@@ -42,22 +42,23 @@ void    SuperBlock::init(uint64_t fs_size, VFile * vfile, results * res,
     force_addr(vfile, sb_force_addr);
 
   // check the super block validity
-  if ((sb_check == "yes") || (!sanity_check(fs_size)))
+  if (!sanity_check(fs_size))
     {
       if (sb_check == "yes")
-	std::cout << "Forcing superblock check : "
-	  "trying to locate a backup." << std::endl;
+	{
+	  std::cerr << "The superblock signature doesn't match 0x53ef. "
+	    "Trying to locate a backup..." << std::endl;
+	  if (!(sigfind(fs_size, vfile)))
+	    throw vfsError("Error while reading Extfs superblock : "
+			   "Could not verify the validity or find valid backups.\n");
+	  else
+	    {
+	      most_recent_backup(vfile);
+	      file_system_sanity();
+	    }
+	}
       else
-	std::cerr << "The superblock signature doesn't match 0x53ef. "
-	  "Trying to locate a backup..." << std::endl;
-      if (!(sigfind(fs_size, vfile)))
-	throw vfsError("Error while reading Extfs superblock : "
-		       "Could not verify the validity or find valid backups.\n");
-      else
-        {
-	  most_recent_backup(vfile);
-	  file_system_sanity();
-        }
+	throw vfsError("Error while reading extfs superblock. Exiting.");
     }
 }
 
