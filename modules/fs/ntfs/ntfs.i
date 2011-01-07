@@ -49,5 +49,5 @@ class NTFS(Module):
     self.conf.add("indexdecode", "int", True, "Only try to decode index records at this offset")
     self.conf.add_const("mime-type", "x86 boot sector")
     self.conf.description = "Creates a tree from a NTFS file system, for regular and deleted/orphan files.\nIt also provides human-readable dump of MFT or Indexex entries."
-    self.tags = "file system"
+    self.tags = "File systems"
 %}

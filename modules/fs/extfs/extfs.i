@@ -68,5 +68,5 @@ class EXTFS(Module):
     self.conf.add_const("mime-type", "ext3")
     self.conf.add_const("mime-type", "ext4")
     self.conf.add_const("run", True)
-    self.tags = "file system"
+    self.tags = "File systems"
 %}

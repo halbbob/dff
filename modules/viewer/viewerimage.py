@@ -341,10 +341,10 @@ class ImageView(QWidget, Script):
 class viewerimage(Module):
   """Display content of graphic file"""
   def __init__(self):
-    Module.__init__(self, "viewerimage", ImageView)
+    Module.__init__(self, "pictures", ImageView)
     self.conf.add("file", "node", False, "File to display")
     self.conf.add_const("mime-type", "JPEG")
     self.conf.add_const("mime-type", "GIF")
     self.conf.add_const("mime-type", "PNG")
     self.conf.add_const("mime-type", "PC bitmap")
-    self.tags = "viewer"
+    self.tags = "Viewers"

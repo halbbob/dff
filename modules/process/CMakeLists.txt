@@ -14,9 +14,9 @@
 
 
 set(process_srcs
-  batch.py
-  evalexp.py
-  post_process.py
+#  batch.py
+#  evalexp.py
+#  post_process.py
   extract.py
 )
 
