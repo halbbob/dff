@@ -44,7 +44,7 @@ class HASH(Script):
         node = args.get_node("file")
 	try :
           algorithm = args.get_string("algorithm")
-	except envError:
+	except KeyError:
 	  algorithm = "md5"
         if algorithm == "":
 	  algorithm = "md5"
