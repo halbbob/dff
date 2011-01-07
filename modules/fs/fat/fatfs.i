@@ -23,7 +23,6 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%include "../../../api/exceptions/libexceptions.i"
 %import "../../../api/vfs/libvfs.i"
 
 %{

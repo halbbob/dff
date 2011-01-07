@@ -12,10 +12,10 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
-from api.type.libtype import *
+#from api.type.libtype import *
 from api.module import *
-from api.vfs.libvfs import *
-from api.exceptions.libexceptions import *
+#from api.vfs.libvfs import *
+#from api.exceptions.libexceptions import *
 
 from CARVER import *
 

@@ -21,6 +21,9 @@
 %include "std_map.i"
 %include "windows.i"
 %import "../../../api/vfs/libvfs.i"
+
+%exception;
+
 %{
 #include "../include/export.hpp"
 #include "fuse.hpp"

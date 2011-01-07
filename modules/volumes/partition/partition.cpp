@@ -163,16 +163,16 @@ void Partition::start(argument* arg)
 	  this->registerTree(this->parent, this->__root);
 	}
     }
+  catch(envError e)
+    {
+      delete this->__root;
+      throw envError("[PARTITION] parent argument not provided\n" + e.error);
+    }
   catch(vfsError e)
     {
-      this->res->add_const("error", e.error);
-      return; 
+      delete this->__root;
+      throw vfsError("[PARTITION] error while processing file\n" + e.error);
     }
-  // if (this->part_count > 1)
-  //   this->res->add_const("partitions found", this->Result.str());
-  // else
-  //   this->res->add_const("no partition found", "");
-  // return;
 }
 
 // int	Partition::SetResult()

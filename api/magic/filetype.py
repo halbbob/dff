@@ -17,7 +17,6 @@ import platform
 import magic
 from api.vfs import *
 from api.env import *
-from api.exceptions.libexceptions import *
 from api.variant.libvariant import Variant
 import os
 import sys
@@ -111,7 +110,7 @@ class FILETYPE():
         node.setStaticAttribute("mime-type", vfilemime)
         res["mime-type"] = filemime
         res["type"] = filetype
-      except vfsError:
+      except IOError:
         vdata = Variant("data")
         node.setStaticAttribute("type", vdata)
         node.setStaticAttribute("mime-type", vdata)
