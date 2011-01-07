@@ -222,4 +222,4 @@ This version of unzip store all data in RAM so don't decompress huge file."""
     Module.__init__(self, "unzip", UNZIP)
     self.conf.add('file', 'node', False, "File to decompress.")
     self.conf.add_const('mime-type', 'Zip')
-    self.tags = "archive"
+    self.tags = "Archives"

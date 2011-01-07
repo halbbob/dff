@@ -67,11 +67,11 @@ class cat(Module):
   """Show text file content
 ex:cat /myfile.txt"""
   def __init__(self):
-    Module.__init__(self, "cat", CAT)
+    Module.__init__(self, "text", CAT)
     self.conf.add("file", "node", False, "File to display content")
     self.conf.add_const("mime-type", "HTML")
     self.conf.add_const("mime-type", "ASCII")
     self.conf.add_const("mime-type", "XML")
     self.conf.add_const("mime-type", "text")
-    self.tags = "viewer"
+    self.tags = "Viewers"
     self.flags = ["console", "gui"]	

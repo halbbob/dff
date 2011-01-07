@@ -173,7 +173,7 @@ class player(Module):
    """Video and Audio player"""
    Module.__init__(self, "player", PLAYER)
    self.conf.add("file", "node")
-   self.tags = "viewer"
+   self.tags = "Viewers"
    #for mimeType in Phonon.BackendCapabilities.availableMimeTypes():
      #self.conf.add_const("mime-type", str(mimeType))
    self.conf.add_const("mime-type", "video")

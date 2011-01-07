@@ -232,4 +232,4 @@ class extract(Module):
     self.conf.add("files", "lnode", False, "Files or directories list to extract.")
     self.conf.add("syspath", "path", False, "Local file system path where to extract files.") 
     self.conf.add("recursive", "bool", True, "Extract recursivly each files in all in sub-directories.")
-    self.tags = "process"
+    self.tags = "Process"

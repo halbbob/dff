@@ -95,4 +95,4 @@ or before applying a file system reconstruction modules."""
      self.conf.add("page-size", "int", True, "size of a nand page")
      self.conf.add_const("page-size", 512)
      self.conf.add("invert", "bool", True, "Create a spare only node")
-     self.tags = "file system"
+     self.tags = "Node"
