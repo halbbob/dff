@@ -51,7 +51,7 @@ void		Fatfs::setContext(argument* arg)
     }
   try
     {
-      arg->get("carve unallocated clusters", &this->carveunalloc);
+      arg->get("meta_carve", &this->carveunalloc);
     }
   catch(envError e)
     {

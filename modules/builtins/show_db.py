@@ -50,7 +50,10 @@ class SHOW_DB(Script):
 
   def start(self, args):
     res = "Variable DB\n"
-    key = args.get_string('key')
+    try :
+      key = args.get_string('key')
+    except KeyError:
+      key = ""
     if key != "":
       res += self.get_dbinfo(key)
     else:

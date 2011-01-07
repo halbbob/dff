@@ -15,7 +15,7 @@
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString
 
 # CORE
@@ -80,7 +80,8 @@ class ApplyModule(QDialog,  UiApplyModule):
                         if value == "" :
                             errorArg.append(i)
                     else:
-                        value = self.valueArgs[i].value()
+                        v = self.valueArgs[i].currentText().toInt()
+                        value = v[0]
         if len(errorArg) > 0:
             QMessageBox.warning(self, self.tr("ApplyModule", "Missing Arguments"), self.tr("ApplyModule", "There are missing arguments."))
         else:
@@ -163,15 +164,22 @@ class ApplyModule(QDialog,  UiApplyModule):
             wl.addWidget(widget)
             wl.addWidget(button)
             return wl
+
         elif arg.type == "int":
-            widget = QSpinBox()
-            widget.setRange(-(2**31), (2**31)-1)
+            widget = QComboBox()
+            widget.setEditable(True)
+            widget.setValidator(QIntValidator())
+            for i in range(0, len(list)) :
+                if widget.findText(str(list[i])) == -1:
+                    widget.addItem(str(list[i]))
             self.valueArgs[arg] = widget
             return widget
+
         elif arg.type == "string":
             widget = StringComboBox(self.argumentsContainer)
             widget.setEditable(True)
             for i in range(0, len(list)) :
+                print type(list[i])
                 widget.addPath(list[i])
             self.valueArgs[arg] = widget
             return widget
@@ -203,8 +211,8 @@ class ApplyModule(QDialog,  UiApplyModule):
                         value = str(self.valueArgs[i].currentText())
                         self.arg.add_path(str(i.name), str(value))
                     elif i.type == "int" :
-                        value = self.valueArgs[i].value()
-                        self.arg.add_int(str(i.name), value)
+                        value = self.valueArgs[i].currentText().toInt()
+                        self.arg.add_int(str(i.name), value[0])
                     elif i.type == "string" :
                         value = str(self.valueArgs[i].currentText())
                         self.arg.add_string(str(i.name), value)       

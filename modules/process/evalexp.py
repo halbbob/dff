@@ -23,7 +23,10 @@ class EVAL(Script):
 
   def start(self, args):
     expr = args.get_string("expression")
-    hex = args.get_bool("hex")
+    try :
+      hex = args.get_bool("hex")
+    except KeyError:
+      hex = None
     buff = eval(expr)
     if hex:
       self.res.add_const("result", "0x%x" % buff)

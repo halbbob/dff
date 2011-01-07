@@ -82,6 +82,7 @@ class Dialog(QObject):
 class evidenceDialog(QDialog):
   def __init__(self, parent):
     QDialog.__init__(self, parent)
+    self.loader = loader.loader()
     self.createShape()
 
   def createShape(self):
@@ -98,7 +99,8 @@ class evidenceDialog(QDialog):
     self.comboformat = QComboBox()
         # Get devices and add in combobox
     self.comboformat.addItem("RAW files")
-    self.comboformat.addItem("EWF files")
+    if "ewf" in self.loader.modules:
+      self.comboformat.addItem("EWF files")
     self.comboformat.addItem("Local directory")
 
     self.header = QHBoxLayout()

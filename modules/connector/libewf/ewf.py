@@ -168,6 +168,8 @@ class ewf(Module):
       zlib = CDLL(zlibpath)
     else:
       ewfpath = find_library('ewf')
+      if not ewfpath :
+	ewfpath = find_library('ewf-1')
     if ewfpath:
       libewf = CDLL(ewfpath)
     if not libewf._name:

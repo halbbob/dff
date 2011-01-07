@@ -49,7 +49,10 @@
     }
   catch (envError &e)
     {
-      SWIG_exception(SWIG_AttributeError, e.error.c_str());
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      PyErr_SetString(PyExc_KeyError, e.error.c_str());
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      return NULL;
     }
   catch (Swig::DirectorException e)
     {
@@ -63,9 +66,7 @@
 {
   try
     {
-      //SWIG_PYTHON_THREAD_BEGIN_ALLOW;
       $action;
-      //SWIG_PYTHON_THREAD_END_ALLOW;
     }
   catch (Swig::DirectorException e)
     {
@@ -77,7 +78,10 @@
     }
   catch (envError &e)
     {
-      SWIG_exception(SWIG_AttributeError, e.error.c_str());
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      PyErr_SetString(PyExc_KeyError, e.error.c_str());
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      return NULL;
     }
   catch (const std::exception &e)
     {
