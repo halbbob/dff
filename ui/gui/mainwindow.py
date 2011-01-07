@@ -124,10 +124,10 @@ class MainWindow(QMainWindow):
         path = DOC_PATH
         file = QFile(path)
         if not file.exists(path):
-            dialog = QMessageBox()
-            dialog.setText(DOC_PATH + " : No such file.\nYou can check on-line help at http://wiki.digital-forensic.org")
-            dialog.setIcon(QMessageBox.Warning)
-            dialog.setWindowTitle("Error while loading help")
+            if DOC_PATH:
+                dialog = QMessageBox.warning(self, "Error while loading help", QString(str(DOC_PATH) + ": No such file.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
+            else:
+                dialog = QMessageBox.warning(self, "Error while loading help", QString("Documentation path not found.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
             dialog.exec_()
             return
 
