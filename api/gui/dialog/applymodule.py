@@ -15,7 +15,7 @@
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString
 
 # CORE
@@ -90,18 +90,25 @@ class ApplyModule(QDialog,  UiApplyModule):
         self.__nodesSelected = nodesSelected
         self.currentModName = str(nameModule)
 
+        title = "Apply module " + str(nameModule)
+        self.setWindowTitle(title)
+
         infolayout = QFormLayout()
 
         infolayout.addRow("Module", QLabel(nameModule))
         infolayout.addRow("Type", QLabel(typeModule))
-        infolayout.addRow("Description", QLabel(self.loader.modules[str(nameModule)].conf.description))
+        tedit = QTextEdit(self.loader.modules[str(nameModule)].conf.description)
+        tedit.setReadOnly(True)
+        tedit.setFixedHeight(50)
+
+        infolayout.addRow("Purpose", tedit)
         self.infoContainer.setLayout(infolayout)
 
         args = Utils.getArgs(str(nameModule))
         self.createArgShape(args)
     
     def createArgShape(self, args):
-        self.argslayout = QHBoxLayout()
+        self.argslayout = QSplitter()
         self.stackedargs = QStackedWidget()
         self.listargs = QListWidget()
 
@@ -113,7 +120,9 @@ class ApplyModule(QDialog,  UiApplyModule):
         self.argslayout.addWidget(self.listargs)
         self.argslayout.addWidget(self.stackedargs)
 
-        self.argumentsContainer.setLayout(self.argslayout)
+        container = QVBoxLayout()
+        container.addWidget(self.argslayout)
+        self.argumentsContainer.setLayout(container)
 
     def createArgument(self, arg):
         warg = QWidget()
@@ -126,7 +135,10 @@ class ApplyModule(QDialog,  UiApplyModule):
             arglayout.addRow("Activate", checkBox)
 
         arglayout.addRow("Type", QLabel(str(arg.type)))
-        arglayout.addRow("Description", QLabel(str(arg.description)))
+        tedit = QTextEdit(str(arg.description))
+        tedit.setReadOnly(True)
+        tedit.setFixedHeight(50)
+        arglayout.addRow("Description", tedit)
         arglayout.addRow(str(arg.name), widget)
 
         warg.setLayout(arglayout)
