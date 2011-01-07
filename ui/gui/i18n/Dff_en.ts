@@ -3,13 +3,13 @@
 <context>
     <name>ApplyModule</name>
     <message>
-        <location filename="applymodule.py" line="93"/>
+        <location filename="applymodule.py" line="85"/>
         <source>ApplyModule</source>
         <comment>Missing Arguments</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="applymodule.py" line="93"/>
+        <location filename="applymodule.py" line="85"/>
         <source>ApplyModule</source>
         <comment>There are missing arguments.</comment>
         <translation type="unfinished"></translation>
@@ -40,45 +40,73 @@
     </message>
 </context>
 <context>
+    <name>DevicesDialog</name>
+    <message>
+        <location filename="selectdevices.py" line="17"/>
+        <source>Select Device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="23"/>
+        <source>OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="25"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="57"/>
+        <source>Select device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="58"/>
+        <source>Block device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="59"/>
+        <source>Model:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="60"/>
+        <source>Serial:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="selectdevices.py" line="61"/>
+        <source>Size:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Dialog</name>
     <message>
-        <location filename="dialog.py" line="29"/>
-        <source>Device</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="31"/>
-        <source>File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="25"/>
-        <source>Add dump:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="25"/>
-        <source>Choose dump type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="53"/>
-        <source>Add Dumps</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="63"/>
+        <location filename="dialog.py" line="73"/>
         <source>Load module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.py" line="69"/>
+        <location filename="dialog.py" line="79"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="dialog.py" line="69"/>
+        <location filename="dialog.py" line="79"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version 0.9)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialog.py" line="47"/>
+        <source>Add evidence directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="dialog.py" line="49"/>
+        <source>Add evidence files</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -277,16 +305,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="72"/>
-        <source>Add Dump</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.py" line="73"/>
-        <source>Add device(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="mainwindow.py" line="74"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
@@ -304,6 +322,16 @@
     <message>
         <location filename="mainwindow.py" line="86"/>
         <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.py" line="72"/>
+        <source>Open evidence file(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.py" line="73"/>
+        <source>Open local device</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -740,15 +768,15 @@
 <context>
     <name>browseButton</name>
     <message>
-        <location filename="applymodule.py" line="277"/>
+        <location filename="applymodule.py" line="264"/>
         <source>BrowserButton</source>
-        <comment>Browse</comment>
+        <comment>Add Dump</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="applymodule.py" line="283"/>
-        <source>BrowserButton</source>
-        <comment>Add Dump</comment>
+        <location filename="applymodule.py" line="258"/>
+        <source>Browse</source>
+        <comment>Browse</comment>
         <translation type="unfinished"></translation>
     </message>
 </context>
