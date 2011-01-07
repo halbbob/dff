@@ -200,6 +200,7 @@ class NodeBrowser(QWidget, DEventHandler):
   def addTableView(self): 
     self.tableView = NodeTableView(self)
     self.tableView.setModel(self.proxyModel)
+    self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
 #    self.tableView.setMinimumWidth(self.mainwindow.width() / 3)
