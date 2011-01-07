@@ -106,4 +106,4 @@ class fileinfo(Module):
   def __init__(self):
     Module.__init__(self, "fileinfo",  FILEINFO)
     self.conf.add("file", "node", False, "File where info is searched.")
-    self.tags = "utils"
+    self.tags = "builtins"

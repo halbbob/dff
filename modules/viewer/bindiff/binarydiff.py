@@ -62,8 +62,8 @@ class binDiff(QWidget, Script):
 
 class binarydiff(Module):
   def __init__(self):
-    Module.__init__(self, "bindiff", binDiff)
+    Module.__init__(self, "diff", binDiff)
     self.conf.add("file1", "node")
     self.conf.add("file2", "node")
-    self.tags = "viewer"
+    self.tags = "Viewers"
 

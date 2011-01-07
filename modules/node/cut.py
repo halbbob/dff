@@ -69,4 +69,4 @@ class cut(Module):
     self.conf.add("out", "string", False, "output node name")
     self.conf.add("start", "int", False, "Start offset of the new node")
     self.conf.add("size", "int", True, "Size of the output node")
-    self.tags = "node"
+    self.tags = "Node"

@@ -102,4 +102,4 @@ ex: hash /myfile"""
     self.conf.add_const("algorithm",  "sha256")
     self.conf.add_const("algorithm",  "sha384")
     self.conf.add_const("algorithm",  "sha512")
-    self.tags = "hash"
+    self.tags = "Hash"

@@ -173,4 +173,4 @@ class ewf(Module):
     if not libewf._name:
        raise Exception('loading modules', 'ewf') 
     self.conf.add('file', 'path', False, "First EWF file to open")
-    self.tags = "connector"
+    self.tags = "Connectors"
