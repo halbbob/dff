@@ -26,14 +26,15 @@ from api.loader.loader import loader
 import gui_rc
 
 class gui():
-    def __init__(self):
+    def __init__(self, debug = False):
         """Launch GUI"""
+        self.debug = debug
         translator = Translator()
         self.app = QApplication(sys.argv)
       
         self.app.installTranslator(translator)
         self.app.setApplicationName("Digital Forensics Framework")
-        self.app.setApplicationVersion("${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+        self.app.setApplicationVersion("0.9.0")
         pixmap = QPixmap(":splash.png")
         self.splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
         self.splash.setMask(pixmap.mask()) 
@@ -43,7 +44,7 @@ class gui():
         if modPath:
           self.loader = loader()
           self.loader.do_load(modPath, self.splash.showMessage)
-        mainWindow = MainWindow(self.app)
+        mainWindow = MainWindow(self.app, self.debug)
         mainWindow.show()
 
         self.splash.finish(mainWindow)
