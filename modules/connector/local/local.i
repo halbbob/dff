@@ -47,5 +47,5 @@ class LOCAL(Module):
     self.conf.add("parent", "node", True, "The file will be added as son of this node or as the root node by default.")
     self.conf.add("path", "path", False, "Path to the file or directory on your operating system.")
   # self.conf.add("size", "uint64", True, "Force size of the file.")
-    self.tags = "connector"
+    self.tags = "Connectors"
 %}

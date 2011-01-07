@@ -15,8 +15,8 @@
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox
-from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem
+from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString
 
 # CORE
 from api.loader import *
@@ -31,7 +31,7 @@ from api.gui.widget.nodeview import NodeTreeView
 from api.gui.box.nodecombobox import NodeComboBox
 from api.gui.box.stringcombobox import StringComboBox
 from api.gui.box.boolcombobox import BoolComboBox
-from api.gui.box.checkbox import CheckBoxWidgetEnable
+from api.gui.box.checkbox import checkBoxWidget
 from api.gui.dialog.uiapplymodule import UiApplyModule 
 
 from ui.gui.utils.utils import Utils
@@ -53,9 +53,6 @@ class ApplyModule(QDialog,  UiApplyModule):
     def initDialog(self):
         self.initArguments()
         self.vlayout = QVBoxLayout(self)
-#        self.vlayout.addWidget(self.label)
-#        self.splitter = QSplitter(Qt.Vertical, self)
-#        self.splitter.addWidget(self.argumentsContainer)        
         self.vlayout.addWidget(self.infoContainer)
         self.vlayout.addWidget(self.argumentsContainer)
         self.vlayout.addWidget(self.buttonBox)
@@ -63,15 +60,7 @@ class ApplyModule(QDialog,  UiApplyModule):
     def initArguments(self):
         self.infoContainer = QGroupBox("Informations", self)
         self.argumentsContainer = QGroupBox("Arguments", self)
-#        self.argumentsContainer = QWidget(self)
-        self.gridArgs = QGridLayout(self.argumentsContainer)
-        self.labelArgs = {}
         self.valueArgs = {}
-        self.checkBoxArgs = {}
-        self.hboxArgs = {}
-        self.browserButtons = {}
-        self.lineEdit = {}
-    
     
     def initCallback(self):
         self.connect(self.buttonBox,SIGNAL("accepted()"), self.validateModule)
@@ -100,151 +89,137 @@ class ApplyModule(QDialog,  UiApplyModule):
     def initAllInformations(self, nameModule, typeModule, nodesSelected):
         self.__nodesSelected = nodesSelected
         self.currentModName = str(nameModule)
-        
-        name = "Module : "
-        name += nameModule
-        lname = QLabel(name)
-        typ = "Type : "
-        typ += typeModule
-        ltype = QLabel(typ)
 
-        desc = "General Description : "
-        desc += self.loader.modules[str(nameModule)].conf.description
-        ldesc = QLabel(desc)
+        infolayout = QFormLayout()
 
-        vboxinfo = QVBoxLayout(self.infoContainer)
-        vboxinfo.addWidget(lname)
-        vboxinfo.addWidget(ltype)
-        vboxinfo.addWidget(ldesc)
+        infolayout.addRow("Module", QLabel(nameModule))
+        infolayout.addRow("Type", QLabel(typeModule))
+        infolayout.addRow("Description", QLabel(self.loader.modules[str(nameModule)].conf.description))
+        self.infoContainer.setLayout(infolayout)
 
-        # Set argument description
         args = Utils.getArgs(str(nameModule))
-#        vars_db = self.env.vars_db
-        for arg in args:            
-            argdesc = " - "
-            argdesc += arg.name
-            argdesc += " : "
-            argdesc += arg.description
-            arglabeldesc = QLabel(argdesc)
-            vboxinfo.addWidget(arglabeldesc)
-
-
-        self.infoContainer.setLayout(vboxinfo)
-
-        self.loadArguments(str(nameModule), str(typeModule))
+        self.createArgShape(args)
     
-    def loadArguments(self, nameModule, type):
-        if self.argumentsContainer == None :
-            self.argumentsContainer = QGroupBox("Arguments", self)
-#            self.argumentsContainer = QWidget(self)
+    def createArgShape(self, args):
+        self.argslayout = QHBoxLayout()
+        self.stackedargs = QStackedWidget()
+        self.listargs = QListWidget()
 
-        iterator = 0
-        args = Utils.getArgs(nameModule)
+        self.connect(self.listargs, SIGNAL("currentItemChanged(QListWidgetItem*,QListWidgetItem*)"), self.argChanged)
 
-        vars_db = self.env.vars_db
         for arg in args:
-            label = QLabel(arg.name + " ( "+ str(arg.type) + " ) " + ":", self.argumentsContainer)
-            label.setMinimumSize(QSize(80,  28))
-            label.setMaximumSize(QSize(120,  28))
-            list = self.env.getValuesInDb(arg.name,  arg.type)
-            if arg.type == "node" :
-                value = QLineEdit()#pathEdit(self)
-                button = browseButton(self.argumentsContainer, value, arg.name, 0)
-                # Check if a node is selected
-                currentNode = self.__mainWindow.nodeBrowser.currentNode()
-                if currentNode != None:
-                    value.clear()
-                    value.insert(currentNode.absolute())
-                    #value.setCurrentNode(currentNode)
+            self.createArgument(arg)
 
-            elif arg.type == "int":
-                value = QSpinBox()
-                value.setRange(-(2**31), (2**31)-1)
-#                value.setEditable(True)
-#                for i in range(0, len(list)) :
-#                    value.addPath(str(list[i]))
-                button = None
-            
-            elif arg.type == "string":
-                value = StringComboBox(self.argumentsContainer)
-                value.setEditable(True)
-                for i in range(0, len(list)) :
-                    value.addPath(list[i])
-                button = None
-                    
-            elif arg.type == "path" :
-                value = StringComboBox(self.argumentsContainer)
-                value.setEditable(True)
-                for i in range(0, len(list)) :
-                    value.addPath(list[i])
-                button = browseButton(self.argumentsContainer,  value, arg.name, 1)
-            
-            elif arg.type == "bool" :
-                value = BoolComboBox(self.argumentsContainer)
-                button = None
-                    
-            if arg.optional :
-                checkBox =  CheckBoxWidgetEnable(self.argumentsContainer, label, value,  button)
-            else :
-                checkBox = None
-            
-            self.gridArgs.addWidget(label, iterator, 0)
-            if value != None :
-                self.gridArgs.addWidget(value, iterator, 1)
-            if button != None:
-                self.gridArgs.addWidget(button, iterator, 2)
-            if checkBox != None :
-                self.gridArgs.addWidget(checkBox, iterator, 3)
+        self.argslayout.addWidget(self.listargs)
+        self.argslayout.addWidget(self.stackedargs)
 
-            self.labelArgs[arg] = label
-            self.valueArgs[arg] = value
-            self.checkBoxArgs[arg] = checkBox
-            self.browserButtons[arg] = button
-            iterator = iterator + 1
+        self.argumentsContainer.setLayout(self.argslayout)
 
-    def currentModuleName(self):
-        return self.currentModName
+    def createArgument(self, arg):
+        warg = QWidget()
+        arglayout = QFormLayout()
+    
+        widget = self.getWidgetFromType(arg)
 
-    # get Arguments
+        if arg.optional :
+            checkBox =  checkBoxWidget(arglayout, widget)
+            arglayout.addRow("Activate", checkBox)
+
+        arglayout.addRow("Type", QLabel(str(arg.type)))
+        arglayout.addRow("Description", QLabel(str(arg.description)))
+        arglayout.addRow(str(arg.name), widget)
+
+        warg.setLayout(arglayout)
+        self.stackedargs.addWidget(warg)
+        argitem = QListWidgetItem(str(arg.name), self.listargs)
+
+    def argChanged(self, curitem, previtem):
+        self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
+
+    def getWidgetFromType(self, arg):
+        list = self.env.getValuesInDb(arg.name, arg.type)
+        if arg.type == "node" :
+            widget = QLineEdit()
+            self.valueArgs[arg] = widget
+            button = browseButton(self.argumentsContainer, widget, arg.name, 0)
+            # Check if a node is selected
+            currentNode = self.__mainWindow.nodeBrowser.currentNode()
+            if currentNode != None:
+                widget.clear()
+                widget.insert(currentNode.absolute())
+            wl = QHBoxLayout()
+            wl.addWidget(widget)
+            wl.addWidget(button)
+            return wl
+        elif arg.type == "int":
+            widget = QSpinBox()
+            widget.setRange(-(2**31), (2**31)-1)
+            self.valueArgs[arg] = widget
+            return widget
+        elif arg.type == "string":
+            widget = StringComboBox(self.argumentsContainer)
+            widget.setEditable(True)
+            for i in range(0, len(list)) :
+                widget.addPath(list[i])
+            self.valueArgs[arg] = widget
+            return widget
+        elif arg.type == "path" :
+            widget = StringComboBox(self.argumentsContainer)
+            widget.setEditable(True)
+            for i in range(0, len(list)) :
+                widget.addPath(list[i])
+            self.valueArgs[arg] = widget
+            button = browseButton(self.argumentsContainer,  widget, arg.name, 1)
+            wl = QHBoxLayout()
+            wl.addWidget(widget)
+            wl.addWidget(button)
+            return wl
+        elif arg.type == "bool" :
+            widget = BoolComboBox(self.argumentsContainer)
+            self.valueArgs[arg] = widget
+            return widget
+
     def getArguments(self):
         self.arg = self.env.libenv.argument("gui_input")
         self.arg.thisown = 0
         for i in self.valueArgs :
-            if i.type == "node" :
-                self.arg.add_node(str(i.name), self.vfs.getnode(str(self.valueArgs[i].text())))
-                #self.arg.add_node(str(i.name), self.valueArgs[i].currentNode())
-            else :
-                if i.type == "path" :
-                    value = str(self.valueArgs[i].currentText())
-                    self.arg.add_path(str(i.name), str(value))
-                elif i.type == "int" :
-                    value = self.valueArgs[i].value()
-                    self.arg.add_int(str(i.name), value)
-                elif i.type == "string" :
-                    value = str(self.valueArgs[i].currentText())
-                    self.arg.add_string(str(i.name), value)       
-                elif i.type == "bool" :
-	 	    value = str(self.valueArgs[i].currentText())
-                    if value == "True" :
-                        value = 1
-                    else :
-                        value = 0
-                    self.arg.add_bool(str(i.name), value)
+            if not i.optional or self.valueArgs[i].isEnabled():
+                if i.type == "node" :
+                    self.arg.add_node(str(i.name), self.vfs.getnode(str(self.valueArgs[i].text())))
+                else :
+                    if i.type == "path" :
+                        value = str(self.valueArgs[i].currentText())
+                        self.arg.add_path(str(i.name), str(value))
+                    elif i.type == "int" :
+                        value = self.valueArgs[i].value()
+                        self.arg.add_int(str(i.name), value)
+                    elif i.type == "string" :
+                        value = str(self.valueArgs[i].currentText())
+                        self.arg.add_string(str(i.name), value)       
+                    elif i.type == "bool" :
+			value = str(self.valueArgs[i].currentText())
+                        if value == "True" :
+                            value = 1
+                        else :
+                            value = 0
+                        self.arg.add_bool(str(i.name), value)
         self.taskmanager = TaskManager()
         modules = self.currentModuleName()
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
-        return #self.arg
+        return
 
     def openApplyModule(self,  nameModule = None, typeModule = None, nodesSelected = None):
-#        self.deleteAllArguments()
         if(self.isVisible()):
             QMessageBox.critical(self, "Erreur", u"This box is already open")
         else:
             self.initAllInformations(nameModule, typeModule,  nodesSelected)
             iReturn = self.exec_()
-        if iReturn :
-            script = nameModule
-            arg = self.getArguments()
+            if iReturn :
+                script = nameModule
+                arg = self.getArguments()
+
+    def currentModuleName(self):
+        return self.currentModName
     
 class VFSDialog(QDialog):
     def __init__(self):
@@ -279,9 +254,8 @@ class browseButton(QPushButton):
         QPushButton.__init__(self,  parent)
         self.targetResult = targetResult
         self.vtype = vtype
-#        self.node = node
         self.setObjectName("Button" + arg_name)
-        self.setText(self.tr("BrowserButton", "Browse"))
+        self.setText(self.tr("Browse", "Browse"))
         self.setFixedSize(QSize(80,  28))
         self.connect(self,  SIGNAL("clicked()"), self.click)
         
@@ -289,7 +263,6 @@ class browseButton(QPushButton):
         if self.vtype == 1:
             sFileName = QFileDialog.getOpenFileName(self, self.tr("BrowserButton", "Add Dump"),  "/home")
             if (sFileName) :
-#                self.targetResult.clear()
                 self.targetResult.addPathAndSelect(sFileName)
         else:
             BrowseVFSDialog = VFSDialog()
@@ -299,7 +272,6 @@ class browseButton(QPushButton):
                 if node :
                     self.targetResult.clear()
                     self.targetResult.insert(node.absolute())
-                    #self.targetResult.setCurrentNode(node)
                     
 class SimpleNodeBrowser(QWidget):
     def __init__(self, parent):
@@ -334,9 +306,6 @@ class SimpleNodeBrowser(QWidget):
     def nodeSelected(self):
         return self.selection
 
-
-# Model For QCompleter
-
 class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
     QSortFilterProxyModel.__init__(self, parent)
@@ -356,15 +325,10 @@ class pathEdit(QLineEdit):
     def __init__(self, parent):
         QLineEdit.__init__(self,  parent) 
         self.init(parent)
-#        self.addModel()
-#        self.initCompleter()
-#        self.initCompleter()
 
     def init(self, parent):
         self.parent = parent
-#        self.setReadOnly(True)
         self.node = None
-#        self.vfs = vfs.vfs()
 
     def currentNode(self):
         return self.node
@@ -378,16 +342,9 @@ class pathEdit(QLineEdit):
         self.treeModel.setRootPath(self.vfs.getnode("/"))
         self.treeProxyModel = NodeTreeProxyModel()
         self.treeProxyModel.setSourceModel(self.treeModel)
-#        self.treeView = NodeTreeView(self)
-#        self.treeView.setModel(self.treeProxyModel)
-#        self.browserLayout.addWidget(self.treeView)
-#        self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
-
 
     def initCompleter(self):
         self.completer = QCompleter(self)
-#        self.treeModel = VFSItemModel(self.completer)
-#        self.treeModel.setRootPath(self.vfs.getnode("/"))
         self.completer.setModel(self.treeProxyModel)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.setCompleter(self.completer)

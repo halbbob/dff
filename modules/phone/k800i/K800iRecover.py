@@ -156,4 +156,4 @@ class K800iRecover(Module):
     self.conf.add_const("spare-size", 16)
     self.conf.add("page-size", "int", True, "Size of nand page")
     self.conf.add_const("page-size", 512)
-    self.tags = "cellphone"
+    self.tags = "Mobile"

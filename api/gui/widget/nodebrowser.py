@@ -24,7 +24,7 @@ from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.env import *
 
-from api.gui.box.nodefilterbox import NodeFilterBox, NodeSearchBox
+from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.dialog.property import Property
 from api.gui.dialog.applymodule import ApplyModule
@@ -160,9 +160,7 @@ class NodeBrowser(QWidget, DEventHandler):
   def addOptionsView(self):
     self.nodeViewBox = NodeViewBox(self)
     self.nodeFilterBox = NodeFilterBox(self)
-    self.nodeSearchBox = NodeSearchBox(self)
     self.baseLayout.insertWidget(0,self.nodeFilterBox)
-    self.baseLayout.insertWidget(0,self.nodeSearchBox)
     self.baseLayout.insertWidget(0, self.nodeViewBox)
 
   def addModel(self, path):

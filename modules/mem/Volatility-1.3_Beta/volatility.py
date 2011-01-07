@@ -9,9 +9,7 @@ from api.module.module import *
 from api.module.script import *
 
 from dfwrapper import *
-#XXX fixer les write car pas correct
-#passer l options mem et disk a dump
-#verifier la creation des files car ququ truc spe mais parait a peu pres ok
+#XXX fix dump options
 
 class Volatility(mfso):
   def __init__(self):
@@ -22,10 +20,22 @@ class Volatility(mfso):
 
   def start(self, args):
     self.node = args.get_node('file')
-    self.meta = args.get_bool("meta")
-    self.dump = args.get_bool("dump") #XXX dump mem / dump disk !
-    self.connections = args.get_bool("connection") #XXX dump mem / dump disk !
-    self.openfiles = args.get_bool("openfiles")
+    try:
+      self.meta = args.get_bool("meta")
+    except :
+      self.meta = None
+    try :
+      self.dump = args.get_bool("dump") #XXX dump mem / dump disk !
+    except :
+      self.dump = None
+    try :
+      self.connections = args.get_bool("connection") #XXX dump mem / dump disk !
+    except :
+      self.connections = None
+    try :
+      self.openfiles = args.get_bool("openfiles")
+    except :
+      self.openfiles = None
     self.root = Node("volatility")
     self.root.__disown__()
     self.op = op(self.node)
@@ -66,4 +76,4 @@ class volatility(Module):
    self.conf.add("dump", "bool", True, "Dump processus data content")
    self.conf.add("openfiles", "bool", True, "List opened files per processus")
    self.conf.add("connection", "bool", True, "List opened connection per processus")
-   self.tags = "volatile memory"
+   self.tags = "Volatile memory"

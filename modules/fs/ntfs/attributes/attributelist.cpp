@@ -214,14 +214,15 @@ uint32_t	AttributeAttributeList::getExternalAttributeData()
   uint16_t	contentSize;
 
   if (_attributeHeader->nonResidentFlag) {
-    ;
+    contentSize = _size;
   }
   else {
     contentSize = _attributeResidentDataHeader->contentSize;
   }
   while (_dataOffset < contentSize) {
     if (_attributeHeader->nonResidentFlag) {
-      ;
+    //XXX to validate
+	_data = (AttributeAttributeList_t *)(_contentBuffer + _dataOffset);
     }
     else {
       _data = (AttributeAttributeList_t *)(_readBuffer + _bufferOffset + _dataOffset);

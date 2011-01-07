@@ -61,4 +61,4 @@ ex: unxor /myfile key"""
     Module.__init__(self, "unxor", UNXOR)
     self.conf.add("file", "node", False, "Encrypted file.")  
     self.conf.add("key", "string", False, "Password.")
-    self.tags = "crypto"
+    self.tags = "Crypto"

@@ -41,7 +41,7 @@ SHM is also used by other modules (zip, touch, ...) to create file with content 
     Module.__init__(self, 'shm', Shm)
     self.conf.add("filename", "string", False, "File name of the created file.")
     self.conf.add("parent", "node", False, "File to copy.")
-    self.tags = "utils"
+    self.tags = "Utils"
 %}
 
 

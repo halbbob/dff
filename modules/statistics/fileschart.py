@@ -150,6 +150,6 @@ ex: statistics /mydump/"""
   def __init__(self):
     Module.__init__(self, "fileschart", FILESCHART)
     self.conf.add('parent', 'node', False, "Directory or file to get filetype from")
-    self.tags = "statistics"
+    self.tags = "Statistics"
 
 

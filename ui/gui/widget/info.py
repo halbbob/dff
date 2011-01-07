@@ -27,9 +27,10 @@ from ui.gui.widget.stdio import IO
 from ui.redirect import RedirectIO
 
 class Info(QWidget):
-    def __init__(self, mainWindow):
+    def __init__(self, mainWindow, debug = False):
         super(Info,  self).__init__()
         self.__mainWindow = mainWindow
+	self.debug = debug
         self.loader = loader.loader()
         self.env = env.env()
         self.tm = TaskManager()
@@ -77,7 +78,7 @@ class Info(QWidget):
 #        self.setWidget(self.Info)
 
     def initSTDIO(self):
-	self.io = IO()
+	self.io = IO(self.debug)
         self.tabWidget.addTab(self.io.textOut, QIcon(":info.png"),"std::out")
         self.tabWidget.addTab(self.io.textErr, QIcon(":cancel.png"),"std::err")
 

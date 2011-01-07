@@ -149,18 +149,15 @@ class DffUnittest(unittest.TestCase):
         val_map = None
         outTest = []
         for i in range(len(self.tm.lprocessus) - 1, 0, -1):
-#            outTest.append(self.tm.lprocessus[i].name)
             if self.tm.lprocessus[i].name == procName:
                 val_map = self.tm.env.get_val_map(self.tm.lprocessus[i].res.val_m)
                 break
         if val_map:
+            outArray = []
             for type, name, val in val_map:
-                if name == 'result':
-                    outArray = []
-                    for line in val.split('\n'):
-                        if len(line.rstrip()):
-                            outArray.append(line.rstrip())
-                    return outArray
+                outArray.append(str(name) + ':')
+                outArray.append(str(val))
+            return outArray
         raise UserWarning
     
     def _readExpectedOutputAsArray(self, filePath):

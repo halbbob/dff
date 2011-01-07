@@ -122,7 +122,7 @@ class EWF(fso):
     buf = create_string_buffer(size)
     fi = self.fdm.get(fd)
     retsize = libewf.libewf_read_random(fi.id, buf, c_ulong(size), c_ulonglong(fi.offset))
-    if retsize < 0:
+    if retsize <= 0:
        return (0, "")
     else :
       fi.offset += retsize
@@ -155,9 +155,7 @@ class EWF(fso):
   def status(self):
     return len(self.mapped_files)
 
-
 libewf = None
-
 
 class ewf(Module):
   """EWF connector modules"""
@@ -165,8 +163,8 @@ class ewf(Module):
     Module.__init__(self, "ewf", EWF)
     global libewf
     if os.name == "nt":
-      ewfpath = "C:\\dff-oss\\modules\\connector\\libewf.dll"	    
-      zlibpath = "C:\\dff-oss\\modules\\connector\\zlib.dll"	  
+      ewfpath = "modules\\connector\\libewf\\libewf.dll"	    
+      zlibpath = "modules\\connector\\libewf\\zlib.dll"	  
       zlib = CDLL(zlibpath)
     else:
       ewfpath = find_library('ewf')
@@ -175,4 +173,4 @@ class ewf(Module):
     if not libewf._name:
        raise Exception('loading modules', 'ewf') 
     self.conf.add('file', 'path', False, "First EWF file to open")
-    self.tags = "connector"
+    self.tags = "Connectors"

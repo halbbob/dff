@@ -39,5 +39,5 @@ class PARTITION(Module):
     Module.__init__(self, 'partition', Partition)
     self.conf.add("parent", "node", False, "File to search partition in")
     self.conf.add_const("mime-type", "partition")
-    self.tags = "volumes"
+    self.tags = "Volumes"
 %}

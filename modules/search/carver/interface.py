@@ -303,4 +303,4 @@ class interface(Module):
   def __init__(self):
     Module.__init__(self, 'carver', PyCarver)
     self.conf.add("ifile", "node", False, "Node to search data in")
-    self.tags = "search"
+    self.tags = "Search"
