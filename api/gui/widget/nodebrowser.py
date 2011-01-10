@@ -57,7 +57,7 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
      index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
-       if node.hasChildren() or node.parent().absolute() == "/":
+       if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
 	 return True
      return False
 
@@ -286,7 +286,7 @@ class NodeBrowser(QWidget, DEventHandler):
 
   def nodeTreeDoubleClicked(self, mouseButton, node, index = None):
      if self.currentView().enterInDirectory:
-       if node.hasChildren():
+       if node.hasChildren() or node.isDir():
 	 self.currentModel().setRootPath(node) 
 
   def nodeDoubleClicked(self, mouseButton, node, index = None):
