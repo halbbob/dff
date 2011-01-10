@@ -78,7 +78,7 @@ void		Extfs::launch(argument * arg)
 {
   bool		sb_check = false;
   std::string	sb_force_addr("1024");
-  bool		run_driver = true;
+  bool		run_driver;
   std::string	check_alloc("");
   uint64_t	root_i_nb = ROOT_INODE;
   Option *	opt;
@@ -98,6 +98,8 @@ void		Extfs::launch(argument * arg)
 
   // parsing file system
   arg_get(arg, "parse_fs", &run_driver);
+
+  std::cout << "parse_fs : " << run_driver << std::endl;
   if (run_driver)
     {
       std::string	orphans("");
@@ -299,6 +301,7 @@ void        Extfs::arg_get(argument * all_args, const std::string & name, T arg)
     }
   catch (vfsError & e)
     {
+      std::cerr << "Could not load " << name << " parameter" << std::endl;
     } 
   catch (...)
     {

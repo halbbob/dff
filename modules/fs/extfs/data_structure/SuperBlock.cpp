@@ -42,7 +42,7 @@ void    SuperBlock::init(uint64_t fs_size, VFile * vfile, results * res,
     force_addr(vfile, sb_force_addr);
 
   // check the super block validity
-  if (!sanity_check(fs_size))
+  if (!sanity_check(fs_size) || (sb_check == "yes"))
     {
       if (sb_check == "yes")
 	{
@@ -65,11 +65,13 @@ void    SuperBlock::init(uint64_t fs_size, VFile * vfile, results * res,
 void    SuperBlock::force_addr(VFile * vfile, const std::string & addr)
 {
   // convert string to uint64_t
-  std::istringstream iss(addr);
+   std::istringstream iss(addr);
   iss >> _offset;
 
-  /* seek and read to the super block at _offset, or throw if an exception is
-     caught */
+  /*
+    seek and read to the super block at _offset, or throw if an exception is
+    caught
+  */
   try
     {
       vfile->seek(_offset);
@@ -99,43 +101,46 @@ bool    SuperBlock::sanity_check(uint64_t fs_size) const
 
 bool    SuperBlock::sigfind(uint64_t fs_size, VFile * vfile)
 {
-  super_block_t_	sig[4];
+  super_block_t_	sb;
   bool			possible_sb_found = false;
   uint64_t		previous_hit = 0;
-  uint16_t		array_size = sizeof(sig); //should be 4096 bytes
+  std::list<uint64_t> *	offset_list;
+  char			noodle[2];
 
+  noodle[0] = 0x53;
+  noodle[1] = 0xEF;
   _offset = 0; //offset of signature in the superblock
-  while (_offset < fs_size)
+  offset_list = vfile->search(noodle, 2, '\0');
+  if (offset_list->empty())
     {
-      uint16_t  read_size = ((_offset + array_size) > fs_size ?
-			     array_size - (fs_size - _offset) : array_size);
-
-      vfile->seek(_offset);
-      vfile->read((void *)sig, read_size);
-      if (read_size < 1024)
-	return possible_sb_found;
-      for (uint8_t i = 0; i < (read_size / 1024); ++i)
-        {
-	  if (sig[i].signature == __SB_SIG)
-            {
-	      std::cout << "Hit : " << (_offset) / 1024
-			<< "\tPrevious : " << previous_hit / 1024 << " ("
-			<< (_offset - previous_hit) / 1024 << ")";
-	      if (sanity_check(fs_size))
-                {
-		  possible_sb_found = true;
-		  _backup_list.insert(std::make_pair(_offset,
-						     last_written_time()));
-		  std::cout << "\t -> Possibly valid." << std::endl;
-                }
-	      else
-		std::cout << "\t -> Invalid." << std::endl;
-	      previous_hit = _offset;
-            }
-	  _offset += sizeof(super_block_t_);
-        }
+      delete offset_list;
+      return possible_sb_found;
     }
-  vfile->seek(_offset - __BOOT_CODE_SIZE);
+
+  std::list<uint64_t>::iterator	it = offset_list->begin(), end = offset_list->end();
+  while (it != end)
+    {
+      _offset = *it;
+
+      vfile->seek(_offset - 56);
+      vfile->read((void *)getSuperBlock(), __BOOT_CODE_SIZE);
+
+      std::cout << "Hit : " << (_offset) / 1024
+		<< "\tPrevious : " << previous_hit / 1024 << " ("
+		<< (_offset - previous_hit) / 1024 << ")";
+      if (sanity_check(fs_size))
+	{
+	  possible_sb_found = true;
+	  _backup_list.insert(std::make_pair(_offset, last_written_time()));
+	  std::cout << "\t -> Possibly valid." << std::endl;
+	}
+      else
+	std::cout << "\t -> Invalid." << std::endl;
+      previous_hit = _offset;
+      _offset -= sizeof(super_block_t_);
+      it++;
+    }
+  delete offset_list;
   return possible_sb_found;
 }
 
@@ -158,8 +163,8 @@ uint64_t        SuperBlock::most_recent_backup(VFile * vfile) throw(vfsError)
       }
   std::cout << "The most recent superblock backup has been located at offset "
 	    << offset << "." << std::endl;
-  _offset = offset;
-  return read(vfile, offset);
+  _offset = offset - 56;
+  return read(vfile, _offset);
 }
 
 void            SuperBlock::file_system_sanity()
