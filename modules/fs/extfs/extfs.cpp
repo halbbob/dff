@@ -97,7 +97,7 @@ void		Extfs::launch(argument * arg)
   opt->parse(this);
 
   // parsing file system
-  arg_get(arg, "run", &run_driver);
+  arg_get(arg, "parse_fs", &run_driver);
   if (run_driver)
     {
       std::string	orphans("");
