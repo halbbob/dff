@@ -66,7 +66,7 @@ class EXTFS(Module):
     self.conf.add_const("mime-type", "ext2")
     self.conf.add_const("mime-type", "ext3")
     self.conf.add_const("mime-type", "ext4")
-    self.conf.add_const("parse_fs", True)
+    #self.conf.add_const("parse_fs", True)
     self.conf.add_const("SB_check", False)
     self.conf.add_const("SB_addr", 1024)
     self.conf.add_const("root_inode", 2)
