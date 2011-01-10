@@ -13,7 +13,6 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-
 add_subdirectory(configuration)
 add_subdirectory(i18n)
 add_subdirectory(ide)
@@ -32,7 +31,12 @@ set(gui_srcs
   gui.py
   gui_rc.py
   mainwindow.py
+# Only for release because so huge file for versionning
+#  help.qhc
+#  help.qch
 )
+
+
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gui.py ${CMAKE_CURRENT_BINARY_DIR}/gui.py)
 
