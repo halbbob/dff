@@ -281,6 +281,10 @@ class NodeBrowser(QWidget, DEventHandler):
          if self.nodeViewBox.propertyTable.isVisible():
             self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
+       if node.hasChildren() or node.isDir():
+         self.opendirasnewtab.setEnabled(True)
+       else:
+         self.opendirasnewtab.setEnabled(False)
        self.submenuFile.popup(QCursor.pos())
        self.submenuFile.show()       
 
@@ -331,6 +335,12 @@ class NodeBrowser(QWidget, DEventHandler):
      self.connect(self.extractor, SIGNAL("filled"), self.launchExtract)
      self.submenuFile = QMenu()
      self.submenuFile.addAction(QIcon(":exec.png"),  "Open", self.openDefault, "Open")
+     ####
+     self.opendirasnewtab = QAction("Open in new tab")
+     self.opendirasnewtab.setEnabled(False)
+     self.submenuFile.addAction(self.opendirasnewtab)
+     self.connect(self.opendirasnewtab, SIGNAL("triggered()"), self.openasnewtab)
+     ###
      self.menu = {}
      self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
@@ -339,6 +349,10 @@ class NodeBrowser(QWidget, DEventHandler):
      self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
      self.submenuFile.addSeparator()
 #     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
+
+  def openAsNewTab(self):
+    node = self.currentNode()
+    self.mainwindow.addBrowser(node)
 
   def launchHexedit(self):
      nodes = self.currentNodes()

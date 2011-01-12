@@ -133,8 +133,13 @@ class MainWindow(QMainWindow):
 
         self.addDockWidgets(Help(self, path=path))
 
-    def addBrowser(self):
-        self.addDockWidgets(NodeBrowser(self)) 
+    def addBrowser(self, rootpath=None):
+        if rootpath == None:
+            self.addDockWidgets(NodeBrowser(self)) 
+        else:
+            nb = NodeBrowser(self)
+            nb.model.setRootPath(nb.vfs.getnode(rootpath))
+            self.addDockWidgets(nb)
  
     def applyModule(self, modname, modtype, selected):
         appMod = ApplyModule(self)
