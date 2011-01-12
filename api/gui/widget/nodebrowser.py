@@ -336,10 +336,10 @@ class NodeBrowser(QWidget, DEventHandler):
      self.submenuFile = QMenu()
      self.submenuFile.addAction(QIcon(":exec.png"),  "Open", self.openDefault, "Open")
      ####
-     self.opendirasnewtab = QAction("Open in new tab")
+     self.opendirasnewtab = QAction("Open in new tab", self)
      self.opendirasnewtab.setEnabled(False)
      self.submenuFile.addAction(self.opendirasnewtab)
-     self.connect(self.opendirasnewtab, SIGNAL("triggered()"), self.openasnewtab)
+     self.connect(self.opendirasnewtab, SIGNAL("triggered()"), self.openAsNewTab)
      ###
      self.menu = {}
      self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
