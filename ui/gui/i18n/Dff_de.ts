@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="es">
+<!DOCTYPE TS><TS version="1.1">
 <context>
     <name>ApplyModule</name>
     <message>
         <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>Missing Arguments</comment>
-        <translation>Faltan argumentos</translation>
+        <translation>Fehlende Argumente</translation>
     </message>
     <message>
         <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>There are missing arguments.</comment>
-        <translation>Hay argumentos faltantes</translation>
+        <translation>Argumente unvollständig.</translation>
     </message>
 </context>
 <context>
@@ -21,13 +21,13 @@
         <location filename="applymoduletable.py" line="48"/>
         <source>applyModule</source>
         <comment>Name</comment>
-        <translation></translation>
+        <translation type="unfinished">Module anwenden</translation>
     </message>
     <message>
         <location filename="applymoduletable.py" line="52"/>
         <source>applyModule</source>
         <comment>Tags</comment>
-        <translation>Etiquetas</translation>
+        <translation type="unfinished">Module anwenden</translation>
     </message>
 </context>
 <context>
@@ -36,103 +36,78 @@
         <location filename="configure.py" line="47"/>
         <source>Configure</source>
         <comment>Choose Your Directory For Extraction</comment>
-        <translation>Elija Su Carpeta Para Extraer</translation>
+        <translation>Verzeichnis für Extraktion auswählen</translation>
     </message>
 </context>
 <context>
     <name>DevicesDialog</name>
     <message>
+        <location filename="selectdevices.py" line="32"/>
+        <source>Select Device</source>
+        <translation>Gerät auswählen</translation>
+    </message>
+    <message>
         <location filename="selectdevices.py" line="38"/>
         <source>OK</source>
-        <translation>OK</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="40"/>
         <source>Cancel</source>
-        <translation>Cancelar</translation>
-    </message>
-    <message>
-        <location filename="selectdevices.py" line="32"/>
-        <source>Select Device</source>
-        <translation>Seleccionar dispositivo</translation>
+        <translation type="unfinished">Abbrechen</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="72"/>
         <source>Select device:</source>
-        <translation>Seleccionar dispositivo:</translation>
+        <translation>Gerät auswählen: </translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="73"/>
         <source>Block device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Block-Device:</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="74"/>
         <source>Model:</source>
-        <translation>Modelo:</translation>
+        <translation>Modell:</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="75"/>
         <source>Serial:</source>
-        <translation>Nro. Serie:</translation>
+        <translation>Serien-Nr.:</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="76"/>
         <source>Size:</source>
-        <translation>Tamaño:</translation>
+        <translation>Größe:</translation>
     </message>
 </context>
 <context>
     <name>Dialog</name>
     <message>
-        <location filename="dialog.py" line="29"/>
-        <source>Device</source>
-        <translation type="obsolete">Dispositivo</translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="31"/>
-        <source>File</source>
-        <translation type="obsolete">Archivo</translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="25"/>
-        <source>Add dump:</source>
-        <translation type="obsolete">Agregar volcado:</translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="25"/>
-        <source>Choose dump type:</source>
-        <translation type="obsolete">Elegir tipo de volcado:</translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="49"/>
-        <source>Add Dumps</source>
-        <translation type="obsolete">Agregar Volcados</translation>
-    </message>
-    <message>
         <location filename="dialog.py" line="73"/>
         <source>Load module</source>
-        <translation>Cargar Módulos</translation>
+        <translation>Modul laden</translation>
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
         <source>About</source>
-        <translation>Acerca de</translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="47"/>
-        <source>Add evidence directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="dialog.py" line="49"/>
-        <source>Add evidence files</source>
-        <translation type="unfinished"></translation>
+        <translation>Über</translation>
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
-        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; si tiene problemas, por favor visite nuestra &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;página de soporte&lt;/a&gt;.&lt;br&gt;Canal IRC: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; en la red Freenode.&lt;br&gt;Más información: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software desarrollado por &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; y &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la comunidad DFF&lt;/a&gt;.</translation>
+        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; Falls Du Probleme hast, besuche bitte unsere &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;Support Seiten&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; im Freenode Netzwerk.&lt;br&gt;Weitere Informationen: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software entwickelt von: &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; und &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;der DFF Gemeinschaft&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location filename="dialog.py" line="47"/>
+        <source>Add evidence directory</source>
+        <translation>Beweismittel-Verzeichnis hinzufügen</translation>
+    </message>
+    <message>
+        <location filename="dialog.py" line="49"/>
+        <source>Add evidence files</source>
+        <translation>Beweismittel-Datei hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -141,7 +116,7 @@
         <location filename="dockide.py" line="42"/>
         <source>IDE</source>
         <comment>IDE</comment>
-        <translation>IDE</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -150,7 +125,7 @@
         <location filename="extractor.py" line="87"/>
         <source>MainWindow</source>
         <comment>Choose the destination folder for extraction</comment>
-        <translation>Elija la carpeta destino para extraer</translation>
+        <translation>Zielverzeichnis für Extraktion auswählen</translation>
     </message>
 </context>
 <context>
@@ -158,19 +133,19 @@
     <message>
         <location filename="ide.py" line="90"/>
         <source>New script</source>
-        <translation>Nueva secuencia de comandos</translation>
+        <translation>Neues Script</translation>
     </message>
     <message>
         <location filename="ide.py" line="142"/>
         <source>MainWindow</source>
         <comment>open</comment>
-        <translation>abrir</translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location filename="ide.py" line="179"/>
         <source>MainWindow</source>
         <comment>Save as</comment>
-        <translation>Guardar como</translation>
+        <translation>Speichern unter</translation>
     </message>
 </context>
 <context>
@@ -178,42 +153,42 @@
     <message>
         <location filename="actions.py" line="54"/>
         <source>New script</source>
-        <translation>Nueva secuencia de comandos</translation>
+        <translation>Neues Skript</translation>
     </message>
     <message>
         <location filename="actions.py" line="57"/>
         <source>Open script</source>
-        <translation>Abrir secuencia de comandos</translation>
+        <translation>Skript öffnen</translation>
     </message>
     <message>
         <location filename="actions.py" line="67"/>
         <source>Save script</source>
-        <translation>Guardar secuencia de comandos</translation>
+        <translation>Skript speichern</translation>
     </message>
     <message>
         <location filename="actions.py" line="70"/>
         <source>Save script as</source>
-        <translation>Guardar secuencia de comandos como</translation>
+        <translation>Skript speichern unter</translation>
     </message>
     <message>
         <location filename="actions.py" line="73"/>
         <source>Load script</source>
-        <translation>Cargar secuencia de comandos</translation>
+        <translation>Skript laden</translation>
     </message>
     <message>
         <location filename="actions.py" line="76"/>
         <source>Undo</source>
-        <translation>Deshacer</translation>
+        <translation>Rückgängig</translation>
     </message>
     <message>
         <location filename="actions.py" line="79"/>
         <source>Redo</source>
-        <translation>Rehacer</translation>
+        <translation>Wiederholen</translation>
     </message>
     <message>
         <location filename="actions.py" line="134"/>
         <source>IDE</source>
-        <translation>IDE</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -221,7 +196,7 @@
     <message>
         <location filename="idewizard.py" line="25"/>
         <source>Integrated Development Environment Wizard</source>
-        <translation>Asistente del Entorno Integrado de Desarrollo</translation>
+        <translation>IDE-Assistent</translation>
     </message>
 </context>
 <context>
@@ -229,62 +204,62 @@
     <message>
         <location filename="info.py" line="250"/>
         <source>Info</source>
-        <translation>Información</translation>
+        <translation>Information</translation>
     </message>
     <message>
         <location filename="info.py" line="249"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="info.py" line="198"/>
         <source>Key</source>
-        <translation>Clave</translation>
+        <translation>Schlüssel</translation>
     </message>
     <message>
         <location filename="info.py" line="200"/>
         <source>Value</source>
-        <translation>Valor</translation>
+        <translation>Wert</translation>
     </message>
     <message>
         <location filename="info.py" line="199"/>
         <source>Type</source>
-        <translation>Tipo</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="info.py" line="123"/>
         <source>Modules</source>
-        <translation>Módulos</translation>
+        <translation>Module</translation>
     </message>
     <message>
         <location filename="info.py" line="201"/>
         <source>From</source>
-        <translation>Desde</translation>
+        <translation>Von</translation>
     </message>
     <message>
         <location filename="info.py" line="204"/>
         <source>Environment</source>
-        <translation>Entorno</translation>
+        <translation>Umgebung</translation>
     </message>
     <message>
         <location filename="info.py" line="249"/>
         <source>PID</source>
-        <translation>PID</translation>
+        <translation>Prozess-ID</translation>
     </message>
     <message>
         <location filename="info.py" line="250"/>
         <source>State</source>
-        <translation>Estado</translation>
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="info.py" line="254"/>
         <source>Task Manager</source>
-        <translation>Administrador de Tareas</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="info.py" line="251"/>
         <source>Exec Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausführungszeit</translation>
     </message>
 </context>
 <context>
@@ -292,12 +267,12 @@
     <message>
         <location filename="interpreter.py" line="344"/>
         <source>Interpreter</source>
-        <translation>Intérprete</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="interpreter.py" line="351"/>
         <source>DFF interpreter</source>
-        <translation>Intérprete DFF</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -305,12 +280,12 @@
     <message>
         <location filename="interpreter.py" line="366"/>
         <source>Interpreter</source>
-        <translation>Intérprete</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="interpreter.py" line="366"/>
         <source>Open Interpreter</source>
-        <translation>Abrir Intérprete</translation>
+        <translation>Interpreter öffnen</translation>
     </message>
 </context>
 <context>
@@ -319,7 +294,7 @@
         <location filename="interpreter.py" line="58"/>
         <source>Python Interpreter
 </source>
-        <translation>Intérprete Python</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -327,47 +302,37 @@
     <message>
         <location filename="mainwindow.py" line="68"/>
         <source>File</source>
-        <translation>Archivo</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.py" line="72"/>
-        <source>Add Dump</source>
-        <translation type="obsolete">Agregar Volcado</translation>
-    </message>
-    <message>
-        <location filename="mainwindow.py" line="73"/>
-        <source>Add device(s)</source>
-        <translation type="obsolete">Agregar dispositivo(s)</translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="82"/>
         <source>Exit</source>
-        <translation>Salir</translation>
+        <translation>Beenden</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="83"/>
         <source>Load</source>
-        <translation>Cargar</translation>
+        <translation>Laden</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="85"/>
         <source>List Files</source>
-        <translation>Listar Archivos</translation>
+        <translation>Dateien auflisten</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="95"/>
         <source>About</source>
-        <translation>Acerca de</translation>
+        <translation>Über</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="80"/>
         <source>Open evidence file(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffne Beweismittel-Datei(en)</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="81"/>
         <source>Open local device</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffne lokales Gerät</translation>
     </message>
 </context>
 <context>
@@ -375,7 +340,7 @@
     <message>
         <location filename="nodebrowser.py" line="96"/>
         <source>nodebrowser</source>
-        <translation>navegador de nodos</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -383,22 +348,22 @@
     <message>
         <location filename="nodefilterbox.py" line="44"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="45"/>
         <source>Size</source>
-        <translation>Tamaño</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="46"/>
         <source>Date</source>
-        <translation>Fecha</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="48"/>
         <source>Attribute:</source>
-        <translation>Atributo:</translation>
+        <translation>Attribute:</translation>
     </message>
 </context>
 <context>
@@ -407,31 +372,31 @@
         <location filename="property.py" line="85"/>
         <source>PropertyDialog</source>
         <comment>Folder</comment>
-        <translation>Carpeta</translation>
+        <translation>Verzeichnis</translation>
     </message>
     <message>
         <location filename="property.py" line="88"/>
         <source>PropertyDialog</source>
         <comment>File</comment>
-        <translation>Archivo</translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="property.py" line="91"/>
         <source>PropertyDialog</source>
         <comment>items, total</comment>
-        <translation>ítems, total</translation>
+        <translation>Elemente, gesamt</translation>
     </message>
     <message>
         <location filename="property.py" line="93"/>
         <source>PropertyDialog</source>
         <comment>Folders</comment>
-        <translation>Carpetas</translation>
+        <translation>Verzeichnisse</translation>
     </message>
     <message>
         <location filename="property.py" line="95"/>
         <source>PropertyDialog</source>
         <comment>Files</comment>
-        <translation>Archivos</translation>
+        <translation>Dateien</translation>
     </message>
 </context>
 <context>
@@ -439,77 +404,77 @@
     <message>
         <location filename="propertytable.py" line="25"/>
         <source>Attribute</source>
-        <translation>Atributo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="propertytable.py" line="25"/>
         <source>Value</source>
-        <translation>Valor</translation>
+        <translation>Wert</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="36"/>
         <source>name</source>
-        <translation>nombre</translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="40"/>
         <source>type</source>
-        <translation>tipo</translation>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="43"/>
         <source>file</source>
-        <translation>archivo</translation>
+        <translation>Datei</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="45"/>
         <source>with module(s) applied on it</source>
-        <translation>con módulo(s) aplicado(s) a él</translation>
+        <translation>angewandte(s) Modul(e)</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="50"/>
         <source>folder</source>
-        <translation>carpeta</translation>
+        <translation>Verzeichnis</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="52"/>
         <source>empty</source>
-        <translation>vacío</translation>
+        <translation>leer</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="54"/>
         <source>deleted</source>
-        <translation>borrado</translation>
+        <translation>gelöscht</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="58"/>
         <source>generated by</source>
-        <translation>generado por</translation>
+        <translation>erzeugt von</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="62"/>
         <source>size</source>
-        <translation>tamaño</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="70"/>
         <source>relevant module(s)</source>
-        <translation>módulo(s) relevante(s)</translation>
+        <translation>relevante(s) Modul(e)</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="105"/>
         <source>default times</source>
-        <translation>fechas y horas por omisión</translation>
+        <translation>Standard-Zeiten</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="122"/>
         <source>extended attributes</source>
-        <translation>atributos extendidos</translation>
+        <translation>Erweiterte Attribute</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="148"/>
         <source>static attributes</source>
-        <translation>atributos estáticos</translation>
+        <translation>statische Attribute</translation>
     </message>
 </context>
 <context>
@@ -517,40 +482,12 @@
     <message>
         <location filename="pushbutton.py" line="29"/>
         <source>Browse</source>
-        <translation>Navegar</translation>
+        <translation>Durchsuchen</translation>
     </message>
     <message>
         <location filename="pushbutton.py" line="35"/>
         <source>Add Dump</source>
-        <translation>Agregar Volcado</translation>
-    </message>
-</context>
-<context>
-    <name>SelectDevices</name>
-    <message>
-        <location filename="selectdevices.py" line="46"/>
-        <source>Serial number</source>
-        <translation type="obsolete">Nro. Serie</translation>
-    </message>
-    <message>
-        <location filename="selectdevices.py" line="47"/>
-        <source>Device</source>
-        <translation type="obsolete">Dispositivo</translation>
-    </message>
-    <message>
-        <location filename="selectdevices.py" line="48"/>
-        <source>Model</source>
-        <translation type="obsolete">Modelo</translation>
-    </message>
-    <message>
-        <location filename="selectdevices.py" line="49"/>
-        <source>Size</source>
-        <translation type="obsolete">Tamaño</translation>
-    </message>
-    <message>
-        <location filename="selectdevices.py" line="45"/>
-        <source>Select Device</source>
-        <translation type="obsolete">Seleccionar dispositivo</translation>
+        <translation>Dump hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -559,13 +496,13 @@
         <location filename="shell.py" line="383"/>
         <source>Shell</source>
         <comment>Shell</comment>
-        <translation>Línea de comandos</translation>
+        <translation>Shell</translation>
     </message>
     <message>
         <location filename="shell.py" line="390"/>
         <source>MainWindow</source>
         <comment>Shell</comment>
-        <translation>Línea de comandos</translation>
+        <translation>Shell</translation>
     </message>
 </context>
 <context>
@@ -574,7 +511,7 @@
         <location filename="uiapplymodule.py" line="46"/>
         <source>applyModule</source>
         <comment>Apply Module</comment>
-        <translation>Aplicar Módulo</translation>
+        <translation>Module anwenden</translation>
     </message>
 </context>
 <context>
@@ -583,25 +520,25 @@
         <location filename="_configure.py" line="85"/>
         <source>Configure</source>
         <comment>Configure</comment>
-        <translation>Configurar</translation>
+        <translation>Einrichten</translation>
     </message>
     <message>
         <location filename="_configure.py" line="86"/>
         <source>Configure</source>
         <comment>Language:</comment>
-        <translation>Idioma:</translation>
+        <translation>Sprache:</translation>
     </message>
     <message>
         <location filename="_configure.py" line="87"/>
         <source>Configure</source>
         <comment>Extract Folder:</comment>
-        <translation>Extraer Carpeta:</translation>
+        <translation>Ausgabe-Verzeichnis</translation>
     </message>
     <message>
         <location filename="_configure.py" line="88"/>
         <source>Configure</source>
         <comment>Browser</comment>
-        <translation>Navegador</translation>
+        <translation>Durchsuchen</translation>
     </message>
 </context>
 <context>
@@ -610,37 +547,37 @@
         <location filename="uiproperty.py" line="130"/>
         <source>PropertyDialog</source>
         <comment>Property</comment>
-        <translation>Propiedad</translation>
+        <translation>Eigenschaft</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="131"/>
         <source>PropertyDialog</source>
         <comment>Name:</comment>
-        <translation>Nombre:</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="132"/>
         <source>PropertyDialog</source>
         <comment>Type:</comment>
-        <translation>Tipo:</translation>
+        <translation>Typ:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="133"/>
         <source>PropertyDialog</source>
         <comment>Location:</comment>
-        <translation>Ubicación:</translation>
+        <translation>Fundstelle:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="134"/>
         <source>PropertyDialog</source>
         <comment>Contents:</comment>
-        <translation>Contenido:</translation>
+        <translation>Inhalte:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="135"/>
         <source>PropertyDialog</source>
         <comment>Close</comment>
-        <translation>Cerrar</translation>
+        <translation>Schließen</translation>
     </message>
 </context>
 <context>
@@ -649,25 +586,25 @@
         <location filename="uiselectnodes.py" line="84"/>
         <source>selectNode</source>
         <comment>Select a node</comment>
-        <translation>Seleccionar un nodo</translation>
+        <translation>Knoten auswählen:</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="85"/>
         <source>selectNode</source>
         <comment>Look in:</comment>
-        <translation>Mirar en:</translation>
+        <translation>Nachschauen in:</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="86"/>
         <source>selectNode</source>
         <comment>Select</comment>
-        <translation>Seleccionar</translation>
+        <translation>Auswählen</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="87"/>
         <source>selectNode</source>
         <comment>Cancel</comment>
-        <translation>Cancelar</translation>
+        <translation>Abbrechen</translation>
     </message>
 </context>
 <context>
@@ -675,32 +612,32 @@
     <message>
         <location filename="vfsitemmodel.py" line="247"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="249"/>
         <source>Size</source>
-        <translation>Tamaño</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="251"/>
         <source>Accessed time</source>
-        <translation>Fecha accedido</translation>
+        <translation>Zugriffszeit (A)</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="253"/>
         <source>Changed time</source>
-        <translation>Fecha cambiado</translation>
+        <translation>Änderungszeit (C)</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="255"/>
         <source>Modified time</source>
-        <translation>Fecha modificado</translation>
+        <translation>Modifikationszeitpunkt (M)</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="257"/>
         <source>Module</source>
-        <translation>Módulo</translation>
+        <translation>Module</translation>
     </message>
 </context>
 <context>
@@ -708,32 +645,32 @@
     <message>
         <location filename="idewizardpages.py" line="88"/>
         <source>Author Informations</source>
-        <translation>Información del autor</translation>
+        <translation>Informationen über den Autor</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="89"/>
         <source>Fill all author&apos;s informations in order to complete header</source>
-        <translation>Llene toda la información del autor para completar el encabezado</translation>
+        <translation>Zum Vervollständigen des Kopfteils bitte Informationen zum Autor ausfüllen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="95"/>
         <source>Author&apos;s first name:</source>
-        <translation>Nombre del autor:</translation>
+        <translation>Vorname des Autors</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="99"/>
         <source>Author&apos;s last name:</source>
-        <translation>Apellido del autor:</translation>
+        <translation>Nachname des Autors</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="102"/>
         <source>Author&apos;s electronic mail:</source>
-        <translation>Correo electrónico del Autor:</translation>
+        <translation>E-Mail-Adresse des Autors</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="123"/>
         <source>Location</source>
-        <translation>Ubicación</translation>
+        <translation>Standort</translation>
     </message>
 </context>
 <context>
@@ -741,52 +678,52 @@
     <message>
         <location filename="idewizardpages.py" line="26"/>
         <source>Script Informations</source>
-        <translation>Información secuencia de comandos</translation>
+        <translation>Skript Informationen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="27"/>
         <source>Fill all script information such as name, type and saving location</source>
-        <translation>Llene toda la información de la secuencia de comandos tales como nombre, tipo y ubicación de guardado</translation>
+        <translation>Alle Skript-Informationen (Name, Typ, Speicherort) ausfüllen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="33"/>
         <source>Script name:</source>
-        <translation>Nombre secuencia comandos:</translation>
+        <translation>Skript-Name</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="37"/>
         <source>Select script type:</source>
-        <translation>Seleccione tipo de secuencia de comandos:</translation>
+        <translation>Skript-Typ auswählen:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="38"/>
         <source>Script</source>
-        <translation>Secuencia de comandos</translation>
+        <translation>Skript</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="39"/>
         <source>Graphical</source>
-        <translation>Gráfico</translation>
+        <translation>Grafisch</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="40"/>
         <source>Driver</source>
-        <translation>Controlador</translation>
+        <translation>Treiber</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="44"/>
         <source>Select script location:</source>
-        <translation>Seleccione ubicación secuencia de comandos:</translation>
+        <translation>Ablage für Skript auswählen:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="46"/>
         <source>Browse</source>
-        <translation>Navegar</translation>
+        <translation>Durchsuchen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="75"/>
         <source>Location</source>
-        <translation>Ubicación</translation>
+        <translation>Speicherort</translation>
     </message>
 </context>
 <context>
@@ -795,37 +732,37 @@
         <location filename="bookmark.py" line="67"/>
         <source>bookmark</source>
         <comment>Address</comment>
-        <translation type="obsolete">Dirección</translation>
+        <translation type="obsolete">Adresse</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="68"/>
         <source>bookmark</source>
         <comment>Length (dec)</comment>
-        <translation type="obsolete">Longitud (dec)</translation>
+        <translation type="obsolete">Länge (dez)</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="69"/>
         <source>bookmark</source>
         <comment>Length (hex)</comment>
-        <translation type="obsolete">Longitud (hexa)</translation>
+        <translation type="obsolete">Länge (hex)</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="70"/>
         <source>bookmark</source>
         <comment>Hex value</comment>
-        <translation type="obsolete">Valor hexa</translation>
+        <translation type="obsolete">HEX-Wert</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="71"/>
         <source>bookmark</source>
         <comment>Ascii value</comment>
-        <translation type="obsolete">Valor Ascii</translation>
+        <translation type="obsolete">ASCII-Wert</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="72"/>
         <source>bookmark</source>
         <comment>Description</comment>
-        <translation type="obsolete">Descripción</translation>
+        <translation type="obsolete">Beschreibung</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="67"/>
@@ -861,22 +798,16 @@
 <context>
     <name>browseButton</name>
     <message>
-        <location filename="applymodule.py" line="277"/>
-        <source>BrowserButton</source>
-        <comment>Browse</comment>
-        <translation type="obsolete">Navegar</translation>
-    </message>
-    <message>
         <location filename="applymodule.py" line="284"/>
         <source>BrowserButton</source>
         <comment>Add Dump</comment>
-        <translation>Agregar Volcado</translation>
+        <translation>Abbild hinzufügen</translation>
     </message>
     <message>
         <location filename="applymodule.py" line="278"/>
         <source>Browse</source>
         <comment>Browse</comment>
-        <translation>Navegar</translation>
+        <translation>Durchsuchen</translation>
     </message>
 </context>
 <context>
@@ -885,23 +816,23 @@
         <location filename="decodeValues.py" line="44"/>
         <source>decodeValues</source>
         <comment>Type</comment>
-        <translation type="obsolete">Tipo</translation>
+        <translation type="obsolete">Typ</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="45"/>
         <source>decodeValues</source>
         <comment>Value</comment>
-        <translation type="obsolete">Valor</translation>
+        <translation type="obsolete">Wert</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="45"/>
         <source>Type</source>
-        <translation type="unfinished">Tipo</translation>
+        <translation type="unfinished">Typ</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="46"/>
         <source>Value</source>
-        <translation type="unfinished">Valor</translation>
+        <translation type="unfinished">Wert</translation>
     </message>
 </context>
 <context>
@@ -910,13 +841,13 @@
         <location filename="navigation.py" line="52"/>
         <source>navigation</source>
         <comment>Current</comment>
-        <translation type="obsolete">Actual</translation>
+        <translation type="obsolete">Aktuell</translation>
     </message>
     <message>
         <location filename="navigation.py" line="53"/>
         <source>navigation</source>
         <comment>Value</comment>
-        <translation type="obsolete">Valor</translation>
+        <translation type="obsolete">Wert</translation>
     </message>
     <message>
         <location filename="navigation.py" line="53"/>
@@ -926,7 +857,7 @@
     <message>
         <location filename="navigation.py" line="54"/>
         <source>Value</source>
-        <translation type="unfinished">Valor</translation>
+        <translation type="unfinished">Wert</translation>
     </message>
 </context>
 </TS>

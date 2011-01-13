@@ -3,13 +3,13 @@
 <context>
     <name>ApplyModule</name>
     <message>
-        <location filename="applymodule.py" line="85"/>
+        <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>Missing Arguments</comment>
         <translation>Arguments manquants</translation>
     </message>
     <message>
-        <location filename="applymodule.py" line="85"/>
+        <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>There are missing arguments.</comment>
         <translation>Certains arguments sont manquant.</translation>
@@ -42,42 +42,42 @@
 <context>
     <name>DevicesDialog</name>
     <message>
-        <location filename="selectdevices.py" line="17"/>
+        <location filename="selectdevices.py" line="32"/>
         <source>Select Device</source>
         <translation>Sélectionnez un périphérique</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="23"/>
+        <location filename="selectdevices.py" line="38"/>
         <source>OK</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="25"/>
+        <location filename="selectdevices.py" line="40"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="57"/>
+        <location filename="selectdevices.py" line="72"/>
         <source>Select device:</source>
         <translation>Sélectionnez un périphérique :</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="58"/>
+        <location filename="selectdevices.py" line="73"/>
         <source>Block device:</source>
         <translation>Périphérique :</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="59"/>
+        <location filename="selectdevices.py" line="74"/>
         <source>Model:</source>
         <translation>Modèle :</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="60"/>
+        <location filename="selectdevices.py" line="75"/>
         <source>Serial:</source>
         <translation>Numéro de série :</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="61"/>
+        <location filename="selectdevices.py" line="76"/>
         <source>Size:</source>
         <translation>Taille :</translation>
     </message>
@@ -202,62 +202,62 @@
 <context>
     <name>Info</name>
     <message>
-        <location filename="info.py" line="249"/>
+        <location filename="info.py" line="250"/>
         <source>Info</source>
         <translation>Informations</translation>
     </message>
     <message>
-        <location filename="info.py" line="122"/>
+        <location filename="info.py" line="123"/>
         <source>Modules</source>
         <translation>Modules</translation>
     </message>
     <message>
-        <location filename="info.py" line="197"/>
+        <location filename="info.py" line="198"/>
         <source>Key</source>
         <translation>Clé</translation>
     </message>
     <message>
-        <location filename="info.py" line="198"/>
+        <location filename="info.py" line="199"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="info.py" line="199"/>
+        <location filename="info.py" line="200"/>
         <source>Value</source>
         <translation>Valeur</translation>
     </message>
     <message>
-        <location filename="info.py" line="200"/>
+        <location filename="info.py" line="201"/>
         <source>From</source>
         <translation>Émetteur</translation>
     </message>
     <message>
-        <location filename="info.py" line="203"/>
+        <location filename="info.py" line="204"/>
         <source>Environment</source>
         <translation>Environnement</translation>
     </message>
     <message>
-        <location filename="info.py" line="248"/>
+        <location filename="info.py" line="249"/>
         <source>PID</source>
         <translation>Processus</translation>
     </message>
     <message>
-        <location filename="info.py" line="248"/>
+        <location filename="info.py" line="249"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="info.py" line="249"/>
+        <location filename="info.py" line="250"/>
         <source>State</source>
         <translation>État</translation>
     </message>
     <message>
-        <location filename="info.py" line="253"/>
+        <location filename="info.py" line="254"/>
         <source>Task Manager</source>
         <translation>Gestionnaire des tâches</translation>
     </message>
     <message>
-        <location filename="info.py" line="250"/>
+        <location filename="info.py" line="251"/>
         <source>Exec Time</source>
         <translation>Temps d&apos;execution</translation>
     </message>
@@ -301,37 +301,37 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.py" line="61"/>
+        <location filename="mainwindow.py" line="68"/>
         <source>File</source>
         <translation>Fichier</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="74"/>
+        <location filename="mainwindow.py" line="82"/>
         <source>Exit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="75"/>
+        <location filename="mainwindow.py" line="83"/>
         <source>Load</source>
         <translation>Charger</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="77"/>
+        <location filename="mainwindow.py" line="85"/>
         <source>List Files</source>
         <translation>Lister les nœuds</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="86"/>
+        <location filename="mainwindow.py" line="95"/>
         <source>About</source>
         <translation>À propos</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="72"/>
+        <location filename="mainwindow.py" line="80"/>
         <source>Open evidence file(s)</source>
         <translation>Ouvrir un ou plusieurs fichier(s)</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="73"/>
+        <location filename="mainwindow.py" line="81"/>
         <source>Open local device</source>
         <translation>Ouvrir un périphérique local</translation>
     </message>
@@ -611,32 +611,32 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="vfsitemmodel.py" line="241"/>
+        <location filename="vfsitemmodel.py" line="247"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="243"/>
+        <location filename="vfsitemmodel.py" line="249"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="245"/>
+        <location filename="vfsitemmodel.py" line="251"/>
         <source>Accessed time</source>
         <translation>Date d&apos;accès</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="247"/>
+        <location filename="vfsitemmodel.py" line="253"/>
         <source>Changed time</source>
         <translation>Date de changement</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="249"/>
+        <location filename="vfsitemmodel.py" line="255"/>
         <source>Modified time</source>
         <translation>Date de modification</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="251"/>
+        <location filename="vfsitemmodel.py" line="257"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
@@ -733,49 +733,73 @@
         <location filename="bookmark.py" line="67"/>
         <source>bookmark</source>
         <comment>Address</comment>
-        <translation>Adresse</translation>
-    </message>
-    <message>
-        <location filename="bookmark.py" line="68"/>
-        <source>bookmark</source>
-        <comment>Length (dec)</comment>
-        <translation></translation>
+        <translation type="obsolete">Adresse</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="69"/>
         <source>bookmark</source>
         <comment>Length (hex)</comment>
-        <translation>Taille (hex)</translation>
+        <translation type="obsolete">Taille (hex)</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="70"/>
         <source>bookmark</source>
         <comment>Hex value</comment>
-        <translation>Valeur héxa</translation>
+        <translation type="obsolete">Valeur héxa</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="71"/>
         <source>bookmark</source>
         <comment>Ascii value</comment>
-        <translation>Valeur ASCII</translation>
+        <translation type="obsolete">Valeur ASCII</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="72"/>
         <source>bookmark</source>
         <comment>Description</comment>
+        <translation type="obsolete">Description</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="67"/>
+        <source>Address</source>
+        <translation>Adresse</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="68"/>
+        <source>Length (dec)</source>
+        <translation>Taille (déc)</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="69"/>
+        <source>Length (hex)</source>
+        <translation>Taille (hex)</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="70"/>
+        <source>Hex value</source>
+        <translation>Valeur hex</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="71"/>
+        <source>Ascii value</source>
+        <translation>Valeur ASCII</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="72"/>
+        <source>Description</source>
         <translation>Description</translation>
     </message>
 </context>
 <context>
     <name>browseButton</name>
     <message>
-        <location filename="applymodule.py" line="264"/>
+        <location filename="applymodule.py" line="284"/>
         <source>BrowserButton</source>
         <comment>Add Dump</comment>
         <translation>Ajouter une image</translation>
     </message>
     <message>
-        <location filename="applymodule.py" line="258"/>
+        <location filename="applymodule.py" line="278"/>
         <source>Browse</source>
         <comment>Browse</comment>
         <translation>Parcourir</translation>
@@ -787,12 +811,22 @@
         <location filename="decodeValues.py" line="44"/>
         <source>decodeValues</source>
         <comment>Type</comment>
-        <translation>Type</translation>
+        <translation type="obsolete">Type</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="45"/>
         <source>decodeValues</source>
         <comment>Value</comment>
+        <translation type="obsolete">Valeur</translation>
+    </message>
+    <message>
+        <location filename="decodeValues.py" line="45"/>
+        <source>Type</source>
+        <translation>Type</translation>
+    </message>
+    <message>
+        <location filename="decodeValues.py" line="46"/>
+        <source>Value</source>
         <translation>Valeur</translation>
     </message>
 </context>
@@ -802,12 +836,22 @@
         <location filename="navigation.py" line="52"/>
         <source>navigation</source>
         <comment>Current</comment>
-        <translation>Courant</translation>
+        <translation type="obsolete">Courant</translation>
     </message>
     <message>
         <location filename="navigation.py" line="53"/>
         <source>navigation</source>
         <comment>Value</comment>
+        <translation type="obsolete">Valeur</translation>
+    </message>
+    <message>
+        <location filename="navigation.py" line="53"/>
+        <source>Current</source>
+        <translation>Courant</translation>
+    </message>
+    <message>
+        <location filename="navigation.py" line="54"/>
+        <source>Value</source>
         <translation>Valeur</translation>
     </message>
 </context>
