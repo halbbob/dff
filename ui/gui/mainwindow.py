@@ -44,12 +44,17 @@ from ui.gui.widget.interpreter import InterpreterActions
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
-from ui.gui.widget.help import Help
-# Documentation
+
 try:
-    from api.settings import DOC_PATH
-except:
-    DOC_PATH = "./ui/gui/help.qhc"
+    from ui.gui.widget.help import Help
+ # Documentation
+    try:
+        from api.settings import DOC_PATH
+    except:
+        DOC_PATH = "./ui/gui/help.qhc"
+        HELP = True
+except ImportError:
+    HELP = False
 
 
 class MainWindow(QMainWindow):
@@ -72,9 +77,10 @@ class MainWindow(QMainWindow):
 	#icon 
         self.toolbarList = [["New_Dump"],
                             ["New_Device"],
-                            ["List_Files"],
-                            ["help"]
+                            ["List_Files"]
                             ]
+        if HELP:
+            self.toolbarList.append(["help"])
 
         self.actionList = [
             ["New_Dump", self.tr("Open evidence file(s)"), self.dialog.addFiles, ":add_image.png", "Add image"],
@@ -82,9 +88,10 @@ class MainWindow(QMainWindow):
             ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
             ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
             ["About", "?", self.dialog.about, None, None ],
-            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"],
-            ["help", "Help", self.addHelpWidget, ":help.png", "Open Help"]
+            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"]
             ] 
+        if HELP:
+            self.actionList.append(["help", "Help", self.addHelpWidget, ":help.png", "Open Help"])
 
         self.setupUi()
         self.ideActions = IdeActions(self)
