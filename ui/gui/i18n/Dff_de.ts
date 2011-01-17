@@ -300,37 +300,37 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.py" line="68"/>
+        <location filename="mainwindow.py" line="73"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="82"/>
+        <location filename="mainwindow.py" line="88"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="83"/>
+        <location filename="mainwindow.py" line="89"/>
         <source>Load</source>
         <translation>Laden</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="85"/>
+        <location filename="mainwindow.py" line="91"/>
         <source>List Files</source>
         <translation>Dateien auflisten</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="95"/>
+        <location filename="mainwindow.py" line="102"/>
         <source>About</source>
         <translation>Über</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="80"/>
+        <location filename="mainwindow.py" line="86"/>
         <source>Open evidence file(s)</source>
         <translation>Öffne Beweismittel-Datei(en)</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="81"/>
+        <location filename="mainwindow.py" line="87"/>
         <source>Open local device</source>
         <translation>Öffne lokales Gerät</translation>
     </message>

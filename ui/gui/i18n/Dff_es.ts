@@ -325,7 +325,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.py" line="68"/>
+        <location filename="mainwindow.py" line="73"/>
         <source>File</source>
         <translation>Archivo</translation>
     </message>
@@ -340,32 +340,32 @@
         <translation type="obsolete">Agregar dispositivo(s)</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="82"/>
+        <location filename="mainwindow.py" line="88"/>
         <source>Exit</source>
         <translation>Salir</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="83"/>
+        <location filename="mainwindow.py" line="89"/>
         <source>Load</source>
         <translation>Cargar</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="85"/>
+        <location filename="mainwindow.py" line="91"/>
         <source>List Files</source>
         <translation>Listar Archivos</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="95"/>
+        <location filename="mainwindow.py" line="102"/>
         <source>About</source>
         <translation>Acerca de</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="80"/>
+        <location filename="mainwindow.py" line="86"/>
         <source>Open evidence file(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="81"/>
+        <location filename="mainwindow.py" line="87"/>
         <source>Open local device</source>
         <translation type="unfinished"></translation>
     </message>
