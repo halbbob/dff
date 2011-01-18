@@ -377,6 +377,21 @@
         <source>nodebrowser</source>
         <translation>navegador de nodos</translation>
     </message>
+    <message>
+        <location filename="nodebrowser.py" line="306"/>
+        <source>Small</source>
+        <translation>Pequeño</translation>
+    </message>
+    <message>
+        <location filename="nodebrowser.py" line="308"/>
+        <source>Medium</source>
+        <translation>Mediano</translation>
+    </message>
+    <message>
+        <location filename="nodebrowser.py" line="310"/>
+        <source>Large</source>
+        <translation>Grande</translation>
+    </message>
 </context>
 <context>
     <name>NodeFilterBox</name>
@@ -399,6 +414,69 @@
         <location filename="nodefilterbox.py" line="48"/>
         <source>Attribute:</source>
         <translation>Atributo:</translation>
+    </message>
+</context>
+<context>
+    <name>NodeViewBox</name>
+    <message>
+        <location filename="nodeviewbox.py" line="41"/>
+        <source>Previous</source>
+        <translation>Previo</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="42"/>
+        <source>Return to root</source>
+        <translation>Regresar a raíz</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="48"/>
+        <source>Add to bookmarks</source>
+        <translation>Agregar a marcadores</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="49"/>
+        <source>Display search engine</source>
+        <translation>Mostrar motor de búsqueda</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="50"/>
+        <source>Active thumbnails</source>
+        <translation>Activar miniaturas</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="59"/>
+        <source>List</source>
+        <translation>Lista</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="60"/>
+        <source>Icons</source>
+        <translation>Íconos</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="61"/>
+        <source>Tree</source>
+        <translation>Árbol</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="98"/>
+        <source>Small</source>
+        <translation>Pequeño</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="99"/>
+        <source>Medium</source>
+        <translation>Mediano</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="100"/>
+        <source>Large</source>
+        <translation>Grande</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="106"/>
+        <source>Attributes</source>
+        <translation>Atributos</translation>
     </message>
 </context>
 <context>
@@ -856,6 +934,34 @@
         <location filename="bookmark.py" line="72"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>bookmarkDialog</name>
+    <message>
+        <location filename="nodeviewbox.py" line="242"/>
+        <source>Add bookmark</source>
+        <translation>Agregar marcador</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="255"/>
+        <source>Add a bookmark from the Virtual File System</source>
+        <translation>Agregar un marcador desde el Sistema Virtual de Archivos (VFS)</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="266"/>
+        <source>Create a new category</source>
+        <translation>Crear nueva categoría</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="286"/>
+        <source>Category name :</source>
+        <translation>Nombre de la categoría:</translation>
+    </message>
+    <message>
+        <location filename="nodeviewbox.py" line="277"/>
+        <source>Add in an existing category</source>
+        <translation>Agregar a una categoría existente</translation>
     </message>
 </context>
 <context>

@@ -38,16 +38,16 @@ class NodeViewBox(QWidget):
     self.gridLayout = QHBoxLayout(self)
     self.gridLayout.setAlignment(Qt.AlignLeft)
     self.addPropertyTable()
-    self.createButton("top", self.moveToTop, "Previous", ":previous.png")
-    self.createButton("root", self.goHome,  "Return to root", ":home.png")
+    self.createButton("top", self.moveToTop, self.tr("Previous"), ":previous.png")
+    self.createButton("root", self.goHome,  self.tr("Return to root"), ":home.png")
 
     self.createPathEdit()
 
     self.createChangeView()
     self.createCheckBoxAttribute()
-    self.createButton("add to bookmarks", self.bookmark, "Add to bookmarks",":bookmark_add.png")
-    self.createButton("search", self.searchActivated, "Display search engine",":filefind.png")
-    self.createButton("imagethumb", self.imagethumbActivated, "Active thumbnails",":image.png")
+    self.createButton("add to bookmarks", self.bookmark, self.tr("Add to bookmarks"), ":bookmark_add.png")
+    self.createButton("search", self.searchActivated, self.tr("Display search engine"), ":filefind.png")
+    self.createButton("imagethumb", self.imagethumbActivated, self.tr("Active thumbnails"), ":image.png")
     self.createThumbSize()
 
     self.tableActivated()
@@ -56,9 +56,9 @@ class NodeViewBox(QWidget):
 
   def createChangeView(self):
     self.viewbox = QComboBox()
-    self.viewbox.insertItem(0, QIcon(":view_detailed.png"), "List")
-    self.viewbox.insertItem(1, QIcon(":view_icon.png"), "Icons")
-    self.viewbox.insertItem(2, QIcon(":view_choose.png"), "Tree")
+    self.viewbox.insertItem(0, QIcon(":view_detailed.png"), self.tr("List"))
+    self.viewbox.insertItem(1, QIcon(":view_icon.png"), self.tr("Icons"))
+    self.viewbox.insertItem(2, QIcon(":view_choose.png"), self.tr("Tree"))
     
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
@@ -95,15 +95,15 @@ class NodeViewBox(QWidget):
   def createThumbSize(self):
     self.thumbSize = QComboBox()
     self.thumbSize.setMaximumWidth(100)
-    self.thumbSize.addItem("Small")
-    self.thumbSize.addItem("Medium")
-    self.thumbSize.addItem("Large")
+    self.thumbSize.addItem(self.tr("Small"))
+    self.thumbSize.addItem(self.tr("Medium"))
+    self.thumbSize.addItem(self.tr("Large"))
     self.thumbSize.setEnabled(False)
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     self.gridLayout.addWidget(self.thumbSize)
 
   def createCheckBoxAttribute(self):
-    self.checkboxAttribute = QCheckBox("Attributes", self)
+    self.checkboxAttribute = QCheckBox(self.tr("Attributes"), self)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.checkboxAttribute.setCheckState(True)
     else:
@@ -142,11 +142,7 @@ class NodeViewBox(QWidget):
   def tableActivated(self):
      self.parent.tableView.setVisible(True)
      self.parent.thumbsView.setVisible(False)
-#     self.checkboxAttribute.setEnabled(False)
-#     self.propertyTable.setVisible(False)
-#     self.button["thumb"].setEnabled(True)
      self.thumbSize.setEnabled(False)
-#     self.button["table"].setEnabled(False)
   
   def thumbActivated(self):
      self.checkboxAttribute.setEnabled(True)
@@ -156,9 +152,7 @@ class NodeViewBox(QWidget):
         self.propertyTable.setVisible(False)
      self.parent.tableView.setVisible(False)
      self.parent.thumbsView.setVisible(True)
-#     self.button["thumb"].setEnabled(False)
      self.thumbSize.setEnabled(True)
- #     self.button["table"].setEnabled(True)
 
   def searchActivated(self):
      if self.parent.nodeFilterBox.isVisible():
@@ -169,8 +163,6 @@ class NodeViewBox(QWidget):
   def createPathEdit(self):
     self.pathedit = QLineEdit(self)
 
-#    self.connect(self.pathedit, SIGNAL("textChanged(QString)"), self.textChanged)
-
     self.treemodel = self.parent.treeModel
     self.model = self.parent.model
 
@@ -179,8 +171,6 @@ class NodeViewBox(QWidget):
     self.completer = kompleter(self.pathedit, self.treemodel, self.model)
     self.pathedit.setCompleter(self.completer)
 
-#    rootlabel = QLabel("/")
-#    self.gridLayout.addWidget(rootlabel)
     self.gridLayout.addWidget(self.pathedit)
 
   def rootpathchanged(self, node):
@@ -249,10 +239,9 @@ class bookmarkDialog(QDialog):
   def initShape(self):
     self.mainLayout = QVBoxLayout()
     
-    self.setWindowTitle("Add bookmark")
+    self.setWindowTitle(self.tr("Add bookmark"))
     self.createDecorator()
     self.createGroupBoxs()
-#    self.createAddBookmarks()
     self.createButtons()
     self.setLayout(self.mainLayout)
 
@@ -263,7 +252,7 @@ class bookmarkDialog(QDialog):
     self.lpixmap = QLabel()
     self.lpixmap.setPixmap(self.pixmap)
 
-    self.headlabel = QLabel("Add a bookmark from the Virtual File System")
+    self.headlabel = QLabel(self.tr("Add a bookmark from the Virtual File System"))
     
     self.head.addWidget(self.lpixmap)
     self.head.addWidget(self.headlabel)
@@ -274,18 +263,18 @@ class bookmarkDialog(QDialog):
     self.mainLayout.addWidget(self.container)
 
   def createGroupBoxs(self):
-    self.newBox = QGroupBox("Create a new category")
+    self.newBox = QGroupBox(self.tr("Create a new category"))
     self.newBox.setCheckable(True)
     self.newBox.setChecked(True)
 
     self.newformLayout = QFormLayout()
     self.catname = QLineEdit()
-    self.newformLayout.addRow("Category name :", self.catname)
+    self.newformLayout.addRow(self.tr("Category name :"), self.catname)
     self.newBox.setLayout(self.newformLayout)
     self.connect(self.newBox, SIGNAL("clicked()"), self.createCategoryBack)
     self.mainLayout.addWidget(self.newBox)
 
-    self.existBox = QGroupBox("Add in an existing category")
+    self.existBox = QGroupBox(self.tr("Add in an existing category"))
     self.existBox.setCheckable(True)
     self.existBox.setChecked(False)
     self.connect(self.existBox, SIGNAL("clicked()"), self.existingCategoryBack)
@@ -294,7 +283,7 @@ class bookmarkDialog(QDialog):
     self.catcombo = QComboBox()
     for cat in self.categories:
       self.catcombo.addItem(cat)
-    self.existformLayout.addRow("Category name :", self.catcombo)
+    self.existformLayout.addRow(self.tr("Category name :"), self.catcombo)
     self.existBox.setLayout(self.existformLayout)
     
     if len(self.categories) != 0:

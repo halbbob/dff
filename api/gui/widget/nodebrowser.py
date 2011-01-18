@@ -303,11 +303,11 @@ class NodeBrowser(QWidget, DEventHandler):
          self.openDefault(node)
 
   def sizeChanged(self, string):
-     if string == "Small":
+     if string == self.tr("Small"):
        self.thumbsView.setIconSize(64, 64)
-     elif string == "Medium":
+     elif string == self.tr("Medium"):
        self.thumbsView.setIconSize(96, 96)
-     elif string == "Large":
+     elif string == self.tr("Large"):
        self.thumbsView.setIconSize(128, 128)
 
   def openDefault(self, node = None):
