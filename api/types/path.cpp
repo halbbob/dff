@@ -14,10 +14,9 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-#include "type.hpp"
+#include "path.hpp"
 
-Path::Path(string p)
+Path::Path(std::string p)
 {
-  path = p;
+  this->path = p;
 }
-

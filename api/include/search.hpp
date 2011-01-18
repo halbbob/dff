@@ -17,10 +17,14 @@
 #ifndef __SEARCH_HPP__
 #define __SEARCH_HPP__
 
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 #include <string>
 #include <list>
 #include "export.hpp"
-#include "type.hpp"
 
 using namespace std;
 
@@ -47,7 +51,7 @@ private:
   unsigned int		needleSize;
   unsigned char		wildcard;
   bool			aligned;
-  dff_ui64		blockSize;
+  uint64_t		blockSize;
   bool			preprocessed;
 
 public:

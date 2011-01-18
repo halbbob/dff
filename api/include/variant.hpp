@@ -17,7 +17,6 @@
 #ifndef __VARIANT_HPP__
 #define __VARIANT_HPP__
 
-//#include "node.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else
@@ -27,7 +26,11 @@
 #include <list>
 #include <map>
 #include <typeinfo>
+#include "path.hpp"
 #include "vtime.hpp"
+
+class Path;
+class Node;
 
 class typeId
 {
@@ -63,8 +66,9 @@ public:
       // dff types
       VTime = 13,
       Node = 14,
+      Path = 15,
       // user types
-      VoidStar = 15
+      VoidStar = 16
     };
 
   static typeId   *Get()
@@ -105,6 +109,7 @@ public:
   // EXPORT Variant(bool b);
   EXPORT Variant(vtime *vt);
   EXPORT Variant(class Node *node);
+  EXPORT Variant(class Path *path);
   EXPORT Variant(std::list<class Variant*> l);
   EXPORT Variant(std::map<std::string, class Variant*> m);
   EXPORT Variant(void *user);
@@ -248,6 +253,20 @@ public:
 	    case typeId::Node:
 	      {
 		*n = (Node*)this->__data.ptr;
+		return true;
+	      }
+	    default:
+	      return false;
+	    }
+	}
+      case uint8_t(typeId::Path):
+      {
+	  class Path **p = static_cast<Path**>(res);
+          switch (this->_type)
+	    {
+	    case typeId::Path:
+	      {
+		*p = (Path*)this->__data.ptr;
 		return true;
 	      }
 	    default:

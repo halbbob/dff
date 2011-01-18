@@ -16,293 +16,33 @@
  */
 
 
-#include "argument.hpp"
+#include "arguments.hpp"
 
-argument::argument()
+Arguments::Arguments(std::string origin)
 {
-
+  this->__origin = origin;
 }
 
-argument::argument(string who)
+Arguments::~Arguments()
 {
-  from = who;
-  km = env::Get();
 }
 
-/* add_xxx(string, val) */
-
-void argument::add_int(string name, int v)
+bool					Arguments::add(std::string name, Variant* value)
 {
-  v_val *v_v;
-
-  v_v = new v_val_int(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v);
 }
 
-void argument::add_uint64(string name, uint64_t v)
+Variant*				Arguments::valueFromKey(std::string name)
 {
-  v_val *v_v;
-
-  v_v = new v_val_uint64(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v);
 }
 
-void argument::add_string(string name, string v)
+std::map<std::string, Variant*>		Arguments::items()
 {
-  v_val *v_v;
-
-  v_v = new v_val_string(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v);
 }
 
-void argument::add_bool(string name, bool v)
+std::list<std::string>			Arguments::keys()
 {
-  v_val *v_v;
-
-  v_v = new v_val_bool(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v);
 }
 
-void argument::add_node(string name, Node* n)
+std::list<Variant*>			Arguments::values()
 {
-  v_val* v;
-
-  v = new v_val_node(from, name, n);
-  val_m[name] = v;
-  km->add_var_val(v);
-}
-
-void argument::add_path(string name, string p)
-{
-  v_val* v;
-   
- 
-  v = new v_val_path(from, name, new Path(p));
-  val_m[name] = v;
-  km->add_var_val(v);
-}
-
-void argument::add_lnode(string name, list<Node *> *v)
-{
-  v_val *v_v;
-
-  v_v = new v_val_lnode(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v);
-}
-
-
-/*
-void argument::add_path(string name, Path* n)
-{
-  v_val* v;
-
-  v = new v_val_path(from, name, n);
-  val_m[name] = v;
-  km->add_var_val(v);
-}
-*/
-/* 
-void argument::add(v_val *v)
-{
-  val[v->name] = v;
-  vars_db[v->name].add_var_val(v);
-}
-*/
-
-/* void get(string name, *val)*/
-
-void argument::get(string name, uint64_t* v)
-{
-  v_val_uint64 *t;
-
-  t = (v_val_uint64 *)val_m[name];
-  if (!t)
-    throw envError("argument " + name + " doesn't exist");
-  else  
-    *v = t->value;
-}
-
-void argument::get(string name, int* v)
-{
-  v_val_int *t;
-
-  t = (v_val_int *)val_m[name];
-  if (!t)
-    throw envError("argument " + name + " doesn't exist");
-  else  
-    *v = t->value;
-}
-
-void argument::get(string name, string* v)
-{
-  v_val_string *t;
-
-  t = (v_val_string *)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist");
-  else 
-   *v = t->value;
-}
-
-void argument::get(string name, bool* v)
-{
-  v_val_bool *t;
-
-  t = (v_val_bool *)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist");
-  else 
-   *v = t->value;
-   
-}
-
-void argument::get(string name, Node** v)
-{
-  v_val_node* t;
-
-  t = (v_val_node*)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist"); 
-  else
-  {
-   if (!t->value)
-   {
-	 throw envError("argument " + name + " value not set");
-   }
-   *v = t->value;
-  }
-}
-
-
-void argument::get(string name, Path** v)
-{
-  v_val_path* t;
-
-  t = (v_val_path*)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist"); 
-  else
-  {
-    if (!t->value)
-      throw envError("argument " + name + " value not set");
-    *v = t->value;
-  }
-}
-
-void argument::get(string name, list<Node *> **v)
-{
-  v_val_lnode* t;
-
-  t = (v_val_lnode*)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist"); 
-  else
-  {
-    if (!t->value)
-      throw envError("argument " + name + " value not set");
-    *v = t->value;
-  }
-}
-
-
-/*int  get_type(string name)  */
-
-int argument::get_int(string name)
-{
-  v_val_int *t;
-
-  t = (v_val_int *)val_m[name];
-  if (!t)
-    throw envError("argument " + name + " doesn't exist");
-  else  
-    return t->value;
-}
-
-uint64_t argument::get_uint64(string name)
-{
-  v_val_uint64 *t;
-
-  t = (v_val_uint64 *)val_m[name];
-  if (!t)
-    throw envError("argument " + name + " doesn't exist");
-  else  
-    return t->value;
-}
-
-string argument::get_string(string name)
-{
-  v_val_string *t;
-
-  t = (v_val_string *)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist");
-  else 
-   return t->value;
-}
-
-bool argument::get_bool(string name)
-{
-  v_val_bool *t;
-
-  t = (v_val_bool *)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist");
-  else 
-   return t->value;
-}
-
-Node* argument::get_node(string name)
-{
-  v_val_node* t;
-
-  t = (v_val_node*)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist"); 
-  else
-  {
-   if (!t->value)
-   {
-	 throw envError("argument " + name + " value not set");
-   }
-   return t->value;
-  }
-}
-
-Path* argument::get_path(string name)
-{
-  v_val_path* t;
-
-  t = (v_val_path*)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist"); 
-  else
-  {
-   if (!t->value)
-   {
-	 throw envError("argument " + name + " value not set");
-   }
-   return  t->value;
-  }
-}
-
-list<Node *>* argument::get_lnode(string name)
-{
-  v_val_lnode* t;
-
-  t = (v_val_lnode*)val_m[name];
-  if (!t)
-   throw envError("argument " + name + " doesn't exist"); 
-  else
-  {
-   if (!t->value)
-   {
-	 throw envError("argument " + name + " value not set");
-   }
-   return t->value;
-  }
 }

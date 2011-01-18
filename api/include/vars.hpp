@@ -17,6 +17,7 @@
 #ifndef __VARS_HPP__
 #define __VARS_HPP__
 
+#include "variant.hpp"
 #include "export.hpp"
 #include "type.hpp"
 #include <string>
@@ -28,150 +29,86 @@
 #include "wstdint.h"
 #endif
 
+//config
+// - Global for module
+// - needs
+//   - name
+//   - description
+//   - origin
+//   - optional
+//   - type
+//   - defaults
+//
+//argument
+// - for each module instance
+// - needs:
+//   - name
+//   - variant
+//
+//results
+// - for each module instance
+// - needs:
+//  - name
+//  - description
+//  - variant
 
-using namespace std;
-class vars
+class ConfigVar
 {
+private:
+  std::string		__name;
+  std::string		__description;
+  std::string		__origin;
+  uint8_t		__type;
+  bool			__optional;
 public:
- string name;		
- string description;
- string type;		
- string from;	
- bool	optional;	
+  std::string		name();
+  std::string		description();
+  std::string		origin();
+  uint8_t		type();
+  bool			isOptional();
 };
 
-
-/* v_descr */
-
-class v_descr : public vars
+class Vars
 {
-};
+private:
+  std::string		__name;
+  std::string		__description;
+  std::string		__origin;
+  Variant*		__var;
 
-
-class v_descr_int : public v_descr
-{
 public:
-  int max;			
-  int min;
-  string descr;		
-
-  EXPORT v_descr_int(string f, string n, bool opt, string description);
-  EXPORT v_descr_int(string f, string n, int x, int y, bool opt, string description);
-  EXPORT int  check_val(int v);
+  Vars(std::string origin, std::string name, std::string description);
+  ~Vars();
+  std::string	name();
+  std::string	description();
+  uint8_t	type();
+  std::string	origin();
+  Variant*	value();
 };
 
-class v_descr_uint64 : public v_descr
-{
-  public:
-  EXPORT v_descr_uint64(string f, string n, bool opt, string description);
-};
+// class Vars
+// {
+// private:
+//   std::string		__name;
+//   std::string		__description;
+//   uint8_t		__type;
+//   std::string		__origin;
+//   bool			__optional;
+//   Variant*		__value;
+//   std::list<Variant*>	__defaults;
 
 
-class v_descr_string : public v_descr
-{
-public:
-  EXPORT v_descr_string(string f, string n, bool opt, string description);
-};
-
-
-class v_descr_bool : public v_descr
-{
-public:
-  EXPORT v_descr_bool(string f, string n, bool opt, string description);
-};
-
-class v_descr_path : public v_descr
-{
-public:
-  EXPORT v_descr_path(string f, string n, bool opt, string description);
-};
-
-class v_descr_node : public v_descr
-{
-public:
-  EXPORT v_descr_node(string f, string n, bool opt, string description);
-};
-
-class v_descr_lnode : public v_descr
-{
-public:
-  EXPORT v_descr_lnode(string f, string n, bool opt, string description);
-
-};
-
-
-/* v_val */
-
-class v_val : public vars
-{
-public:
- EXPORT int get_int(void);
- EXPORT uint64_t get_uint64(void);
- EXPORT string get_string(void);
- EXPORT class Node* get_node(void);
- EXPORT class Path* get_path(void);
- EXPORT bool get_bool(void);
- EXPORT list<Node *>* get_lnode(void);
-};
-
-class v_val_int : public v_val
-{
-public:
-  int	value;		
-
-  EXPORT v_val_int(string f, string n, int v);
-};
-
-class v_val_uint64 : public v_val
-{
-public:
-  uint64_t	value;		
-
-  EXPORT v_val_uint64(string f, string n, uint64_t v);
-};
-
-
-
-
-class v_val_string : public v_val
-{
-public:
-  string value;		
-  EXPORT v_val_string(string f, string n, string v);
-};
-
-
-class v_val_bool : public v_val
-{
-public:
-  bool value;		
-
-  EXPORT v_val_bool(string f, string n, bool v);
-};
-
-
-class v_val_node : public v_val
-{
-public:
-  class Node* value;	
-
-  EXPORT v_val_node(string f, string n, Node* v);
-};
-
-class v_val_path : public v_val
-{
-public:
-  class Path*	value;	
-
-   EXPORT v_val_path(string f, string n, Path* v);
-};
-
-class v_val_lnode : public v_val
-{
-public:
-  list<Node *>* value;
-
-  EXPORT v_val_lnode(string f, string n, list<Node *>* v);
-};
+// public:
+//   Vars(std::string origin, std::string name, bool optional, std::string description, uint8_t type);
+//   ~Vars();
+//   bool		addDefault(Variant* defaults);
+//   std::list<Variant*>	defaults();
+//   std::string	name();
+//   std::string	description();
+//   uint8_t	type();
+//   std::string	origin();
+//   bool		isOptional();
+//   Variant*	value();
+// };
 
 #endif

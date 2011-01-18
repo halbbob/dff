@@ -16,7 +16,7 @@
 from api.vfs.libvfs import DEventHandler
 from api.taskmanager.scheduler import sched 
 from api.taskmanager.processus import *
-from api.env import *
+#from api.env import *
 from api.loader import *
 from api.exceptions.libexceptions import *
 import threading
@@ -77,6 +77,7 @@ class TaskManager():
 ###donc le mieux recreer une list puisque on les a pu et par contre puisqu on a les list de node ds les modules -> passer cette list au modules batch qui prenne une list directe et font juste une instance ou alors les modules prenne qu une node mais c le taskmanager qui s en occupe a l ancinne mais essayer d avoir qu une instnace c mieux (et de update ....) -> c pas pres d etre finie ..........
 
 
+      #self.env = env.env() 
 
     def add(self, cmd, args, exec_flags):
       task = self.loader.modules[cmd] 

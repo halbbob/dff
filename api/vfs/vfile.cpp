@@ -297,7 +297,7 @@ uint64_t	VFile::find(char *needle, uint32_t len, char wildcard, uint64_t start, 
   if (l->size() > 0)
     res = l->front();
   else
-    res = dff_ui64(-1);
+    res = uint64_t(-1);
   delete l;
   return res;
 }

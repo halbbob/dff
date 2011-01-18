@@ -757,8 +757,12 @@ Open the node and return a pointer to a VFile instance
   #include "node.hpp"
   #include "mfso.hpp"
   #include "vfile.hpp"
-  //  #include "../include/variant.hpp"
+  #include "variant.hpp"
 %}
+
+%include "../include/results.hpp"
+%include "../include/path.hpp"
+%include "../include/vtime.hpp"
 
 %include "../include/DEventHandler.hpp"
 %include "../include/export.hpp"
@@ -767,7 +771,6 @@ Open the node and return a pointer to a VFile instance
 %include "../include/node.hpp"
 %include "../include/mfso.hpp"
 %include "../include/vfile.hpp"
- //%include "../include/variant.hpp"
 
 namespace std
 {

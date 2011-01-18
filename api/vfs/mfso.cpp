@@ -98,7 +98,7 @@ void		FdManager::remove(int32_t fd)
 fso::fso(std::string name)
 {
   this->name = name;
-  this->res = new results(this->name);
+  this->res = new Results(this->name);
   this->stateinfo = "";
 }
 

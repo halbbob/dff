@@ -15,119 +15,238 @@
  *  Frederic B. <fba@digital-forensic.org>
  */
 
-#include  "conf.hpp"
+#include  "config.hpp"
 
-config::config(string who)
+
+Parameter::Parameter(std::string name, uint8_t type, bool optional, std::string description)
 {
-  km = env::Get();
-  from = who;
+  this->__name = name;
+  this->__type = type;
+  this->__optional = optional;
+  this->__description = description;
 }
 
-void	config::add(string name, string type, bool opt, string descr)
+Parameter::~Parameter()
 {
-  v_descr *v;
-  
-  if (!strcmp(type.c_str(), "int"))
-    v = new v_descr_int(from, name, opt, descr);
-  else if ((!strcmp(type.c_str(), "uint64")))
-    v = new v_descr_uint64(from, name, opt, descr);
-  else if (!strcmp(type.c_str(), "string"))
-    v = new v_descr_string(from, name, opt, descr);
-  else if (!strcmp(type.c_str(), "node"))
-    v = new v_descr_node(from, name, opt, descr);
-  else if (!strcmp(type.c_str(), "path"))
-    v = new v_descr_path(from, name, opt, descr);
-  else if (!strcmp(type.c_str(), "bool"))
-    v = new v_descr_bool(from, name, opt, descr);
-  else if (!strcmp(type.c_str(), "lnode"))
-    v = new v_descr_lnode(from, name, opt, descr);
+  //  if (this->__defaults != NULL)
+  //  delete this->__defaults;
+}
+
+std::string	Parameter::name()
+{
+  return this->__name;
+}
+
+uint8_t			Parameter::type()
+{
+  return this->__type;
+}
+
+bool			Parameter::isOptional()
+{
+  return this->__optional;
+}
+
+bool			Parameter::isMandatory()
+{
+  return !this->__optional;
+}
+
+std::string		Parameter::description()
+{
+  return this->__description;
+}
+
+void			Parameter::addDefault(Variant* val, )
+
+void			Parameter::addDefault(Variant* val)
+{
+  this->__defaults.push_back(val);
+}
+
+std::list<Variant* >	Parameter::defaults()
+{
+  return this->__defaults;
+}
+
+
+Config::Config(std::string origin, std::string description)
+{
+  this->__origin = origin;
+  this->__description = description;
+}
+
+Config::~Config()
+{
+}
+
+void			Config::add(std::string name, uint8_t type, bool optional, std::string description)
+{
+  Parameter*		param;
+
+  if (this->__parameters.find(name) == this->__parameters.end())
+    {
+      param = new Parameter(type, optional, description);
+      this->__parameters.insert(std::pair<std::string, Parameter* >(name, param));
+    }
   else
-  {
-    cout << "Can't find type" << endl;
-    return ;
-  }
-  descr_l.push_back(v);
-  km->add_var_descr(v);
+    std::cout << "param already present" << std::endl;
 }
 
-void 	config::add(string name, string type, int min, int max, bool opt, string descr)
+void			Config::add_const(std::string param, Variant* val)
 {
-  v_descr *v;
+}
 
-  if (!strcmp(type.c_str(), "int"))
-    v = new v_descr_int(from, name, min, max, opt, descr);
-  else if (!strcmp(type.c_str(), "string")) //min max == size min/max
-    v = new v_descr_string(from, name, opt, descr);
-  else
-  {
-    cout << "Can't find type" << endl;
-    return ;
-  }
-  descr_l.push_back(v);
-  km->add_var_descr(v);
+std::string		Config::origin()
+{
+  return this->__origin;
+}
+
+std::string		Config::description()
+{
+  return this->__description;
+}
+
+std::map<std::string, Parameter* >	Config::parameters()
+{
+  return this->__parameters;
 }
 
 
-void config::add_const(string name, string val)
-{
-   v_val *v;
+// bool		Config::isContainerCompatible(std::map<std::string, Variant*> vmap)
+// {
+//   std::map<std::string, Variant*>::iterator	it;
+//   bool						ret;
   
-  v = new v_val_string(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
+//   ret = true;
+//   it = vmap.begin();
+//   while ((it != vmap.end()) && (ret == true))
+//     {
+//       if ((*it).second->type() != this->__type)
+// 	ret = false;
+//       it++;
+//     }
+//   return ret;
+// }
 
-void config::add_const(string name, int val)
-{
-   v_val *v;
+
+// bool		Config::isContainerCompatible(std::list<Variant*> vlist)
+// {
+//   std::list<Variant*>::iterator	it;
+//   bool				ret;
   
-  v = new v_val_int(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
+//   ret = true;
+//   std::cout << vlist.size() << std::endl;
+//   it = vlist.begin();
+//   while ((it != vlist.end()) && (ret == true))
+//     {
+//       printf("%d | %d\n", (*it)->type(), this->__type);
+//       if ((*it)->type() != this->__type)
+// 	ret = false;
+//       it++;
+//     }
+//   std::cout << "ENDED" << std::endl;
+//   return ret;
+// }
 
-void config::add_const(string name, uint64_t val)
-{
-   v_val *v;
+// bool		Config::isDefaultCompatible(Variant *defaults)
+// {
+//   bool		ret;
+//   uint8_t	dtype;
   
-  v = new v_val_uint64(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
+//   ret = false;
+//   dtype = defaults->type();
+//   if (dtype == this->__type)
+//     ret = true;
+//   else if (dtype == typeId::List)
+//     {
+//       std::cout << "List" << std::endl;
+//       ret = this->isContainerCompatible(defaults->value<std::list< Variant *> >());
+//     }
+//   else if (dtype == typeId::Map)
+//     {
+//       std::cout << "Map" << std::endl;
+//       ret = this->isContainerCompatible(defaults->value<std::map<std::string, Variant*> >());
+//     }
+//   else
+//     ret = false;
+//   return ret;
+// }
 
-void config::add_const(string name, bool val)
-{
-   v_val *v;
+// std::list<Variant*>	Config::defaults()
+// {
+//   return this->__defaults;
+// }
+
+// bool		Config::add_const(std::string name, Variant* val)
+// {
+// //   if (this->isDefaultCompatible(val))
+// //     this->__defaults.push_back(val);
+// //   else
+// //     std::cout << "wrong type" << std::endl;
+// }
+
+
+
+// std::string	Config::origin()
+// {
+//   return this->__origin;
+// }
+
+// Vars*		Config::__findVarsByName(std::string name)
+// {
+//   std::list<Vars*>::iterator	it;
+//   bool				found;
+//   Vars*				v;
   
-  v = new v_val_bool(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
+//   found = false;
+//   it = this->__configvars.begin();
+//   while ((it != this->__configvars.end()) && (!found))
+//     {
+//       v = *it;
+//       if (v->name() == name)
+// 	found = true;
+//       it++;
+//     }
+//   if (found)
+//     return v;
+//   else
+//     return NULL;
+// }
 
-void config::add_const(string name, Node* val)
-{
-   v_val *v;
+// std::list<Vars*>	Config::vars()
+// {
+//   return this->__configvars;
+// }
+
+// std::list<Vars*>	Config::defaults()
+// {
+//   return this->__defaultvars;
+// }
+
+// void 		Config::add_const(std::string name, Variant* val)
+// {
+//   //  Vars*		v;
+
+// //   if ((v = this->__findVarsByName(name)) != NULL)
+// //     {
+// //       this->__defaultvars.push_back(v);
+// //       v->addDefault(val);
+// //     }
+// //   else
+// //     std::cout << "Config::add_const --> parameter " << name << " not found" << std::endl;
+// }
+
+// bool		Config::add(std::string name, uint8_t type, bool optional, std::string description)
+// {
   
-  v = new v_val_node(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
+// //   Vars*		nvar;
 
-void config::add_const(string name, Path* val)
-{
-   v_val *v;
-  
-  v = new v_val_path(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
-
-void config::add_const(string name, list<Node* >* val)
-{
-  v_val *v;
-  
-  v = new v_val_lnode(from, name, val);
-  val_l.push_back(v);
-  km->add_var_val(v); 
-}
-
+// //   if (this->__findVarsByName(name) == NULL)
+// //     {
+// //       nvar = new Vars(this->__origin, name, optional, description, type);
+// //       this->__configvars.push_back(nvar);
+// //     }
+// //   else
+// //     std::cout << "vars " << name << " already exist" << std::endl;
+// }

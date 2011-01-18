@@ -33,6 +33,7 @@ typeId::typeId()
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::string *).name(), typeId::String));
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class vtime**).name(), typeId::VTime));
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Node**).name(), typeId::Node));
+  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Path**).name(), typeId::Path));
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::map<std::string, class Variant*> *).name(), typeId::Map));
   this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::list<class Variant*> *).name(), typeId::List));
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::vector<class Variant*> *).name(), typeId::List));
@@ -117,6 +118,12 @@ Variant::Variant(Node *node)
 {
   this->__data.ptr = node;
   this->_type = typeId::Node;
+}
+
+Variant::Variant(Path *path)
+{
+  this->__data.ptr = path;
+  this->_type = typeId::Path;
 }
 
 Variant::Variant(std::list<Variant*> l)

@@ -46,7 +46,7 @@ class MenuTags():
 class MenuModules(QMenu):
     def __init__(self, parent, mainWindow, tags, selectItem = None):
         QMenu.__init__(self, tags,  parent)
-	self.tags = tags       
+	self.tags = tags
         self.__mainWindow = mainWindow
         self.callbackSelected = selectItem
         self.loader = loader.loader()

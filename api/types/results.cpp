@@ -18,62 +18,34 @@
 
 #include "results.hpp"
 
-results::results(string who)
+Results::Results(std::string origin)
 {
-    from = who;
-    km = env::Get();
 }
 
-void results::add_const(string name, string v)
+Results::~Results()
 {
-  v_val *v_v;
-  
-  v_v = new v_val_string(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v); 
 }
 
-void results::add_const(string name, uint64_t v)
+bool					Results::add(std::string name, Variant* val, std::string description)
 {
-   v_val *v_v;
-  
-  v_v = new v_val_uint64(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v); 
 }
 
-void results::add_const(string name, int v)
+Variant*				Results::valueFromKey(std::string name)
 {
-   v_val *v_v;
-  
-  v_v = new v_val_int(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v); 
 }
 
-void results::add_const(string name, Node* v)
+std::string				Results::descriptionFromKey(std::string)
 {
-   v_val *v_v;
-  
-  v_v = new v_val_node(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v); 
 }
 
-void results::add_const(string name, Path* v)
+std::map<std::string, Variant*>		Results::items()
 {
-   v_val *v_v;
-  
-  v_v = new v_val_path(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v); 
 }
 
-void results::add_const(string name, list<Node *>* v)
+std::list<std::string>			Results::keys()
 {
-   v_val *v_v;
-  
-  v_v = new v_val_lnode(from, name, v);
-  val_m[name] = v_v;
-  km->add_var_val(v_v); 
+}
+
+std::list<Variant*>			Results::values()
+{
 }

@@ -21,7 +21,7 @@ from api.vfs import *
 from api.vfs.libvfs import VFS, DEventHandler
 from api.loader import *
 from api.taskmanager.taskmanager import *
-from api.env import *
+from api.types import libtypes
 
 from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
@@ -37,7 +37,7 @@ from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
 class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
     QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()  
+    self.VFS = VFS.Get()
 
   def data(self, index, role):
     if index.isValid():
@@ -114,7 +114,12 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     self.VFS = VFS.Get()
     #register to event from vfs
     self.VFS.connection(self)
-    self.env = env.env()	
+    #XXX merge variantBaseAPI
+    #self.env = env.env()	
+    #XXX merge variantBaseAPI
+
+    self.ft = FILETYPE()
+
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
@@ -313,8 +318,10 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
        node = self.currentNode()
        if not node:
 	 return
-     arg = self.env.libenv.argument("gui_input")
-     arg.thisown = 0 
+     #XXX merge variantBaseAPI
+     #arg = self.env.libenv.argument("gui_input")
+     #arg.thisown = 0
+     #XXX merge variantBaseAPI
      try:
        mod = node.compatibleModules()[0]
        if self.lmodules[mod]:
@@ -355,7 +362,7 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
   def launchHexedit(self):
      nodes = self.currentNodes()
      for node in nodes:
-        arg = self.env.libenv.argument("gui_input")
+        arg = libtypes.Arguments("gui_input")
         arg.thisown = 0
         arg.add_node("file", node)
         self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
@@ -365,8 +372,10 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
   def launchExtract(self):
      res = self.extractor.getArgs()
-     arg = self.env.libenv.argument("gui_input")
-     lnodes = self.env.libenv.ListNode()
+     arg = libtypes.Arguments("gui_input")
+     #XXX MERGEALL
+     #lnodes = self.env.libenv.ListNode()
+     #XXX MERGEALL
      lnodes.thisown = 0
      for node in res["nodes"]:
         lnodes.append(node)

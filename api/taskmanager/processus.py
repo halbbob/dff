@@ -16,9 +16,9 @@
 from api.module.module import *
 from api.vfs.libvfs import *
 from api.taskmanager.scheduler import *
-from api.type.libtype import *
+from api.types import libtypes
 from api.vfs import *
-from api.env.env import env
+#from api.env.env import env
 import threading
 
 import time
@@ -34,7 +34,7 @@ class Processus(Script):
     self.args = args
     self.stream = Queue()
     self.event = threading.Event()
-    self.env = env()
+    #self.env = env()
     self.timestart = 0
     self.timeend = 0
 
@@ -63,11 +63,12 @@ class Processus(Script):
 	self.result()
 
   def result(self):
-     try :
-       for type, name, val in self.env.get_val_map(self.res.val_m):
-	     print name + ":" +"\n"  + val
-     except AttributeError, e:
-       pass
+    return None
+    #try :
+    #  for type, name, val in self.env.get_val_map(self.res.val_m):
+    #    print name + ":" +"\n"  + val
+    #except AttributeError, e:
+    #  pass
 
   def error(self, trace = None):
     if trace:

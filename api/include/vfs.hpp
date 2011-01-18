@@ -25,7 +25,7 @@
 #include "vfile.hpp"
 #include "export.hpp"
 #include "exceptions.hpp"
-#include "type.hpp"
+#include "node.hpp"
 #include "DEventHandler.hpp"
 #include "node.hpp"
 

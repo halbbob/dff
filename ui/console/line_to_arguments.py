@@ -35,7 +35,6 @@ class Line_to_arguments():
 #        self.loader = loader.loader()
 #        self.vfs = vfs.vfs()
         self.api = ApiManager()
-        self.env = self.api.env()
         self.argument = self.api.argument
         self.loader = self.api.loader()
         self.vfs = self.api.vfs()

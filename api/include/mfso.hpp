@@ -34,18 +34,21 @@
 #include "vfile.hpp"
 #include "DEventHandler.hpp"
 
+#include "arguments.hpp"
+#include "results.hpp"
+
 class fso
 {
 private:
   std::list<Node *>		__update_queue;
 public:
-  results*			res;
+  Results*			res;
   std::string			stateinfo;
   std::string			name;
 
   EXPORT fso(std::string name);
   EXPORT virtual ~fso();
-  EXPORT virtual void		start(argument* args) = 0;
+  EXPORT virtual void		start(Arguments* args) = 0;
   EXPORT virtual int32_t 	vopen(class Node *n) = 0;
   EXPORT virtual int32_t 	vread(int32_t fd, void *rbuff, uint32_t size) = 0;
   EXPORT virtual int32_t 	vwrite(int32_t fd, void *wbuff, uint32_t size) = 0;
@@ -129,7 +132,7 @@ public:
   ///  EXPORT mfso();
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
-  EXPORT virtual void		start(argument* args) = 0;
+  EXPORT virtual void		start(Arguments* args) = 0;
   EXPORT virtual int32_t 	vopen(class Node *n);
   EXPORT virtual int32_t 	vread(int32_t fd, void *buff, uint32_t size);
   EXPORT virtual int32_t 	vwrite(int32_t fd, void *buff, uint32_t size);

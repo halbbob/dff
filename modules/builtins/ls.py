@@ -16,6 +16,7 @@
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import typeId
 
 class LS(Script):
   def __init__(self) :
@@ -85,7 +86,8 @@ class ls(Module):
   """List file and directory"""
   def __init__(self):
    Module.__init__(self, "ls", LS)
-   self.conf.add("node", "node", True, "Directory to list")
-   self.conf.add("long", "bool", True, "Display size of files")
-   self.conf.add("recursive", "bool", True, "Recurse in sub-directory")
+   self.conf.add("node", typeId.Node, True, "Directory to list")
+   self.conf.add("long", typeId.Bool, True, "Display size of files")
+   self.conf.add("recursive", typeId.Bool, True, "Recurse in sub-directory")
+   self.conf.add_const("node", [1, 2, 4])
    self.tags = "builtins"

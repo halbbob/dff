@@ -27,7 +27,6 @@
 #include "wstdint.h"
 #endif
 #include "node.hpp"
-#include "type.hpp"
 #include "export.hpp"
 #include "search.hpp"
 

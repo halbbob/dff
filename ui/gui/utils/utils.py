@@ -16,9 +16,8 @@
 from types import *
 
 from api.loader import *
-from api.env import *
 from api.taskmanager.taskmanager import *
-from api.type import *
+from api.types import libtypes
 
 class Utils():
     def __init__(self):
@@ -102,7 +101,6 @@ class Utils():
         
     @staticmethod
     def execModule(name, type, nameArg, listNode):
-        e = env.env()
         tm = TaskManager()
 	if isinstance(listNode, Node):
 	    arg = e.libenv.argument("gui_input")
@@ -110,7 +108,7 @@ class Utils():
             tm.add(str(name), arg, ["thread", "gui"])
 	else:
           for i in range(0, len(listNode)) :
-            arg = e.libenv.argument("gui_input")
-            arg.add_node(str(nameArg), listNode[i])
-            tm.add(str(name), arg, ["thread", "gui"])
+              arg = libtypes.argument("gui_input")
+              arg.add_node(str(nameArg), listNode[i])
+              tm.add(str(name), arg, ["thread", "gui"])
         

@@ -35,19 +35,19 @@ using namespace std;
  * 
  * 
  */
-class v_key
-{
-public:
-  EXPORT v_key();	
-  EXPORT ~v_key();
-  list<class v_descr*> descr_l;
-  list<class v_val*> val_l;
+// class v_key
+// {
+// public:
+//   EXPORT v_key();	
+//   EXPORT ~v_key();
+//   list<class v_descr*> descr_l;
+//   list<class v_val*> val_l;
 
-  EXPORT void add_var_descr(v_descr *v);
-  EXPORT void add_var_val(v_val *v);
-};
+//   EXPORT void add_var_descr(v_descr *v);
+//   EXPORT void add_var_val(v_val *v);
+// };
 
-typedef map< string, v_key * > mapdb_t;
+// typedef map< string, v_key * > mapdb_t;
 
 
 /**
@@ -59,24 +59,24 @@ typedef map< string, v_key * > mapdb_t;
  * 
  * 
  */
-class env
-{
-private:
-  env() {};
-  ~env() {};
+// class env
+// {
+// private:
+//   env() {};
+//   ~env() {};
 
-  void operator=(env&);
-  env(const env&);
-public:
-  mapdb_t vars_db;
-  static env* Get() 
-  {
-    static env single;
-    return &single;
-  };
+//   void operator=(env&);
+//   env(const env&);
+// public:
+//   mapdb_t vars_db;
+//   static env* Get() 
+//   {
+//     static env single;
+//     return &single;
+//   };
 
-  EXPORT void add_var_descr(class v_descr *v);
-  EXPORT void add_var_val(class v_val *v);
-};
+// //   EXPORT void add_var_descr(class v_descr *v);
+// //   EXPORT void add_var_val(class v_val *v);
+// };
 
 #endif

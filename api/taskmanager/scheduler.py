@@ -21,7 +21,7 @@ from Queue import *
 from types import *
 from api.loader import *
 from api.exceptions.libexceptions import *
-from api.env import *
+#from api.env import *
 
 event_type = ["add_qwidget"]
 
@@ -48,7 +48,7 @@ class WorkQueue():
 			self.waitQueue = Queue()
 			self.workerQueue = Queue(max)
 			self.max = max
-			self.env = env.env()
+			#self.env = env.env()
 			self.event_func = {}
 			for type in event_type:
 				self.event_func[type] = []

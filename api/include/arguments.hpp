@@ -12,63 +12,33 @@
  * 
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
 
-#ifndef __ARGUMENT_HPP__
-#define __ARGUMENT_HPP__
+#ifndef __ARGUMENTS_HPP__
+#define __ARGUMENTS_HPP__
 
 #include <string>
 #include <list>
 #include <map>
-#include <iostream>
-#include "env.hpp"
-#include "vars.hpp"
+//#include "env.hpp"
 #include "export.hpp"
-#include "type.hpp"
-#include <string.h>
+#include "variant.hpp"
 
-class argument
+class Arguments
 {
-  class env* km;
-  string from;	
- public:
-   map<string, class v_val * > val_m; 
-
-  EXPORT argument(string who);
-  EXPORT argument();
-
-//add_type
-
-  EXPORT void 	add_int(string, int);
-  EXPORT void 	add_uint64(string, uint64_t);
-  EXPORT void 	add_string(string, string);
-  EXPORT void 	add_bool(string, bool);
-  EXPORT void 	add_node(string, Node*);
-//  EXPORT void 	add_path(string, Path*);
-  EXPORT void   add_path(string, string);
-  EXPORT void	add_lnode(string, list<Node *> *);
-
-
-//get( type)
-
-  EXPORT void 	get(string name, int *v);
-  EXPORT void 	get(string name, uint64_t *v);
-  EXPORT void 	get(string name, bool *v);
-  EXPORT void 	get(string name, Node **v);
-  EXPORT void 	get(string name, string *v);
-  EXPORT void 	get(string name, Path **v);
-  EXPORT void   get(string name, list<Node *> **v);
-//
-
-//get_type
-
-  EXPORT int 		get_int(string name);
-  EXPORT uint64_t 	get_uint64(string name);
-  EXPORT bool 		get_bool(string name);
-  EXPORT string 	get_string(string name);
-  EXPORT Node*  	get_node(string name);
-  EXPORT Path*  	get_path(string name);
-  EXPORT list<Node *>*	get_lnode(string name);
+private:
+  std::string				__origin;
+  std::map<std::string, Variant*>	__arguments;
+public:
+  EXPORT Arguments(std::string origin);
+  EXPORT ~Arguments();
+  EXPORT bool					add(std::string name, Variant* value);
+  EXPORT Variant*				valueFromKey(std::string name);
+  EXPORT std::map<std::string, Variant*>	items();
+  EXPORT std::list<std::string>			keys();
+  EXPORT std::list<Variant*>			values();
 };
+
 #endif

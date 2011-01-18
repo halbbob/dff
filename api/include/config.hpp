@@ -12,44 +12,71 @@
  * 
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
 
-#ifndef __CONF_HPP__
-#define __CONF_HPP__
+#ifndef __CONFIG_HPP__
+#define __CONFIG_HPP__
 
+#include "variant.hpp"
 #include <string>
 #include <list>
 #include <map>
 #include <iostream>
-#include "env.hpp"
-#include "vars.hpp"
 #include "export.hpp"
-#include <string.h>
 
-using namespace std;
+#define ParamUnique		0x01
+#define ParamList		0x02
+#define ParamVariable		ParamUnique | ParamList
+//#define ParamRange		0x04 <-- later use
+#define ParamOptional		0x05
+#define ParamMandatory		0x09
 
-class config
+#define UniqueAndOptional	ParamUnique | ParamOptional
+#define UniqueAndMandatory	ParamUnique | ParamMandatory
+#define ListAndOptional		ParamList | ParamOptional
+#define ListAndMandatory	ParamList | ParamMandatory
+//#define VariableAndOptional	ParamVariable | ParamOptional
+//#define VariableAndMandatory	ParamVariable | ParamMandatory
+
+#define DefaultFixed		0x01
+#define DefaultSuggested	0x02
+
+class Parameter
 {
-  class env* 	km;		
-  public:
-  string 	from;
+private:
+  uint8_t		__type;
+  bool			__optional;
+  std::string		__description;
+  std::list<Variant* >	__defaults;
+public:
+  Parameter(uint8_t type, bool optional, std::string description);
+  ~Parameter();
+  uint8_t		type();
+  bool			isMandatory();
+  bool			isOptional();
+  std::string		description();
+  void			addDefault(Variant* val);
+  std::list<Variant* >	defaults();
+};
 
-  EXPORT 		config(string from);
+class Config
+{
+private:
+  std::string				__origin;
+  std::string				__description;
+  std::map<std::string, Parameter* >	__parameters;
 
-  list<class v_descr *> descr_l;
-  list<class v_val *>	val_l; 
-  string		description; 
-//c+++ interface 
-  EXPORT void 		add(string name, string type, bool opt = false, string descr = "");
-  EXPORT void 		add(string name, string type, int min, int max, bool opt = false, string descr = "");
-  EXPORT void 		add_const(string name, string val); 
-  EXPORT void 		add_const(string name, bool val); 
-  EXPORT void 		add_const(string name, int val); 
-  EXPORT void 		add_const(string name, uint64_t val); 
-  EXPORT void 		add_const(string name, Node* val); 
-  EXPORT void 		add_const(string name, Path* val); 
-  EXPORT void 		add_const(string name, list<Node *>* val); 
+public:
+  EXPORT Config(std::string origin, std::string description = "");
+  EXPORT ~Config();
+  EXPORT void					add(std::string param, uint8_t type, bool optional=false, std::string description = "");
+  EXPORT void					add_const(std::string param, Variant* val);
+
+  EXPORT std::string				origin();
+  EXPORT std::string				description();
+  EXPORT std::map<std::string, Parameter*>	parameters();
 };
 
 #endif

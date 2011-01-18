@@ -12,6 +12,7 @@
  * 
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
 #ifndef __RESULTS_HPP__
@@ -20,28 +21,24 @@
 #include <string>
 #include <list>
 #include <map>
-#include <iostream>
-#include "env.hpp"
-#include "argument.hpp"
-#include "vars.hpp"
-#include "type.hpp"
+//#include "env.hpp"
+#include "variant.hpp"
 #include "export.hpp"
-#include <string.h>
 
-
-class results : public argument
+class Results
 {
-  env* km;			
- public:
-  string	from;		
-
-  EXPORT 	results(string who);
-  EXPORT void	add_const(string name, string val);
-  EXPORT void 	add_const(string name, int val);
-  EXPORT void 	add_const(string name, uint64_t val);
-  EXPORT void 	add_const(string name, Node* val);
-  EXPORT void 	add_const(string name, Path* val);
-  EXPORT void 	add_const(string name, list<Node *>* val);
+private:
+  std::string				__origin;
+  //std::map<std::string, dresult* >	__results;
+public:
+  EXPORT Results(std::string origin);
+  EXPORT ~Results();
+  EXPORT bool					add(std::string name, Variant* val, std::string description);
+  EXPORT Variant*				valueFromKey(std::string name);
+  EXPORT std::string				descriptionFromKey(std::string);
+  EXPORT std::map<std::string, Variant*>	items();
+  EXPORT std::list<std::string>			keys();
+  EXPORT std::list<Variant*>			values();
 };
 
 #endif

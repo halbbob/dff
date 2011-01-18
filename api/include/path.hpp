@@ -24,11 +24,6 @@
 #include <iostream>
 #include <map>
 
-typedef  unsigned long long dff_ui64;
-
-#include "vtime.hpp"
-#include "attrib.hpp"
-
 union s_ull
 {
   struct 
@@ -44,13 +39,11 @@ union s_ull
   unsigned long long ull;
 };
 
-using namespace std;
-
 class Path
 {
 public:
-  string	path;
-  EXPORT 	Path(string p);
+  std::string	path;
+  EXPORT 	Path(std::string p);
 };
 
 #endif

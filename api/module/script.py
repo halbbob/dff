@@ -14,15 +14,15 @@
 #
 
 from api.vfs import *
-from api.env import *
+from api.types import libtypes
 from api.exceptions.libexceptions import *
 
 class Script(object):
     def __init__(self, name):
 	self.name = name
-        self.env = env.env()
+#        self.env = env.env()
         self.vfs = vfs.vfs()
-	self.res = self.env.libenv.results(self.name)
+	self.res = libtypes.results(self.name)
 	self.stateinfo = ""
 
     #def stateInfo(self):

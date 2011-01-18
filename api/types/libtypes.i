@@ -12,31 +12,1047 @@
  * 
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-%module(package="api.type") libtype
-%ignore attrib::attrib(struct stat*);
-%ignore attrib::get_stat(struct stat*);
+%module(package="api.types") libtypes
+%feature("autodoc", 1); //1 = generate type for func proto, no work for typemap
+%feature("docstring");
+
+#ifndef WIN32
+%include "stdint.i"
+#else
+%include "wstdint.i"
+#endif
 %include "std_string.i"
+%include "std_list.i"
 %include "std_map.i"
 %include "windows.i"
-
-typedef unsigned long long dff_ui64; 
+%include "std_except.i"
 
 %{
 #include <sys/stat.h>
 #include <datetime.h>
+#include "variant.hpp"
 #include "export.hpp"
-#include "type.hpp"
+#include "path.hpp"
 #include "vtime.hpp"
-#include "attrib.hpp"
 #include "Time.h"
+#include "config.hpp"
+#include "arguments.hpp"
+#include "results.hpp"
+//#include "node.hpp"
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 %}
+
+%inline %{
+
+bool checkSignedOverflow (PyObject* val, uint8_t t)
+{
+   long long ll;
+   PyObject* pyerr;
+   
+   if (PyInt_Check(val))
+      {
+	long l;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        l = PyInt_AsLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if ((l == -1) && (pyerr != NULL))
+	   return false;
+	else
+	   ll = (long long)l;
+      }
+   else if (PyLong_Check(val))
+      {
+	long l;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        l = PyLong_AsLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if ((l == -1) && (pyerr != NULL))
+	{
+	   SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	   PyErr_Clear();
+	   ll = PyLong_AsLongLong(val);
+	   pyerr = PyErr_Occurred();
+           SWIG_PYTHON_THREAD_END_BLOCK;
+	   if ((ll == -1) && (pyerr != NULL))
+	      return false;
+   	}
+	else
+	   ll = (long long)l;
+      }
+   else
+      return false;
+
+   if ((t == typeId::Int16) && (ll >= INT16_MIN) && (ll <= INT16_MAX))
+   {
+      printf("%lld\n", ll);
+      return true;
+   }
+   else if ((t == typeId::Int32) && (ll >= INT32_MIN) && (ll <= INT32_MAX))
+   {
+      printf("%lld\n", ll);
+      return true;
+   }
+   else if ((t == typeId::Int64) && (ll >= INT32_MIN) && (ll <= INT64_MAX))
+   {
+      printf("%lld\n", ll);
+      return true;
+   }
+   else
+      return false;
+}
+
+
+Variant* pySignedNumericToVariant(PyObject* val, uint8_t t)
+{
+   long long ll;
+   PyObject* pyerr;
+   Variant* vval;
+   
+   if (PyInt_Check(val))
+      {
+	long l;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        l = PyInt_AsLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if ((l == -1) && (pyerr != NULL))
+	   return NULL;
+	else
+	   ll = (long long)l;
+      }
+   else if (PyLong_Check(val))
+      {
+	long l;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        l = PyLong_AsLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if ((l == -1) && (pyerr != NULL))
+	{
+	   SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	   PyErr_Clear();
+	   ll = PyLong_AsLongLong(val);
+	   pyerr = PyErr_Occurred();
+           SWIG_PYTHON_THREAD_END_BLOCK;
+	   if ((ll == -1) && (pyerr != NULL))
+	      return NULL;
+   	}
+	else
+	   ll = (long long)l;
+      }
+   else
+      return NULL;
+
+   if ((t == typeId::Int16) && (ll >= INT16_MIN) && (ll <= INT16_MAX))
+   {
+      int16_t   v;
+      v = static_cast<int16_t>(ll);
+      vval = new Variant(v);
+      return vval;
+   }
+   else if ((t == typeId::Int32) && (ll >= INT32_MIN) && (ll <= INT32_MAX))
+   {
+      int32_t   v;
+      v = static_cast<int32_t>(ll);
+      vval = new Variant(v);
+      return vval;
+   }
+   else if ((t == typeId::Int64) && (ll >= INT32_MIN) && (ll <= INT64_MAX))
+   {
+      int64_t   v;
+      v = static_cast<int64_t>(ll);
+      vval = new Variant(v);
+      return vval;
+   }
+   else
+      return NULL;
+}
+
+
+bool checkUnsignedOverflow (PyObject* val, uint8_t t)
+{
+   unsigned long long ull;
+   PyObject* pyerr;
+   
+   if (PyInt_Check(val))
+      {
+        long l;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        l = PyInt_AsLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if ((l < 0) && (pyerr != NULL))
+	   return false;
+	else
+           ull = (unsigned long long)l;
+      }
+   else if (PyLong_Check(val))
+      {
+	unsigned long ul;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        ul = PyLong_AsUnsignedLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if (pyerr != NULL)
+	{
+           SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	   PyErr_Clear();
+	   ull = PyLong_AsUnsignedLongLong(val);
+           pyerr = PyErr_Occurred();
+           SWIG_PYTHON_THREAD_END_BLOCK;
+	   if (pyerr != NULL)
+	     return false;
+	}
+	else
+	  ull = (unsigned long long)ul;
+      }
+   else
+      return false;
+
+   if ((t == typeId::UInt16) && (ull <= UINT16_MAX))
+   {
+      printf("%llu\n", ull);
+      return true;
+   }
+   else if ((t == typeId::UInt32) && (ull <= UINT32_MAX))
+   {
+      printf("%llu\n", ull);
+      return true;
+   }
+   else if ((t == typeId::UInt64) && (ull <= UINT64_MAX))
+   {
+      printf("%llu\n", ull);
+      return true;
+   }
+   else
+      return false;
+}
+
+Variant* pyUnsignedNumericToVariant(PyObject* val, uint8_t t)
+{
+   unsigned long long ull;
+   PyObject* pyerr;
+   Variant* vval;
+   
+   if (PyInt_Check(val))
+      {
+        long l;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        l = PyInt_AsLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if ((l < 0) && (pyerr != NULL))
+	   return NULL;
+	else
+           ull = (unsigned long long)l;
+      }
+   else if (PyLong_Check(val))
+      {
+	unsigned long ul;
+
+        SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+        ul = PyLong_AsUnsignedLong(val);
+        pyerr = PyErr_Occurred();
+        SWIG_PYTHON_THREAD_END_BLOCK;
+	if (pyerr != NULL)
+	{
+           SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	   PyErr_Clear();
+	   ull = PyLong_AsUnsignedLongLong(val);
+           pyerr = PyErr_Occurred();
+           SWIG_PYTHON_THREAD_END_BLOCK;
+	   if (pyerr != NULL)
+	     return NULL;
+	}
+	else
+	  ull = (unsigned long long)ul;
+      }
+   else
+      return NULL;
+
+   if ((t == typeId::UInt16) && (ull <= UINT16_MAX))
+   {
+	uint16_t v;
+	v = static_cast<uint16_t>(ull);
+	vval = new Variant(v);
+	return vval;
+   }
+   else if ((t == typeId::UInt32) && (ull <= UINT32_MAX))
+   {
+	uint32_t v;
+	v = static_cast<uint32_t>(ull);
+	vval = new Variant(v);
+	return vval;
+   }
+   else if ((t == typeId::UInt64) && (ull <= UINT64_MAX))
+   {
+	uint64_t v;
+	v = static_cast<uint64_t>(ull);
+	vval = new Variant(v);
+	return vval;
+   }
+   else
+      return NULL;
+}
+
+bool checkStringOverflow (PyObject* val, uint8_t t)
+{
+     return true;
+}
+
+
+Variant* pyObjectToInt16Variant(PyObject* val)
+{
+   Variant*     var;
+   long         l;
+   int16_t	i16;
+
+   l = PyInt_AsLong(val);
+   i16 = static_cast<int16_t>(l);
+   var = new Variant(i16);
+   return var;
+}
+
+
+Variant* pyObjectToInt32Variant(PyObject* val)
+{
+   Variant*     var;
+   long         l;
+   int32_t	i32;
+
+   l = PyInt_AsLong(val); 
+   i32 = static_cast<int32_t>(l);
+   var = new Variant(i32);
+   return var;
+}
+
+
+Variant* pyObjectToInt64Variant(PyObject* val)
+{
+   Variant*     var;
+   long         l;
+   int64_t	i64;
+
+   l = PyInt_AsLong(val); 
+   i64 = static_cast<int64_t>(l);
+   var = new Variant(i64);
+   return var;
+}
+
+
+Variant* pyObjectToUInt16Variant(PyObject* val)
+{
+   Variant*     var;
+   long         l;
+   uint16_t	ui16;
+
+   l = PyInt_AsLong(val);
+   ui16 = static_cast<uint16_t>(l);
+   var = new Variant(ui16);
+   return var;
+}
+
+
+Variant* pyObjectToUInt32Variant(PyObject* val)
+{
+   Variant*     var;
+   long         l;
+   uint32_t	ui32;
+
+   l = PyInt_AsLong(val); 
+   ui32 = static_cast<uint32_t>(l);
+   var = new Variant(ui32);
+   return var;
+}
+
+
+Variant* pyObjectToUInt64Variant(PyObject* val)
+{
+   Variant*     var;
+   long         l;
+   uint64_t	ui64;
+
+   l = PyInt_AsLong(val); 
+   ui64 = static_cast<uint64_t>(l);
+   var = new Variant(ui64);
+   return var;
+}
+
+
+
+Variant* intToVariant(PyObject* val, uint8_t t)
+{
+   Variant* var;
+   long vval;
+
+   vval = PyInt_AsLong(val);
+}
+
+Variant*  pyStringToVariant(PyObject* val, uint8_t t)
+{
+   Py_ssize_t size;
+   char* str;
+   Variant* vval;
+
+   if (PyString_Check(val))
+   {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      size = PyString_Size(val);
+      str = PyString_AsString(val);
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      if (size < 0)
+      	 return NULL;
+      else if (t == typeId::Char)
+      {
+	char c;
+        if (size < 2)
+	{
+	   c = *str;
+	   vval = new Variant(c);
+	   return vval;
+	}
+      }
+      else if (t == typeId::String)
+      {
+	std::string  s;
+	s = std::string(str);
+	vval = new Variant(s);
+	return vval;
+      }
+      else if (t == typeId::CArray)
+      {
+	vval = new Variant(str);
+	return vval;	
+      }
+   }
+   else
+     return NULL;
+}
+
+Variant*  pyObjectToVariant(PyObject* val, uint8_t t);
+
+Variant* pyListToVariant(PyObject* val, uint8_t t)
+{
+  Py_ssize_t size;
+  PyObject* item;
+  Variant* vval;
+  std::list<Variant *>  vlist;
+  Py_ssize_t i;
+  bool	     err;
+
+  size = PyList_Size(val);
+  i = 0;
+  err = false;
+  while ((i != size) && (err != true))
+    {
+       item = PyList_GetItem(val, i);
+       if ((PyList_Check(item)) || (PyDict_Check(item)))
+       	  err = true;
+       else
+       {
+          vval = pyObjectToVariant(item, t);
+          if (vval != NULL)
+       	     vlist.push_back(vval);
+          else
+	    err = true;
+       }
+       i++;
+    }
+  if (!err)
+  {
+     printf("No error in vlist creation\n");
+     return new Variant(vlist);
+  }
+  else
+  {
+     printf("Error while generating vlist !! Wrong type provided\n");
+     vlist.erase(vlist.begin(), vlist.end());
+     return NULL;
+  }
+}
+
+Variant*  pyObjectToVariant(PyObject* val, uint8_t t)
+{
+   if (PyList_Check(val))
+     return pyListToVariant(val, t);
+   else if ((t == typeId::Int16) || (t == typeId::Int32) || (t == typeId::Int64))
+     return pySignedNumericToVariant(val, t);
+   else if ((t == typeId::UInt16) || (t == typeId::UInt32) || (t == typeId::UInt64))
+     return pyUnsignedNumericToVariant(val, t);
+   else if ((t == typeId::String) || (t == typeId::Char) || (t == typeId::CArray))
+     return pyStringToVariant(val, t);
+   else
+     return NULL;
+//     var = longToVariant(val, t);
+//   else if (PyString_Check(val))
+//     var = strToVariant(val, t);
+}
+
+bool isTypeCompatible(PyObject* val, uint8_t t)
+{
+   if ((t == typeId::Int16) || (t == typeId::Int32) || (t == typeId::Int64))
+	return checkSignedOverflow(val, t);
+   if ((t == typeId::UInt16) || (t == typeId::UInt32) || (t == typeId::UInt64))
+        return checkUnsignedOverflow(val, t);
+   if ((t == typeId::String) || (t == typeId::Char) || (t == typeId::CArray))
+        return checkStringOverflow(val, t);
+    if (t == typeId::Node)
+       {
+	  return false;
+       }
+    if (t == typeId::Path)
+      {
+         return true;
+      }
+    return false;
+}
+
+bool validatePyList(PyObject* val, uint8_t t)
+{
+  Py_ssize_t size;
+  PyObject* item;
+  Py_ssize_t i;
+
+  size = PyList_Size(val);
+  for (i = 0; i != size; i++)
+    {
+       item = PyList_GetItem(val, i);
+       if (!isTypeCompatible(item, t))
+         {
+	   SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	   PyErr_SetString(PyExc_TypeError, "Config::add_const, list contains not compatible argument");
+	   SWIG_PYTHON_THREAD_END_BLOCK;
+	   return false;
+	 }
+     }
+  return true;
+}
+
+
+bool validateDefault (PyObject* val, uint8_t t)
+{ 
+  if (PyList_Check(val))
+     {
+        return validatePyList(val, t);
+     }
+  else
+     {
+       if (!isTypeCompatible(val, t))
+	 {
+	   SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	   PyErr_SetString(PyExc_KeyError, "Config::add_const argument is not compatible");
+	   SWIG_PYTHON_THREAD_END_BLOCK;
+	   return false;
+	 }
+     }
+  return true;
+}
+
+%}
+
+
+%pythoncode
+%{
+import types
+import traceback
+%}
+
 %include "../include/export.hpp"
-%include "../include/type.hpp"
+%include "../include/variant.hpp"
+%include "../include/path.hpp"
 %include "../include/vtime.hpp"
-%include "../include/attrib.hpp"
 %include "../include/Time.h"
+%include "../include/config.hpp"
+%include "../include/arguments.hpp"
+%include "../include/results.hpp"
+//%include "../include/node.hpp"
+
+%feature("docstring") Variant
+"
+    Variants are designed to be a generic template type which can be used to store
+    different type of data. This is useful for example while setting the extended
+    attributes of a node : these attributes can be strings, integers, lists, etc.
+
+    The type of the value is defined while creating the Variant object. To get the
+    value back you just have to use the value() method.
+"
+
+%feature("docstring") Variant::__init__
+"
+        __init__(self) -> Variant
+        __init__(self, string str) -> Variant
+        __init__(self, char carray) -> Variant
+        __init__(self, char c) -> Variant
+        __init__(self, uint16_t us) -> Variant
+        __init__(self, int16_t s) -> Variant
+        __init__(self, uint32_t ui) -> Variant
+        __init__(self, int32_t i) -> Variant
+        __init__(self, int64_t ull) -> Variant
+        __init__(self, uint64_t ll) -> Variant
+        __init__(self, vtime vt) -> Variant
+        __init__(self, Node node) -> Variant
+        __init__(self, VList l) -> Variant
+        __init__(self, VMap m) -> Variant
+        __init__(self, void user) -> Variant
+
+        Variants are designed to be a generic template type which can be used to store
+        different type of data. This is useful for example while setting the extended
+        attributes of a node : these attributes can be strings, integers, lists, etc.
+
+        The type of the value is defined while creating the Variant object. To get the
+        value back you just have to use the value() method.
+
+        You can recursively used Variant. For example, you can create a map of <string, Variant \*>
+        and in each Variant of the map set a list<Variant \*>. You can give a look to the
+        different constructors to see which types are supported by Variants.
+
+        The last constructor overload, which takes a void \* pointer as parameter allows
+        you to use customs data type in Variant.
+"
+
+%feature("docstring") Variant::convert
+"
+        convert(self, uint8_t itype, void res) -> bool
+
+        This method is used to convert the value of the variant from one type to an other.
+        
+        Params :
+                * itype : the Id of the type into which you want to convert the value.
+                * res : the buffer in which you want to store the result.
+"
+
+%feature("docstring") Variant::value
+"
+        Return : the value of the Variant.
+"
+
+%feature("docstring") Variant::toString
+"
+        toString(self) -> string
+
+        Convert the variant value to a string
+
+        Return : a string containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toUInt16
+"
+        toUInt16(self) -> uint16_t
+
+        Convert the variant value to an unsigned integer 16 bits big.
+
+        Return : an uint16_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toInt16
+"
+        toInt16(self) -> int16_t
+
+        Convert the variant value to an integer 16 bits big
+
+        Return : a int16_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toUInt32
+"
+        toUInt32(self) -> uint32_t
+
+        Convert the variant value to an unsigned integer 32 bits big
+        Return : an uint32_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toInt32
+"
+        toInt32(self) -> int32_t
+
+        Convert the variant value to an integer 32 bits big.
+        Return : an int32_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toUInt64
+"
+        toUInt64(self) -> uint64_t
+
+        Convert the variant value to an unsigned integer 64 bits big.
+        Return : an uint64_t  containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toInt64
+"
+        toInt64(self) -> int64_t
+
+        Convert the variant value to an integer 64 bits big.
+
+        Return : an int64_t containing the result of the conversion.
+"
+
+%feature("docstring") Variant::toBool
+"
+        toBool(self) -> bool
+
+        Convert the variant value to a boolean
+
+        Return : a boolean containing the result of the conversion.
+"
+
+%feature("docstring") Variant::type
+"
+        type(self) -> uint8_t
+
+        Return the type of the value stored in the variant.
+"
+
+%feature("docstring") typeId
+"
+    This class is a singleton used to define the type identifier of the value of a Variant.
+"
+
+%feature("docstring") typeId::Get
+"
+        This method returns a pointer to the instance of THE object typeId. If it
+        is called for the first time, it creates the instance before returning it.
+
+        Return : a pointer to the typeId instance.
+"
+
+%feature("docstring") typeId::getType
+"
+        This method returns the ID of a type accoroding to its name. This is not the
+        \"real\" typeid as defined in <typeinfo> header from the stl, but a typeid
+        defined in th unum Type of the typeId class.
+        
+        Params :
+                * args : the name of the type you want the ID
+
+        Return : the ID of the type passed in parameter.
+"
+
+%feature("docstring") VList
+"
+    A list a Variant. Their use and behaviour is the same as the the std::list from the STL.
+    Most of the code used in this class is generated by SWIG, who \"knows\" the
+    implementation of the std::list from the STL.
+
+    Vlists can be seen as a particular non-templated type of list where the element
+    is necessarly of Variant type.
+
+    They can be instanciated and used as in the following example (the type used for the
+    variant is std::string, but it could be aby types supported by the Variant):
+
+    
+        Variant \* ex = new Variant(\"an example string\")\;
+
+        VList   a_list(ex)\;
+
+        a_list.push_back(new Variant(\"42\"))\; // add a new variant to the list.
+
+        a_list.pop(); // remove the fisrt element of the list
+        a_list.clear(); // empty the list
+
+    You also can use iterators to browse elements of the VList.
+
+    We recommend that you refer to the STL documentation of std::list for a better
+    understanding of how to use the VList container.
+"
+
+%feature("doxstring") VMap
+"
+    A map of string and Variant. 
+
+    This is an associative container where the key is the string and the value
+    a variant.
+
+    Their use and behaviour is the same as the the std::map from the STL.
+    Most of the code used in this class is generated by SWIG, who \"knows\" the
+    implementation of the std::map from the STL.
+
+    VMaps can be seen as a particular non-templated type of map where elements
+    are necessarly a pair of string and Variant.
+
+    They can be instanciated and used as in the following example (the type used for the
+    variant is std::string, but it could be aby types supported by the Variant):
+
+    
+        Variant \* ex = new Variant(\"an example string\")\;
+
+        VList   a_map(\"key1\", ex)\;
+
+        a_map.[\"key2\"] = new Variant(\"42\")\; // add a new variant to the list.
+
+        a_map.clear()\; // empty the map.
+
+    You also can use iterators to browse elements in a VMap.
+
+    We recommend that you refer to the STL documentation of std::map for a better
+    understanding of how to use the VMap container.
+"
+
+%pythoncode
+%{
+  Variant.__origininit__ = Variant.__init__
+  Variant.__init__ = Variant.__proxyinit__
+  Variant.funcMapper = {typeId.Char: "_Variant__Char",
+                          typeId.Int16: "_Variant__Int16",
+                          typeId.UInt16: "_Variant__UInt16",
+                          typeId.Int32: "_Variant__Int32",
+                          typeId.UInt32: "_Variant__UInt32",
+                          typeId.Int64: "_Variant__Int64",
+                          typeId.UInt64: "_Variant__UInt64",
+                          typeId.String: "_Variant__String",
+                          typeId.CArray: "_Variant__CArray",
+			  typeId.Node: "_Variant__Node",
+			  typeId.Path: "_Variant__Path",
+                          typeId.VTime: "_Variant__VTime",
+		          typeId.List: "_Variant__VList",
+  		          typeId.Map: "_Variant__VMap"}
+
+%}
+
+%template(__Char) Variant::value<char>;
+%template(__Int16) Variant::value<int16_t>;
+%template(__UInt16) Variant::value<uint16_t>;
+%template(__Int32) Variant::value<int32_t>;
+%template(__UInt32) Variant::value<uint32_t>;
+%template(__Int64) Variant::value<int64_t>;
+%template(__UInt64) Variant::value<uint64_t>;
+%template(__CArray) Variant::value<char *>;
+%template(__Node) Variant::value<Node*>;
+%template(__Path) Variant::value<Path*>;
+%template(__VTime) Variant::value<vtime*>;
+
+%template(__String) Variant::value<std::string>;
+%template(VList) std::list<Variant*>;
+%template(VMap) std::map<std::string, Variant*>;
+%template(__VList) Variant::value< std::list<Variant *> >;
+%template(__VMap) Variant::value< std::map<std::string, Variant *> >;
+
+
+
+%extend Config
+{
+
+	PyObject*	add_const(PyObject* name, PyObject* val)
+	{
+		PyObject *resultobj = 0;
+		if (!PyString_Check(name))
+		{
+                  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+		  PyErr_SetString(PyExc_TypeError, "Config::add_const first argument must be a string");
+		  SWIG_PYTHON_THREAD_END_BLOCK;
+		  return NULL;
+		}
+		else
+		{
+		  std::map<std::string, Parameter* > params;
+		  Parameter* param;
+		  std::map<std::string, Parameter* >::iterator it ;
+                  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+		  SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+		  params = self->parameters();
+		  SWIG_PYTHON_THREAD_END_ALLOW;
+		  SWIG_PYTHON_THREAD_END_BLOCK;
+		  std::string sname(PyString_AsString(name));
+		  it = params.find(sname);
+		  if (it != params.end())
+		  {
+		      param = (*it).second;
+		      Variant* vval;
+		      //if (validateDefault(val, param->type()))
+		      if ((vval = pyObjectToVariant(val, param->type())) != NULL)
+		      {
+			 param->addDefault(vval);
+			 resultobj = SWIG_Py_Void();
+		         return resultobj;
+		      }
+		      else
+		        return NULL;
+		  }
+		  else
+		  {
+		     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+		     PyErr_SetString(PyExc_KeyError, "Config::__parameters map<std::string, Parameters * > requested name not found");
+		     SWIG_PYTHON_THREAD_END_BLOCK;
+		     return NULL;
+		  }
+		  resultobj = SWIG_Py_Void();
+		  return resultobj;
+		}
+	}
+}
+
+%extend Variant
+{
+  %pythoncode
+  %{
+    def __proxyinit__(self, *args):
+        if len(args) == 1:
+           if type(args[0]) in [type(VList), type(VMap)]:
+              args[0].thisown = False
+        self.__origininit__(*args)
+
+    def __repr__(self):
+        #if self.type() in [typeId.Char, typeId.CArray, typeId.String]:
+           #buff = "'" + str(self.value()) + "'"
+        #else:
+        buff = str(self.value())
+        return buff
+
+    def value(self):
+        valType = self.type()
+        if valType in self.funcMapper.keys():
+            func = getattr(self, self.funcMapper[valType])
+            if func != None:
+                return func()
+            else:
+                return None
+        else:
+            return None
+  %}
+};
+
+%pythoncode
+%{
+########################################################
+# Following method provides overload for VMap and VList#
+########################################################
+VariantType = str(type(Variant()))[8:-2]
+VListType = str(type(VList()))[8:-2]
+VMapType = str(type(VMap()))[8:-2]
+
+baseManagedTypes = [types.BooleanType, types.IntType, types.LongType,
+                    types.StringType, types.FloatType]
+
+def create_container_from_item(item):
+    if str(type(item)).find(VariantType) != -1 or str(type(item)).find(VListType) != -1 or str(type(item)).find(VMapType) != -1:
+        item.thisown = False
+        return item
+    elif type(item) == types.ListType:
+        vl = VList()
+        vl.thisown = False
+        for i in item:
+            container = create_container_from_item(i)
+            container.thisown = False
+            vl.append(container)
+        return vl
+    elif type(item) == types.DictType:
+        vm = VMap()
+        vm.thisown = False
+        for key, val in item.iteritems():
+            strkey = str(key)
+            container = create_container_from_item(val)
+            container.thisown = False
+            VMap[strkey] = container
+        return vm
+    elif type(item) in baseManagedTypes:
+        vitem = Variant(item)
+        vitem.thisown = False
+        return vitem
+    else:
+        TypeError("Management of type " + str(type(item)) + " is not implemented")
+
+
+def create_variant_from_item(item):
+    try:
+        if str(type(item)).find(VariantType) != -1:
+            return item
+        else:
+            vitem = create_container_from_item(item)
+            if str(type(vitem)).find(VListType) != -1 or str(type(vitem)).find(VMapType) != -1:
+                vvitem = Variant(vitem)
+                vvitem.thisown = False
+                return vvitem
+            else:
+                return vitem
+    except(TypeError):
+        traceback.print_exc()
+        return None
+
+
+# Wrapping methods for VList
+def __vlist_proxyinit__(self, *args):
+    self.__originit__()
+    if len(args) >= 1:
+        for arg in args:
+            self.append(arg)
+
+VList.__originit__ = VList.__init__
+VList.__init__ = __vlist_proxyinit__
+
+
+def vlist_append_proxy(self, item):
+    vitem = create_variant_from_item(item)
+    if vitem != None:
+        self.__origappend__(vitem)
+
+VList.__origappend__ = VList.append
+VList.append = vlist_append_proxy
+
+
+def vlist_setitem_proxy(self, *args):
+    witem = create_variant_from_item(args[1])
+    self.__orig_setitem__(args[0], witem)
+    
+VList.__orig_setitem__ = VList.__setitem__
+VList.__setitem__ = vlist_setitem_proxy
+
+
+def __vlist_repr__(self):
+    buff = "["
+    lsize = self.size()
+    i = 0
+    for item in self.iterator():
+        i += 1
+        buff += repr(item)
+        if i < lsize:
+            buff += ", "
+    buff += "]"
+    return buff
+
+
+VList.__orig_repr__ = VList.__repr__
+VList.__repr__ = __vlist_repr__
+
+
+# Wrapping methods for VMap
+def __vmap_setitem_proxy__(self, *args):
+    witem = create_variant_from_item(args[1])
+    self.__orig_setitem__(args[0], witem)
+
+VMap.__orig_setitem__ = VMap.__setitem__
+VMap.__setitem__ =  __vmap_setitem_proxy__
+
+
+def __vmap_repr_proxy__(self):
+    buff = "{"
+    msize = self.size()
+    i = 0
+    for key, val in self.iteritems():
+        i += 1
+        buff += repr(key) + ": " + repr(val)
+        if i < msize:
+            buff += ", "
+    buff += "}"
+    return buff
+
+VMap.__orig_repr__ = VMap.__repr__
+VMap.__repr__ = __vmap_repr_proxy__
+%}
 
 %extend vtime
 {
@@ -55,10 +1071,12 @@ typedef unsigned long long dff_ui64;
 
 namespace std
 {
-  %template(MapString)    map<string, string>;
-  %template(MapVtime)     map<string,   vtime* >;
-  %template(MapInt)       map<string, unsigned int>;
+  %template(MapString)       map<string, string>;
+  %template(ParameterMap)    map<string, Parameter* >;
+  %template(MapVtime)        map<string, vtime* >;
+  %template(MapInt)          map<string, unsigned int>;
 };
-
+%traits_swigtype(Parameter);
+%fragment(SWIG_Traits_frag(Parameter));
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));
