@@ -19,93 +19,6 @@
 #include <iomanip>
 #include <sstream>
 
-FdManager::FdManager()
-{
-  this->fds.assign(16384, (fdinfo*)0);
-  this->allocated = 0;
-}
-
-FdManager::~FdManager()
-{
-}
-
-fdinfo*		FdManager::get(int32_t fd)
-{
-  fdinfo*	fi;
-
-  if (fd > this->fds.size())
-    throw(vfsError("fdmanager::get -> Provided fd is too high"));
-  else
-    {
-      fi = this->fds[fd];
-      if (fi != 0)
-	return fi;
-      else
-	throw(vfsError("fdmanager::get -> fd not allocated"));
-    }
-}
-
-int32_t	FdManager::push(fdinfo* fi)
-{
-  int32_t	i;
-  bool		empty;
-
-  empty = false;
-  if (this->allocated == this->fds.size())
-    throw(vfsError("fdmanager::push -> there is no room for new fd"));
-  else
-    {
-      i = 0;
-      while ((i < this->fds.size()) && !empty)
-	{
-	  if (this->fds[i] == 0)
-	    empty = true;
-	  else
-	    i++;
-	}
-      if (empty && i < this->fds.size())
-	{
-	  this->allocated++;
-	  this->fds[i] = fi;
-	  return i;
-	}
-      else
-	throw(vfsError("fdmanager::push -> new fd allocation failed"));
-    }
-}
-
-void		FdManager::remove(int32_t fd)
-{
-  fdinfo*	fi;
-  
-  if (fd > this->fds.size())
-    {
-      std::cout << "fdmanager::remove -> fd not allocated" << std::endl;
-      //throw(vfsError("fdmanager::remove -> fd not allocated"));
-    }
-  else
-    {
-      fi = this->fds[fd];
-      if (fi != 0)
-	{
-	  delete fi;
-	  this->fds[fd] = 0;
-	  this->allocated--;
-	}
-    }
-}
-
-fso::fso(std::string name)
-{
-  this->name = name;
-  this->res = new Results(this->name);
-  this->stateinfo = "";
-}
-
-fso::~fso()
-{
-}
-
 mfso::mfso(std::string name): fso(name)
 {
   this->__fdmanager = new FdManager();
@@ -116,6 +29,7 @@ mfso::~mfso()
 {
 }
 
+<<<<<<< HEAD
 std::list<Node *>	fso::updateQueue()
 {
   return this->__update_queue;
@@ -132,6 +46,8 @@ void	fso::registerTree(Node* parent, Node* head)
   //VFS::Get().notify(e);
 }
 
+=======
+>>>>>>> !!! STILL VERY EXPERIMENTAL BRANCH !!!
 VFile*		mfso::vfileFromNode(Node* n)
 {
   std::map<Node*, class VFile*>::iterator	it;

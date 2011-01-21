@@ -26,7 +26,7 @@ VFS::~VFS()
 {
 }
 
-void	VFS::Event(DEvent *e)
+void	VFS::Event(event *e)
 {
 }
 

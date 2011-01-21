@@ -14,15 +14,15 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#include "DEventHandler.hpp"
+#include "eventhandler.hpp"
 
-DEventHandler::DEventHandler()
+EventHandler::EventHandler()
 {
 }
 
-bool    DEventHandler::connection(class DEventHandler *obs)
+bool    EventHandler::connection(class EventHandler *obs)
 {
-  std::vector<class DEventHandler *>::iterator        it;
+  std::vector<class EventHandler *>::iterator        it;
 
   for (it = this->watchers.begin(); it != this->watchers.end(); it++)
     if (*it == obs)
@@ -34,9 +34,9 @@ bool    DEventHandler::connection(class DEventHandler *obs)
   return true;
 }
 
-bool    DEventHandler::deconnection(class DEventHandler *obs)
+bool    EventHandler::deconnection(class EventHandler *obs)
 {
-  std::vector<class DEventHandler *>::iterator        it;
+  std::vector<class EventHandler *>::iterator        it;
 
   for (it = this->watchers.begin(); it != this->watchers.end(), *it != obs; it++)
     ;
@@ -49,9 +49,9 @@ bool    DEventHandler::deconnection(class DEventHandler *obs)
     return false;
 }
 
-bool    DEventHandler::notify(DEvent *e)
+bool    EventHandler::notify(event *e)
 {
-  std::vector<class DEventHandler *>::iterator        it;
+  std::vector<class EventHandler *>::iterator        it;
 
   for (it = this->watchers.begin(); it != this->watchers.end(); it++)
     (*it)->Event(e);

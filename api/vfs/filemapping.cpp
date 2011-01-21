@@ -14,7 +14,11 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
+<<<<<<< HEAD
 #include "node.hpp"
+=======
+#include "filemapping.hpp"
+>>>>>>> !!! STILL VERY EXPERIMENTAL BRANCH !!!
 
 FileMapping::FileMapping()
 {
@@ -131,6 +135,10 @@ chunck*			FileMapping::chunckFromOffset(uint64_t offset)
 	}
     }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> !!! STILL VERY EXPERIMENTAL BRANCH !!!
 uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset, uint32_t providedidx)
 {
   uint32_t		begidx;
@@ -163,6 +171,10 @@ uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset, uint32_t providedidx)
     }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> !!! STILL VERY EXPERIMENTAL BRANCH !!!
 void		FileMapping::allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
   chunck	*c;

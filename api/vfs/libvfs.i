@@ -689,7 +689,6 @@ Open the node and return a pointer to a VFile instance
 #endif
 %include "windows.i"
 
-
 %feature("director") fso;
 %feature("director") mfso;
 %feature("director") Node;
@@ -750,25 +749,25 @@ Open the node and return a pointer to a VFile instance
 }
 
 %{
-  #include "DEventHandler.hpp"
-  #include "exceptions.hpp"
-  #include "export.hpp"
-  #include "vfs.hpp"
-  #include "node.hpp"
-  #include "mfso.hpp"
-  #include "vfile.hpp"
-  #include "variant.hpp"
+
+#include "eventhandler.hpp"
+#include "vfs.hpp"
+#include "exceptions.hpp"
+#include "export.hpp"
+#include "node.hpp"
+#include "fso.hpp"
+#include "mfso.hpp"
+#include "vfile.hpp"
+#include "variant.hpp"
 %}
 
-%include "../include/results.hpp"
-%include "../include/path.hpp"
-%include "../include/vtime.hpp"
+%import "../events/libevents.i"
 
-%include "../include/DEventHandler.hpp"
+%include "../include/vfs.hpp"
 %include "../include/export.hpp"
 %include "../include/exceptions.hpp"
-%include "../include/vfs.hpp"
 %include "../include/node.hpp"
+%include "../include/fso.hpp"
 %include "../include/mfso.hpp"
 %include "../include/vfile.hpp"
 

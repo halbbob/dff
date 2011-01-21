@@ -14,8 +14,8 @@
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __DEVENTHANDLER_HPP__
-#define __DEVENTHANDLER_HPP__
+#ifndef __EVENTHANDLER_HPP__
+#define __EVENTHANDLER_HPP__
 
 #ifndef WIN32
 #include <stdint.h>
@@ -23,34 +23,36 @@
 #include "wstdint.h"
 #endif
 #include "export.hpp"
+#include "variant.hpp"
 #include <iostream>
 #include <iomanip>
 #include <vector>
-enum event {OPEN = 0, CLOSE = 1, READ = 2, WRITE = 3, SEEK = 4, OTHER = 5};
 
-class	DEvent
+typedef struct	s_event
 {
-public:
-  EXPORT 	DEvent() {};
-  EXPORT 	DEvent(class Node* v) { value = v;};
- // EXPORT	DEvent(std::string t, class Node* v);
-//  EXPORT	std::string		stype;
-  EXPORT	Node*		value;
-  event		type;
-  uint64_t	seek;
-};
+  enum type
+    {
+      OPEN = 0,
+      CLOSE = 1,
+      READ = 2,
+      WRITE = 3,
+      SEEK = 4,
+      OTHER = 5
+    };
+  Variant*	value;
+}		event;
 
-class DEventHandler
+class EventHandler
 {
 private:
-  std::vector<class DEventHandler *>	watchers;
+  std::vector<class EventHandler *>	watchers;
 public:
-  EXPORT DEventHandler();
-  EXPORT virtual		~DEventHandler() {};
-  EXPORT virtual void		Event(DEvent *e) = 0;
-  EXPORT bool			connection(class DEventHandler *obs);
-  EXPORT bool			deconnection(class DEventHandler *obs);
-  EXPORT bool			notify(DEvent *e);
+  EXPORT EventHandler();
+  EXPORT virtual		~EventHandler() {};
+  EXPORT virtual void		Event(event *e) = 0;
+  EXPORT bool			connection(class EventHandler *obs);
+  EXPORT bool			deconnection(class EventHandler *obs);
+  EXPORT bool			notify(event *e);
 };
 
 #endif

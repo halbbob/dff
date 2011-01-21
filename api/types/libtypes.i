@@ -30,24 +30,36 @@
 %include "windows.i"
 %include "std_except.i"
 
+%import "../exceptions/libexceptions.i"
+
 %{
 #include <sys/stat.h>
 #include <datetime.h>
-#include "variant.hpp"
 #include "export.hpp"
+#include "exceptions.hpp"
+
+#include "variant.hpp"
+#include "argument.hpp"
+#include "config.hpp"
+#include "node.hpp"
 #include "path.hpp"
 #include "vtime.hpp"
 #include "Time.h"
-#include "config.hpp"
-#include "arguments.hpp"
-#include "results.hpp"
-//#include "node.hpp"
+  
 #ifndef WIN32
 #include <stdint.h>
 #else
 #include "wstdint.h"
 #endif
 %}
+
+//%include "../include/exceptions.hpp"
+%include "../include/variant.hpp"
+%include "../include/argument.hpp"
+%include "../include/export.hpp"
+%include "../include/config.hpp"
+%include "../include/Time.h"
+%include "../include/vtime.hpp"
 
 %inline %{
 
@@ -569,242 +581,10 @@ bool validateDefault (PyObject* val, uint8_t t)
 
 %pythoncode
 %{
-import types
-import traceback
-%}
+  import traceback
+  import types
 
-%include "../include/export.hpp"
-%include "../include/variant.hpp"
-%include "../include/path.hpp"
-%include "../include/vtime.hpp"
-%include "../include/Time.h"
-%include "../include/config.hpp"
-%include "../include/arguments.hpp"
-%include "../include/results.hpp"
-//%include "../include/node.hpp"
 
-%feature("docstring") Variant
-"
-    Variants are designed to be a generic template type which can be used to store
-    different type of data. This is useful for example while setting the extended
-    attributes of a node : these attributes can be strings, integers, lists, etc.
-
-    The type of the value is defined while creating the Variant object. To get the
-    value back you just have to use the value() method.
-"
-
-%feature("docstring") Variant::__init__
-"
-        __init__(self) -> Variant
-        __init__(self, string str) -> Variant
-        __init__(self, char carray) -> Variant
-        __init__(self, char c) -> Variant
-        __init__(self, uint16_t us) -> Variant
-        __init__(self, int16_t s) -> Variant
-        __init__(self, uint32_t ui) -> Variant
-        __init__(self, int32_t i) -> Variant
-        __init__(self, int64_t ull) -> Variant
-        __init__(self, uint64_t ll) -> Variant
-        __init__(self, vtime vt) -> Variant
-        __init__(self, Node node) -> Variant
-        __init__(self, VList l) -> Variant
-        __init__(self, VMap m) -> Variant
-        __init__(self, void user) -> Variant
-
-        Variants are designed to be a generic template type which can be used to store
-        different type of data. This is useful for example while setting the extended
-        attributes of a node : these attributes can be strings, integers, lists, etc.
-
-        The type of the value is defined while creating the Variant object. To get the
-        value back you just have to use the value() method.
-
-        You can recursively used Variant. For example, you can create a map of <string, Variant \*>
-        and in each Variant of the map set a list<Variant \*>. You can give a look to the
-        different constructors to see which types are supported by Variants.
-
-        The last constructor overload, which takes a void \* pointer as parameter allows
-        you to use customs data type in Variant.
-"
-
-%feature("docstring") Variant::convert
-"
-        convert(self, uint8_t itype, void res) -> bool
-
-        This method is used to convert the value of the variant from one type to an other.
-        
-        Params :
-                * itype : the Id of the type into which you want to convert the value.
-                * res : the buffer in which you want to store the result.
-"
-
-%feature("docstring") Variant::value
-"
-        Return : the value of the Variant.
-"
-
-%feature("docstring") Variant::toString
-"
-        toString(self) -> string
-
-        Convert the variant value to a string
-
-        Return : a string containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toUInt16
-"
-        toUInt16(self) -> uint16_t
-
-        Convert the variant value to an unsigned integer 16 bits big.
-
-        Return : an uint16_t containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toInt16
-"
-        toInt16(self) -> int16_t
-
-        Convert the variant value to an integer 16 bits big
-
-        Return : a int16_t containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toUInt32
-"
-        toUInt32(self) -> uint32_t
-
-        Convert the variant value to an unsigned integer 32 bits big
-        Return : an uint32_t containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toInt32
-"
-        toInt32(self) -> int32_t
-
-        Convert the variant value to an integer 32 bits big.
-        Return : an int32_t containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toUInt64
-"
-        toUInt64(self) -> uint64_t
-
-        Convert the variant value to an unsigned integer 64 bits big.
-        Return : an uint64_t  containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toInt64
-"
-        toInt64(self) -> int64_t
-
-        Convert the variant value to an integer 64 bits big.
-
-        Return : an int64_t containing the result of the conversion.
-"
-
-%feature("docstring") Variant::toBool
-"
-        toBool(self) -> bool
-
-        Convert the variant value to a boolean
-
-        Return : a boolean containing the result of the conversion.
-"
-
-%feature("docstring") Variant::type
-"
-        type(self) -> uint8_t
-
-        Return the type of the value stored in the variant.
-"
-
-%feature("docstring") typeId
-"
-    This class is a singleton used to define the type identifier of the value of a Variant.
-"
-
-%feature("docstring") typeId::Get
-"
-        This method returns a pointer to the instance of THE object typeId. If it
-        is called for the first time, it creates the instance before returning it.
-
-        Return : a pointer to the typeId instance.
-"
-
-%feature("docstring") typeId::getType
-"
-        This method returns the ID of a type accoroding to its name. This is not the
-        \"real\" typeid as defined in <typeinfo> header from the stl, but a typeid
-        defined in th unum Type of the typeId class.
-        
-        Params :
-                * args : the name of the type you want the ID
-
-        Return : the ID of the type passed in parameter.
-"
-
-%feature("docstring") VList
-"
-    A list a Variant. Their use and behaviour is the same as the the std::list from the STL.
-    Most of the code used in this class is generated by SWIG, who \"knows\" the
-    implementation of the std::list from the STL.
-
-    Vlists can be seen as a particular non-templated type of list where the element
-    is necessarly of Variant type.
-
-    They can be instanciated and used as in the following example (the type used for the
-    variant is std::string, but it could be aby types supported by the Variant):
-
-    
-        Variant \* ex = new Variant(\"an example string\")\;
-
-        VList   a_list(ex)\;
-
-        a_list.push_back(new Variant(\"42\"))\; // add a new variant to the list.
-
-        a_list.pop(); // remove the fisrt element of the list
-        a_list.clear(); // empty the list
-
-    You also can use iterators to browse elements of the VList.
-
-    We recommend that you refer to the STL documentation of std::list for a better
-    understanding of how to use the VList container.
-"
-
-%feature("doxstring") VMap
-"
-    A map of string and Variant. 
-
-    This is an associative container where the key is the string and the value
-    a variant.
-
-    Their use and behaviour is the same as the the std::map from the STL.
-    Most of the code used in this class is generated by SWIG, who \"knows\" the
-    implementation of the std::map from the STL.
-
-    VMaps can be seen as a particular non-templated type of map where elements
-    are necessarly a pair of string and Variant.
-
-    They can be instanciated and used as in the following example (the type used for the
-    variant is std::string, but it could be aby types supported by the Variant):
-
-    
-        Variant \* ex = new Variant(\"an example string\")\;
-
-        VList   a_map(\"key1\", ex)\;
-
-        a_map.[\"key2\"] = new Variant(\"42\")\; // add a new variant to the list.
-
-        a_map.clear()\; // empty the map.
-
-    You also can use iterators to browse elements in a VMap.
-
-    We recommend that you refer to the STL documentation of std::map for a better
-    understanding of how to use the VMap container.
-"
-
-%pythoncode
-%{
   Variant.__origininit__ = Variant.__init__
   Variant.__init__ = Variant.__proxyinit__
   Variant.funcMapper = {typeId.Char: "_Variant__Char",
@@ -844,60 +624,93 @@ import traceback
 
 
 
-%extend Config
+%extend Argument
 {
 
-	PyObject*	add_const(PyObject* name, PyObject* val)
-	{
-		PyObject *resultobj = 0;
-		if (!PyString_Check(name))
-		{
-                  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-		  PyErr_SetString(PyExc_TypeError, "Config::add_const first argument must be a string");
-		  SWIG_PYTHON_THREAD_END_BLOCK;
-		  return NULL;
-		}
-		else
-		{
-		  std::map<std::string, Parameter* > params;
-		  Parameter* param;
-		  std::map<std::string, Parameter* >::iterator it ;
-                  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-		  SWIG_PYTHON_THREAD_BEGIN_ALLOW;
-		  params = self->parameters();
-		  SWIG_PYTHON_THREAD_END_ALLOW;
-		  SWIG_PYTHON_THREAD_END_BLOCK;
-		  std::string sname(PyString_AsString(name));
-		  it = params.find(sname);
-		  if (it != params.end())
-		  {
-		      param = (*it).second;
-		      Variant* vval;
-		      //if (validateDefault(val, param->type()))
-		      if ((vval = pyObjectToVariant(val, param->type())) != NULL)
-		      {
-			 param->addDefault(vval);
-			 resultobj = SWIG_Py_Void();
-		         return resultobj;
-		      }
-		      else
-		        return NULL;
-		  }
-		  else
-		  {
-		     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-		     PyErr_SetString(PyExc_KeyError, "Config::__parameters map<std::string, Parameters * > requested name not found");
-		     SWIG_PYTHON_THREAD_END_BLOCK;
-		     return NULL;
-		  }
-		  resultobj = SWIG_Py_Void();
-		  return resultobj;
-		}
-	}
+  /* PyObject*	addPredefinedParameters(PyObject* val) */
+  /* { */
+  /*   PyObject*	resultobj = 0; */
+  /*   Variant*	params; */
+  /*   uint8_t	type; */
+
+  /*   SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+  /*   SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
+  /*   type = self->type(); */
+  /*   SWIG_PYTHON_THREAD_END_ALLOW; */
+  /*   SWIG_PYTHON_THREAD_END_BLOCK; */
+  /*   params = pyObjectToVariant(val, type); */
+  /*   if (params != NULL) */
+  /*     { */
+  /* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+  /* 	SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
+  /* 	self->addPredefinedParameters(params); */
+  /* 	SWIG_PYTHON_THREAD_END_ALLOW; */
+  /* 	SWIG_PYTHON_THREAD_END_BLOCK; */
+  /* 	resultobj = SWIG_Py_Void(); */
+  /* 	return resultobj; */
+  /*     } */
+  /*   else */
+  /*     { */
+  /* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+  /* 	PyErr_SetString(PyExc_ValueError, "Argument::setPredefinedParameters(), provided value is not compatbile with the type of argument\n"); */
+  /* 	SWIG_PYTHON_THREAD_END_BLOCK; */
+  /* 	return NULL; */
+  /*     } */
+  /*   /\* if (!PyString_Check(val)) *\/ */
+  /*   /\*   { *\/ */
+  /*   /\* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; *\/ */
+  /*   /\* 	PyErr_SetString(PyExc_TypeError, "Config::add_const first argument must be a string"); *\/ */
+  /*   /\* 	SWIG_PYTHON_THREAD_END_BLOCK; *\/ */
+  /*   /\* 	return NULL; *\/ */
+  /*   /\*   } *\/ */
+  /*   /\* else *\/ */
+  /*   /\*   { *\/ */
+    
+  /* 	//SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+  /* 	//SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
+  /* 	//params = self->parameters(); */
+  /* 	//SWIG_PYTHON_THREAD_END_ALLOW; */
+  /* 	//SWIG_PYTHON_THREAD_END_BLOCK; */
+  /* 	//if (it != params.end()) */
+  /* 	//  { */
+  /* 	//    param = (*it).second; */
+  /* 	//    Variant* vval; */
+  /* 	    //if (validateDefault(val, param->type())) */
+  /* 	//    if ((vval = pyObjectToVariant(val, param->type())) != NULL) */
+  /* 	//     { */
+  /* 	//		param->addDefault(vval); */
+  /* 	//		resultobj = SWIG_Py_Void(); */
+  /* 	//		return resultobj; */
+  /* 	//	      } */
+  /* 	//	    else */
+  /* 	//	      return NULL; */
+  /* 	//  } */
+  /* 	/\* else *\/ */
+  /* 	/\*   { *\/ */
+  /* 	/\*     SWIG_PYTHON_THREAD_BEGIN_BLOCK; *\/ */
+  /* 	/\*     PyErr_SetString(PyExc_KeyError, "Config::__parameters map<std::string, Parameters * > requested name not found"); *\/ */
+  /* 	/\*     SWIG_PYTHON_THREAD_END_BLOCK; *\/ */
+  /* 	/\*     return NULL; *\/ */
+  /* 	/\*   } *\/ */
+  /* 	/\* resultobj = SWIG_Py_Void(); *\/ */
+  /* 	/\* return resultobj; *\/ */
+  /*   // } */
+  /* } */
+
+  PyObject*			activateParameters(PyObject* param)
+  {
+  }
+
+  PyObject*			deactivateParameter(PyObject* param)
+  {
+  }
 }
 
 %extend Variant
 {
+  Variant(PyObject*)
+    {
+    }
   %pythoncode
   %{
     def __proxyinit__(self, *args):
@@ -1072,11 +885,11 @@ VMap.__repr__ = __vmap_repr_proxy__
 namespace std
 {
   %template(MapString)       map<string, string>;
-  %template(ParameterMap)    map<string, Parameter* >;
+  //%template(ParameterMap)    map<string, Parameter* >;
   %template(MapVtime)        map<string, vtime* >;
   %template(MapInt)          map<string, unsigned int>;
 };
-%traits_swigtype(Parameter);
-%fragment(SWIG_Traits_frag(Parameter));
+//%traits_swigtype(Parameter);
+//%fragment(SWIG_Traits_frag(Parameter));
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));

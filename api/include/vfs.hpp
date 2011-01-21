@@ -22,11 +22,15 @@
 #ifndef __VFS_HH__
 #define __VFS_HH__
 
-#include "vfile.hpp"
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
+
+#include "eventhandler.hpp"
 #include "export.hpp"
 #include "exceptions.hpp"
-#include "node.hpp"
-#include "DEventHandler.hpp"
 #include "node.hpp"
 
 #include <vector>
@@ -34,7 +38,7 @@
 #include <list>
 #include <set>
 
-class VFS: public DEventHandler
+class VFS: public EventHandler
 {  
 private:
   EXPORT 	        VFS();
@@ -53,7 +57,7 @@ public:
     return single; 
   }
 
-  EXPORT virtual void	Event(DEvent *e);
+  EXPORT virtual void	Event(event *e);
   EXPORT set<Node*>*    GetTree(void);
   EXPORT void 	        cd(Node *);
   EXPORT Node* 	        GetCWD(void);

@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http: www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -15,60 +15,7 @@
  *  Frederic B. <fba@digital-forensic.org>
  */
 
-#include  "config.hpp"
-
-
-Parameter::Parameter(std::string name, uint8_t type, bool optional, std::string description)
-{
-  this->__name = name;
-  this->__type = type;
-  this->__optional = optional;
-  this->__description = description;
-}
-
-Parameter::~Parameter()
-{
-  //  if (this->__defaults != NULL)
-  //  delete this->__defaults;
-}
-
-std::string	Parameter::name()
-{
-  return this->__name;
-}
-
-uint8_t			Parameter::type()
-{
-  return this->__type;
-}
-
-bool			Parameter::isOptional()
-{
-  return this->__optional;
-}
-
-bool			Parameter::isMandatory()
-{
-  return !this->__optional;
-}
-
-std::string		Parameter::description()
-{
-  return this->__description;
-}
-
-void			Parameter::addDefault(Variant* val, )
-
-void			Parameter::addDefault(Variant* val)
-{
-  this->__defaults.push_back(val);
-}
-
-std::list<Variant* >	Parameter::defaults()
-{
-  return this->__defaults;
-}
-
+#include "config.hpp"
 
 Config::Config(std::string origin, std::string description)
 {
@@ -80,22 +27,18 @@ Config::~Config()
 {
 }
 
-void			Config::add(std::string name, uint8_t type, bool optional, std::string description)
-{
-  Parameter*		param;
+// void			Config::add(std::string name, uint8_t type, bool optional, std::string description)
+// {
+//   Argument*		param;
 
-  if (this->__parameters.find(name) == this->__parameters.end())
-    {
-      param = new Parameter(type, optional, description);
-      this->__parameters.insert(std::pair<std::string, Parameter* >(name, param));
-    }
-  else
-    std::cout << "param already present" << std::endl;
-}
-
-void			Config::add_const(std::string param, Variant* val)
-{
-}
+//   if (this->__parameters.find(name) == this->__parameters.end())
+//     {
+//       param = new Argument(type, optional, description);
+//       this->__parameters.insert(std::pair<std::string, Argument* >(name, param));
+//     }
+//   else
+//     std::cout << "param already present" << std::endl;
+// }
 
 std::string		Config::origin()
 {
@@ -107,10 +50,17 @@ std::string		Config::description()
   return this->__description;
 }
 
-std::map<std::string, Parameter* >	Config::parameters()
+Argument*		Config::addArgument(std::string name, uint16_t type, std::string description)
 {
-  return this->__parameters;
+  
 }
+
+
+
+// std::map<std::string, Argument* >	Config::parameters()
+// {
+//   return this->__parameters;
+// }
 
 
 // bool		Config::isContainerCompatible(std::map<std::string, Variant*> vmap)

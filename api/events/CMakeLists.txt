@@ -23,24 +23,24 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
 
-
-add_definitions(-D__STDC_LIMIT_MACROS)
-SET_SOURCE_FILES_PROPERTIES(libtypes.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(libtypes python libtypes.i argument.cpp config.cpp path.cpp vtime.cpp Time.cpp variant.cpp)
-SWIG_LINK_LIBRARIES(libtypes ${PYTHON_LIBRARIES})
+SET_SOURCE_FILES_PROPERTIES(libevents.i PROPERTIES CPLUSPLUS ON)
+if (HAVE_64_BIT)
+   SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -D64_BITS)
+endif (HAVE_64_BIT)
+SWIG_ADD_MODULE(libevents python libevents.i eventhandler.cpp)
+SWIG_LINK_LIBRARIES(libevents ${PYTHON_LIBRARIES} _libtypes)
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
-set_target_properties (${SWIG_MODULE_libtypes_REAL_NAME} PROPERTIES
+set_target_properties (${SWIG_MODULE_libevents_REAL_NAME} PROPERTIES
   PREFIX "../"
   SUFFIX ".pyd"
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
-set(type_srcs
+set(events_srcs
   __init__.py
-  libtypes.py
-  OS.py
+  libevents.py
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 
-install_file(type ${type_srcs})
-install_lib(${SWIG_MODULE_libtypes_REAL_NAME})
+install_lib(${SWIG_MODULE_libevents_REAL_NAME})
+install_file(events ${events_srcs})

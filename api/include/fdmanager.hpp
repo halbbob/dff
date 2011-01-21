@@ -11,34 +11,44 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
  *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
+#ifndef __FDMANAGER_HPP__
+#define __FDMANAGER_HPP__
 
-#ifndef __ARGUMENTS_HPP__
-#define __ARGUMENTS_HPP__
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
 
-#include <string>
-#include <list>
-#include <map>
-//#include "env.hpp"
 #include "export.hpp"
-#include "variant.hpp"
+#include "exceptions.hpp"
+#include "filemapping.hpp"
 
-class Arguments
+#include <vector>
+#include <iostream>
+
+typedef struct
+{
+  class FileMapping*		fm;
+  Node*				node;
+  uint64_t			id;
+  uint64_t			offset;
+}				fdinfo;
+
+class FdManager
 {
 private:
-  std::string				__origin;
-  std::map<std::string, Variant*>	__arguments;
+  uint32_t		allocated;
+  std::vector<fdinfo*>	fds;
 public:
-  EXPORT Arguments(std::string origin);
-  EXPORT ~Arguments();
-  EXPORT bool					add(std::string name, Variant* value);
-  EXPORT Variant*				valueFromKey(std::string name);
-  EXPORT std::map<std::string, Variant*>	items();
-  EXPORT std::list<std::string>			keys();
-  EXPORT std::list<Variant*>			values();
+  EXPORT FdManager();
+  EXPORT ~FdManager();
+  EXPORT fdinfo*	get(int32_t fd);
+  EXPORT void		remove(int32_t fd);
+  EXPORT int32_t	push(fdinfo* fi);
 };
 
 #endif
