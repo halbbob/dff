@@ -17,13 +17,13 @@
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
-#include "mfso.hpp"
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
 #include <iostream>
 #include <sys/types.h>
+#include "fso.hpp"
 #include "export.hpp"
 #include "filemapping.hpp"
 #include "vfile.hpp"

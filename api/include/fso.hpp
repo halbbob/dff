@@ -18,12 +18,12 @@
 #define __FSO_HPP__
 
 #ifndef WIN32
-#include <stdint.h>
+  #include <stdint.h>
 #else
-#include "wstdint.h"
+  #include "wstdint.h"
 #endif
-#include <string.h>
 
+#include <string.h>
 #include <iostream>
 #include <stdio.h>
 #include <list>
@@ -33,12 +33,11 @@
 #include "variant.hpp"
 #include "vfs.hpp"
 #include "node.hpp"
-#include "vfile.hpp"
 
 class fso
 {
 private:
-  std::list<Node *>		__update_queue;
+  std::list<class Node *>	__update_queue;
 public:
   //Results*			res;
   std::string			stateinfo;

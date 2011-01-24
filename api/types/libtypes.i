@@ -41,7 +41,6 @@
 #include "variant.hpp"
 #include "argument.hpp"
 #include "config.hpp"
-#include "node.hpp"
 #include "path.hpp"
 #include "vtime.hpp"
 #include "Time.h"
@@ -53,7 +52,6 @@
 #endif
 %}
 
-//%include "../include/exceptions.hpp"
 %include "../include/variant.hpp"
 %include "../include/argument.hpp"
 %include "../include/export.hpp"
@@ -526,7 +524,7 @@ bool isTypeCompatible(PyObject* val, uint8_t t)
         return checkStringOverflow(val, t);
     if (t == typeId::Node)
        {
-	  return false;
+    	  return false;
        }
     if (t == typeId::Path)
       {

@@ -19,7 +19,7 @@
 fso::fso(std::string name)
 {
   this->name = name;
-  this->res = new Results(this->name);
+  //this->res = new Results(this->name);
   this->stateinfo = "";
 }
 
@@ -34,7 +34,7 @@ std::list<Node *>	fso::updateQueue()
 
 void	fso::registerTree(Node* parent, Node* head)
 {
-  DEvent*  e = new DEvent;
+  event*  e = new event;
 
   parent->addChild(head);
   VFS::Get().notify(e);

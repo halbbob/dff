@@ -26,12 +26,8 @@
 #include <list>
 #include <map>
 #include <typeinfo>
-//#include "node.hpp"
-//#include "path.hpp"
-#include "vtime.hpp"
 
-class Path;
-class Node;
+#include "vtime.hpp"
 
 class typeId
 {
@@ -248,18 +244,18 @@ public:
 	}
       case uint8_t(typeId::Node):
       {
-	  class Node **n = static_cast<Node**>(res);
+      	  class Node **n = static_cast<class Node**>(res);
           switch (this->_type)
-	    {
-	    case typeId::Node:
-	      {
-		*n = (Node*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
+      	    {
+      	    case typeId::Node:
+      	      {
+      		*n = (class Node*)this->__data.ptr;
+      		return true;
+      	      }
+      	    default:
+      	      return false;
+      	    }
+      	}
       case uint8_t(typeId::Path):
       {
 	  class Path **p = static_cast<Path**>(res);

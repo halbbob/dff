@@ -18,9 +18,9 @@
 #define __MFSO_HPP__
 
 #ifndef WIN32
-#include <stdint.h>
+  #include <stdint.h>
 #else
-#include "wstdint.h"
+  #include "wstdint.h"
 #endif
 
 #include <iostream>
@@ -28,13 +28,10 @@
 #include <list>
 #include <map>
 #include <vector>
-
-#include "variant.hpp"
-#include "fdmanager.hpp"
-#include "fso.hpp"
-#include "vfs.hpp"
 #include <string.h>
-#include "node.hpp"
+
+#include "fso.hpp"
+#include "fdmanager.hpp"
 #include "vfile.hpp"
 
 class mfso: public fso

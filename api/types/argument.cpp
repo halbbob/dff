@@ -17,10 +17,10 @@
 
 #include "argument.hpp"
 
-Argument::Argument(std::string name, uint16_t type, std::string description)
+Argument::Argument(std::string name, uint16_t flags, std::string description)
 {
   this->__name = name;
-  this->__type = type;
+  this->__flags = flags;
   this->__description = description;
 }
 
@@ -39,14 +39,14 @@ std::string			Argument::name()
 }
 
 
-void				Argument::setType(uint16_t type)
+void				Argument::setFlags(uint16_t flags)
 {
-  this->__type = type;
+  this->__flags = flags;
 }
 
-uint16_t			Argument::type()
+uint16_t			Argument::flags()
 {
-  return (this->__type & TYPEMASK);
+  return this->__flags;
 }
 
 
@@ -70,6 +70,46 @@ bool				Argument::isEnabled()
   return this->__enabled;
 }
 
+void				Argument::setType(uint16_t type)
+{
+  this->__flags = (this->__flags&0xFF00)|(type&0x00FF);
+}
+
+uint16_t			Argument::type()
+{
+  return (this->__flags & TYPEMASK);
+}
+
+void				Argument::setInputType(uint16_t itype)
+{
+  this->__flags = (this->__flags&0xFCFF)|(itype&0x0300);
+}
+
+uint16_t			Argument::inputType()
+{
+  return (this->__flags & 0x0300);
+}
+
+
+void				Argument::setParametersType(uint16_t ptype)
+{
+  this->__flags = (this->__flags&0x0FFF)|(ptype&0xF000);
+}
+
+uint16_t			Argument::parametersType()
+{
+  return (this->__flags & 0xF000);
+}
+
+void				Argument::setNeedType(uint16_t ntype)
+{
+  this->__flags = (this->__flags&0xF3FF)|(ntype&0x0C00);
+}
+
+uint16_t			Argument::needType()
+{
+  return (this->__flags & 0x0c00);
+}
 
 
 // void				Argument::addPredefinedParameters(Variant* param)
@@ -104,19 +144,6 @@ bool				Argument::isEnabled()
 // {
 // }
 
-
-uint16_t			Argument::inputType()
-{
-  
-}
-
-uint16_t			Argument::parametersType()
-{
-}
-
-uint16_t			Argument::needType()
-{
-}
 
 // bool			Argument::isOptional()
 // {

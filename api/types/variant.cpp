@@ -114,7 +114,7 @@ Variant::Variant(vtime *vt)
   this->_type = typeId::VTime;
 }
 
-Variant::Variant(Node *node)
+Variant::Variant(class Node *node)
 {
   this->__data.ptr = node;
   this->_type = typeId::Node;

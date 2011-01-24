@@ -19,13 +19,13 @@
 // The Virtual File System (VFS) is a central point of the framework.
 // It permits to register nodes and browse them.
 
-#ifndef __VFS_HH__
-#define __VFS_HH__
+#ifndef __VFS_HPP__
+#define __VFS_HPP__
 
 #ifndef WIN32
-#include <stdint.h>
+  #include <stdint.h>
 #else
-#include "wstdint.h"
+  #include "wstdint.h"
 #endif
 
 #include "eventhandler.hpp"

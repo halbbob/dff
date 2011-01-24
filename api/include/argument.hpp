@@ -58,7 +58,7 @@ class Argument
 {
 private:
   std::string			__name;
-  uint8_t			__type;
+  uint16_t			__flags;
   std::string			__description;
   bool				__enabled;
   std::list<Variant*>		__predefparams;
@@ -66,19 +66,22 @@ private:
   std::list<Variant*>		__deactivatedparams;
 
 public:
-  Argument(std::string name, uint16_t type, std::string description = "");
+  Argument(std::string name, uint16_t flags, std::string description = "");
   ~Argument();
   void				setName(std::string name);
   std::string			name();
 
-  void				setType(uint16_t type);
-  uint16_t			type();
+  void				setFlags(uint16_t flags);
+  uint16_t			flags();
 
   void				setDescription(std::string description);
   std::string			description();
 
   void				setEnabled(bool enabled);
   bool				isEnabled();
+
+  void				setType(uint16_t type);
+  uint16_t			type();
 
   void				setInputType(uint16_t itype);
   uint16_t			inputType();

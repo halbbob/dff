@@ -754,9 +754,9 @@ Open the node and return a pointer to a VFile instance
 #include "vfs.hpp"
 #include "exceptions.hpp"
 #include "export.hpp"
-#include "node.hpp"
 #include "fso.hpp"
 #include "mfso.hpp"
+#include "node.hpp"
 #include "vfile.hpp"
 #include "variant.hpp"
 %}
@@ -766,9 +766,9 @@ Open the node and return a pointer to a VFile instance
 %include "../include/vfs.hpp"
 %include "../include/export.hpp"
 %include "../include/exceptions.hpp"
-%include "../include/node.hpp"
 %include "../include/fso.hpp"
 %include "../include/mfso.hpp"
+%include "../include/node.hpp"
 %include "../include/vfile.hpp"
 
 namespace std
