@@ -8,7 +8,7 @@ from api.taskmanager.taskmanager import *
 from api.loader import *
 from api.vfs import vfs
 from api.devices.devices import Devices
-from api.gui.widget.selectdevices import DevicesDialog 
+from api.gui.widget.devicesdialog import DevicesDialog 
 
 class Dialog(QObject):
   def __init__(self, parent):

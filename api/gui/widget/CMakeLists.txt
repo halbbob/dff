@@ -11,7 +11,14 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+#  Christophe Malinge <cma@digital-forensic.org>
 
+set(ui_apigui_widget_files
+  devicesdialog.ui
+)
+
+# Generates ui_devicesdialog.py
+uitopy_file(ui_apigui_widget ${ui_apigui_widget_files})
 
 #### Deploying python __init__ script
 set(apiguiwidget_srcs
@@ -22,7 +29,7 @@ set(apiguiwidget_srcs
   nodeview.py
   propertytable.py
   textedit.py
-  selectdevices.py
+  devicesdialog.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

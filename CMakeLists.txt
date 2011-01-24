@@ -185,6 +185,14 @@ else(QT_LANGUAGE_COMPILER)
   message(ERROR "QT translation compiler not found.")
 endif(QT_LANGUAGE_COMPILER)
 
+## PyQt UI compiler check, to generate widgets
+find_program(PYTHON_QT4_UIC NAMES pyuic4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+if(PYTHON_QT4_UIC)
+  message(STATUS "Python Qt4 user interface compiler found: ${PYTHON_QT4_RCC}")
+else(PYTHON_QT4_UIC)
+  message(SEND_ERROR "Python Qt4 user interface compiler not found.")
+endif(PYTHON_QT4_UIC)
+
 ## PyQt resource compiler check, to generate icons
 find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
 if(PYTHON_QT4_RCC)
@@ -252,6 +260,19 @@ if (APPLE)
   SET(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
   SET(CMAKE_SHARED_MODULE_SUFFIX ".so")
 endif(APPLE)
+
+## Macro to convert XML ui files to Python Qt widget code
+macro(uitopy_file target_name)
+message(status "argn is ${ARGN}")
+  foreach(UIFILE ${ARGN})
+    string(REGEX REPLACE "^(.*)\\.ui$" "ui_\\1.py" PYUICFILE ${UIFILE})
+    add_custom_target("${target_name}.${UIFILE}" ALL
+      COMMAND ${PYTHON_QT4_UIC} -o ${CMAKE_CURRENT_BINARY_DIR}/${PYUICFILE} ${CMAKE_CURRENT_SOURCE_DIR}/${UIFILE}
+      SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/${UIFILE}
+      )
+  endforeach(UIFILE ${ui_dialog_files})
+endmacro(uitopy_file)
+
 
 
 #### Project install
