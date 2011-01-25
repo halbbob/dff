@@ -26,6 +26,7 @@ class ShellView(QTextEdit, console):
     def __init__(self, parent=None, log=''):
         QTextEdit.__init__(self, parent)
         console.__init__(self, sigstp=False)
+        self.name = "Shell"
 	self.completion = completion.Completion(self)
 	taskmanager = TaskManager()
         self.vfs = vfs.vfs()
@@ -65,8 +66,6 @@ class ShellView(QTextEdit, console):
 
     def write(self, str):
 	self.redirect.write(str)
-	#self.redirect.write(str, inspect.currentframe().f_back.f_globals['__name__'])
-#	self.redirect.write(str,  [sys._getframe(0).f_globals['__name__'], sys._getframe(1).f_globals['__name__'], sys._getframe(2).f_globals['__name__'] ])
 
     def puttext(self, text):
         cursor = self.textCursor()
@@ -158,9 +157,6 @@ class ShellView(QTextEdit, console):
 
     def get_term_size(self):
 	 n =  int(self.document().textWidth()/ 7.4)
-#	 n =  int(self.document().textWidth()/self.fontwidth)
-#	 self.write(str(self.document().textWidth()) + "\n")
-	 #self.write(str(n) + "\n")
 	 return n 
 
     def insert_comp(self, text, matches):
@@ -361,46 +357,6 @@ class ShellView(QTextEdit, console):
         else:
             return (self.fgcolor)
 
-class MDockWidget(QDockWidget):
-    def __init__(self, mainWindow):
-        QDockWidget.__init__(self, mainWindow)
-        self.init()
-        self.show()
-
-    def init(self):
-        self.setAllowedAreas(Qt.AllDockWidgetAreas)
-
-class Shell(MDockWidget):
-    def __init__(self, mainWindow):
-        MDockWidget.__init__(self, mainWindow)
-        self.__mainWindow = mainWindow
-        self.icon = QIcon(":shell.png")
-        self.addAction(mainWindow)
-        self.g_display()
-
-    def g_display(self):
-        self.setWidget(ShellView(self))
-        self.setWindowTitle(self.tr("Shell", "Shell"))
-
-    def addAction(self, mainWindow):
-        self.__action = QAction(self)
-        self.__action.setCheckable(True)
-        self.__action.setChecked(True)
-        self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(self.tr("MainWindow", "Shell"))
-        self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
-    
-    def changeVisibleInformations(self):
-        if not self.isVisible() :
-            self.setVisible(True)
-            self.__action.setChecked(True)
-        else :
-            self.setVisible(False)
-            self.__action.setChecked(False)
-
-#    self.setWindowTitle(n)
-#    self.setWidget(widget)
-
 class ShellActions():
   def __init__(self, mainwindow):
      self.mainwindow = mainwindow
@@ -408,7 +364,7 @@ class ShellActions():
 #     self.mainwindow.addToolBars(["Shell"])	
 
   def create(self):
-     self.mainwindow.addSingleDock("Shell", Shell)
+     self.mainwindow.addSingleDock("Shell", ShellView)
 
 
 

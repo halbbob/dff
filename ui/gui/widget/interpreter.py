@@ -24,6 +24,7 @@ class InterpreterView(QTextEdit, InteractiveInterpreter):
     def __init__(self, parent=None, log=''):
         QTextEdit.__init__(self, parent)
 	InteractiveInterpreter.__init__(self, None)
+        self.name = "Interpreter"
         self.log = log or ''
 
         if parent is None:
@@ -322,43 +323,6 @@ class InterpreterView(QTextEdit, InteractiveInterpreter):
         return ((str.startswith("'''") and str.endswith("'''")) or (str.startswith('"""') and str.endswith('"""')) or \
              (str.startswith("'") and str.endswith("'")) or (str.startswith('"') and str.endswith('"')))
 
-class MDockWidget(QDockWidget):
-    def __init__(self, mainWindow = None):
-        QDockWidget.__init__(self, mainWindow)
-        self.init()
-        self.show()
-
-    def init(self):
-        self.setAllowedAreas(Qt.AllDockWidgetAreas)
-        
-class Interpreter(MDockWidget):
-    def __init__(self, mainWindow=None):
-        MDockWidget.__init__(self, mainWindow)
-        self.__mainWindow = mainWindow
-        self.icon = QIcon(":interpreter.png")
-        self.addAction(mainWindow)
-        self.g_display()
-        
-    def g_display(self):
-        self.setWidget(InterpreterView(self))
-        self.setWindowTitle(self.tr("Interpreter"))
-        
-    def addAction(self, mainWindow):
-        self.__action = QAction(self)
-        self.__action.setCheckable(True)
-        self.__action.setChecked(True)
-        self.__action.setObjectName("actionCoreInformations")
-        self.__action.setText(self.tr("DFF interpreter"))
-        self.connect(self.__action,  SIGNAL("triggered()"),  self.changeVisibleInformations)
-    
-    def changeVisibleInformations(self):
-        if not self.isVisible() :
-            self.setVisible(True)
-            self.__action.setChecked(True)
-        else :
-            self.setVisible(False)
-            self.__action.setChecked(False)
-
 class InterpreterActions(QObject):
   def __init__(self, mainwindow):
     QObject.__init__(self)
@@ -367,4 +331,4 @@ class InterpreterActions(QObject):
 #    self.mainwindow.addToolBars(["Interpreter"])			
 
   def create(self):
-    self.mainwindow.addSingleDock("Interpreter", Interpreter)	
+      self.mainwindow.addSingleDock("Interpreter", InterpreterView)	

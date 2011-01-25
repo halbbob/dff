@@ -111,8 +111,9 @@ class IdeActions(QObject):
     def newScript(self):
         if not self.ide:
             self.dockide = DockIde(self.mainwindow, self)
-            self.mainwindow.dockWidget["IDE"] = self.dockide
-            self.mainwindow.addNewDockWidgetTab(self.mainwindow.mainArea, self.dockide)
+            self.mainwindow.addDockWidgets(self.dockide)
+#            self.mainwindow.dockWidget["IDE"] = self.dockide
+#            self.mainwindow.addNewDockWidgetTab(self.mainwindow.mainArea, self.dockide)
         self.dockide.ide.newactBack()
         
     def openScript(self):
@@ -122,8 +123,9 @@ class IdeActions(QObject):
           pass
         except AttributeError:
             self.dockide = DockIde(self.mainwindow, self)
-            self.mainwindow.dockWidget["IDE"] = self.dockide
-            self.mainwindow.addNewDockWidgetTab(self.mainwindow.mainArea, self.dockide)
+            self.mainwindow.addDockWidgets(self.dockide)
+#            self.mainwindow.dockWidget["IDE"] = self.dockide
+#            self.mainwindow.addNewDockWidgetTab(self.mainwindow.mainArea, self.dockide)
 
         self.dockide.ide.openactBack()
 

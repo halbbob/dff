@@ -10,11 +10,11 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Jeremy MOUNIER <jmo@digital-forensic.org>
 # 
 
 from PyQt4.QtGui import QDockWidget
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, SIGNAL
 
 class DockWidget(QDockWidget):
   def __init__(self, mainWindow, widget, name):
@@ -25,7 +25,11 @@ class DockWidget(QDockWidget):
 
   def init(self, widget, name):
     self.setAllowedAreas(Qt.AllDockWidgetAreas)
+    self.setFeatures(QDockWidget.AllDockWidgetFeatures)
     self.setWindowTitle(name)
     self.setWidget(widget)
  
-
+  def visibility_changed(self, enable):
+    if enable:
+      self.raise_()
+      self.setFocus()
