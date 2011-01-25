@@ -263,7 +263,6 @@ endif(APPLE)
 
 ## Macro to convert XML ui files to Python Qt widget code
 macro(uitopy_file target_name)
-message(status "argn is ${ARGN}")
   foreach(UIFILE ${ARGN})
     string(REGEX REPLACE "^(.*)\\.ui$" "ui_\\1.py" PYUICFILE ${UIFILE})
     add_custom_target("${target_name}.${UIFILE}" ALL

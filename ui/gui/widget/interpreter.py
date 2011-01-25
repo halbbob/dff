@@ -363,8 +363,8 @@ class InterpreterActions(QObject):
   def __init__(self, mainwindow):
     QObject.__init__(self)
     self.mainwindow = mainwindow
-    self.mainwindow.addAction(*["Interpreter", self.tr("Interpreter"), self.create, ":interpreter.png", self.tr("Open Interpreter")])
-    self.mainwindow.addToolBars(["Interpreter"])			
+#    self.mainwindow.addAction(*["Interpreter", self.tr("Interpreter"), self.create, ":interpreter.png", self.tr("Open Interpreter")])
+#    self.mainwindow.addToolBars(["Interpreter"])			
 
   def create(self):
     self.mainwindow.addSingleDock("Interpreter", Interpreter)	

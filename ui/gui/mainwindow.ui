@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>598</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Digital Forensics Framework</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_evidence_file_s"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <widget class="QMenu" name="menuModule">
+    <property name="title">
+     <string>Module</string>
+    </property>
+    <addaction name="actionLoad"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuIDE">
+    <property name="title">
+     <string>IDE</string>
+    </property>
+    <addaction name="actionNew_script"/>
+    <addaction name="actionOpen_script"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_script"/>
+    <addaction name="actionSave_script_as"/>
+    <addaction name="actionLoad_script"/>
+    <addaction name="separator"/>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="action"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuModule"/>
+   <addaction name="menuIDE"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen_evidence_file_s">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/add_image.png</normaloff>:/add_image.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open evidence file(s)</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/add_device.png</normaloff>:/add_device.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open local device</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionNew_script">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/script-new.png</normaloff>:/script-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>New script</string>
+   </property>
+  </action>
+  <action name="actionOpen_script">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/script-open.png</normaloff>:/script-open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open script</string>
+   </property>
+  </action>
+  <action name="actionSave_script">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/script-save.png</normaloff>:/script-save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save script</string>
+   </property>
+  </action>
+  <action name="actionSave_script_as">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/script-save-as.png</normaloff>:/script-save-as.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save script as</string>
+   </property>
+  </action>
+  <action name="actionLoad_script">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/script-run.png</normaloff>:/script-run.png</iconset>
+   </property>
+   <property name="text">
+    <string>Load script</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/undo.png</normaloff>:/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/redo.png</normaloff>:/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>?</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
+ <connections/>
+</ui>

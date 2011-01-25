@@ -13,21 +13,22 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #  Christophe Malinge <cma@digital-forensic.org>
 
-# BASH / UNIX commands to check for files with translatable strings :
+# BASH / UNIX commands to check for files with translatable strings : <-- About to be/MUST be deprecated !
 # echo $(grep -R 'QApplication.translate(' * | grep '.py:' | grep -v '.sh:' | cut -d ':' -f 1 | sort | uniq | sed 's/^\(.*\)$/${CMAKE_HOME_DIRECTORY}\/\1/')
 
 # FIXME :
-#  - Dynamic specification of available languages in configuration
+#  - Dynamic specification of available languages in configuration <-- in progress
 
 # please keep the list of supported languages sorted alphabetically
 set(DFF_SUPPORTED_LANGUAGES "de" "en" "es" "fr" "nl")
 
-set(TRANSLATABLE_STRINGS_IN_FILES ${CMAKE_HOME_DIRECTORY}/api/gui/button/pushbutton.py ${CMAKE_HOME_DIRECTORY}/api/gui/dialog/applymodule.py ${CMAKE_HOME_DIRECTORY}/api/gui/dialog/extractor.py ${CMAKE_HOME_DIRECTORY}/api/gui/dialog/property.py ${CMAKE_HOME_DIRECTORY}/api/gui/dialog/uiapplymodule.py ${CMAKE_HOME_DIRECTORY}/api/gui/dialog/uiproperty.py ${CMAKE_HOME_DIRECTORY}/api/gui/dialog/uiselectnodes.py ${CMAKE_HOME_DIRECTORY}/api/gui/widget/applymoduletable.py ${CMAKE_HOME_DIRECTORY}/api/gui/widget/nodebrowser.py ${CMAKE_HOME_DIRECTORY}/modules/viewer/hexedit/bookmark.py ${CMAKE_HOME_DIRECTORY}/modules/viewer/hexedit/decodeValues.py ${CMAKE_HOME_DIRECTORY}/modules/viewer/hexedit/navigation.py ${CMAKE_HOME_DIRECTORY}/ui/gui/configuration/_configure.py ${CMAKE_HOME_DIRECTORY}/ui/gui/configuration/configure.py ${CMAKE_HOME_DIRECTORY}/ui/gui/ide/actions.py ${CMAKE_HOME_DIRECTORY}/ui/gui/ide/dockide.py ${CMAKE_HOME_DIRECTORY}/ui/gui/ide/ide.py ${CMAKE_HOME_DIRECTORY}/ui/gui/ide/idewizardpages.py ${CMAKE_HOME_DIRECTORY}/ui/gui/widget/info.py ${CMAKE_HOME_DIRECTORY}/ui/gui/widget/interpreter.py ${CMAKE_HOME_DIRECTORY}/ui/gui/widget/shell.py ${CMAKE_HOME_DIRECTORY}/ui/gui/mainwindow.py ${CMAKE_HOME_DIRECTORY}/api/gui/widget/nodebrowser.py ${CMAKE_HOME_DIRECTORY}/api/gui/widget/propertytable.py ${CMAKE_HOME_DIRECTORY}/api/gui/box/nodefilterbox.py ${CMAKE_HOME_DIRECTORY}/api/gui/box/nodeviewbox.py ${CMAKE_HOME_DIRECTORY}/api/gui/model/vfsitemmodel.py ${CMAKE_HOME_DIRECTORY}/api/gui/button/pushbutton.py ${CMAKE_HOME_DIRECTORY}/ui/gui/dialog/dialog.py ${CMAKE_HOME_DIRECTORY}/ui/gui/ide/idewizard.py ${CMAKE_HOME_DIRECTORY}/api/gui/widget/selectdevices.py)
+# Please also take care of dff.pro file !
+
+# Configure step
+execute_process(COMMAND ${PYTHON_QT4_LANGUAGE} -verbose "${CMAKE_CURRENT_SOURCE_DIR}/dff.pro")
 
 foreach(LANGUAGE ${DFF_SUPPORTED_LANGUAGES})
-# Configure step
-  execute_process(COMMAND ${PYTHON_QT4_LANGUAGE} -verbose ${TRANSLATABLE_STRINGS_IN_FILES} -ts ${CMAKE_CURRENT_SOURCE_DIR}/Dff_${LANGUAGE}.ts)
-  set(QM_OUTPUT_FILES ${QM_OUTPUT_FILES} Dff_${LANGUAGE}.qm)
+  set(QM_OUTPUT_FILES ${QM_OUTPUT_FILES} "Dff_${LANGUAGE}.qm")
 # Build step
   add_custom_target(gui_translation_${LANGUAGE} ALL
     COMMAND ${QT_LANGUAGE_COMPILER} ${CMAKE_CURRENT_SOURCE_DIR}/Dff_${LANGUAGE}.ts -qm ${CMAKE_CURRENT_BINARY_DIR}/Dff_${LANGUAGE}.qm

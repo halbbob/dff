@@ -36,8 +36,8 @@ class IdeActions(QObject):
         self.initMainCallBacks()
 
         self.disableActions()
-        self.mainwindow.menubar.addAction(self.menu.menuAction())
-        self.mainwindow.addToolBar(Qt.TopToolBarArea, self.maintoolbar)
+#        self.mainwindow.menubar.addAction(self.menu.menuAction())
+#        self.mainwindow.addToolBar(Qt.TopToolBarArea, self.maintoolbar)
 
     def init(self):
         self.mainActs = []

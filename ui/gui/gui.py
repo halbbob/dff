@@ -29,10 +29,12 @@ class gui():
     def __init__(self, debug = False):
         """Launch GUI"""
         self.debug = debug
-        translator = Translator()
         self.app = QApplication(sys.argv)
-      
-        self.app.installTranslator(translator)
+
+        self.translator = Translator()
+        
+        self.app.installTranslator(self.translator.getGeneric())
+        self.app.installTranslator(self.translator.getDFF())
         self.app.setApplicationName("Digital Forensics Framework")
         self.app.setApplicationVersion("0.9.0")
         pixmap = QPixmap(":splash.png")

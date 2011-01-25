@@ -32,9 +32,6 @@ from api.gui.dialog.property import Property
 from api.gui.widget.nodebrowser import NodeBrowser
 from api.gui.dialog.applymodule import ApplyModule
 
-from ui.gui.configuration.configure import ConfigureDialog
-from ui.gui.configuration.conf import Conf
-from ui.gui.configuration.translator import Translator
 from ui.gui.ide.ide import Ide
 from ui.gui.ide.actions import IdeActions
 from ui.gui.widget.info import Info
@@ -44,6 +41,7 @@ from ui.gui.widget.interpreter import InterpreterActions
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
+from ui.gui.ui_mainwindow import Ui_MainWindow
 
 try:
     from ui.gui.widget.help import Help
@@ -57,7 +55,7 @@ except ImportError:
     HELP = False
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self,  app, debug = False):
         super(MainWindow,  self).__init__()
         self.app = app
@@ -69,37 +67,32 @@ class MainWindow(QMainWindow):
 	self.initCallback()
         self.initDockWidgets()
 
-	#menu
-	self.menuList = [[self.tr("File"), ["New_Dump", "New_Device", "Exit"]],
-                         ["Modules", ["Load"]],
-                         ] 
+        #if HELP:
+        #    self.toolbarList.append(["help"])
 
-	#icon 
-        self.toolbarList = [["New_Dump"],
-                            ["New_Device"],
-                            ["List_Files"]
-                            ]
-        if HELP:
-            self.toolbarList.append(["help"])
+        #if HELP:
+        #    self.actionList.append(["help", "Help", self.addHelpWidget, ":help.png", "Open Help"])
 
-        self.actionList = [
-            ["New_Dump", self.tr("Open evidence file(s)"), self.dialog.addFiles, ":add_image.png", "Add image"],
-            ["New_Device", self.tr("Open local device"), self.dialog.addDevices, ":add_device.png", "Add device(s)"],
-            ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
-            ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
-            ["About", "?", self.dialog.about, None, None ],
-            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"]
-            ] 
-        if HELP:
-            self.actionList.append(["help", "Help", self.addHelpWidget, ":help.png", "Open Help"])
+        # Set up the user interface from Qt Designer
+        self.setupUi(self)
 
-        self.setupUi()
+        # Signals handling
+        ## File menu
+        self.connect(self.actionOpen_evidence_file_s, SIGNAL("triggered()"), self.dialog.addFiles)
+        self.connect(self.actionOpen, SIGNAL("triggered()"), self.dialog.addDevices)
+        self.connect(self.actionExit, SIGNAL("triggered()"), self.close)
+        ## Edit menu
+        self.connect(self.actionPreferences, SIGNAL("triggered()"), self.dialog.preferences)
+        ## Module menu
+        self.connect(self.actionLoad, SIGNAL("triggered()"), self.dialog.loadDriver)
+        ## About menu
+        self.connect(self.action, SIGNAL("triggered()"), self.dialog.about)
+
+        
         self.ideActions = IdeActions(self)
 	self.shellActions = ShellActions(self)				
 
-	self.interpreterActions =InterpreterActions(self)				
-
-	self.addMenu(*[self.tr("About"), ["About"]])
+	self.interpreterActions = InterpreterActions(self)				
 
         # Setup AREA
 
@@ -291,7 +284,7 @@ class MainWindow(QMainWindow):
         self.statusbar.setObjectName("statusbar")
         self.setStatusBar(self.statusbar)
  
-    def setupUi(self):
+    def setupUiiii(self):
         self.menu = {}          
         self.action = {}
         self.setObjectName("MainWindow")
@@ -320,7 +313,18 @@ class MainWindow(QMainWindow):
         self.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBarMain)
         for toolbar in self.toolbarList:
 	   self.addToolBars(toolbar)
- 
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+        else:
+            QMainWindow.changeEvent(self, event)
+            
 #    def closeEvent(self, e):
 #        settings = QSettings("ArxSys", "DFF-0.5")
 #	settings.setValue("geometry", self.saveGeometry())

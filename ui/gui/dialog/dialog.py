@@ -1,3 +1,18 @@
+# DFF -- An Open Source Digital Forensics Framework
+# Copyright (C) 2009-2011 ArxSys
+# This program is free software, distributed under the terms of
+# the GNU General Public License Version 2. See the LICENSE file
+# at the top of the source tree.
+#  
+# See http://www.digital-forensic.org for more information about this
+# project. Please do not directly contact any of the maintainers of
+# DFF for assistance; the project provides a web site, mailing lists
+# and IRC channels for your use.
+# 
+# Author(s):
+#  Solal Jacob <sja@digital-forensic.org>
+#
+
 import os
 
 from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog, QDialog, QDialogButtonBox, QComboBox, QPushButton, QFormLayout, QHBoxLayout, QPixmap, QLabel, QApplication
@@ -8,7 +23,9 @@ from api.taskmanager.taskmanager import *
 from api.loader import *
 from api.vfs import vfs
 from api.devices.devices import Devices
-from api.gui.widget.devicesdialog import DevicesDialog 
+from api.gui.widget.devicesdialog import DevicesDialog
+
+from ui.gui.dialog.preferences import Preferences
 
 class Dialog(QObject):
   def __init__(self, parent):
@@ -18,6 +35,12 @@ class Dialog(QObject):
      self.vfs = vfs.vfs()
      self.taskmanager = TaskManager()
      self.loader = loader.loader()
+
+  def preferences(self):
+    """Open a preferences dialog"""
+    
+    pref = Preferences(self.parent)
+    pref.exec_()
 
   def addDevices(self):
        """Open a device list dialog"""
