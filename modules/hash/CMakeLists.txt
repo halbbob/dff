@@ -10,7 +10,11 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Christophe Malinge <cma@digital-forensic.org>
-#
+#  Jeremy MOUNIER <jmo@digital-forensic.org>
 
-__all__ = ["hashmod"]
+set(hash_srcs
+  hash.py
+  __init__.py
+)
+
+install_file(hash ${hash_srcs})

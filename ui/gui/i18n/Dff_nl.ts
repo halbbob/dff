@@ -6,13 +6,13 @@
         <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>Missing Arguments</comment>
-        <translation>Arguments manquants</translation>
+        <translation>U mist parameters</translation>
     </message>
     <message>
         <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>There are missing arguments.</comment>
-        <translation>Certains arguments sont manquant.</translation>
+        <translation>Niet alle parameters zijn ingevuld</translation>
     </message>
 </context>
 <context>
@@ -21,13 +21,13 @@
         <location filename="applymoduletable.py" line="48"/>
         <source>applyModule</source>
         <comment>Name</comment>
-        <translation>Nom</translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="applymoduletable.py" line="52"/>
         <source>applyModule</source>
         <comment>Tags</comment>
-        <translation>Catégorie</translation>
+        <translation>Markeer</translation>
     </message>
 </context>
 <context>
@@ -36,7 +36,7 @@
         <location filename="configure.py" line="47"/>
         <source>Configure</source>
         <comment>Choose Your Directory For Extraction</comment>
-        <translation>Répertoire d&apos;extraction global</translation>
+        <translation>Kies uw &apos;uitpak&apos; folder</translation>
     </message>
 </context>
 <context>
@@ -44,7 +44,7 @@
     <message>
         <location filename="selectdevices.py" line="32"/>
         <source>Select Device</source>
-        <translation>Sélectionnez un périphérique</translation>
+        <translation>Selecteer uw data opslag</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="38"/>
@@ -54,32 +54,32 @@
     <message>
         <location filename="selectdevices.py" line="40"/>
         <source>Cancel</source>
-        <translation>Annuler</translation>
+        <translation>Afbreken</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="72"/>
         <source>Select device:</source>
-        <translation>Sélectionnez un périphérique :</translation>
+        <translation>Selecteer data opslag</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="73"/>
         <source>Block device:</source>
-        <translation>Périphérique :</translation>
+        <translation>Blokeer data opslag</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="74"/>
         <source>Model:</source>
-        <translation>Modèle :</translation>
+        <translation>Model</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="75"/>
         <source>Serial:</source>
-        <translation>Numéro de série :</translation>
+        <translation>Serie nummer</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="76"/>
         <source>Size:</source>
-        <translation>Taille :</translation>
+        <translation>Grootte</translation>
     </message>
 </context>
 <context>
@@ -87,27 +87,27 @@
     <message>
         <location filename="dialog.py" line="73"/>
         <source>Load module</source>
-        <translation>Charger un module</translation>
+        <translation>Laad module</translation>
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
         <source>About</source>
-        <translation>À propos</translation>
+        <translation>Omschrijving</translation>
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
-        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; Au moindre problème, veuillez s&apos;il vous plaît visiter notre &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;page de support&lt;/a&gt;.&lt;br&gt;Salon de discussion IRC : &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; sur le réseau Freenode.&lt;br&gt;Plus d&apos;informations : &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Logiciel développé par &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; et &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la communauté DFF&lt;/a&gt;.</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="dialog.py" line="47"/>
         <source>Add evidence directory</source>
-        <translation>Ajouter un répertoire</translation>
+        <translation>Bewijs folder toevoegen</translation>
     </message>
     <message>
         <location filename="dialog.py" line="49"/>
         <source>Add evidence files</source>
-        <translation>Ajouter un fichier</translation>
+        <translation>Bewijs bestanden toevoegen</translation>
     </message>
 </context>
 <context>
@@ -125,27 +125,27 @@
         <location filename="extractor.py" line="87"/>
         <source>MainWindow</source>
         <comment>Choose the destination folder for extraction</comment>
-        <translation>Choisissez le répertoire de destination pour l&apos;extraction</translation>
+        <translation>Kies uw &apos;uitpak&apos; bestemmings folder</translation>
     </message>
 </context>
 <context>
     <name>Ide</name>
     <message>
+        <location filename="ide.py" line="90"/>
+        <source>New script</source>
+        <translation>Nieuw script</translation>
+    </message>
+    <message>
         <location filename="ide.py" line="142"/>
         <source>MainWindow</source>
         <comment>open</comment>
-        <translation>Ouvrir</translation>
+        <translation>open</translation>
     </message>
     <message>
         <location filename="ide.py" line="179"/>
         <source>MainWindow</source>
         <comment>Save as</comment>
-        <translation>Enregistrer-sous</translation>
-    </message>
-    <message>
-        <location filename="ide.py" line="90"/>
-        <source>New script</source>
-        <translation>Nouveau script</translation>
+        <translation>Bewaren als</translation>
     </message>
 </context>
 <context>
@@ -153,37 +153,37 @@
     <message>
         <location filename="actions.py" line="54"/>
         <source>New script</source>
-        <translation>Nouveau script</translation>
+        <translation>Nieuw script</translation>
     </message>
     <message>
         <location filename="actions.py" line="57"/>
         <source>Open script</source>
-        <translation>Ouvrir un script</translation>
+        <translation>Open script</translation>
     </message>
     <message>
         <location filename="actions.py" line="67"/>
         <source>Save script</source>
-        <translation>Enregistrer le script</translation>
+        <translation>Bewaar script</translation>
     </message>
     <message>
         <location filename="actions.py" line="70"/>
         <source>Save script as</source>
-        <translation>Enregistrer le script sous</translation>
+        <translation>Bewaar script</translation>
     </message>
     <message>
         <location filename="actions.py" line="73"/>
         <source>Load script</source>
-        <translation>Charger un script</translation>
+        <translation>Laad script</translation>
     </message>
     <message>
         <location filename="actions.py" line="76"/>
         <source>Undo</source>
-        <translation>Annuler</translation>
+        <translation>Stap terug</translation>
     </message>
     <message>
         <location filename="actions.py" line="79"/>
         <source>Redo</source>
-        <translation>Rétablir</translation>
+        <translation>Stap vooruit</translation>
     </message>
     <message>
         <location filename="actions.py" line="134"/>
@@ -196,7 +196,7 @@
     <message>
         <location filename="idewizard.py" line="25"/>
         <source>Integrated Development Environment Wizard</source>
-        <translation>Assitant de l&apos;Environnement de Développement Intégré</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -204,17 +204,22 @@
     <message>
         <location filename="info.py" line="250"/>
         <source>Info</source>
-        <translation>Informations</translation>
+        <translation>Informatie</translation>
     </message>
     <message>
-        <location filename="info.py" line="123"/>
-        <source>Modules</source>
-        <translation>Modules</translation>
+        <location filename="info.py" line="249"/>
+        <source>Name</source>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="info.py" line="198"/>
         <source>Key</source>
-        <translation>Clé</translation>
+        <translation>Sleutel</translation>
+    </message>
+    <message>
+        <location filename="info.py" line="200"/>
+        <source>Value</source>
+        <translation>Waarde</translation>
     </message>
     <message>
         <location filename="info.py" line="199"/>
@@ -222,44 +227,39 @@
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="info.py" line="200"/>
-        <source>Value</source>
-        <translation>Valeur</translation>
+        <location filename="info.py" line="123"/>
+        <source>Modules</source>
+        <translation>Modulen</translation>
     </message>
     <message>
         <location filename="info.py" line="201"/>
         <source>From</source>
-        <translation>Émetteur</translation>
+        <translation>Van</translation>
     </message>
     <message>
         <location filename="info.py" line="204"/>
         <source>Environment</source>
-        <translation>Environnement</translation>
+        <translation>Omgeving</translation>
     </message>
     <message>
         <location filename="info.py" line="249"/>
         <source>PID</source>
-        <translation>Processus</translation>
-    </message>
-    <message>
-        <location filename="info.py" line="249"/>
-        <source>Name</source>
-        <translation>Nom</translation>
+        <translation>Process ID</translation>
     </message>
     <message>
         <location filename="info.py" line="250"/>
         <source>State</source>
-        <translation>État</translation>
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="info.py" line="254"/>
         <source>Task Manager</source>
-        <translation>Gestionnaire des tâches</translation>
+        <translation>Opdracht Manager</translation>
     </message>
     <message>
         <location filename="info.py" line="251"/>
         <source>Exec Time</source>
-        <translation>Temps d&apos;execution</translation>
+        <translation>Begin tijd</translation>
     </message>
 </context>
 <context>
@@ -267,25 +267,25 @@
     <message>
         <location filename="interpreter.py" line="344"/>
         <source>Interpreter</source>
-        <translation>Interpréteur</translation>
+        <translation>Vertaler</translation>
     </message>
     <message>
         <location filename="interpreter.py" line="351"/>
         <source>DFF interpreter</source>
-        <translation>Interpréteur DFF</translation>
+        <translation>DFF vertaler</translation>
     </message>
 </context>
 <context>
     <name>InterpreterActions</name>
     <message>
         <location filename="interpreter.py" line="366"/>
-        <source>Open Interpreter</source>
-        <translation>Ouvrir l&apos;interpréteur</translation>
+        <source>Interpreter</source>
+        <translation>Vertaler</translation>
     </message>
     <message>
         <location filename="interpreter.py" line="366"/>
-        <source>Interpreter</source>
-        <translation>Interpréteur</translation>
+        <source>Open Interpreter</source>
+        <translation>Open de vertaler</translation>
     </message>
 </context>
 <context>
@@ -294,8 +294,7 @@
         <location filename="interpreter.py" line="58"/>
         <source>Python Interpreter
 </source>
-        <translation>Interpréteur Python
-</translation>
+        <translation>Python Vertaler</translation>
     </message>
 </context>
 <context>
@@ -303,37 +302,37 @@
     <message>
         <location filename="mainwindow.py" line="73"/>
         <source>File</source>
-        <translation>Fichier</translation>
+        <translation>Bestand</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="88"/>
         <source>Exit</source>
-        <translation>Quitter</translation>
+        <translation>Afsluiten</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="89"/>
         <source>Load</source>
-        <translation>Charger</translation>
+        <translation>Laden</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="91"/>
         <source>List Files</source>
-        <translation>Lister les nœuds</translation>
+        <translation>Bestandslijst</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="102"/>
         <source>About</source>
-        <translation>À propos</translation>
+        <translation>Omschrijving</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="86"/>
         <source>Open evidence file(s)</source>
-        <translation>Ouvrir un ou plusieurs fichier(s)</translation>
+        <translation>Open uw bewijs bestand(en)</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="87"/>
         <source>Open local device</source>
-        <translation>Ouvrir un périphérique local</translation>
+        <translation>Open lokale data opslag</translation>
     </message>
 </context>
 <context>
@@ -341,22 +340,22 @@
     <message>
         <location filename="nodebrowser.py" line="96"/>
         <source>nodebrowser</source>
-        <translation>Navigateur de nœuds</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodebrowser.py" line="306"/>
         <source>Small</source>
-        <translation>Petit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodebrowser.py" line="308"/>
         <source>Medium</source>
-        <translation>Moyen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodebrowser.py" line="310"/>
         <source>Large</source>
-        <translation>Grand</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -364,22 +363,22 @@
     <message>
         <location filename="nodefilterbox.py" line="44"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="45"/>
         <source>Size</source>
-        <translation>Taille</translation>
+        <translation>Grootte</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="46"/>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="48"/>
         <source>Attribute:</source>
-        <translation>Attribut :</translation>
+        <translation>Attribuut:</translation>
     </message>
 </context>
 <context>
@@ -387,62 +386,62 @@
     <message>
         <location filename="nodeviewbox.py" line="41"/>
         <source>Previous</source>
-        <translation>Précédent</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="42"/>
         <source>Return to root</source>
-        <translation>Revenir à la racine</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="48"/>
         <source>Add to bookmarks</source>
-        <translation>Ajouter aux favoris</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="49"/>
         <source>Display search engine</source>
-        <translation>Afficher le moteur de recherche</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="50"/>
         <source>Active thumbnails</source>
-        <translation>Activer les imagettes</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="59"/>
         <source>List</source>
-        <translation>Liste</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="60"/>
         <source>Icons</source>
-        <translation>Icônes</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="61"/>
         <source>Tree</source>
-        <translation>Arbre</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="98"/>
         <source>Small</source>
-        <translation>Petit</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="99"/>
         <source>Medium</source>
-        <translation>Moyen</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="100"/>
         <source>Large</source>
-        <translation>Grand</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="106"/>
         <source>Attributes</source>
-        <translation>Attributs</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -451,31 +450,31 @@
         <location filename="property.py" line="85"/>
         <source>PropertyDialog</source>
         <comment>Folder</comment>
-        <translation>Répertoire</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="property.py" line="88"/>
         <source>PropertyDialog</source>
         <comment>File</comment>
-        <translation>Fichier</translation>
+        <translation>Bestand</translation>
     </message>
     <message>
         <location filename="property.py" line="91"/>
         <source>PropertyDialog</source>
         <comment>items, total</comment>
-        <translation>éléments, totalisant</translation>
+        <translation>items, totaal</translation>
     </message>
     <message>
         <location filename="property.py" line="93"/>
         <source>PropertyDialog</source>
         <comment>Folders</comment>
-        <translation>Répertoires</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="property.py" line="95"/>
         <source>PropertyDialog</source>
         <comment>Files</comment>
-        <translation>Fichiers</translation>
+        <translation>Bestanden</translation>
     </message>
 </context>
 <context>
@@ -483,77 +482,77 @@
     <message>
         <location filename="propertytable.py" line="25"/>
         <source>Attribute</source>
-        <translation>Attribut</translation>
+        <translation>Attribuut</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="25"/>
         <source>Value</source>
-        <translation>Valeur</translation>
+        <translation>Waarde</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="36"/>
         <source>name</source>
-        <translation>nom</translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="40"/>
         <source>type</source>
-        <translation>type</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="propertytable.py" line="43"/>
         <source>file</source>
-        <translation>fichier</translation>
+        <translation>bestand</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="45"/>
         <source>with module(s) applied on it</source>
-        <translation>avec modules appliqué dessus</translation>
+        <translation>met de toegevoegde module(n)</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="50"/>
         <source>folder</source>
-        <translation>répertoire</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="propertytable.py" line="52"/>
         <source>empty</source>
-        <translation>vide</translation>
+        <translation>leeg</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="54"/>
         <source>deleted</source>
-        <translation>effacé</translation>
+        <translation>verwijderd</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="58"/>
         <source>generated by</source>
-        <translation>généré par</translation>
+        <translation>gemaakt door</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="62"/>
         <source>size</source>
-        <translation>taille</translation>
+        <translation>grootte</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="70"/>
         <source>relevant module(s)</source>
-        <translation>module(s) conseillé(s)</translation>
+        <translation>relevante module(n)</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="105"/>
         <source>default times</source>
-        <translation>dates par défaut</translation>
+        <translation>standaard aantal keren</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="122"/>
         <source>extended attributes</source>
-        <translation>attributs étendus</translation>
+        <translation>andere attributen</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="148"/>
         <source>static attributes</source>
-        <translation>attributs statiques</translation>
+        <translation>statische attributen</translation>
     </message>
 </context>
 <context>
@@ -561,12 +560,12 @@
     <message>
         <location filename="pushbutton.py" line="29"/>
         <source>Browse</source>
-        <translation>Parcourir</translation>
+        <translation>Surf</translation>
     </message>
     <message>
         <location filename="pushbutton.py" line="35"/>
         <source>Add Dump</source>
-        <translation>Ajouter une image</translation>
+        <translation>Dump toevoegen</translation>
     </message>
 </context>
 <context>
@@ -575,13 +574,13 @@
         <location filename="shell.py" line="383"/>
         <source>Shell</source>
         <comment>Shell</comment>
-        <translation>Shell</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="shell.py" line="390"/>
         <source>MainWindow</source>
         <comment>Shell</comment>
-        <translation>Shell</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -590,7 +589,7 @@
         <location filename="uiapplymodule.py" line="46"/>
         <source>applyModule</source>
         <comment>Apply Module</comment>
-        <translation>Appliquer un module</translation>
+        <translation>Module toevoegen</translation>
     </message>
 </context>
 <context>
@@ -599,25 +598,25 @@
         <location filename="_configure.py" line="85"/>
         <source>Configure</source>
         <comment>Configure</comment>
-        <translation>Configurer</translation>
+        <translation>Configureren</translation>
     </message>
     <message>
         <location filename="_configure.py" line="86"/>
         <source>Configure</source>
         <comment>Language:</comment>
-        <translation>Langage :</translation>
+        <translation>Taal:</translation>
     </message>
     <message>
         <location filename="_configure.py" line="87"/>
         <source>Configure</source>
         <comment>Extract Folder:</comment>
-        <translation>Répertoire d&apos;extraction :</translation>
+        <translation>Uitpak folder:</translation>
     </message>
     <message>
         <location filename="_configure.py" line="88"/>
         <source>Configure</source>
         <comment>Browser</comment>
-        <translation>Navigateur</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -626,37 +625,37 @@
         <location filename="uiproperty.py" line="130"/>
         <source>PropertyDialog</source>
         <comment>Property</comment>
-        <translation>Propriété</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="131"/>
         <source>PropertyDialog</source>
         <comment>Name:</comment>
-        <translation>Nom :</translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="132"/>
         <source>PropertyDialog</source>
         <comment>Type:</comment>
-        <translation>Type :</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="133"/>
         <source>PropertyDialog</source>
         <comment>Location:</comment>
-        <translation>Localisation :</translation>
+        <translation>Lokatie</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="134"/>
         <source>PropertyDialog</source>
         <comment>Contents:</comment>
-        <translation>Contenu :</translation>
+        <translation>Inhoud:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="135"/>
         <source>PropertyDialog</source>
         <comment>Close</comment>
-        <translation>Fermer</translation>
+        <translation>Afsluiten</translation>
     </message>
 </context>
 <context>
@@ -665,25 +664,25 @@
         <location filename="uiselectnodes.py" line="84"/>
         <source>selectNode</source>
         <comment>Select a node</comment>
-        <translation>Sélectionnez un nœud</translation>
+        <translation>Selecteer een node</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="85"/>
         <source>selectNode</source>
         <comment>Look in:</comment>
-        <translation>Regarder dans :</translation>
+        <translation>Kijk in:</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="86"/>
         <source>selectNode</source>
         <comment>Select</comment>
-        <translation>Sélectionner</translation>
+        <translation>Selekteer</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="87"/>
         <source>selectNode</source>
         <comment>Cancel</comment>
-        <translation>Annuler</translation>
+        <translation>Terug</translation>
     </message>
 </context>
 <context>
@@ -691,32 +690,32 @@
     <message>
         <location filename="vfsitemmodel.py" line="247"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="249"/>
         <source>Size</source>
-        <translation>Taille</translation>
+        <translation>Grootte</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="251"/>
         <source>Accessed time</source>
-        <translation>Date d&apos;accès</translation>
+        <translation>Toegangs tijd</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="253"/>
         <source>Changed time</source>
-        <translation>Date de changement</translation>
+        <translation>Veranderde tijd</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="255"/>
         <source>Modified time</source>
-        <translation>Date de modification</translation>
+        <translation>Gewijzigde tijd</translation>
     </message>
     <message>
         <location filename="vfsitemmodel.py" line="257"/>
         <source>Module</source>
-        <translation>Module</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -724,32 +723,32 @@
     <message>
         <location filename="idewizardpages.py" line="88"/>
         <source>Author Informations</source>
-        <translation>Informations sur l&apos;Auteur</translation>
+        <translation>Auteur informatie</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="89"/>
         <source>Fill all author&apos;s informations in order to complete header</source>
-        <translation>Remplissez tous les champs au sujet de l&apos;auteur afin de compléter l&apos;en-tête</translation>
+        <translation>Vul alle auteur&apos;s informatie in om de header compleet te maken</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="95"/>
         <source>Author&apos;s first name:</source>
-        <translation>Prénom de l&apos;auteur :</translation>
+        <translation>Voornaam auteur&apos;s</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="99"/>
         <source>Author&apos;s last name:</source>
-        <translation>Nom de l&apos;auteur :</translation>
+        <translation>Achternaam auteur&apos;s</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="102"/>
         <source>Author&apos;s electronic mail:</source>
-        <translation>Addresse électronique de l&apos;auteur :</translation>
+        <translation>Email auteur&apos;s</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="123"/>
         <source>Location</source>
-        <translation>Destination</translation>
+        <translation>Lokatie</translation>
     </message>
 </context>
 <context>
@@ -757,52 +756,52 @@
     <message>
         <location filename="idewizardpages.py" line="26"/>
         <source>Script Informations</source>
-        <translation>Informations sur le Script</translation>
+        <translation>Script informatie</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="27"/>
         <source>Fill all script information such as name, type and saving location</source>
-        <translation>Remplissez tous les champs au sujet du script tels que son nom, son type et sa destination pour l&apos;enregistrement</translation>
+        <translation>Vul alle script in, zoals naam, type en lokatie van opslag</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="33"/>
         <source>Script name:</source>
-        <translation>Nom du script :</translation>
+        <translation>Script naam:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="37"/>
         <source>Select script type:</source>
-        <translation>Sélectionnez le type de script :</translation>
+        <translation>Selecteer script type:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="38"/>
         <source>Script</source>
-        <translation>Script</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="39"/>
         <source>Graphical</source>
-        <translation>Graphique</translation>
+        <translation>Grafisch</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="40"/>
         <source>Driver</source>
-        <translation>Pilote</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="44"/>
         <source>Select script location:</source>
-        <translation>Sélectionnez la destination du script :</translation>
+        <translation>Selecteer script lokatie:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="46"/>
         <source>Browse</source>
-        <translation>Parcourir</translation>
+        <translation>Surf</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="75"/>
         <source>Location</source>
-        <translation>Destination</translation>
+        <translation>Lokatie</translation>
     </message>
 </context>
 <context>
@@ -811,61 +810,67 @@
         <location filename="bookmark.py" line="67"/>
         <source>bookmark</source>
         <comment>Address</comment>
-        <translation type="obsolete">Adresse</translation>
+        <translation type="obsolete">Adres</translation>
+    </message>
+    <message>
+        <location filename="bookmark.py" line="68"/>
+        <source>bookmark</source>
+        <comment>Length (dec)</comment>
+        <translation type="obsolete">Lengte (decimal)</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="69"/>
         <source>bookmark</source>
         <comment>Length (hex)</comment>
-        <translation type="obsolete">Taille (hex)</translation>
+        <translation type="obsolete">Lengte (hexadecimal</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="70"/>
         <source>bookmark</source>
         <comment>Hex value</comment>
-        <translation type="obsolete">Valeur héxa</translation>
+        <translation type="obsolete">Hexadecimale waarde</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="71"/>
         <source>bookmark</source>
         <comment>Ascii value</comment>
-        <translation type="obsolete">Valeur ASCII</translation>
+        <translation type="obsolete">ASCII waarde</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="72"/>
         <source>bookmark</source>
         <comment>Description</comment>
-        <translation type="obsolete">Description</translation>
+        <translation type="obsolete">Omschrijving</translation>
     </message>
     <message>
         <location filename="bookmark.py" line="67"/>
         <source>Address</source>
-        <translation>Adresse</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="bookmark.py" line="68"/>
         <source>Length (dec)</source>
-        <translation>Taille (déc)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="bookmark.py" line="69"/>
         <source>Length (hex)</source>
-        <translation>Taille (hex)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="bookmark.py" line="70"/>
         <source>Hex value</source>
-        <translation>Valeur hex</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="bookmark.py" line="71"/>
         <source>Ascii value</source>
-        <translation>Valeur ASCII</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="bookmark.py" line="72"/>
         <source>Description</source>
-        <translation>Description</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -873,27 +878,27 @@
     <message>
         <location filename="nodeviewbox.py" line="242"/>
         <source>Add bookmark</source>
-        <translation>Ajouter un favoris</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="255"/>
         <source>Add a bookmark from the Virtual File System</source>
-        <translation>Ajouter un favoris depuis le Système de Fichier Virtuel</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="266"/>
         <source>Create a new category</source>
-        <translation>Créer une nouvelle catégorie</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="286"/>
         <source>Category name :</source>
-        <translation>Nom de la catégorie :</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="nodeviewbox.py" line="277"/>
         <source>Add in an existing category</source>
-        <translation>Ajouter dans une catégorie existante</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -902,38 +907,32 @@
         <location filename="applymodule.py" line="284"/>
         <source>BrowserButton</source>
         <comment>Add Dump</comment>
-        <translation>Ajouter une image</translation>
+        <translation>Dump toevoegen</translation>
     </message>
     <message>
         <location filename="applymodule.py" line="278"/>
         <source>Browse</source>
         <comment>Browse</comment>
-        <translation>Parcourir</translation>
+        <translation>Surf</translation>
     </message>
 </context>
 <context>
     <name>decodeValues</name>
     <message>
-        <location filename="decodeValues.py" line="44"/>
-        <source>decodeValues</source>
-        <comment>Type</comment>
-        <translation type="obsolete">Type</translation>
-    </message>
-    <message>
         <location filename="decodeValues.py" line="45"/>
         <source>decodeValues</source>
         <comment>Value</comment>
-        <translation type="obsolete">Valeur</translation>
+        <translation type="obsolete">Waarde</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="45"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation type="unfinished">Type</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="46"/>
         <source>Value</source>
-        <translation>Valeur</translation>
+        <translation type="unfinished">Waarde</translation>
     </message>
 </context>
 <context>
@@ -942,23 +941,23 @@
         <location filename="navigation.py" line="52"/>
         <source>navigation</source>
         <comment>Current</comment>
-        <translation type="obsolete">Courant</translation>
+        <translation type="obsolete">Huidige</translation>
     </message>
     <message>
         <location filename="navigation.py" line="53"/>
         <source>navigation</source>
         <comment>Value</comment>
-        <translation type="obsolete">Valeur</translation>
+        <translation type="obsolete">Waarde</translation>
     </message>
     <message>
         <location filename="navigation.py" line="53"/>
         <source>Current</source>
-        <translation>Courant</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="navigation.py" line="54"/>
         <source>Value</source>
-        <translation>Valeur</translation>
+        <translation type="unfinished">Waarde</translation>
     </message>
 </context>
 </TS>

@@ -223,8 +223,7 @@ class ImageView(QWidget, Script):
       if self.isImage(child):
         self.images.append(child)
         if child.name() == node.name():
-          self.curIdx = len(self.images) - 1 
-
+          self.curIdx = len(self.images) - 1
 
   def isImage(self, node):
     if node.size() != 0:
@@ -324,6 +323,10 @@ class ImageView(QWidget, Script):
     self.databox = QVBoxLayout()
     self.metadata = Metadata()
     self.databox.addWidget(self.metadata)
+
+    if len(self.images) < 2:
+      self.nextButton.setEnabled(False)
+      self.previousButton.setEnabled(False)
 
     self.box.addLayout(self.imagebox)
     self.box.addLayout(self.databox)
