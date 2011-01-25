@@ -41,11 +41,11 @@ from ui.gui.ide.actions import IdeActions
 from ui.gui.widget.taskmanager import Processus
 from ui.gui.widget.modules import Modules
 from ui.gui.widget.env import Env
-from ui.gui.widget.stdio import *
+from ui.gui.widget.stdio import STDErr, STDOut
 
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
-#from ui.gui.widget.stdio import IO
+
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
@@ -201,7 +201,6 @@ class MainWindow(QMainWindow):
         self.addDockWidget(self.masterArea, self.master)
         self.addDockWidget(self.secondArea, self.second)
 
-        self.io = IO(self.debug)
         self.timer = QTimer(self)
 	self.connect(self.timer, SIGNAL("timeout()"), self.refreshSecondWidgets)
         self.timer.start(2000)      

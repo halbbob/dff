@@ -42,7 +42,7 @@ class STDOut(QPlainTextEdit):
      QPlainTextEdit.__init__(self)
      self.setReadOnly(1)
      self.parent = parent
-     self.name = "STDOut"
+     self.name = "Output"
      self.debug = debug
      self.sigout = "IOOUTputtext"
      self.connect(self, SIGNAL(self.sigout), self.puttext)
@@ -58,7 +58,7 @@ class STDErr(QPlainTextEdit):
      QPlainTextEdit.__init__(self)
      self.setReadOnly(1)
      self.parent = parent
-     self.name = "STDError"
+     self.name = "Errors"
      self.debug = debug
      self.sigerr = "IOERRputtext"
      self.connect(self, SIGNAL(self.sigerr), self.puttext)
