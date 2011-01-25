@@ -11,6 +11,7 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+#  Jeremy MOUNIER <jmo@digital-forensic.org>
 #
 
 from PyQt4.QtGui import QDockWidget, QAction, QApplication, QTextEdit, QWidget, QHBoxLayout, QTabWidget, QPlainTextEdit
@@ -36,36 +37,35 @@ class CIO(QThread):
         except OSError:
 	  pass
 
-class TextOut(QPlainTextEdit):
-   def __init__(self, name):
-     QPlainTextEdit.__init__(self)	
+class STDOut(QPlainTextEdit):
+   def __init__(self, parent, debug):
+     QPlainTextEdit.__init__(self)
      self.setReadOnly(1)
-     self.name = name 
+     self.parent = parent
+     self.name = "Output"
+     self.debug = debug
+     self.sigout = "IOOUTputtext"
+     self.connect(self, SIGNAL(self.sigout), self.puttext)
+     if sys.__stdout__.fileno() >= 0 and not self.debug:
+       self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)
+       self.cioout.start()
 
    def puttext(self, text):
      self.insertPlainText(text)
 
-class IO(QObject):
-  def __init__(self, debug = False):
-    QObject.__init__(self)
-    self.textOut = TextOut("output")
-    self.sigout = "IOOUTputtext"
-    self.connect(self, SIGNAL(self.sigout), self.puttextout)
-    if sys.__stdout__.fileno() >= 0 and not debug:
-      self.cioout = CIO(self, sys.__stdout__.fileno(), self.sigout)
-      self.cioout.start()
+class STDErr(QPlainTextEdit):
+   def __init__(self, parent, debug):
+     QPlainTextEdit.__init__(self)
+     self.setReadOnly(1)
+     self.parent = parent
+     self.name = "Errors"
+     self.debug = debug
+     self.sigerr = "IOERRputtext"
+     self.connect(self, SIGNAL(self.sigerr), self.puttext)
+     if sys.__stderr__.fileno() >= 0 and not self.debug: 
+       self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)
+       self.cioerr.start()
 
-    self.textErr = TextOut("error")
-    self.sigerr = "IOERRputtext"
-    self.connect(self, SIGNAL(self.sigerr), self.puttexterr)
-    if sys.__stderr__.fileno() >= 0 and not debug: 
-      self.cioerr = CIO(self, sys.__stderr__.fileno(), self.sigerr)
-      self.cioerr.start()
-
-  def puttextout(self, text):
-    self.textOut.puttext(text)
-
-  def puttexterr(self, text):
-    self.textErr.puttext(text)
-
+   def puttext(self, text):
+     self.insertPlainText(text)
 

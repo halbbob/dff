@@ -45,7 +45,7 @@ class Ide(QWidget):
 
     def g_display(self):
         self.vbox = QVBoxLayout()
-        self.createSplitter()
+        self.createTabWidget()
         self.setLayout(self.vbox)
 
         self.setToolbars()
@@ -53,9 +53,7 @@ class Ide(QWidget):
         self.initActions()
 
     def setToolbars(self):
-
         self.actions.idetoolbar.setVisible(True)
-
         self.mainWindow.addToolBar(self.actions.idetoolbar)
         self.mainWindow.insertToolBarBreak(self.actions.idetoolbar)
         self.actions.enableActions()
@@ -69,12 +67,8 @@ class Ide(QWidget):
         self.buttonCloseTab.setEnabled(False)
         self.scripTab.setCornerWidget(self.buttonCloseTab,  Qt.TopRightCorner)
         self.scripTab.connect(self.buttonCloseTab, SIGNAL("clicked()"), self.closeTabWidget)
+        self.vbox.addWidget(self.scripTab)
 
-    def createSplitter(self):
-        self.splitter = QSplitter()
-        self.createTabWidget()
-        self.splitter.addWidget(self.scripTab)
-        self.vbox.addWidget(self.splitter)
 
     def createPage(self,  buffer):
         page = Editor(self.scripTab)
@@ -88,8 +82,6 @@ class Ide(QWidget):
     def newactBack(self):
         #prepare for wizard        
         self.ideWiz = IdeWizard(self, self.tr("New script"))
-#        self.ideWiz.exec_()
-        #XXX cancel 
         ret = self.ideWiz.exec_()
         if ret > 0:
         #First page fields
@@ -134,20 +126,15 @@ class Ide(QWidget):
                 self.actions.ide = self.mainWindow.dockWidget["IDE"]
                 self.actions.idetoolbar.setVisible(False)
 
-#            self.mainWindow.removeToolBar(self.actions.idetoolbar)
-#            self.actions.disableActions()
     
     def openactBack(self):
-        #POSIX
-        sFileName = QFileDialog.getOpenFileName(self, self.tr("MainWindow", "open"),"/home")
+        sFileName = QFileDialog.getOpenFileName(self.parent, self.tr("MainWindow", "open"),"/home")
         if sFileName:
             file = open(sFileName,  "r")
             scin = self.createPage("")
             buffer = QString()
             buffer = file.read()
             scin.insert(buffer)
-            
-            #XXXX POSIX
             script = sFileName.split("/")
             
             scriptname = script[len(script) - 1]
