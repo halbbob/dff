@@ -89,8 +89,8 @@ public:
   void				setParametersType(uint16_t ptype);
   uint16_t			parametersType();
   
-  void				setNeedType(uint16_t ntype);
-  uint16_t			needType();
+  void				setRequirementType(uint16_t ntype);
+  uint16_t			requirementType();
 
   //void				addPredefinedParameters(Variant *params);
 

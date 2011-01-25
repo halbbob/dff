@@ -101,12 +101,12 @@ uint16_t			Argument::parametersType()
   return (this->__flags & 0xF000);
 }
 
-void				Argument::setNeedType(uint16_t ntype)
+void				Argument::setRequirementType(uint16_t ntype)
 {
   this->__flags = (this->__flags&0xF3FF)|(ntype&0x0C00);
 }
 
-uint16_t			Argument::needType()
+uint16_t			Argument::requirementType()
 {
   return (this->__flags & 0x0c00);
 }

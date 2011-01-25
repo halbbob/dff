@@ -487,7 +487,8 @@ Variant* pyListToVariant(PyObject* val, uint8_t t)
   if (!err)
   {
      printf("No error in vlist creation\n");
-     return new Variant(vlist);
+     Variant* res = new Variant(vlist);
+     return res;
   }
   else
   {
