@@ -11,6 +11,7 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@arxsys.fr>
+#  Jeremy MOUNIER <jmo@arxsys.fr>
 # 
 
 import os
@@ -19,7 +20,7 @@ from Queue import *
 
 # Form Custom implementation of MAINWINDOW
 from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit
-from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString
+from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
 from api.type import *
@@ -35,9 +36,13 @@ from api.gui.dialog.applymodule import ApplyModule
 from ui.gui.configuration.configure import ConfigureDialog
 from ui.gui.configuration.conf import Conf
 from ui.gui.configuration.translator import Translator
-from ui.gui.ide.ide import Ide
 from ui.gui.ide.actions import IdeActions
-from ui.gui.widget.info import Info
+
+from ui.gui.widget.taskmanager import Processus
+from ui.gui.widget.modules import Modules
+from ui.gui.widget.env import Env
+from ui.gui.widget.stdio import *
+
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
 #from ui.gui.widget.stdio import IO
@@ -61,23 +66,25 @@ class MainWindow(QMainWindow):
     def __init__(self,  app, debug = False):
         super(MainWindow,  self).__init__()
         self.app = app
+        self.debug = debug
         self.sched = scheduler.sched
         self.vfs = VFS.Get()
 
         self.dialog = Dialog(self)
 	
 	self.initCallback()
-        self.initDockWidgets()
-
 	#menu
 	self.menuList = [[self.tr("File"), ["New_Dump", "New_Device", "Exit"]],
                          ["Modules", ["Load"]],
+                         ["View", ["Maximize", "Fullscreen mode"]],
                          ] 
 
 	#icon 
         self.toolbarList = [["New_Dump"],
                             ["New_Device"],
-                            ["List_Files"]
+                            ["List_Files"],
+                            ["Maximize"],
+                            ["Fullscreen mode"]
                             ]
         if HELP:
             self.toolbarList.append(["help"])
@@ -85,47 +92,64 @@ class MainWindow(QMainWindow):
         self.actionList = [
             ["New_Dump", self.tr("Open evidence file(s)"), self.dialog.addFiles, ":add_image.png", "Add image"],
             ["New_Device", self.tr("Open local device"), self.dialog.addDevices, ":add_device.png", "Add device(s)"],
+            ["Maximize", self.tr("Maximize"), self.maximizeDockwidget,  ":maximize.png", "Maximize"],
+            ["Fullscreen mode", self.tr("Fullscreen mode"), self.fullscreenMode,  ":randr.png", "Fullscreen mode"],
             ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
             ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
             ["About", "?", self.dialog.about, None, None ],
-            ["List_Files", self.tr("List Files"), self.addBrowser, ":view_detailed.png", "Open List"]
+            ["List_Files", self.tr("List Files"), self.addNodeBrowser, ":view_detailed.png", "Open List"]
             ] 
         if HELP:
             self.actionList.append(["help", "Help", self.addHelpWidget, ":help.png", "Open Help"])
 
         self.setupUi()
         self.ideActions = IdeActions(self)
-	self.shellActions = ShellActions(self)				
-
-	self.interpreterActions =InterpreterActions(self)				
-
+	self.shellActions = ShellActions(self)
+	self.interpreterActions = InterpreterActions(self)
 	self.addMenu(*[self.tr("About"), ["About"]])
+        self.initDockWidgets()
+        self.setCentralWidget(None)
 
-        # Setup AREA
+#############  DOCKWIDGETS FUNCTIONS ###############
 
-        self.mainArea = Qt.TopDockWidgetArea
-        self.rightArea = Qt.RightDockWidgetArea
+    def addDockWidgets(self, widget, master=True):
+        if widget is None:
+            return
+        dockwidget = DockWidget(self, widget, widget.name)
+        name = self.getWidgetName(widget.name)
+        self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
-        self.mainWidget = Info(self, debug)
-        self.setCentralWidget(self.mainWidget)
+        self.addDockWidget(self.masterArea, dockwidget)
+        if master:
+            self.tabifyDockWidget(self.master, dockwidget)
+        else:
+            self.tabifyDockWidget(self.second, dockwidget)
 
-	self.nodeBrowser = NodeBrowser(self)
-        dockwidget = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
-        dockwidget.setAllowedAreas(Qt.AllDockWidgetAreas)
-        dockwidget.setWidget(self.nodeBrowser)
-        self.dockWidget["NodeBrowser"] = dockwidget
-        self.connect(dockwidget, SIGNAL("resizeEvent"), self.nodeBrowser.resize)
-        self.connect(dockwidget, SIGNAL("dockLocationChanged(Qt::DockWidgetArea)"), self.markerAreaChanged)
+        self.dockWidget[str(widget.name)] = dockwidget
 
-        self.addNewDockWidgetTab(self.mainArea, self.dockWidget["NodeBrowser"])
+    def getWidgetName(self, name):
+        did = 0
+        for d in self.dockWidget:
+            if d.startswith(str(name)):
+                did += 1
+        if did > 0:
+            name = name + str(did)
+        return name
 
-#        self.addShell()
-
-#        self.readSettings()
-   
-    def markerAreaChanged(self, area):
-        self.mainArea = area
-        self.rightArea = area
+    def addSingleDock(self, name, cl):
+        try :
+	   self.dockWidget[name].show()
+        except KeyError:
+            w = cl(self)
+            self.addDockWidgets(w, master=False)
+           
+    def addNodeBrowser(self, rootpath=None):
+        if rootpath == None:
+            self.addDockWidgets(NodeBrowser(self)) 
+        else:
+            nb = NodeBrowser(self)
+            nb.model.setRootPath(nb.vfs.getnode(rootpath))
+            self.addDockWidgets(nb)
 
     def addHelpWidget(self):
         path = DOC_PATH
@@ -135,19 +159,99 @@ class MainWindow(QMainWindow):
                 dialog = QMessageBox.warning(self, "Error while loading help", QString(str(DOC_PATH) + ": No such file.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
             else:
                 dialog = QMessageBox.warning(self, "Error while loading help", QString("Documentation path not found.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
-            dialog.exec_()
             return
 
         self.addDockWidgets(Help(self, path=path))
 
-    def addBrowser(self, rootpath=None):
-        if rootpath == None:
-            self.addDockWidgets(NodeBrowser(self)) 
-        else:
-            nb = NodeBrowser(self)
-            nb.model.setRootPath(nb.vfs.getnode(rootpath))
-            self.addDockWidgets(nb)
+    def addInterpreter(self):
+       self.addSingleDock("Interpreter", Interpreter)
  
+    def initDockWidgets(self):
+        """Init Dock in application and init DockWidgets"""
+        widgetPos = [ ( Qt.TopLeftCorner, Qt.LeftDockWidgetArea, QTabWidget.North),
+	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.North), 
+	 (Qt.TopLeftCorner, Qt.TopDockWidgetArea, QTabWidget.North), 
+	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.South) ]
+
+        for corner, area, point in widgetPos:
+            self.setCorner(corner, area)
+            try:
+                self.setTabPosition(area, point)
+            except AttributeError:
+                pass
+        self.dockWidget = {}
+        self.widget = {}
+        self.masterArea = Qt.TopDockWidgetArea
+        self.secondArea = Qt.BottomDockWidgetArea
+        self.last_state = None
+        self.last_dockwidget = None
+        self.last_widget = None
+
+        self.createFirstWidgets()
+
+    def createFirstWidgets(self):
+	self.nodeBrowser = NodeBrowser(self)
+        self.master = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
+        self.master.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.dockWidget["nodebrowser"] = self.master
+        self.wprocessus = Processus(self)
+        self.second = DockWidget(self, self.wprocessus, "Task manager")
+        self.second.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.dockWidget["Task manager"] = self.second
+        self.addDockWidget(self.masterArea, self.master)
+        self.addDockWidget(self.secondArea, self.second)
+
+        self.io = IO(self.debug)
+        self.timer = QTimer(self)
+	self.connect(self.timer, SIGNAL("timeout()"), self.refreshSecondWidgets)
+        self.timer.start(2000)      
+
+        self.wstdout = STDOut(self, self.debug)
+        self.wstderr = STDErr(self, self.debug)
+
+        self.addDockWidgets(self.wstdout, master=False)
+        self.addDockWidgets(self.wstderr, master=False)
+        self.wmodules = Modules(self)
+        self.addDockWidgets(self.wmodules, master=False)
+        self.wenv = Env(self)
+        self.addDockWidgets(self.wenv, master=False)
+        self.refreshSecondWidgets()
+
+    def maximizeDockwidget(self):
+        if self.last_state is None:
+            self.last_state = self.saveState()
+            focus_widget = QApplication.focusWidget()
+            for key, dock in self.dockWidget.iteritems():
+                dock.hide()
+                if dock.isAncestorOf(focus_widget):
+                    self.last_dockwidget = dock
+            self.last_widget = self.last_dockwidget.widget()
+            self.last_dockwidget.toggleViewAction().setDisabled(True)
+            self.setCentralWidget(self.last_dockwidget.widget())
+            self.last_dockwidget.visibility_changed(True)
+        else:
+            self.last_dockwidget.setWidget(self.last_widget)
+            self.last_dockwidget.toggleViewAction().setEnabled(True)
+            self.setCentralWidget(None)
+            self.restoreState(self.last_state)
+            self.last_dockwidget.setFocus()
+            self.last_state = None
+            self.last_widget = None
+            self.last_dockwidget = None
+
+    def fullscreenMode(self):
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
+        
+#############  END OF DOCKWIDGETS FUNCTIONS ###############
+
+    def refreshSecondWidgets(self):
+	self.wprocessus.LoadInfoProcess()
+        self.wmodules.LoadInfoModules()
+	self.wenv.LoadInfoEnv()
+
     def applyModule(self, modname, modtype, selected):
         appMod = ApplyModule(self)
         appMod.openApplyModule(modname, modtype, selected)
@@ -161,7 +265,7 @@ class MainWindow(QMainWindow):
  
     def strResult(self, proc):
         self.emit(SIGNAL("strResultView"), proc)
-           
+
     def qwidgetResultView(self, proc):
 	try :
            proc.inst.g_display()
@@ -187,57 +291,10 @@ class MainWindow(QMainWindow):
 	   widget.emit(SIGNAL("puttext"), res)
            self.addDockWidgets(widget)
 
-    def addInterpreter(self):
-       self.addSingleDock("Interpreter", Interpreter)	
- 
-    def addSingleDock(self, name, cl):
-        try :
-	   self.dockWidget[name].show()
-        except KeyError:
-           self.dockWidget[name] = cl(self)
-           self.addNewDockWidgetTab(self.rightArea, self.dockWidget[name])
-
-#    def addDock(self, name, cl):
-#        self.dockWidget[name] = cl(self)
-#        self.addNewDockWidgetTab(Qt.BottomDockWidgetArea, self.dockWidget[name])
-
-    def addDockWidgets(self, widget):
-        dockwidget = DockWidget(self, widget, widget.name)
-        self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
-        self.addNewDockWidgetTab(self.mainArea, dockwidget)
-  
-    def initDockWidgets(self):
-        """Init Dock in application and init DockWidgets"""
-        widgetPos = [ ( Qt.TopLeftCorner, Qt.LeftDockWidgetArea, QTabWidget.North),
-	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.North), 
-	 (Qt.TopLeftCorner, Qt.TopDockWidgetArea, QTabWidget.North), 
-	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.North) ]
-
-        for corner, area, point in widgetPos:
-            self.setCorner(corner, area)
-            try:
-                self.setTabPosition(area, point)
-            except AttributeError:
-                pass
-               
-        self.dockWidget = {}
-        self.widget = {}
-      
-    def addNewDockWidgetTab(self, dockArea, dockWidget):
-        if dockWidget is None :
-            return
-        for dock in self.dockWidget.itervalues():
-           if self.dockWidgetArea(dock) == dockArea:
-             self.addDockWidget(dockArea, dockWidget)
-             self.tabifyDockWidget(dock, dockWidget)
-             return
-        self.addDockWidget(dockArea, dockWidget)
-    
     def addToolBars(self, toolbar):
         """ Init Toolbar"""
         for action in toolbar:
            self.toolBarMain.addAction(self.action[action])
-        #self.toolBarMain.addSeparator()
 
     def addMenu(self, name, actionList = None):
         self.menu[name] = QMenu(self.menubar)
@@ -321,13 +378,4 @@ class MainWindow(QMainWindow):
         for toolbar in self.toolbarList:
 	   self.addToolBars(toolbar)
  
-#    def closeEvent(self, e):
-#        settings = QSettings("ArxSys", "DFF-0.5")
-#	settings.setValue("geometry", self.saveGeometry())
-#	settings.setValue("windowState", self.saveState())
-
-#    def readSettings(self):
-#	settings = QSettings("ArxSys", "DFF-0.5")
-#	self.restoreGeometry(settings.value("geometry").toByteArray())
-#	self.restoreState(settings.value("windowState").toByteArray())
 

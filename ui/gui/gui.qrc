@@ -22,6 +22,8 @@
 
     <file alias="anim.gif">icons/anim.gif</file>
     <file alias="exec.png">icons/filesystem/exec.png</file>
+    <file alias="randr.png">icons/actions/randr.png</file>
+    <file alias="maximize.png">icons/actions/maximize.png</file>
 
     <file alias="configure.png">icons/actions/configure.png</file>
     <file alias="harddrive.png">icons/devices/harddrive.png</file>
