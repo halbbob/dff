@@ -56,6 +56,7 @@
 %include "../include/argument.hpp"
 %include "../include/export.hpp"
 %include "../include/config.hpp"
+%include "../include/path.hpp"
 %include "../include/Time.h"
 %include "../include/vtime.hpp"
 
@@ -105,7 +106,7 @@ bool checkSignedOverflow (PyObject* val, uint8_t t)
 
    if ((t == typeId::Int16) && (ll >= INT16_MIN) && (ll <= INT16_MAX))
    {
-      printf("%lld\n", ll);
+     printf("%lld\n", ll);
       return true;
    }
    else if ((t == typeId::Int32) && (ll >= INT32_MIN) && (ll <= INT32_MAX))
@@ -391,7 +392,6 @@ Variant* pyObjectToUInt32Variant(PyObject* val)
    return var;
 }
 
-
 Variant* pyObjectToUInt64Variant(PyObject* val)
 {
    Variant*     var;
@@ -486,7 +486,7 @@ Variant* pyListToVariant(PyObject* val, uint8_t t)
     }
   if (!err)
   {
-     printf("No error in vlist creation\n");
+    //printf("No error in vlist creation\n");
      Variant* res = new Variant(vlist);
      return res;
   }
@@ -510,9 +510,6 @@ Variant*  pyObjectToVariant(PyObject* val, uint8_t t)
      return pyStringToVariant(val, t);
    else
      return NULL;
-//     var = longToVariant(val, t);
-//   else if (PyString_Check(val))
-//     var = strToVariant(val, t);
 }
 
 bool isTypeCompatible(PyObject* val, uint8_t t)
@@ -573,6 +570,55 @@ bool validateDefault (PyObject* val, uint8_t t)
 	 }
      }
   return true;
+}
+
+PyObject*	start(PyObject* input)
+{
+  PyObject*	resultobj = 0;
+  //Variant*	params;
+  //uint8_t	type;
+  
+  if (!PyDict_Check(input))
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      PyErr_SetString(PyExc_TypeError, "fso::start argument 1 must be of DictType");
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      return NULL;
+    }
+  else
+    {
+      PyObject *key, *value;
+      Py_ssize_t pos = 0;
+      std::map<std::string, Variant* > cppmap;
+      
+      while (PyDict_Next(input, &pos, &key, &value))
+	{
+	  if (!PyString_Check(key))
+	    {
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      PyErr_SetString(PyExc_TypeError, "fso::start --> dict keys must be of type string");
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      return NULL;
+	    }
+	  else
+	    {
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      char* cstr = PyString_AsString(key);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (cstr != NULL)
+		{
+		  Variant* vval;
+		  
+		  if ((vval = pyObjectToVariant(value, 1)) != NULL)
+		    cppmap[std::string(cstr)] = vval;
+		  else
+		    return NULL;
+		}
+	    }
+	  resultobj = SWIG_Py_Void();
+	  return resultobj;
+	}
+    }
 }
 
 %}
@@ -707,9 +753,9 @@ bool validateDefault (PyObject* val, uint8_t t)
 
 %extend Variant
 {
-  Variant(PyObject*)
-    {
-    }
+  /* Variant(PyObject*) */
+  /*   { */
+  /*   } */
   %pythoncode
   %{
     def __proxyinit__(self, *args):

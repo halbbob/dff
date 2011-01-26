@@ -789,54 +789,6 @@ namespace std
 
 %extend fso
 {
-  /* PyObject*	start(PyObject* input) */
-  /* { */
-  /*   PyObject*	resultobj = 0; */
-  /*   //Variant*	params; */
-  /*   //uint8_t	type; */
-    
-  /*   if (!PyDict_Check(input)) */
-  /*     { */
-  /* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /*   	PyErr_SetString(PyExc_TypeError, "fso::start argument 1 must be of DictType"); */
-  /*   	SWIG_PYTHON_THREAD_END_BLOCK; */
-  /*   	return NULL; */
-  /*     } */
-  /*   else */
-  /*     { */
-  /* 	PyObject *key, *value; */
-  /* 	Py_ssize_t pos = 0; */
-  /* 	std::map<std::string, Variant* > cppmap; */
-	
-  /* 	while (PyDict_Next(input, &pos, &key, &value))  */
-  /* 	  { */
-  /* 	    if (!PyString_Check(key)) */
-  /* 	      { */
-  /* 		SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /* 		PyErr_SetString(PyExc_TypeError, "fso::start --> dict keys must be of type string"); */
-  /* 		SWIG_PYTHON_THREAD_END_BLOCK; */
-  /* 		return NULL; */
-  /* 	      } */
-  /* 	    else */
-  /* 	      { */
-  /* 		SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /* 		char* cstr = PyString_AsString(key); */
-  /* 		SWIG_PYTHON_THREAD_END_BLOCK; */
-  /* 		if (cstr != NULL) */
-  /* 		  { */
-  /* 		    Variant* vval; */
-		    
-  /* 		    if ((vval = pyObjectToVariant(value, 1)) != NULL) */
-  /* 		      cppmap[std::string(cstr)] = vval; */
-  /* 		    else */
-  /* 		      return NULL; */
-  /* 		  } */
-  /* 	      } */
-  /* 	    resultobj = SWIG_Py_Void(); */
-  /* 	    return resultobj; */
-  /* 	  } */
-  /*     } */
-  /* } */
 };
 
 /* %extend mfso */

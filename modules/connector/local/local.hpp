@@ -23,9 +23,9 @@
 #include <stdio.h>
 #include <list>
 #include <vector>
-#include "type.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
+#include "argument.hpp"
+#include "path.hpp"
 #ifdef WIN32
 #include "wlocalnode.hpp"
 #else
@@ -41,6 +41,8 @@ private:
   std::string	basePath;
   int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
+  void		createTree(std::list<Variant *>);
+
 #ifndef WIN32
   class ULocalNode*	__root; 
 #else
@@ -63,6 +65,6 @@ public:
   int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
   uint32_t	status(void);
   uint64_t	vtell(int32_t fd);
-  virtual void	start(argument* ar);
+  virtual void	start(std::map<std::string, Variant* > args);
 };
 #endif

@@ -34,6 +34,8 @@
 #include "vfs.hpp"
 #include "node.hpp"
 
+typedef std::map<std::string, Variant* > RunTimeArguments; 
+
 class fso
 {
 private:
