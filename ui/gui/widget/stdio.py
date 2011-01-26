@@ -19,6 +19,8 @@ from PyQt4.QtCore import Qt, SIGNAL, QThread, QObject
 from ui.redirect import RedirectIO
 import os, sys
 
+from ui.gui.resources.ui_errors import Ui_Errors
+from ui.gui.resources.ui_output import Ui_Output
 
 class CIO(QThread):
   def __init__(self, IOout, fd, sig):
@@ -37,9 +39,10 @@ class CIO(QThread):
         except OSError:
 	  pass
 
-class STDOut(QPlainTextEdit):
+class STDOut(QPlainTextEdit, Ui_Output):
    def __init__(self, parent, debug):
      QPlainTextEdit.__init__(self)
+     self.setupUi(self)
      self.setReadOnly(1)
      self.parent = parent
      self.name = "Output"
@@ -53,9 +56,10 @@ class STDOut(QPlainTextEdit):
    def puttext(self, text):
      self.insertPlainText(text)
 
-class STDErr(QPlainTextEdit):
+class STDErr(QPlainTextEdit, Ui_Errors):
    def __init__(self, parent, debug):
      QPlainTextEdit.__init__(self)
+     self.setupUi(self)
      self.setReadOnly(1)
      self.parent = parent
      self.name = "Errors"
