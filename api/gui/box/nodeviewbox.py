@@ -23,10 +23,12 @@ from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, DEvent, VLink
 from api.vfs import libvfs
+from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 
-class NodeViewBox(QWidget):
+class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
+    self.setupUi(self)
     self.vfs = vfs()
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
@@ -38,44 +40,27 @@ class NodeViewBox(QWidget):
 
     self.bookmarkCategories = []
 
-    self.gridLayout = QHBoxLayout(self)
-    self.gridLayout.setAlignment(Qt.AlignLeft)
     self.addPropertyTable()
-    self.createButton("previous", self.moveToPrevious, self.tr("Previous"), ":previous.png")
-    self.createPrevDropButton()
-#    self.createButton("previous", self.moveToPrevious, self.tr("Previous"), ":previous.png")
 
-    self.createButton("next", self.moveToNext, self.tr("Previous"), ":next.png")
-    self.createNextDropButton()
-    self.createButton("top", self.moveToTop, self.tr("Previous"), ":top.png")
-
-    self.button["previous"].setEnabled(False)
-    self.button["next"].setEnabled(False)
-
-    self.createButton("root", self.goHome,  self.tr("Return to root"), ":home.png")
-
-    self.createPathEdit()
-
-    self.createChangeView()
-    self.createCheckBoxAttribute()
-    self.createButton("add to bookmarks", self.bookmark, self.tr("Add to bookmarks"), ":bookmark_add.png")
-    self.createButton("search", self.searchActivated, self.tr("Display search engine"), ":filefind.png")
-    self.createButton("imagethumb", self.imagethumbActivated, self.tr("Active thumbnails"), ":image.png")
-    self.createThumbSize()
-
-    self.tableActivated()
-
-    self.setLayout(self.gridLayout)
-
-  def createChangeView(self):
-    self.viewbox = QComboBox()
-    self.viewbox.insertItem(0, QIcon(":view_detailed.png"), self.tr("List"))
-    self.viewbox.insertItem(1, QIcon(":view_icon.png"), self.tr("Icons"))
-    self.viewbox.insertItem(2, QIcon(":view_choose.png"), self.tr("Tree"))
+    self.parent.connect(self.previous, SIGNAL("clicked()"), self.moveToPrevious)
+    self.setPrevDropButton()
+    self.parent.connect(self.next, SIGNAL("clicked()"), self.moveToNext)
+    self.setNextDropButton()
+    self.parent.connect(self.top, SIGNAL("clicked()"), self.moveToTop)
+    self.parent.connect(self.root, SIGNAL("clicked()"), self.goHome)
     
+    self.createPathEdit()
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
-    self.gridLayout.addWidget(self.viewbox)
+    self.createCheckBoxAttribute()
+    self.connect(self.addToBookmark, SIGNAL("clicked()"), self.bookmark)
+    self.connect(self.search, SIGNAL("clicked()"), self.searchActivated)
+    self.connect(self.imagethumb, SIGNAL("clicked()"), self.imagethumbActivated)
+
+    self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
+    
+    self.tableActivated()
+
 
   def viewboxChanged(self, index):
     if index == 0:
@@ -92,26 +77,11 @@ class NodeViewBox(QWidget):
     self.propertyTable.setMinimumSize(QSize(150, 300))
     self.parent.browserLayout.addWidget(self.propertyTable)
 
-  def createButton(self, name, func, tooltip, iconName, iconSize = 32):
-    self.button[name] = QPushButton(self)
-    self.button[name].setFixedSize(QSize(iconSize, iconSize))
-    self.button[name].setFlat(True)
-    self.button[name].setToolTip(tooltip)
-    self.button[name].setIcon(QIcon(iconName))
-    self.button[name].setIconSize(QSize(iconSize, iconSize))
-    self.gridLayout.addWidget(self.button[name])
-    self.parent.connect(self.button[name], SIGNAL("clicked()"), func)
-
-  def createPrevDropButton(self):
-    self.prevdrop = QPushButton(self)
-    self.prevdrop.setFixedSize(QSize(20, 32))
-    self.prevdrop.setEnabled(False)
-    self.prevdrop.setFlat(True)
+  def setPrevDropButton(self):
+    self.prevdrop.setFixedSize(QSize(10, 16))
     self.prevmenu = QMenu()
     self.prevdrop.setMenu(self.prevmenu)
     self.connect(self.prevmenu, SIGNAL("triggered(QAction*)"), self.prevMenuTriggered)
-
-    self.gridLayout.addWidget(self.prevdrop)
 
   def setPrevMenu(self):
     self.prevmenu.clear()
@@ -122,15 +92,11 @@ class NodeViewBox(QWidget):
   def prevMenuTriggered(self, action):
     self.parent.model.setRootPath(self.vfs.getnode(str(action.text())))
 
-  def createNextDropButton(self):
-    self.nextdrop = QPushButton(self)
-    self.nextdrop.setFixedSize(QSize(20, 32))
-    self.nextdrop.setEnabled(False)
-    self.nextdrop.setFlat(True)
+  def setNextDropButton(self):
+    self.nextdrop.setFixedSize(QSize(10, 16))
     self.nextmenu = QMenu()
     self.nextdrop.setMenu(self.nextmenu)
     self.connect(self.nextmenu, SIGNAL("triggered(QAction*)"), self.nextMenuTriggered)
-    self.gridLayout.addWidget(self.nextdrop)
 
   def setNextMenu(self):
     self.nextmenu.clear()
@@ -151,18 +117,7 @@ class NodeViewBox(QWidget):
   def goHome(self):
      self.parent.model.setRootPath(self.vfs.getnode("/"))    
 
-  def createThumbSize(self):
-    self.thumbSize = QComboBox()
-    self.thumbSize.setMaximumWidth(100)
-    self.thumbSize.addItem(self.tr("Small"))
-    self.thumbSize.addItem(self.tr("Medium"))
-    self.thumbSize.addItem(self.tr("Large"))
-    self.thumbSize.setEnabled(False)
-    self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
-    self.gridLayout.addWidget(self.thumbSize)
-
   def createCheckBoxAttribute(self):
-    self.checkboxAttribute = QCheckBox(self.tr("Attributes"), self)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.checkboxAttribute.setCheckState(True)
     else:
@@ -171,7 +126,6 @@ class NodeViewBox(QWidget):
     self.checkboxAttribute.setTristate(False)
 
     self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
-    self.gridLayout.addWidget(self.checkboxAttribute)
 
   def checkboxAttributeChanged(self, state):
      if state:
@@ -245,8 +199,6 @@ class NodeViewBox(QWidget):
        self.parent.nodeFilterBox.setVisible(True) 
 
   def createPathEdit(self):
-    self.pathedit = QLineEdit(self)
-
     self.treemodel = self.parent.treeModel
     self.model = self.parent.model
 
@@ -254,9 +206,6 @@ class NodeViewBox(QWidget):
     
     self.completer = kompleter(self.pathedit, self.treemodel, self.model)
     self.pathedit.setCompleter(self.completer)
-
-    self.gridLayout.addWidget(self.pathedit)
-
 
   def rootpathchanged(self, node):
     path = node.absolute()
@@ -278,16 +227,16 @@ class NodeViewBox(QWidget):
     self.setPrevMenu()
     self.setNextMenu()
     if self.currentPathId > 0:
-      self.button["previous"].setEnabled(True)
+      self.previous.setEnabled(True)
       self.prevdrop.setEnabled(True)
     else:
-      self.button["previous"].setEnabled(False)
+      self.previous.setEnabled(False)
       self.prevdrop.setEnabled(False)
     if self.currentPathId < len(self.history) -1:
-      self.button["next"].setEnabled(True)
+      self.next.setEnabled(True)
       self.nextdrop.setEnabled(True)
     else:
-      self.button["next"].setEnabled(False)
+      self.next.setEnabled(False)
       self.nextdrop.setEnabled(False)
 
 
@@ -335,6 +284,19 @@ class NodeViewBox(QWidget):
       return True
     else:
       return False
+
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+    else:
+      QWidget.changeEvent(self, event)
+
+
 
 class bookmarkDialog(QDialog):
   def __init__(self, nodeviewbox):

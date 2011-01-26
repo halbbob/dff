@@ -34,6 +34,7 @@ from api.gui.widget.propertytable import PropertyTable
 from api.gui.model.vfsitemmodel import  VFSItemModel
 
 from ui.gui.utils.menu import MenuTags
+from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
 
 class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
@@ -84,18 +85,20 @@ class SimpleNodeBrowser(QWidget):
     self.box.addWidget(self.view, 0,0)
     self.setLayout(self.box)
 
-class NodeBrowser(QWidget, DEventHandler):
+class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
   def __init__(self, parent):
-    QWidget.__init__(self, parent)
+    super(QWidget, self).__init__()
     DEventHandler.__init__(self)
+    self.setupUi(self)
 
     self.mainwindow = parent
 
     self.getWindowGeometry()
 
-    self.name = self.tr("nodebrowser")
+    self.name = self.windowTitle()
     self.type = "filebrowser"
     self.setObjectName(self.name)
+
 
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
@@ -119,25 +122,7 @@ class NodeBrowser(QWidget, DEventHandler):
     self.addNodeView()
 
     self.addOptionsView()
-#    self.browserLayout.addWidget(self.thumbsView)
-#    self.browserLayout.addWidget(self.tableView)
 
-#    self.browserLayout.setOpaqueResize(False)
-
-#    siz = self.mainwindow.width() / 3
-#    sizelist = [siz, siz * 3]
-#    self.browserLayout.setSizes(sizelist)
-#    self.browserLayout.setSizes(sizelist)
-
-#    si = self.browserLayout.sizes()
-#    for s in si:
-#      print s
-
-
-  #def refresh(self, node):
-     #self.thumbsView.model().sourceModel().emit(SIGNAL("refresh"), None)
-     #self.tableView.model().sourceModel().emit(SIGNAL("refresh"), None)
-     #self.treeModel.emit(SIGNAL("refresh"), node)	
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
@@ -282,9 +267,11 @@ class NodeBrowser(QWidget, DEventHandler):
             self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
        if node.hasChildren() or node.isDir():
-         self.opendirasnewtab.setEnabled(True)
+#         self.opendirasnewtab.setEnabled(True)
+         self.actionOpen_in_new_tab.setEnabled(True)
        else:
-         self.opendirasnewtab.setEnabled(False)
+#         self.opendirasnewtab.setEnabled(False)
+         self.actionOpen_in_new_tab.setEnabled(False)
        self.submenuFile.popup(QCursor.pos())
        self.submenuFile.show()       
 
@@ -334,25 +321,25 @@ class NodeBrowser(QWidget, DEventHandler):
      self.extractor = Extractor(self.parent)
      self.connect(self.extractor, SIGNAL("filled"), self.launchExtract)
      self.submenuFile = QMenu()
-     self.submenuFile.addAction(QIcon(":exec.png"),  "Open", self.openDefault, "Open")
+     self.submenuFile.addAction(self.actionOpen)
+     self.connect(self.actionOpen, SIGNAL("triggered()"), self.openDefault)
      ####
-     self.opendirasnewtab = QAction("Open in new tab", self)
-     self.opendirasnewtab.setEnabled(False)
-     self.submenuFile.addAction(self.opendirasnewtab)
-     self.connect(self.opendirasnewtab, SIGNAL("triggered()"), self.openAsNewTab)
+     self.submenuFile.addAction(self.actionOpen_in_new_tab)
+     self.connect(self.actionOpen_in_new_tab, SIGNAL("triggered()"), self.openAsNewTab)
      ###
      self.menu = {}
-     self.menuModule = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
+     self.menuModule = self.submenuFile.addMenu(self.actionOpen_with.icon(), self.actionOpen_with.text())
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
      self.submenuFile.addSeparator()
-     self.submenuFile.addAction(QIcon(":hexedit.png"), "Hex viewer", self.launchHexedit, "Hex viewer")
-     self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
+     self.submenuFile.addAction(self.actionHex_viewer)
+     self.connect(self.actionHex_viewer, SIGNAL("triggered()"), self.launchHexedit)
+     self.submenuFile.addAction(self.actionExtract)
+     self.connect(self.actionExtract, SIGNAL("triggered()"), self.extractNodes)
      self.submenuFile.addSeparator()
-#     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
 
   def openAsNewTab(self):
     node = self.currentNode()
-    self.mainwindow.addBrowser(node)
+    self.mainwindow.addNodeBrowser(node)
 
   def launchHexedit(self):
      nodes = self.currentNodes()
@@ -386,4 +373,17 @@ class NodeBrowser(QWidget, DEventHandler):
      arg.add_lnode("files", lnodes)
      arg.add_bool("recursive", int(res["recurse"]))
      self.taskmanager.add("extract", arg, ["thread", "gui"])
+
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+      self.menuModule.setTitle(self.actionOpen_with.text())
+    else:
+      QWidget.changeEvent(self, event)
+
 

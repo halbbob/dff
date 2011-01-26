@@ -18,6 +18,8 @@ set(ui_resources_files
   env.ui
   mainwindow.ui
   modules.ui
+  nodebrowser.ui
+  nodeviewbox.ui
   preferences.ui
   shell.ui
   taskmanager.ui
@@ -40,6 +42,8 @@ set(resources_srcs
   ui_env.py
   ui_mainwindow.py
   ui_modules.py
+  ui_nodebrowser.py
+  ui_nodeviewbox.py
   ui_preferences.py
   ui_shell.py
   ui_taskmanager.py

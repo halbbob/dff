@@ -221,12 +221,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	self.nodeBrowser = NodeBrowser(self)
         self.master = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
         self.master.setAllowedAreas(Qt.AllDockWidgetAreas)
-        self.master.setWindowTitle("nodebrowser")
+        self.master.setWindowTitle(self.nodeBrowser.windowTitle())
         self.dockWidget["nodebrowser"] = self.master
         self.wprocessus = Processus(self)
         self.second = DockWidget(self, self.wprocessus, "Task manager")
         self.second.setAllowedAreas(Qt.AllDockWidgetAreas)
-        self.second.setWindowTitle("Task manager")
+        self.second.setWindowTitle(self.wprocessus.windowTitle())
         self.dockWidget["Task manager"] = self.second
         self.addDockWidget(self.masterArea, self.master)
         self.addDockWidget(self.secondArea, self.second)
