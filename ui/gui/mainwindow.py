@@ -133,6 +133,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.MenuTags = MenuTags(self, self)
 
 
+        self.refreshTabifiedDockWidgets()
 
 #############  DOCKWIDGETS FUNCTIONS ###############
 
@@ -141,6 +142,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
         dockwidget = DockWidget(self, widget, widget.name)
         name = self.getWidgetName(widget.name)
+        dockwidget.setWindowTitle(name)
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
         self.addDockWidget(self.masterArea, dockwidget)
@@ -149,13 +151,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.tabifyDockWidget(self.second, dockwidget)
 
-        self.dockWidget[str(widget.name)] = dockwidget
-        
-        
+        self.dockWidget[name] = dockwidget
+        self.refreshTabifiedDockWidgets()
+
     def getWidgetName(self, name):
         did = 0
         for d in self.dockWidget:
-            if d.startswith(str(name)):
+            if d[:len(str(name))] == str(name):
                 did += 1
         if did > 0:
             name = name + str(did)
@@ -195,9 +197,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def initDockWidgets(self):
         """Init Dock in application and init DockWidgets"""
         widgetPos = [ ( Qt.TopLeftCorner, Qt.LeftDockWidgetArea, QTabWidget.North),
-	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.North), 
+	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.South), 
 	 (Qt.TopLeftCorner, Qt.TopDockWidgetArea, QTabWidget.North), 
-	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.South) ]
+	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.North) ]
 
         for corner, area, point in widgetPos:
             self.setCorner(corner, area)
@@ -219,10 +221,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	self.nodeBrowser = NodeBrowser(self)
         self.master = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
         self.master.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.master.setWindowTitle("nodebrowser")
         self.dockWidget["nodebrowser"] = self.master
         self.wprocessus = Processus(self)
         self.second = DockWidget(self, self.wprocessus, "Task manager")
         self.second.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.second.setWindowTitle("Task manager")
         self.dockWidget["Task manager"] = self.second
         self.addDockWidget(self.masterArea, self.master)
         self.addDockWidget(self.secondArea, self.second)
@@ -241,6 +245,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.wenv = Env(self)
         self.addDockWidgets(self.wenv, master=False)
         self.refreshSecondWidgets()
+        self.refreshTabifiedDockWidgets()
 
     def maximizeDockwidget(self):
         if self.last_state is None:
@@ -269,13 +274,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.showNormal()
         else:
             self.showFullScreen()
-        
-#############  END OF DOCKWIDGETS FUNCTIONS ###############
 
     def refreshSecondWidgets(self):
 	self.wprocessus.LoadInfoProcess()
         self.wmodules.LoadInfoModules()
-	self.wenv.LoadInfoEnv()
+	self.wenv.LoadInfoEnv()        
+
+    def refreshTabifiedDockWidgets(self):
+        allTabs = self.findChildren(QTabBar)
+        for tabGroup in allTabs:
+            for i in range(tabGroup.count()):
+                for v in self.dockWidget.values():
+                    title = str(tabGroup.tabText(i))
+                    if title.startswith(v.windowTitle()) and not v.widget().windowIcon().isNull():
+                        tabGroup.setTabIcon(i, v.widget().windowIcon()) 
+
+#############  END OF DOCKWIDGETS FUNCTIONS ###############
 
     def applyModule(self, modname, modtype, selected):
         appMod = ApplyModule(self)
@@ -319,7 +333,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def addToolBars(self, toolbar):
         """ Init Toolbar"""
         for action in toolbar:
-           self.toolBar.addAction(action)
+           self.toolBarMain.addAction(self.action[action])
 
     def addAction(self, name, text, func = None, iconName = None, iconText = None):
         self.action[name] = QtGui.QAction(self)
