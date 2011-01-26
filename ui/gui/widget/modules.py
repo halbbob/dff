@@ -15,29 +15,31 @@
 #
 
 from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QMessageBox
-from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL
+from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
 
 from api.loader import *
 from api.env import *
 from api.taskmanager.taskmanager import *
 
 from ui.gui.utils.utils import Utils
+from ui.gui.resources.ui_modules import Ui_Modules
 
-class Modules(QTreeWidget):
+class Modules(QTreeWidget, Ui_Modules):
     def __init__(self, parent):
         QTreeWidget.__init__(self, parent)
         self.name = "Modules"
         self.env = env.env()
         self.tm = TaskManager()
         self.loader = loader.loader()
+        self.setupUi(self)
         self.initTreeModule()
 
     def initTreeModule(self):
-        self.setColumnCount(3)
-        headerLabel = [self.tr("Name"), self.tr("Key"), self.tr("Value"),
-                       self.tr("Info"), self.tr("Type")]
-        self.setHeaderLabels(headerLabel)
-        self.setAlternatingRowColors(True)
+#        self.setColumnCount(3)
+#        headerLabel = [self.tr("Name"), self.tr("Key"), self.tr("Value"),
+#                       self.tr("Info"), self.tr("Type")]
+#        self.setHeaderLabels(headerLabel)
+#        self.setAlternatingRowColors(True)
         self.itemModuleDic = dict()
 	self.itemListArgDic = dict()
 	self.itemArgDic = dict()
@@ -107,3 +109,14 @@ class Modules(QTreeWidget):
 	          		    	 	    		
     def deleteInfoModule(self):
 	self.clear()
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+        else:
+            QTreeWidget.changeEvent(self, event)

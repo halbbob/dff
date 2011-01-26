@@ -15,27 +15,22 @@
 #
 
 from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QMessageBox
-from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL
+from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
 
 from api.env import *
 
 from ui.gui.utils.utils import Utils
+from ui.gui.resources.ui_env import Ui_Env
 
-class Env(QTreeWidget):
+class Env(QTreeWidget, Ui_Env):
     def __init__(self, parent):
         QTreeWidget.__init__(self, parent)
         self.name = "Environment"
+        self.setupUi(self)
         self.env = env.env()
         self.initTreeEnv()
 
     def initTreeEnv(self):
-        self.setColumnCount(3)
-        headerLabel = [self.tr("Key"), 
-        self.tr("Type"), 
-        self.tr("Value"), 
-        self.tr("From")]
-        self.setHeaderLabels(headerLabel)
-        self.setAlternatingRowColors(True)
 	self.envItemDic = dict()
 	self.envConfKeyDic = dict()
 	self.envValKeyDic = dict()
@@ -74,3 +69,14 @@ class Env(QTreeWidget):
 
     def deleteInfoEnv(self):
         self.clear()
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+        else:
+            QTreeWidget.changeEvent(self, event)

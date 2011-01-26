@@ -23,7 +23,7 @@ from configuration.translator import Translator
 from api.loader.loader import loader
 
 # import Resource QT
-import gui_rc
+from ui.gui.resources import gui_rc
 
 class gui():
     def __init__(self, debug = False):

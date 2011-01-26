@@ -1,6 +1,10 @@
-FORMS           += ../../../api/gui/widget/devicesdialog.ui
-FORMS           += ../../../ui/gui/dialog/preferences.ui
-FORMS           += ../../../ui/gui/mainwindow.ui
+FORMS           += ../../../ui/gui/resources/devicesdialog.ui
+FORMS           += ../../../ui/gui/resources/env.ui
+FORMS           += ../../../ui/gui/resources/mainwindow.ui
+FORMS           += ../../../ui/gui/resources/modules.ui
+FORMS           += ../../../ui/gui/resources/preferences.ui
+FORMS           += ../../../ui/gui/resources/shell.ui
+FORMS           += ../../../ui/gui/resources/taskmanager.ui
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_es.ts

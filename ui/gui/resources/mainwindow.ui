@@ -27,23 +27,17 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen_evidence_file_s"/>
+    <addaction name="actionOpen_evidence"/>
     <addaction name="separator"/>
-    <addaction name="actionOpen"/>
+    <addaction name="actionOpen_device"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
-   </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="title">
-     <string>Edit</string>
-    </property>
-    <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuModule">
     <property name="title">
      <string>Module</string>
     </property>
-    <addaction name="actionLoad"/>
+    <addaction name="actionLoadModule"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuIDE">
@@ -64,54 +58,51 @@
     <property name="title">
      <string>About</string>
     </property>
-    <addaction name="action"/>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionMaximize"/>
+    <addaction name="separator"/>
+    <addaction name="actionFullscreen_mode"/>
+    <addaction name="separator"/>
+    <addaction name="actionNodeBrowser"/>
+    <addaction name="separator"/>
+    <addaction name="actionShell"/>
+    <addaction name="actionPython_interpreter"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuModule"/>
+   <addaction name="menuView"/>
    <addaction name="menuIDE"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionOpen_evidence_file_s">
-   <property name="icon">
-    <iconset resource="gui.qrc">
-     <normaloff>:/add_image.png</normaloff>:/add_image.png</iconset>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
    </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="actionAbout">
    <property name="text">
-    <string>Open evidence file(s)</string>
-   </property>
-  </action>
-  <action name="actionOpen">
-   <property name="icon">
-    <iconset resource="gui.qrc">
-     <normaloff>:/add_device.png</normaloff>:/add_device.png</iconset>
-   </property>
-   <property name="text">
-    <string>Open local device</string>
-   </property>
-  </action>
-  <action name="actionExit">
-   <property name="icon">
-    <iconset resource="gui.qrc">
-     <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
-   </property>
-   <property name="text">
-    <string>Exit</string>
-   </property>
-  </action>
-  <action name="actionPreferences">
-   <property name="icon">
-    <iconset resource="gui.qrc">
-     <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
-   </property>
-   <property name="text">
-    <string>Preferences</string>
-   </property>
-  </action>
-  <action name="actionLoad">
-   <property name="text">
-    <string>Load</string>
+    <string>?</string>
    </property>
   </action>
   <action name="actionNew_script">
@@ -192,9 +183,99 @@
     <string>Redo</string>
    </property>
   </action>
-  <action name="action">
+  <action name="actionLoadModule">
    <property name="text">
-    <string>?</string>
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionOpen_evidence">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/add_image.png</normaloff>:/add_image.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open evidence file(s)</string>
+   </property>
+  </action>
+  <action name="actionOpen_device">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/add_device.png</normaloff>:/add_device.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open local device</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/configure.png</normaloff>:/configure.png</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionMaximize">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/maximize.png</normaloff>:/maximize.png</iconset>
+   </property>
+   <property name="text">
+    <string>Maximize</string>
+   </property>
+  </action>
+  <action name="actionFullscreen_mode">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/randr.png</normaloff>:/randr.png</iconset>
+   </property>
+   <property name="text">
+    <string>Fullscreen mode</string>
+   </property>
+  </action>
+  <action name="actionNodeBrowser">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/view_detailed.png</normaloff>:/view_detailed.png</iconset>
+   </property>
+   <property name="text">
+    <string>Node browser</string>
+   </property>
+  </action>
+  <action name="actionShell">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/shell.png</normaloff>:/shell.png</iconset>
+   </property>
+   <property name="text">
+    <string>Shell</string>
+   </property>
+  </action>
+  <action name="actionPython_interpreter">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/interpreter.png</normaloff>:/interpreter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Python iterpreter</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="icon">
+    <iconset resource="gui.qrc">
+     <normaloff>:/help.png</normaloff>:/help.png</iconset>
+   </property>
+   <property name="text">
+    <string>Help</string>
    </property>
   </action>
  </widget>

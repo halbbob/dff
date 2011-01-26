@@ -16,17 +16,20 @@
 import os, sys, inspect, threading
 import signal; signal.signal(signal.SIGINT, signal.SIG_DFL)
 from PyQt4.QtGui import QAction, QApplication, QTextEdit, QTextCursor , QPalette, QColor, QBrush, QHBoxLayout, QIcon, QDockWidget, QFont, QFontMetrics
-from PyQt4.QtCore import Qt, QString, QThread, QSemaphore, SIGNAL, QObject
+from PyQt4.QtCore import Qt, QString, QThread, QSemaphore, SIGNAL, QObject, QEvent
 from ui.console.console import *
 from ui.redirect import RedirectIO
 from api.vfs import *
 from api.taskmanager.taskmanager import *
+from ui.gui.resources.ui_shell import Ui_Shell
 
-class ShellView(QTextEdit, console):
+class ShellView(QTextEdit, console, Ui_Shell):
     def __init__(self, parent=None, log=''):
         QTextEdit.__init__(self, parent)
         console.__init__(self, sigstp=False)
-        self.name = "Shell"
+        self.setupUi(self)
+        
+        self.name = self.windowTitle()
 	self.completion = completion.Completion(self)
 	taskmanager = TaskManager()
         self.vfs = vfs.vfs()
@@ -42,26 +45,21 @@ class ShellView(QTextEdit, console):
         self.reading = 0
         self.pointer = 0
         self.cursor_pos   = 0
-	font = QFont("Courier")
-	font.setFixedPitch(1)
-	fm = QFontMetrics(font)	
-       	self.fontwidth = fm.averageCharWidth()
-	self.setFont(font)
-        self.bgcolor = QColor("black")
+
         self.fgcolor = QColor("white")
         self.selcolor = QColor("green")
-        pal = QPalette()
-        pal.setColor(pal.Base, self.bgcolor)
-        pal.setColor(pal.Text, self.fgcolor)
-        self.setPalette(pal)
+
         self.preloop()
-        self.cwd = self.vfs.getcwd()
-        self.ps1 = self.cwd.absolute() + " > "
 	self.redirect = RedirectIO()
 	self.sig = "Sputtext"
 	self.connect(self, SIGNAL(self.sig), self.puttext)
 	self.redirect.addparent(self, ["ui.gui.widget.shell", "ui.console.console", "ui.console.completion", "ui.console.line_to_arguments", "api.taskmanager.taskmanager", "api.taskmanager.scheduler", "api.taskmanager.processus"], True)
-        self.write('Welcome to dff shell\n')
+        self.writePrompt()
+
+    def writePrompt(self):
+        self.cwd = self.vfs.getcwd()
+        self.ps1 = self.cwd.absolute() + " > "
+        self.write('\n')
         self.write(self.ps1)
 
     def write(self, str):
@@ -357,14 +355,23 @@ class ShellView(QTextEdit, console):
         else:
             return (self.fgcolor)
 
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            self.writePrompt()
+            
+        else:
+            QTextEdit.changeEvent(self, event)
+
+
 class ShellActions():
   def __init__(self, mainwindow):
      self.mainwindow = mainwindow
-#     self.mainwindow.addAction(*["Shell", "Shell",  self.create, ":shell.png", "Open Shell"])
-#     self.mainwindow.addToolBars(["Shell"])	
 
   def create(self):
      self.mainwindow.addSingleDock("Shell", ShellView)
-
-
-

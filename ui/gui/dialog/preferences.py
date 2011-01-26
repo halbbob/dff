@@ -16,7 +16,7 @@
 from PyQt4.QtGui import QDialog
 from PyQt4.QtCore import SIGNAL, QEvent
 
-from ui.gui.dialog.ui_preferences import Ui_PreferencesDialog
+from ui.gui.resources.ui_preferences import Ui_PreferencesDialog
 from ui.gui.configuration.conf import Conf
 from ui.gui.configuration.translator import Translator
 

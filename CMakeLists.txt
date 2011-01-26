@@ -262,6 +262,10 @@ if (APPLE)
 endif(APPLE)
 
 ## Macro to convert XML ui files to Python Qt widget code
+# We are unable to use pyuic4 with QTreeWidget as base class
+# It is why <widget class="QWidget" name="useless" /> has to be appended to .ui
+# files using QTreeWidget. Be carreful, QtDesigner place this second widget at
+# the end of the .ui file ; which make pyuic4 fails to compile.
 macro(uitopy_file target_name)
   foreach(UIFILE ${ARGN})
     string(REGEX REPLACE "^(.*)\\.ui$" "ui_\\1.py" PYUICFILE ${UIFILE})

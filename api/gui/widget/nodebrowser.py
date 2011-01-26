@@ -342,7 +342,7 @@ class NodeBrowser(QWidget, DEventHandler):
      self.connect(self.opendirasnewtab, SIGNAL("triggered()"), self.openAsNewTab)
      ###
      self.menu = {}
-     self.menu["Modules"] = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
+     self.menuModule = self.submenuFile.addMenu(QIcon(":exec.png"),  "Open With")
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
      self.submenuFile.addSeparator()
      self.submenuFile.addAction(QIcon(":hexedit.png"), "Hex viewer", self.launchHexedit, "Hex viewer")

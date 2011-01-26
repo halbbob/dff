@@ -16,31 +16,35 @@
 
 
 from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QMessageBox
-from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL
+from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
 
 #from api.loader import *
 from api.env import *
 from api.taskmanager.taskmanager import *
 
 from ui.gui.utils.utils import Utils
-#from ui.gui.widget.stdio import IO 
+from ui.gui.resources.ui_taskmanager import Ui_TaskManager
 
-#from ui.redirect import RedirectIO
-
-class Processus(QTreeWidget):
+class Processus(QTreeWidget, Ui_TaskManager):
     def __init__(self, parent):
-        QTreeWidget.__init__(self, parent)
+        super(QTreeWidget, self).__init__()
+        self.setupUi(self)
+#        self.TaskManager = self
+        
         self.name = "Task manager"
         self.tm = TaskManager()
+
         self.initTreeProcess()
 
+#        print self.treeWidget.size()
+        
     def initTreeProcess(self):
-        self.setColumnCount(3)
-        headerLabel = [self.tr("PID"), self.tr("Name"),
-                       self.tr("State"), self.tr("Info"),
-                       self.tr("Exec Time")]
-        self.setHeaderLabels(headerLabel)
-        self.setAlternatingRowColors(True)
+#        self.setColumnCount(3)
+#        headerLabel = [self.tr("PID"), self.tr("Name"),
+#                       self.tr("State"), self.tr("Info"),
+#                       self.tr("Exec Time")]
+#        self.setHeaderLabels(headerLabel)
+#        self.setAlternatingRowColors(True)
  	self.connect(self, SIGNAL("itemDoubleClicked(QTreeWidgetItem*,int)"), self.procClicked)
 	self.procItemDic = dict()
         self.procChildItemDic = dict()
@@ -72,6 +76,18 @@ class Processus(QTreeWidget):
 
     def deleteInfoProcess(self):
         self.clear()
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+        else:
+            QTreeWidget.changeEvent(self, event)
+
 
 class procMB(QMessageBox):
   def __init__(self, parent, mainWindow, pid):

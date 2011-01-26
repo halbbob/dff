@@ -23,7 +23,7 @@ from api.loader import *
 from api.vfs import vfs
 from api.devices.devices import Devices
 
-from api.gui.widget.ui_devicesdialog import Ui_DevicesDialog
+from ui.gui.resources.ui_devicesdialog import Ui_DevicesDialog
 
 class DevicesDialog(QDialog, Ui_DevicesDialog):
     def __init__(self, parent = None):
