@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Task Manager</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="gui.qrc">
+    <normaloff>:/script-run.png</normaloff>:/script-run.png</iconset>
+  </property>
   <column>
    <property name="text">
     <string>PID</string>
@@ -45,6 +49,8 @@
    </property>
   </column>
  </widget>
- <resources/>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
  <connections/>
 </ui>

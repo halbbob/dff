@@ -157,10 +157,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def getWidgetName(self, name):
         did = 0
         for d in self.dockWidget:
-            if d[:len(str(name))] == str(name):
+            if d[:QString(name).length()] == QString(name):
                 did += 1
         if did > 0:
-            name = name + str(did)
+            name = name + ' ' + str(did)
         return name
 
     def addSingleDock(self, name, cl):
@@ -285,8 +285,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for tabGroup in allTabs:
             for i in range(tabGroup.count()):
                 for v in self.dockWidget.values():
-                    title = str(tabGroup.tabText(i))
-                    if title.startswith(v.windowTitle()) and not v.widget().windowIcon().isNull():
+                    if tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
                         tabGroup.setTabIcon(i, v.widget().windowIcon()) 
 
 #############  END OF DOCKWIDGETS FUNCTIONS ###############
