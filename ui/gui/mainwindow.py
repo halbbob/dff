@@ -132,7 +132,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Set up modules menu
         self.MenuTags = MenuTags(self, self)
 
-
         self.refreshTabifiedDockWidgets()
 
 #############  DOCKWIDGETS FUNCTIONS ###############
@@ -197,7 +196,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def initDockWidgets(self):
         """Init Dock in application and init DockWidgets"""
         widgetPos = [ ( Qt.TopLeftCorner, Qt.LeftDockWidgetArea, QTabWidget.North),
-	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.South), 
+	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.North), 
 	 (Qt.TopLeftCorner, Qt.TopDockWidgetArea, QTabWidget.North), 
 	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.North) ]
 
@@ -268,6 +267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.last_state = None
             self.last_widget = None
             self.last_dockwidget = None
+            self.refreshTabifiedDockWidgets()
 
     def fullscreenMode(self):
         if self.isFullScreen():
