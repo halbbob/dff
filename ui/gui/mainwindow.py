@@ -333,7 +333,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def addToolBars(self, toolbar):
         """ Init Toolbar"""
         for action in toolbar:
-           self.toolBarMain.addAction(self.action[action])
+           self.toolBar.addAction(action)
 
     def addAction(self, name, text, func = None, iconName = None, iconText = None):
         self.action[name] = QtGui.QAction(self)
