@@ -217,10 +217,8 @@ class ApplyModule(QDialog, Ui_applyModule):
             self.initAllInformations(nameModule, typeModule, nodesSelected)
             iReturn = self.exec_()
             if iReturn:
-                print 'ret'
                 script = nameModule
                 arg = self.getArguments()
-            print 'ret2'
 
     def currentModuleName(self):
         return self.currentModName

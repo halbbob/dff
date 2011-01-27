@@ -20,6 +20,7 @@ set(ui_resources_files
   env.ui
   errors.ui
   evidencedialog.ui
+  extractdialog.ui
   interpreter.ui
   mainwindow.ui
   modules.ui
@@ -51,6 +52,7 @@ set(resources_srcs
   ui_env.py
   ui_errors.py
   ui_evidencedialog.py
+  ui_extractdialog.py
   ui_interpreter.py
   ui_mainwindow.py
   ui_modules.py
