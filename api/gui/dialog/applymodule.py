@@ -42,7 +42,7 @@ class ApplyModule(QDialog, Ui_applyModule):
         super(QDialog, self).__init__()
         self.setupUi(self)
 
-# Hide label and button used for translators
+# Hide labels and button used for translators
         self.labActivate.setVisible(False)
         self.labType.setVisible(False)
         self.labDescription.setVisible(False)
@@ -56,7 +56,6 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.initArguments()
         self.initCallback()
         self.nameModule = ''
-        
 
 
     def initArguments(self):

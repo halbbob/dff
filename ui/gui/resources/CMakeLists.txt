@@ -27,6 +27,7 @@ set(ui_resources_files
   nodeviewbox.ui
   output.ui
   preferences.ui
+  propertytable.ui
   shell.ui
   taskmanager.ui
 )
@@ -57,6 +58,7 @@ set(resources_srcs
   ui_nodeviewbox.py
   ui_output.ui
   ui_preferences.py
+  ui_propertytable.py
   ui_shell.py
   ui_taskmanager.py
 # Only for release because so huge file for versionning

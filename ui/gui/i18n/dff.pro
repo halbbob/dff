@@ -11,6 +11,7 @@ FORMS           += ../../../ui/gui/resources/nodebrowser.ui
 FORMS           += ../../../ui/gui/resources/nodeviewbox.ui
 FORMS           += ../../../ui/gui/resources/output.ui
 FORMS           += ../../../ui/gui/resources/preferences.ui
+FORMS           += ../../../ui/gui/resources/propertytable.ui
 FORMS           += ../../../ui/gui/resources/shell.ui
 FORMS           += ../../../ui/gui/resources/taskmanager.ui
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
