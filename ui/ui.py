@@ -21,7 +21,7 @@ from console.console import console
 from gui.gui import *
 from redirect import RedirectIO
 
-interfaceLanguage, extractGlobalPath = 'EN', ''
+from gui.configuration.conf import Conf
 
 class ui():  
   def __init__(self, type, debug = False):
@@ -29,8 +29,6 @@ class ui():
    self.type = type
    RedirectIO(None, self.debug)
    self.modPath = sys.path[0] + "/modules/"
-# Configuration
-   global interfaceLanguage, extractGlobalPath
 
   def launch(self):
    if self.type == "gui":
@@ -74,8 +72,10 @@ Options:
      self.graphical = 0
      self.test = ""
      self.debug = False
+# Configuration
+     self.conf = Conf()
      self.main()
-
+  
    def main(self):
     """Check command line argument"""
     try:
@@ -90,13 +90,12 @@ Options:
         elif opt in ("-t", "--test"):
             self.test = arg
         elif opt in ("-l", "--language"):
-            global interfaceLanguage
-            interfaceLanguage = arg
+            self.conf.setLanguage(arg[:2])
         elif opt in ("-v", "--version"):
-          print "dff version " + self.VERSION
-          sys.exit(1)
+            print "dff version " + self.VERSION
+            sys.exit(1)
         elif opt in ("-d", "--debug"):
-           self.debug = True
+            self.debug = True
     return
 
    def usage(self):

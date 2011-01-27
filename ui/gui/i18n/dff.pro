@@ -1,6 +1,10 @@
+FORMS           += ../../../ui/gui/resources/about.ui
+FORMS           += ../../../ui/gui/resources/applymodule.ui
 FORMS           += ../../../ui/gui/resources/devicesdialog.ui
 FORMS           += ../../../ui/gui/resources/env.ui
 FORMS           += ../../../ui/gui/resources/errors.ui
+FORMS           += ../../../ui/gui/resources/evidencedialog.ui
+FORMS           += ../../../ui/gui/resources/interpreter.ui
 FORMS           += ../../../ui/gui/resources/mainwindow.ui
 FORMS           += ../../../ui/gui/resources/modules.ui
 FORMS           += ../../../ui/gui/resources/nodebrowser.ui

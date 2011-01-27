@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Node Browser</string>
+   <string>Browser</string>
   </property>
   <property name="windowIcon">
    <iconset resource="gui.qrc">

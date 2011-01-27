@@ -29,22 +29,14 @@ class Processus(QTreeWidget, Ui_TaskManager):
     def __init__(self, parent):
         super(QTreeWidget, self).__init__()
         self.setupUi(self)
-#        self.TaskManager = self
         
         self.name = "Task manager"
         self.tm = TaskManager()
 
         self.initTreeProcess()
 
-#        print self.treeWidget.size()
         
     def initTreeProcess(self):
-#        self.setColumnCount(3)
-#        headerLabel = [self.tr("PID"), self.tr("Name"),
-#                       self.tr("State"), self.tr("Info"),
-#                       self.tr("Exec Time")]
-#        self.setHeaderLabels(headerLabel)
-#        self.setAlternatingRowColors(True)
  	self.connect(self, SIGNAL("itemDoubleClicked(QTreeWidgetItem*,int)"), self.procClicked)
 	self.procItemDic = dict()
         self.procChildItemDic = dict()

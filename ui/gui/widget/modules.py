@@ -35,11 +35,6 @@ class Modules(QTreeWidget, Ui_Modules):
         self.initTreeModule()
 
     def initTreeModule(self):
-#        self.setColumnCount(3)
-#        headerLabel = [self.tr("Name"), self.tr("Key"), self.tr("Value"),
-#                       self.tr("Info"), self.tr("Type")]
-#        self.setHeaderLabels(headerLabel)
-#        self.setAlternatingRowColors(True)
         self.itemModuleDic = dict()
 	self.itemListArgDic = dict()
 	self.itemArgDic = dict()

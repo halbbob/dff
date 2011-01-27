@@ -26,7 +26,6 @@ from api.env import *
 
 from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
-from api.gui.dialog.property import Property
 from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
@@ -109,7 +108,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
-    self.propertyDialog = Property(self)
 
     self.parent = parent
     self.icon = None
@@ -290,11 +288,11 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
          self.openDefault(node)
 
   def sizeChanged(self, string):
-     if string == self.tr("Small"):
+     if self.nodeViewBox.thumbSize.currentIndex() == 0:
        self.thumbsView.setIconSize(64, 64)
-     elif string == self.tr("Medium"):
+     elif self.nodeViewBox.thumbSize.currentIndex() == 1:
        self.thumbsView.setIconSize(96, 96)
-     elif string == self.tr("Large"):
+     elif self.nodeViewBox.thumbSize.currentIndex() == 2:
        self.thumbsView.setIconSize(128, 128)
 
   def openDefault(self, node = None):
@@ -349,15 +347,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
         arg.add_node("file", node)
         self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
 
-  def launchProperty(self, node = None):
-       if not node:
-         node = self.currentNode()
-         if not node:
-           return
-       self.propertyDialog.fillInfo(node, node.parent().children())
-       self.propertyDialog.exec_()
-       self.propertyDialog.removeAttr()
- 
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())
 

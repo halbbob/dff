@@ -29,11 +29,9 @@ from api.taskmanager import scheduler
 
 from api.gui.widget.textedit import TextEdit
 from api.gui.widget.dockwidget import DockWidget 
-from api.gui.dialog.property import Property
 from api.gui.widget.nodebrowser import NodeBrowser
 from api.gui.dialog.applymodule import ApplyModule
 
-from ui.gui.configuration.configure import ConfigureDialog
 from ui.gui.configuration.conf import Conf
 from ui.gui.configuration.translator import Translator
 from ui.gui.ide.actions import IdeActions
@@ -110,6 +108,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionFullscreen_mode, SIGNAL("triggered()"), self.fullscreenMode)
         self.connect(self.actionNodeBrowser, SIGNAL("triggered()"), self.addNodeBrowser)
         self.connect(self.actionShell, SIGNAL("triggered()"), self.shellActions.create)
+        self.connect(self.actionPython_interpreter, SIGNAL("triggered()"), self.interpreterActions.create)
 # Interpreter ?        self.connect(, SIGNAL("triggered()"), self.)
         ## About menu
         self.connect(self.actionHelp, SIGNAL("triggered()"), self.addHelpWidget)

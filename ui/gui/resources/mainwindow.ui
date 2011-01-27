@@ -187,6 +187,9 @@
    <property name="text">
     <string>Load</string>
    </property>
+   <property name="toolTip">
+    <string>Load module</string>
+   </property>
   </action>
   <action name="actionOpen_evidence">
    <property name="icon">
@@ -248,7 +251,7 @@
      <normaloff>:/view_detailed.png</normaloff>:/view_detailed.png</iconset>
    </property>
    <property name="text">
-    <string>Node browser</string>
+    <string>Browser</string>
    </property>
   </action>
   <action name="actionShell">
@@ -266,7 +269,7 @@
      <normaloff>:/interpreter.png</normaloff>:/interpreter.png</iconset>
    </property>
    <property name="text">
-    <string>Python iterpreter</string>
+    <string>Python interpreter</string>
    </property>
   </action>
   <action name="actionHelp">

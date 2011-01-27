@@ -16,7 +16,6 @@
 #### Deploying python __init__ script
 set(apiguiwidget_srcs
   __init__.py
-  applymoduletable.py
   dockwidget.py
   nodebrowser.py
   nodeview.py

@@ -15,16 +15,18 @@
  
 import os, sys, inspect
 from PyQt4.QtGui import QAction, QApplication, QTextEdit, QTextCursor , QPalette, QColor, QBrush, QHBoxLayout, QIcon, QDockWidget
-from PyQt4.QtCore import Qt, QString, QThread, QSemaphore, SIGNAL, QObject
+from PyQt4.QtCore import Qt, QString, QThread, QSemaphore, SIGNAL, QObject, QEvent
 import signal; signal.signal(signal.SIGINT, signal.SIG_DFL)
 from code import InteractiveInterpreter 
 from ui.redirect import RedirectIO
+from ui.gui.resources.ui_interpreter import Ui_Interpreter
 
-class InterpreterView(QTextEdit, InteractiveInterpreter):
+class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
     def __init__(self, parent=None, log=''):
         QTextEdit.__init__(self, parent)
 	InteractiveInterpreter.__init__(self, None)
-        self.name = "Interpreter"
+        self.setupUi(self)
+        self.name = self.windowTitle()
         self.log = log or ''
 
         if parent is None:
@@ -40,14 +42,9 @@ class InterpreterView(QTextEdit, InteractiveInterpreter):
         self.history = []
         self.pointer = 0
         self.cursor_pos   = 0
-        self.bgcolor = QColor("black")
         self.fgcolor = QColor("white")
         self.selcolor = QColor("green")
         self.strcolor = QColor("red")
-        pal = QPalette()
-        pal.setColor(pal.Base, self.bgcolor)
-        pal.setColor(pal.Text, self.fgcolor)
-        self.setPalette(pal)
 
 	self.redirect = RedirectIO()
 	self.sig = "Iputtext"
@@ -56,10 +53,13 @@ class InterpreterView(QTextEdit, InteractiveInterpreter):
 
         self.ps1 = ">>> "
         self.ps2 = "... "
-        self.write(self.tr('Python Interpreter\n'))
-        self.write(self.ps1)
+        self.writePrompt()
         self.more = self.runsource("from api.vfs import *; v = vfs.vfs()")
 
+    def writePrompt(self):
+        self.write('\n')
+        self.write(self.ps1)
+        
     def write(self, str):
 	self.redirect.write(str)
 
@@ -323,12 +323,24 @@ class InterpreterView(QTextEdit, InteractiveInterpreter):
         return ((str.startswith("'''") and str.endswith("'''")) or (str.startswith('"""') and str.endswith('"""')) or \
              (str.startswith("'") and str.endswith("'")) or (str.startswith('"') and str.endswith('"')))
 
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            self.writePrompt()
+            
+        else:
+            QTextEdit.changeEvent(self, event)
+
+
 class InterpreterActions(QObject):
   def __init__(self, mainwindow):
     QObject.__init__(self)
     self.mainwindow = mainwindow
-#    self.mainwindow.addAction(*["Interpreter", self.tr("Interpreter"), self.create, ":interpreter.png", self.tr("Open Interpreter")])
-#    self.mainwindow.addToolBars(["Interpreter"])			
 
   def create(self):
       self.mainwindow.addSingleDock("Interpreter", InterpreterView)	

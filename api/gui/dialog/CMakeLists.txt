@@ -18,11 +18,6 @@ set(dialog_srcs
   __init__.py
   applymodule.py
   extractor.py
-  property.py
-#  selectnodes.py
-  uiapplymodule.py
-  uiproperty.py
-  uiselectnodes.py
 )
 
 install_file(dialog ${dialog_srcs})
