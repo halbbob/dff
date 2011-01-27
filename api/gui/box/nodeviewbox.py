@@ -24,6 +24,7 @@ from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, DEvent, VLink
 from api.vfs import libvfs
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
+from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
 
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
@@ -298,83 +299,32 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
 
 
-class bookmarkDialog(QDialog):
+class bookmarkDialog(QDialog, Ui_AddBookmark):
   def __init__(self, nodeviewbox):
     QDialog.__init__(self, nodeviewbox)
+    self.setupUi(self)
     self.nodeviewbox = nodeviewbox
     self.categories = self.nodeviewbox.bookmarkCategories
     self.initShape()
 
-
   def initShape(self):
-    self.mainLayout = QVBoxLayout()
-    
-    self.setWindowTitle(self.tr("Add bookmark"))
-    self.createDecorator()
-    self.createGroupBoxs()
-    self.createButtons()
-    self.setLayout(self.mainLayout)
-
-  def createDecorator(self):
-    self.head = QHBoxLayout()
-    self.spixmap = QPixmap(":bookmark.png")
-    self.pixmap = self.spixmap.scaled(42, 42)
-    self.lpixmap = QLabel()
-    self.lpixmap.setPixmap(self.pixmap)
-
-    self.headlabel = QLabel(self.tr("Add a bookmark from the Virtual File System"))
-    
-    self.head.addWidget(self.lpixmap)
-    self.head.addWidget(self.headlabel)
-
-    self.container = QWidget()
-    self.container.setLayout(self.head)
-
-    self.mainLayout.addWidget(self.container)
-
-  def createGroupBoxs(self):
-    self.newBox = QGroupBox(self.tr("Create a new category"))
-    self.newBox.setCheckable(True)
-    self.newBox.setChecked(True)
-
-    self.newformLayout = QFormLayout()
-    self.catname = QLineEdit()
-    self.newformLayout.addRow(self.tr("Category name :"), self.catname)
-    self.newBox.setLayout(self.newformLayout)
     self.connect(self.newBox, SIGNAL("clicked()"), self.createCategoryBack)
-    self.mainLayout.addWidget(self.newBox)
-
-    self.existBox = QGroupBox(self.tr("Add in an existing category"))
-    self.existBox.setCheckable(True)
-    self.existBox.setChecked(False)
     self.connect(self.existBox, SIGNAL("clicked()"), self.existingCategoryBack)
     
-    self.existformLayout = QFormLayout()
-    self.catcombo = QComboBox()
     for cat in self.categories:
       self.catcombo.addItem(cat)
-    self.existformLayout.addRow(self.tr("Category name :"), self.catcombo)
-    self.existBox.setLayout(self.existformLayout)
     
     if len(self.categories) != 0:
       self.newBox.setChecked(True)
-      self.mainLayout.addWidget(self.existBox)
-
-  def createButtons(self):
-    self.buttonbox = QDialogButtonBox()
-    self.buttonbox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
-    self.connect(self.buttonbox, SIGNAL("accepted()"),self.accept)
-    self.connect(self.buttonbox, SIGNAL("rejected()"),self.reject)
-
-    self.mainLayout.addWidget(self.buttonbox)
-
+      self.existBox.setVisible(True)
+    else:
+      self.existBox.setVisible(False)
 
   def getSelectedCategory(self):
     if self.newBox.isChecked():
       return self.catname.text()
     else:
       return self.catcombo.currentText()
-
 
   def createCategoryBack(self):
     if self.existBox.isChecked():
@@ -389,6 +339,17 @@ class bookmarkDialog(QDialog):
       self.newBox.setChecked(False)
     else:
       self.existBox.setChecked(True)
+
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+    else:
+      QDialog.changeEvent(self, event)
         
 
 class kompleter(QCompleter):
