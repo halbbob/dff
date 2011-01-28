@@ -63,6 +63,7 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
 
   def columnCount(self, parent = QModelIndex()):
      return 1
+   
 
 class SimpleNodeBrowser(QWidget):
   def __init__(self, parent, view = NodeThumbsView):
@@ -83,6 +84,17 @@ class SimpleNodeBrowser(QWidget):
     self.box = QGridLayout()
     self.box.addWidget(self.view, 0,0)
     self.setLayout(self.box)
+
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.model.translation()
+    else:
+      QWidget.changeEvent(self, event)
 
 class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
   def __init__(self, parent):
@@ -373,6 +385,8 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     if event.type() == QEvent.LanguageChange:
       self.retranslateUi(self)
       self.menuModule.setTitle(self.actionOpen_with.text())
+      self.model.translation()
+      self.treeModel.translation()
     else:
       QWidget.changeEvent(self, event)
 

@@ -16,38 +16,57 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from idewizardpages import *
+from ui.gui.resources.ui_idewizard import Ui_IdeWizard
 
-class IdeWizard(QWizard):
-    def __init__(self, mainWindow, title):
+class IdeWizard(QWizard, Ui_IdeWizard):
+    def __init__(self, mainWindow):
         super(IdeWizard,  self).__init__(mainWindow)
         self.main = mainWindow
-        self.setWindowTitle(self.tr("Integrated Development Environment Wizard"))
-
-        self.setOrder()
-        self.setPages()
-
-    def setOrder(self):
-        self.porder = {}
-        self.porder['INTRO'] = 0
-        self.porder['DESCRIPTION'] = 1
-        self.porder['AUTH'] = 2
-
-    def setPages(self):
-        self.PIntro = WIntroPage(self)
-        self.PAuth = WAuthorPage(self)
-        self.PDescription = WDescriptionPage(self)
-
-        self.setPage(self.porder['INTRO'], self.PIntro)
-        self.setPage(self.porder['DESCRIPTION'], self.PDescription)
-        self.setPage(self.porder['AUTH'], self.PAuth)
+        self.setupUi(self)
+        self.translation()
         
+        pix = QPixmap(":script-new.png")
+        self.introPage.setPixmap(QWizard.LogoPixmap, pix)
+        self.introPage.registerField("typeS", self.type_script)
+        self.introPage.registerField("typeG", self.type_graphical)
+        self.introPage.registerField("typeD", self.type_driver)
+        self.introPage.registerField("name*", self.name)
+        self.introPage.registerField("path*", self.path)
         
-    def nextId(self):
-        current = self.currentId()
-        if current == self.porder['INTRO']:
-            return self.porder['DESCRIPTION']
-        elif current == self.porder['DESCRIPTION']:
-            return self.porder['AUTH']
+        self.descriptionPage.setPixmap(QWizard.LogoPixmap, pix)
+        self.descriptionPage.registerField("description", self.description, "plainText")
+        
+        self.authorPage.setPixmap(QWizard.LogoPixmap, pix)
+        self.authorPage.registerField("authFName*", self.auth_fname)
+        self.authorPage.registerField("authLName*", self.auth_lname)
+        self.authorPage.registerField("authMail*", self.auth_mail)
+        
+        self.tags = []
+        setags = Utils.getSetTags()
+        for tag in setags:
+            if not tag == "builtins":
+                self.tags.append(tag)
+                self.category.addItem(QString(tag))
+
+        self.connect(self.brwButton, SIGNAL("clicked()"), self.browseBack)
+        
+    def browseBack(self):
+        dirName = QFileDialog.getExistingDirectory(self, self.locationTitle)
+        self.path.setText(dirName)
+
+    def translation(self):
+        self.locationTitle = self.tr("Location")
+        
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            self.translation()
         else:
-            return -1
+            QWizard.changeEvent(self, event)
+
+

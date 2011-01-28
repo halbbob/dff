@@ -19,42 +19,27 @@ from PyQt4.QtGui import *
 from ui.gui.ide.idewizard import IdeWizard
 
 from ui.gui.ide.generatecode import GenerateCode
-from ui.gui.ide.messagebox import MessageBoxWarningSave,  MessageBoxErrorSave
+from ui.gui.ide.messagebox import MessageBoxWarningSave
 from ui.gui.ide.editor import codeEditor
 from ui.gui.ide.explorer import Explorer
-
+from ui.gui.resources.ui_ide import Ui_Ide
 
 from api.loader import *
 
-class Ide(QWidget):
+class Ide(QWidget, Ui_Ide):
     def __init__(self, parent):
         super(Ide,  self).__init__(parent)
+        self.setupUi(self)
         self.loader = loader.loader()
-#        self.actions = parent.actions
+
         self.name = "IDE"
         self.pages = []
         self.mainWindow = parent
-        self.toolbar = QToolBar()
-        self.toolbar.setObjectName('IDE_toolbar')
 
-#        self.mainwindow.toolBar.addAction(self.newact)
-        self.initActions()
         self.initCallBacks()
-        self.setupToolbar()
+        self.translation()
         self.g_display()
         
-    def initActions(self):
-        self.newemptyact = QAction(QIcon(":empty.png"),  self.tr("New empty file"),  self.toolbar)
-        self.newact = QAction(QIcon(":script-new.png"),  self.tr("Generate script"),  self.toolbar)
-        self.openact = QAction(QIcon(":script-open.png"),  self.tr("Open script"),  self.toolbar)
-        self.saveact = QAction(QIcon(":script-save.png"),  self.tr("Save script"),  self.toolbar)
-        self.saveasact = QAction(QIcon(":script-save-as.png"),  self.tr("Save script as"),  self.toolbar)
-        self.runact = QAction(QIcon(":script-run.png"),  self.tr("Load script"),  self.toolbar)
-        self.undoact = QAction(QIcon(":undo.png"),  self.tr("Undo"),  self.toolbar)
-        self.redoact = QAction(QIcon(":redo.png"),  self.tr("Redo"),  self.toolbar)
-        self.commentact = QAction(QIcon(":comment.png"),  self.tr("Comment"),  self.toolbar)
-        self.uncommentact = QAction(QIcon(":uncomment.png"),  self.tr("Uncomment"),  self.toolbar)
-#        self.redoact = QAction(QIcon(":search.png"),  self.tr("Find"),  self.toolbar)
 
     def initCallBacks(self):
         self.newemptyact.connect(self.newemptyact,  SIGNAL("triggered()"), self.newempty)
@@ -68,24 +53,7 @@ class Ide(QWidget):
         self.commentact.connect(self.commentact,  SIGNAL("triggered()"), self.comment)
         self.uncommentact.connect(self.uncommentact,  SIGNAL("triggered()"), self.uncomment)
 
-    def setupToolbar(self):
-        self.toolbar.addAction(self.newemptyact)
-        self.toolbar.addAction(self.newact)
-        self.toolbar.addAction(self.openact)
-        self.toolbar.addAction(self.saveact)
-        self.toolbar.addAction(self.saveasact)
-        self.toolbar.addAction(self.runact)
-        self.toolbar.addAction(self.undoact)
-        self.toolbar.addAction(self.redoact)
-        self.toolbar.addAction(self.commentact)
-        self.toolbar.addAction(self.uncommentact)
-
     def g_display(self):
-        self.vbox = QVBoxLayout()
-        self.vbox.setSpacing(0)
-        self.vbox.setMargin(0)
-        self.vbox.addWidget(self.toolbar)
-
         self.splitter = QSplitter()
         self.createExplorer()
         self.createTabWidget()
@@ -104,6 +72,7 @@ class Ide(QWidget):
         self.buttonCloseTab.setFixedSize(QSize(23,  23))
         self.buttonCloseTab.setIcon(QIcon(":cancel.png"))
         self.buttonCloseTab.setEnabled(False)
+        self.buttonCloseTab.setFlat(True)
         self.scripTab.setCornerWidget(self.buttonCloseTab,  Qt.TopRightCorner)
         self.scripTab.connect(self.buttonCloseTab, SIGNAL("clicked()"), self.closeTabWidget)
         self.splitter.addWidget(self.scripTab)
@@ -115,7 +84,7 @@ class Ide(QWidget):
         return page
 
     def new(self):
-        self.ideWiz = IdeWizard(self, self.tr("New script"))
+        self.ideWiz = IdeWizard(self)
         ret = self.ideWiz.exec_()
         if ret > 0:
             scriptname = self.ideWiz.field("name").toString()
@@ -123,8 +92,7 @@ class Ide(QWidget):
             stype = self.ideWiz.field("typeS").toBool()
             gtype = self.ideWiz.field("typeG").toBool()
             dtype = self.ideWiz.field("typeD").toBool()
-            tag = self.ideWiz.field("category").toString()
-            category = self.ideWiz.PIntro.category.currentText()
+            category = self.ideWiz.category.currentText()
             description = self.ideWiz.field("description").toString()
             authfname = self.ideWiz.field("authFName").toString()
             authlname = self.ideWiz.field("authLName").toString()
@@ -173,7 +141,7 @@ class Ide(QWidget):
     
     def open(self, path=None):
         if path == None:
-            sFileName = QFileDialog.getOpenFileName(self.parent, self.tr("MainWindow", "open"),"/home")
+            sFileName = QFileDialog.getOpenFileName(self.parent, self.openFile, "/home")
         else:
             sFileName = path
         if sFileName:
@@ -207,7 +175,7 @@ class Ide(QWidget):
         index = self.scripTab.currentIndex()
         title = self.scripTab.tabText(index)
         if title:
-            sFileName = QFileDialog.getSaveFileName(self, self.tr("MainWindow", "Save as"),title)
+            sFileName = QFileDialog.getSaveFileName(self, self.saveFileAs, title)
             page = self.pages[index]
             file = open(str(sFileName),"w")
             file.write(page.toPlainText())
@@ -222,7 +190,7 @@ class Ide(QWidget):
             path = page.getScriptPath()
             self.loader.do_load(str(path))
         else:
-            print "No script found"
+            print self.noFileFound
         
     def undo(self):
         if self.scripTab.count() > 0:
@@ -256,18 +224,22 @@ class Ide(QWidget):
             self.runact.setEnabled(False)
             self.undoact.setEnabled(False)
             self.redoact.setEnabled(False)
+            self.commentact.setEnabled(False)
+            self.uncommentact.setEnabled(False)
         else:
             self.saveact.setEnabled(True)
             self.saveasact.setEnabled(True)
             self.runact.setEnabled(True)
             self.undoact.setEnabled(True)
             self.redoact.setEnabled(True)
+            self.commentact.setEnabled(True)
+            self.uncommentact.setEnabled(True)
 
     def closeTabWidget(self):
         if self.scripTab.count() > 0:
             index = self.scripTab.currentIndex()
             currentPage = self.scripTab.currentWidget()
-            warning = MessageBoxWarningSave(self,  "Save document?")
+            warning = MessageBoxWarningSave(self,  self.saveQuestion)
             warning.exec_()
 
             self.scripTab.removeTab(index)
@@ -278,6 +250,20 @@ class Ide(QWidget):
                 self.buttonCloseTab.setEnabled(False)
                 self.refreshToolbar()
 
-#                self.mainWindow.Ide_toolBar.disableToolbar()
+    def translation(self):
+        self.saveQuestion = self.tr("Save document ?")
+        self.noFileFound = self.tr("No file found")
+        self.openFile = self.tr("Open file")
+        self.saveFileAs = self.tr("Save file as")
 
-   
+    def changeEvent(self, event):
+        """ Search for a language change event
+        
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            self.translation()
+        else:
+            QWidget.changeEvent(self, event)

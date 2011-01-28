@@ -359,6 +359,81 @@
         <comment>Save as</comment>
         <translation type="obsolete">Guardar como</translation>
     </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="14"/>
+        <source>IDE</source>
+        <translation type="unfinished">IDE</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="30"/>
+        <source>IDE toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="51"/>
+        <source>New empty file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="60"/>
+        <source>Generate skeleton</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="256"/>
+        <source>Open file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="78"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="87"/>
+        <source>Save as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="96"/>
+        <source>Load</source>
+        <translation type="unfinished">Cargar</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="105"/>
+        <source>Undo</source>
+        <translation type="unfinished">Deshacer</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="114"/>
+        <source>Redo</source>
+        <translation type="unfinished">Rehacer</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="123"/>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="132"/>
+        <source>Uncomment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="254"/>
+        <source>Save document ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="255"/>
+        <source>No file found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="257"/>
+        <source>Save file as</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IdeActions</name>
@@ -406,9 +481,104 @@
 <context>
     <name>IdeWizard</name>
     <message>
-        <location filename="idewizard.py" line="25"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="14"/>
         <source>Integrated Development Environment Wizard</source>
-        <translation type="obsolete">Asistente del Entorno Integrado de Desarrollo</translation>
+        <translation type="unfinished">Asistente del Entorno Integrado de Desarrollo</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="22"/>
+        <source>General Informations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="25"/>
+        <source>Fill all script information such as name, type and saving location.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="31"/>
+        <source>Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="41"/>
+        <source>Category:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="55"/>
+        <source>Work location:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="71"/>
+        <source>Browse</source>
+        <translation type="unfinished">Navegar</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="83"/>
+        <source>Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="111"/>
+        <source>Script</source>
+        <translation type="unfinished">Secuencia de comandos</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="121"/>
+        <source>Graphical</source>
+        <translation type="unfinished">Gráfico</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="128"/>
+        <source>Driver</source>
+        <translation type="unfinished">Controlador</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="152"/>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="155"/>
+        <source>Describe here the goal of the module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="161"/>
+        <source>Module&apos;s description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="172"/>
+        <source>Author informations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="175"/>
+        <source>Fill all author&apos;s informations in order to complete header</source>
+        <translation type="unfinished">Llene toda la información del autor para completar el encabezado</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="183"/>
+        <source>Author&apos;s first name:</source>
+        <translation type="unfinished">Nombre del autor:</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="190"/>
+        <source>Author&apos;s last name:</source>
+        <translation type="unfinished">Apellido del autor:</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="197"/>
+        <source>Author&apos;s electronic mail:</source>
+        <translation type="unfinished">Correo electrónico del Autor:</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/idewizard.py" line="58"/>
+        <source>Location</source>
+        <translation type="unfinished">Ubicación</translation>
     </message>
 </context>
 <context>
@@ -1290,34 +1460,34 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="vfsitemmodel.py" line="247"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="392"/>
         <source>Name</source>
-        <translation type="obsolete">Nombre</translation>
+        <translation type="unfinished">Nombre</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="249"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="393"/>
         <source>Size</source>
-        <translation type="obsolete">Tamaño</translation>
+        <translation type="unfinished">Tamaño</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="251"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="394"/>
         <source>Accessed time</source>
-        <translation type="obsolete">Fecha accedido</translation>
+        <translation type="unfinished">Fecha accedido</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="253"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="395"/>
         <source>Changed time</source>
-        <translation type="obsolete">Fecha cambiado</translation>
+        <translation type="unfinished">Fecha cambiado</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="255"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="396"/>
         <source>Modified time</source>
-        <translation type="obsolete">Fecha modificado</translation>
+        <translation type="unfinished">Fecha modificado</translation>
     </message>
     <message>
-        <location filename="vfsitemmodel.py" line="257"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="397"/>
         <source>Module</source>
-        <translation type="obsolete">Módulo</translation>
+        <translation type="unfinished">Módulo</translation>
     </message>
 </context>
 <context>

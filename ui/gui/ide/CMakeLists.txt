@@ -22,7 +22,6 @@ set(ide_srcs
   generatecode.py
   messagebox.py
   idewizard.py
-  idewizardpages.py
 )
 
 install_file(ide ${ide_srcs})

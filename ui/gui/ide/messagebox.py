@@ -22,19 +22,11 @@ class MessageBoxWarningSave(QMessageBox):
         self.ide = parent
         self.message = message
         self.g_display()
-        self.initCallback()
         
     def g_display(self):
         self.setText(self.message)
-        self.yes = QPushButton("yes")
-        self.addButton(self.yes,  QMessageBox.YesRole)
-        self.no = QPushButton("no")
-        self.addButton(self.no,  QMessageBox.NoRole)
+        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         self.setIcon(QMessageBox.Warning)
-        
-    def initCallback(self):
-        self.connect(self.yes, SIGNAL("clicked()"),self.accept)
-        self.connect(self.no, SIGNAL("clicked()"),self.reject)
         
     def accept(self):
         self.ide.saveasactBack()
@@ -42,25 +34,3 @@ class MessageBoxWarningSave(QMessageBox):
         
     def reject(self):
         self.destroy()
-
-
-class MessageBoxErrorSave(QMessageBox):
-    def __init__(self,  parent,  message):
-        super(MessageBoxErrorSave,  self).__init__(parent)
-        self.ide = parent
-        self.message = message
-        self.g_display()
-        self.initCallback()
-        
-    def g_display(self):
-        self.setText(self.message)
-        self.ok = QPushButton("Ok")
-        self.addButton(self.ok,  QMessageBox.AcceptRole)
-        self.setIcon(QMessageBox.Critical)
-        
-    def initCallback(self):
-        self.connect(self.ok, SIGNAL("clicked()"),self.accept)
-        
-    def accept(self):
-        self.destroy()
-        

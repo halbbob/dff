@@ -22,7 +22,8 @@ set(ui_resources_files
   errors.ui
   evidencedialog.ui
   extractdialog.ui
-  interpreter.ui
+  ide.ui
+  idewizard.ui
   mainwindow.ui
   modules.ui
   nodebrowser.ui
@@ -56,6 +57,8 @@ set(resources_srcs
   ui_errors.py
   ui_evidencedialog.py
   ui_extractdialog.py
+  ui_ide.py
+  ui_idewizard.py
   ui_interpreter.py
   ui_mainwindow.py
   ui_modules.py
