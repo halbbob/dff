@@ -144,6 +144,26 @@ Variant::Variant(void *user)
   this->_type = typeId::VoidStar;
 }
 
+// bool  Variant::operator==(Variant* v)
+// {
+//   if (v->value() == this->value())
+//     std::cout << "operator== for variant" << std::endl;
+//   return true;
+// }
+
+// bool	Variant::operator==(std::map<std::string, Variant* > *m)
+// {
+//   std::cout << "operator== for map of variant\n" << std::endl;
+//   return true;
+// }
+
+// bool	Variant::operator==(std::list<Variant* > *l)
+// {
+//   std::cout << "operator== for list of variant\n" << std::endl;
+//   return true;
+// }
+
+
 std::string	Variant::toString()
 {
     //FIXME

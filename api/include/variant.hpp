@@ -110,7 +110,19 @@ public:
   EXPORT Variant(std::list<class Variant*> l);
   EXPORT Variant(std::map<std::string, class Variant*> m);
   EXPORT Variant(void *user);
-
+  EXPORT bool operator==(std::string str){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(char* carray){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(uint16_t us){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(int16_t s){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(uint32_t ui){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(int32_t i){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(uint64_t ull){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(int64_t ll){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(vtime *vt){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(class Node *node){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(class Path* path){std::cout << "OK OK" << std::endl;}
+  EXPORT bool operator==(std::list<class Variant*> l){std::cout << "VLIST OPE" << std::endl;}
+  EXPORT bool operator==(std::map<std::string, class Variant*> m){std::cout << "VMAP OPE" << std::endl;}
 
   bool	convert(uint8_t itype, void *res)
   {
@@ -317,7 +329,6 @@ public:
       }
   }
 
-
   template<typename T>
   T	value(void)
   {
@@ -336,6 +347,15 @@ public:
     else
       return T();
   }
+
+  // template<typename T>
+  // bool	operator==(T &v)
+  // {
+  //   return (v == this->value<T*>());
+  // }
+  // {
+  //   return (this->value() == v);
+  // }
 
   std::string	toString();
   uint16_t	toUInt16();

@@ -52,6 +52,10 @@
 #endif
 %}
 
+%inline %{
+Variant*  pyObjectToVariant(PyObject* val, uint8_t t);
+ %}
+
 %include "../include/variant.hpp"
 %include "../include/argument.hpp"
 %include "../include/export.hpp"
@@ -455,8 +459,6 @@ Variant*  pyStringToVariant(PyObject* val, uint8_t t)
      return NULL;
 }
 
-Variant*  pyObjectToVariant(PyObject* val, uint8_t t);
-
 Variant* pyListToVariant(PyObject* val, uint8_t t)
 {
   Py_ssize_t size;
@@ -572,54 +574,54 @@ bool validateDefault (PyObject* val, uint8_t t)
   return true;
 }
 
-PyObject*	start(PyObject* input)
-{
-  PyObject*	resultobj = 0;
-  //Variant*	params;
-  //uint8_t	type;
+/* PyObject*	start(PyObject* input) */
+/* { */
+/*   PyObject*	resultobj = 0; */
+/*   //Variant*	params; */
+/*   //uint8_t	type; */
   
-  if (!PyDict_Check(input))
-    {
-      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-      PyErr_SetString(PyExc_TypeError, "fso::start argument 1 must be of DictType");
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      return NULL;
-    }
-  else
-    {
-      PyObject *key, *value;
-      Py_ssize_t pos = 0;
-      std::map<std::string, Variant* > cppmap;
+/*   if (!PyDict_Check(input)) */
+/*     { */
+/*       SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+/*       PyErr_SetString(PyExc_TypeError, "fso::start argument 1 must be of DictType"); */
+/*       SWIG_PYTHON_THREAD_END_BLOCK; */
+/*       return NULL; */
+/*     } */
+/*   else */
+/*     { */
+/*       PyObject *key, *value; */
+/*       Py_ssize_t pos = 0; */
+/*       std::map<std::string, Variant* > cppmap; */
       
-      while (PyDict_Next(input, &pos, &key, &value))
-	{
-	  if (!PyString_Check(key))
-	    {
-	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      PyErr_SetString(PyExc_TypeError, "fso::start --> dict keys must be of type string");
-	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      return NULL;
-	    }
-	  else
-	    {
-	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      char* cstr = PyString_AsString(key);
-	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      if (cstr != NULL)
-		{
-		  Variant* vval;
+/*       while (PyDict_Next(input, &pos, &key, &value)) */
+/* 	{ */
+/* 	  if (!PyString_Check(key)) */
+/* 	    { */
+/* 	      SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+/* 	      PyErr_SetString(PyExc_TypeError, "fso::start --> dict keys must be of type string"); */
+/* 	      SWIG_PYTHON_THREAD_END_BLOCK; */
+/* 	      return NULL; */
+/* 	    } */
+/* 	  else */
+/* 	    { */
+/* 	      SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
+/* 	      char* cstr = PyString_AsString(key); */
+/* 	      SWIG_PYTHON_THREAD_END_BLOCK; */
+/* 	      if (cstr != NULL) */
+/* 		{ */
+/* 		  Variant* vval; */
 		  
-		  if ((vval = pyObjectToVariant(value, 1)) != NULL)
-		    cppmap[std::string(cstr)] = vval;
-		  else
-		    return NULL;
-		}
-	    }
-	  resultobj = SWIG_Py_Void();
-	  return resultobj;
-	}
-    }
-}
+/* 		  if ((vval = pyObjectToVariant(value, 1)) != NULL) */
+/* 		    cppmap[std::string(cstr)] = vval; */
+/* 		  else */
+/* 		    return NULL; */
+/* 		} */
+/* 	    } */
+/* 	  resultobj = SWIG_Py_Void(); */
+/* 	  return resultobj; */
+/* 	} */
+/*     } */
+/* } */
 
 %}
 
@@ -751,8 +753,70 @@ PyObject*	start(PyObject* input)
   }
 }
 
+%rename(__eq__) Variant::operator==;
+
 %extend Variant
 {
+
+  /* bool	operator==(PyObject* val) */
+  /* { */
+  /*   Variant*	v; */
+
+  /*   PyTypeObject*	ob_type; */
+  /*   if ((ob_type = val->ob_type) != NULL) */
+  /*     { */
+  /* 	printf("ob_type->tp_name: %s\n", ob_type->tp_name); */
+  /* 	//if (ob_type->tp_name) */
+  /* 	if (ob_type->tp_name != NULL) */
+  /* 	  { */
+  /* 	    if (strncmp("Variant", ob_type->tp_name, 7) == 0) */
+  /* 	      { */
+  /* 		void* argp1 = 0; */
+  /* 		Variant *arg1 = (Variant *) 0 ; */
+  /* 		int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_Variant, 0 | 0); */
+  /* 		if (SWIG_IsOK(res1)) */
+  /* 		  { */
+  /* 		    arg1 = reinterpret_cast< Variant * >(argp1); */
+  /* 		    printf("Variant provided, subtype GetOriginalType: %d\n", arg1->type()); */
+  /* 		    return self->operator==(arg1->value()); */
+  /* 		  } */
+  /* 	      } */
+  /* 	    else if (strncmp("VList", ob_type->tp_name, 5) == 0) */
+  /* 	      { */
+  /* 		void* argp1 = 0; */
+  /* 		std::list< Variant *> *arg1 = (std::list< Variant * > *) 0 ; */
+  /* 		int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_std__listT_Variant_p_std__allocatorT_Variant_p_t_t, 0 | 0); */
+  /* 		if (SWIG_IsOK(res1)) */
+  /* 		  { */
+  /* 		    arg1 = reinterpret_cast< std::list<Variant * > * >(argp1); */
+  /* 		    printf("VList provided\n"); */
+  /* 		    return self->operator==(*arg1); */
+  /* 		  } */
+  /* 	      } */
+  /* 	    else if (strncmp("VMap", ob_type->tp_name, 4) == 0) */
+  /* 	      { */
+  /* 		void* argp1 = 0; */
+  /* 		std::map< std::string, Variant *> *arg1 = (std::map< std::string, Variant * > *) 0 ; */
+  /* 		int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_std__mapT_std__string_Variant_p_std__lessT_std__string_t_std__allocatorT_std__pairT_std__string_const_Variant_p_t_t_t, 0 | 0); */
+  /* 		if (SWIG_IsOK(res1)) */
+  /* 		  { */
+  /* 		    arg1 = reinterpret_cast< std::map<std::string, Variant * > * >(argp1); */
+  /* 		    printf("VMap provided\n"); */
+  /* 		    return self->operator==(*arg1); */
+  /* 		  } */
+  /* 	      } */
+  /* 	    else if ((v = pyObjectToVariant(val, self->type())) != NULL) */
+  /* 	      { */
+  /* 		return self->operator==(v); */
+  /* 	      } */
+  /* 	    else */
+  /* 	      return false; */
+  /* 	  } */
+  /*     } */
+  /*   else */
+  /*     return false; */
+  /* } */
+
   /* Variant(PyObject*) */
   /*   { */
   /*   } */

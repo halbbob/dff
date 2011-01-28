@@ -23,22 +23,41 @@ class LS(Script):
     Script.__init__(self, "ls")
     self.vfs = vfs.vfs()
 
-  def start(self, args):
-    try :
-      self.node = args.get_node('node')
-    except KeyError:
-      self.node = None
-    try :
-      self.long = args.get_bool('long')
-    except KeyError:
-      self.long = None
-    try :
-      self.rec = args.get_bool('recursive')
-    except KeyError:
-      self.rec = None
-    if self.node == None:
-      self.node = self.vfs.getcwd()
-    self._res = self.launch()
+  def start(self, **kwargs):
+    print dir(self)
+    self.__dict__.update(kwargs)
+    print dir(self)
+
+
+  def start2(self, long, node, recursive):
+    #self.__dict__.update(**kwargs)
+    #print kwargs.get("node")
+    #for i in kwargs:
+    #  print i
+    print dir(self)
+    print node.value().name()
+
+
+#  def start(self, **kwargs):
+#    try:
+#      self.node = args["node"].value()
+#      print self.node.name()
+#    except IndexError:
+#      self.node = None
+    
+#    if "long" in args.keys():
+#      self.long = True
+#    else:
+#      self.long = False
+#    try :
+#      self.rec = args['recursive']
+#    except IndexError:
+#      self.rec = None
+#    if self.node == None:
+#      self.node = self.vfs.getcwd()
+#    self._res = self.launch()
+
+
 
   def launch(self):
      if self.rec:
