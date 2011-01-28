@@ -24,6 +24,12 @@ class GenerateCode():
         self.lname = lname
         self.mail = mail
 
+    def setTag(self, tag):
+        self.tag = tag
+
+    def setDescription(self, desc):
+        self.description = desc
+
     def generate_header(self):
         buff="# DFF -- An Open Source Digital Forensics Framework\n\
 #\n\
@@ -73,7 +79,7 @@ class " + scriptname + "(Module):\n\
     #self.conf.add(\"filename\", \"node\")\n\
     #Add your const here\n\
     #self.conf.add_const(\"mime-type\", \"JPEG\")\n\
-    #self.tags = \"test\"\n"
+    self.tags = \"" + self.tag + "\" \n"
         return buff
 
     def generate_script_gui(self,  scriptname):
@@ -115,7 +121,7 @@ class " + scriptname + "(Module):\n\
     Module.__init__(self, \"" + scriptname + "\"," + scriptname.upper() + ")\n\
     #Add your argument and tags here\n\
     #self.conf.add(\"filename\", \"node\")\n\
-    #self.tags = \"test\"\n"
+    self.tags = \"" + self.tag + "\" \n"
         return buff	
 
 
@@ -131,12 +137,12 @@ from modules.fs.spare import SpareNode\n\
 \n\
 \n\
 class " + drivername + "(Module):\n\
-  \"\"\" Here can be a brief description of your module \"\"\"\n\
+  \"\"\" " + self.description + " \"\"\"\n\
   def __init__(self):\n\
      Module.__init__(self, \"" + drivername + "\", " + drivername.capitalize() +")\n\
      self.conf.add(\"parent\", \"node\", \"False\", \"Parent node\")\n\
      # you can add some arguments for your module here by using the self.conf.add method\n\
-     self.tags = \"file system\"\n\
+    self.tags = \"" + self.tag + "\" \n\
 \n\
 \n\
 class " + drivername.capitalize() + "(mfso):\n\

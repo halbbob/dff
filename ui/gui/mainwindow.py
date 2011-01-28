@@ -36,7 +36,7 @@ from api.gui.dialog.applymodule import ApplyModule
 from ui.gui.configuration.configure import ConfigureDialog
 from ui.gui.configuration.conf import Conf
 from ui.gui.configuration.translator import Translator
-from ui.gui.ide.actions import IdeActions
+from ui.gui.ide.ide import Ide
 
 from ui.gui.widget.taskmanager import Processus
 from ui.gui.widget.modules import Modules
@@ -87,11 +87,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.resize(QtCore.QSize(QtCore.QRect(0,0,1014,693).size()).expandedTo(self.minimumSizeHint()))
 
-
 	self.shellActions = ShellActions(self)
-
-        self.ideActions = IdeActions(self)
-
 	self.interpreterActions = InterpreterActions(self)
         self.initDockWidgets()
         self.setCentralWidget(None)
@@ -110,12 +106,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionFullscreen_mode, SIGNAL("triggered()"), self.fullscreenMode)
         self.connect(self.actionNodeBrowser, SIGNAL("triggered()"), self.addNodeBrowser)
         self.connect(self.actionShell, SIGNAL("triggered()"), self.shellActions.create)
-# Interpreter ?        self.connect(, SIGNAL("triggered()"), self.)
         ## About menu
         self.connect(self.actionHelp, SIGNAL("triggered()"), self.addHelpWidget)
         self.connect(self.actionAbout, SIGNAL("triggered()"), self.dialog.about)
-
-        
         self.toolbarList = [[self.actionOpen_evidence],
                             [self.actionOpen_device],
                             [self.actionNodeBrowser],
@@ -128,6 +121,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Set up toolbar
         self.setupToolBar()
+        # single actions
+        self.ideAction = QAction(QIcon(":script-new.png"),  self.tr("Open IDE"),  self.toolBar)
+        self.connect(self.ideAction, SIGNAL("triggered()"), self.addIde)
+        self.toolBar.addAction(self.ideAction)
+#       self.mainwindow.addSingleDock("Interpreter", InterpreterView)
 
         # Set up modules menu
         self.MenuTags = MenuTags(self, self)
@@ -162,13 +160,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             name = name + ' ' + str(did)
         return name
 
-    def addSingleDock(self, name, cl):
-        print 'adding', name
+    def addSingleDock(self, name, cl, master=False):
         try :
-	   self.dockWidget[name].show()
+            print self.dockWidget[name]
+            self.dockWidget[name].show()
         except KeyError:
             w = cl(self)
-            self.addDockWidgets(w, master=False)
+            self.addDockWidgets(w, master)
            
     def addNodeBrowser(self, rootpath=None):
         if rootpath == None:
@@ -192,6 +190,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def addInterpreter(self):
        self.addSingleDock("Interpreter", Interpreter)
+
+    def addIde(self):
+       self.addSingleDock("IDE", Ide, master=True)
  
     def initDockWidgets(self):
         """Init Dock in application and init DockWidgets"""

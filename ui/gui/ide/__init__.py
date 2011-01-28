@@ -10,7 +10,7 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Jeremy MOUNIER <jmo@digital-forensic.org>
 
 
-__all__ = ["dockide", "ide", "actions", "editor", "generatecode", "idewizardpages", "idewizard", "messagebox"]
+__all__ = ["ide", "editor", "generatecode", "idewizardpages", "idewizard", "messagebox", "explorer", "highlighter"]
