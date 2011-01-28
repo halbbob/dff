@@ -99,35 +99,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPreferences, SIGNAL("triggered()"), self.dialog.preferences)
         ## Module menu
         self.connect(self.actionLoadModule, SIGNAL("triggered()"), self.dialog.loadDriver)
+        ## Ide menu
+        self.connect(self.actionIdeOpen, SIGNAL("triggered()"), self.addIde)        
         ## View menu
         self.connect(self.actionMaximize, SIGNAL("triggered()"), self.maximizeDockwidget)
         self.connect(self.actionFullscreen_mode, SIGNAL("triggered()"), self.fullscreenMode)
         self.connect(self.actionNodeBrowser, SIGNAL("triggered()"), self.addNodeBrowser)
         self.connect(self.actionShell, SIGNAL("triggered()"), self.shellActions.create)
-        self.connect(self.actionPython_interpreter, SIGNAL("triggered()"), self.interpreterActions.create)
-# Interpreter ?        self.connect(, SIGNAL("triggered()"), self.)
-        ## About menu
+        self.connect(self.actionPython_interpreter, SIGNAL("triggered()"), self.interpreterActions.create)        ## About menu
         self.connect(self.actionHelp, SIGNAL("triggered()"), self.addHelpWidget)
         self.connect(self.actionAbout, SIGNAL("triggered()"), self.dialog.about)
 
-        
-        self.toolbarList = [[self.actionOpen_evidence],
-                            [self.actionOpen_device],
-                            [self.actionNodeBrowser],
-                            [self.actionMaximize],
-                            [self.actionFullscreen_mode],
-                            [self.actionShell],
-                            [self.actionPython_interpreter],
-                            [self.actionHelp]
+        # list used to build toolbar
+        # None will be a separator
+        self.toolbarList = [self.actionOpen_evidence,
+                            self.actionOpen_device,
+                            None,
+                            self.actionNodeBrowser,
+                            self.actionShell,
+                            self.actionPython_interpreter,
+                            self.actionIdeOpen,
+                            self.actionHelp,
+                            None,
+                            self.actionMaximize,
+                            self.actionFullscreen_mode,
                             ]
 
         # Set up toolbar
         self.setupToolBar()
-        # single actions
-        self.ideAction = QAction(QIcon(":script-new.png"),  self.tr("Open IDE"),  self.toolBar)
-        self.connect(self.ideAction, SIGNAL("triggered()"), self.addIde)
-        self.toolBar.addAction(self.ideAction)
-#       self.mainwindow.addSingleDock("Interpreter", InterpreterView)
 
         # Set up modules menu
         self.MenuTags = MenuTags(self, self)
@@ -136,12 +135,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 #############  DOCKWIDGETS FUNCTIONS ###############
 
-    def addDockWidgets(self, widget, master=True):
+    def addDockWidgets(self, widget, internalName, master=True):
         if widget is None:
             return
         dockwidget = DockWidget(self, widget, widget.name)
-        name = self.getWidgetName(widget.name)
-        dockwidget.setWindowTitle(name)
+        docIndex, docTitle = self.getWidgetName(widget.name)
+        dockwidget.setWindowTitle(docTitle)
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
         self.addDockWidget(self.masterArea, dockwidget)
@@ -150,32 +149,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.tabifyDockWidget(self.second, dockwidget)
 
-        self.dockWidget[name] = dockwidget
+        if docIndex:
+            self.dockWidget[internalName + str(docIndex)] = dockwidget
+        else:
+            self.dockWidget[internalName] = dockwidget
         self.refreshTabifiedDockWidgets()
 
     def getWidgetName(self, name):
         did = 0
         for d in self.dockWidget:
-            if d[:QString(name).length()] == QString(name):
+            if self.dockWidget[d].windowTitle().startsWith(QString(name)):
                 did += 1
         if did > 0:
             name = name + ' ' + str(did)
-        return name
+        return (did, name)
 
     def addSingleDock(self, name, cl, master=False):
-        try :
-	   self.dockWidget[name].show()
+        try:
+            self.dockWidget[name].show()
         except KeyError:
             w = cl(self)
-            self.addDockWidgets(w, master)
+            self.addDockWidgets(w, name, master)
            
     def addNodeBrowser(self, rootpath=None):
         if rootpath == None:
-            self.addDockWidgets(NodeBrowser(self)) 
+            self.addDockWidgets(NodeBrowser(self), 'nodeBrowser')
         else:
             nb = NodeBrowser(self)
             nb.model.setRootPath(nb.vfs.getnode(rootpath))
-            self.addDockWidgets(nb)
+            self.addDockWidgets(nb, 'nodeBrowser')
 
     def addHelpWidget(self):
         path = DOC_PATH
@@ -187,7 +189,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dialog = QMessageBox.warning(self, "Error while loading help", QString("Documentation path not found.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
             return
 
-        self.addDockWidgets(Help(self, path=path))
+        self.addDockWidgets(Help(self, path=path), 'help')
 
     def addInterpreter(self):
        self.addSingleDock("Interpreter", Interpreter)
@@ -239,12 +241,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.wstdout = STDOut(self, self.debug)
         self.wstderr = STDErr(self, self.debug)
 
-        self.addDockWidgets(self.wstdout, master=False)
-        self.addDockWidgets(self.wstderr, master=False)
+        self.addDockWidgets(self.wstdout, 'stdout', master=False)
+        self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
-        self.addDockWidgets(self.wmodules, master=False)
+        self.addDockWidgets(self.wmodules, 'modules', master=False)
         self.wenv = Env(self)
-        self.addDockWidgets(self.wenv, master=False)
+        self.addDockWidgets(self.wenv, 'env', master=False)
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
 
@@ -309,7 +311,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def qwidgetResultView(self, proc):
 	try :
            proc.inst.g_display()
-           self.addDockWidgets(proc.inst)
+           self.addDockWidgets(proc.inst, proc.name)
 	except :
 	   trace = sys.exc_info()
 	   proc.error(trace)
@@ -329,12 +331,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	    pass   
 	if res and res != '':
 	   widget.emit(SIGNAL("puttext"), res)
-           self.addDockWidgets(widget)
+           self.addDockWidgets(widget, proc.name)
 
-    def addToolBars(self, toolbar):
+    def addToolBars(self, action):
         """ Init Toolbar"""
-        for action in toolbar:
-           self.toolBar.addAction(action)
+        if not action:
+            #Add separator
+            self.toolBar.addSeparator()
+        else:
+            self.toolBar.addAction(action)
 
     def addAction(self, name, text, func = None, iconName = None, iconText = None):
         self.action[name] = QtGui.QAction(self)
@@ -348,8 +353,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
           self.connect(self.action[name], SIGNAL("triggered()"), func)
 
     def setupToolBar(self):
-        for toolbar in self.toolbarList:
-	   self.addToolBars(toolbar)
+        for action in self.toolbarList:
+	   self.addToolBars(action)
 
     def changeEvent(self, event):
         """ Search for a language change event

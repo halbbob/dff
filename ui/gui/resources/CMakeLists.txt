@@ -26,6 +26,7 @@ set(ui_resources_files
   mainwindow.ui
   modules.ui
   nodebrowser.ui
+  nodefilterbox.ui
   nodeviewbox.ui
   output.ui
   preferences.ui
@@ -59,6 +60,7 @@ set(resources_srcs
   ui_mainwindow.py
   ui_modules.py
   ui_nodebrowser.py
+  ui_nodefilterbox.py
   ui_nodeviewbox.py
   ui_output.ui
   ui_preferences.py

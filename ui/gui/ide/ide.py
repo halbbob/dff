@@ -82,6 +82,8 @@ class Ide(QWidget):
 
     def g_display(self):
         self.vbox = QVBoxLayout()
+        self.vbox.setSpacing(0)
+        self.vbox.setMargin(0)
         self.vbox.addWidget(self.toolbar)
 
         self.splitter = QSplitter()

@@ -79,7 +79,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.parent.browserLayout.addWidget(self.propertyTable)
 
   def setPrevDropButton(self):
-    self.prevdrop.setFixedSize(QSize(10, 16))
+    self.prevdrop.setFixedSize(QSize(16, 16))
     self.prevmenu = QMenu()
     self.prevdrop.setMenu(self.prevmenu)
     self.connect(self.prevmenu, SIGNAL("triggered(QAction*)"), self.prevMenuTriggered)
@@ -94,7 +94,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.parent.model.setRootPath(self.vfs.getnode(str(action.text())))
 
   def setNextDropButton(self):
-    self.nextdrop.setFixedSize(QSize(10, 16))
+    self.nextdrop.setFixedSize(QSize(16, 16))
     self.nextmenu = QMenu()
     self.nextdrop.setMenu(self.nextmenu)
     self.connect(self.nextmenu, SIGNAL("triggered(QAction*)"), self.nextMenuTriggered)

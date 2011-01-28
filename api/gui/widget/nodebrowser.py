@@ -135,6 +135,7 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)
+    self.baseLayout.setMargin(0)
     self.baseLayout.setSpacing(0)
     self.browserLayout = QSplitter(self)
     self.baseLayout.insertWidget(0, self.browserLayout)

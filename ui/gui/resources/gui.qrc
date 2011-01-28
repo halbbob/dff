@@ -106,6 +106,8 @@
 
     <file alias="comment.png">icons/actions/comment.png</file>
     <file alias="uncomment.png">icons/actions/uncomment.png</file>
+    <file alias="run.png">icons/actions/agt_runit.png</file>
+    <file alias="ide.png">icons/app/ksnake.png</file>
 
 
 </qresource>

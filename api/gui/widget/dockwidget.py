@@ -28,6 +28,7 @@ class DockWidget(QDockWidget):
     self.name = widget.name
     self.setAllowedAreas(Qt.AllDockWidgetAreas)
     self.setFeatures(QDockWidget.AllDockWidgetFeatures)
+
     self.setWidget(widget)
 
     self.connect(self, SIGNAL("topLevelChanged(bool)"), self.toplevel_changed)
