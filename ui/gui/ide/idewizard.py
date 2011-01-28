@@ -30,27 +30,24 @@ class IdeWizard(QWizard):
     def setOrder(self):
         self.porder = {}
         self.porder['INTRO'] = 0
-        self.porder['AUTH'] = 1
-        #self.porder['COC'] = 2
-
+        self.porder['DESCRIPTION'] = 1
+        self.porder['AUTH'] = 2
 
     def setPages(self):
         self.PIntro = WIntroPage(self)
         self.PAuth = WAuthorPage(self)
-        #self.PCOC = WCOCPage(self)
+        self.PDescription = WDescriptionPage(self)
 
         self.setPage(self.porder['INTRO'], self.PIntro)
+        self.setPage(self.porder['DESCRIPTION'], self.PDescription)
         self.setPage(self.porder['AUTH'], self.PAuth)
-        #self.setPage(self.porder['COC'], self.PCOC)
         
         
     def nextId(self):
         current = self.currentId()
         if current == self.porder['INTRO']:
+            return self.porder['DESCRIPTION']
+        elif current == self.porder['DESCRIPTION']:
             return self.porder['AUTH']
         else:
             return -1
-
-    def getIntro(self):
-        #return list of informations
-        pass

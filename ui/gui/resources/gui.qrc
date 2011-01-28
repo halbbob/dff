@@ -103,5 +103,10 @@
     <file alias="magicball.png">icons/app/magic8ball.png</file>
     <file alias="virtualize.png">icons/app/parallels.png</file>
     <file alias="password.png">icons/app/password.png</file>
+
+    <file alias="comment.png">icons/actions/comment.png</file>
+    <file alias="uncomment.png">icons/actions/uncomment.png</file>
+
+
 </qresource>
 </RCC>
