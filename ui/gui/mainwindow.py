@@ -266,6 +266,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.last_dockwidget.toggleViewAction().setDisabled(True)
             self.setCentralWidget(self.last_dockwidget.widget())
             self.last_dockwidget.visibility_changed(True)
+            self.actionNodeBrowser.setEnabled(False)
+            self.actionShell.setEnabled(False)
+            self.actionPython_interpreter.setEnabled(False)
+            self.actionIdeOpen.setEnabled(False)
+            self.actionHelp.setEnabled(False)
         else:
             self.last_dockwidget.setWidget(self.last_widget)
             self.last_dockwidget.toggleViewAction().setEnabled(True)
@@ -276,6 +281,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.last_widget = None
             self.last_dockwidget = None
             self.refreshTabifiedDockWidgets()
+            self.actionNodeBrowser.setEnabled(True)
+            self.actionShell.setEnabled(True)
+            self.actionPython_interpreter.setEnabled(True)
+            self.actionIdeOpen.setEnabled(True)
+            self.actionHelp.setEnabled(True)
 
     def fullscreenMode(self):
         if self.isFullScreen():
