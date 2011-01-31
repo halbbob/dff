@@ -167,6 +167,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def addSingleDock(self, name, cl, master=False):
         try:
             self.dockWidget[name].show()
+            self.refreshTabifiedDockWidgets()
         except KeyError:
             w = cl(self)
             self.addDockWidgets(w, name, master)

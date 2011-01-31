@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
-    <height>158</height>
+    <width>446</width>
+    <height>189</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,25 +25,12 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string notr="true"/>
+          <string/>
          </property>
-         <property name="icon">
-          <iconset resource="gui.qrc">
-           <normaloff>:/info.png</normaloff>:/info.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="autoDefault">
-          <bool>true</bool>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
+         <property name="pixmap">
+          <pixmap resource="gui.qrc">:/info.png</pixmap>
          </property>
         </widget>
        </item>
@@ -65,7 +52,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href="http://wiki.digital-forensic.org/"&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href="https://webchat.freenode.net/?channels=digital-forensic"&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href="http://www.digital-forensic.org/"&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href="http://arxsys.fr/"&gt;ArxSys&lt;/a&gt; and &lt;a href="https://tracker.digital-forensic.org/"&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</string>
+        <string>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</string>
        </property>
        <property name="openExternalLinks">
         <bool>true</bool>

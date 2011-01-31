@@ -16,6 +16,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+from ui.gui.utils.utils import Utils
 from ui.gui.resources.ui_idewizard import Ui_IdeWizard
 
 class IdeWizard(QWizard, Ui_IdeWizard):

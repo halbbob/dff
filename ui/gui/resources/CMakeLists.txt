@@ -23,6 +23,7 @@ set(ui_resources_files
   evidencedialog.ui
   extractdialog.ui
   ide.ui
+  interpreter.ui
   idewizard.ui
   mainwindow.ui
   modules.ui

@@ -38,6 +38,7 @@ class Ide(QWidget, Ui_Ide):
 
         self.initCallBacks()
         self.translation()
+        self.addMainMenuActions()
         self.g_display()
         
 
@@ -52,6 +53,20 @@ class Ide(QWidget, Ui_Ide):
         self.redoact.connect(self.redoact,  SIGNAL("triggered()"), self.redo)
         self.commentact.connect(self.commentact,  SIGNAL("triggered()"), self.comment)
         self.uncommentact.connect(self.uncommentact,  SIGNAL("triggered()"), self.uncomment)
+
+    def addMainMenuActions(self):
+        self.mainWindow.menuIDE.addSeparator()
+        self.mainWindow.menuIDE.addAction(self.newemptyact)
+        self.mainWindow.menuIDE.addAction(self.newact)
+        self.mainWindow.menuIDE.addAction(self.openact)
+        self.mainWindow.menuIDE.addAction(self.saveact)
+        self.mainWindow.menuIDE.addAction(self.saveasact)
+        self.mainWindow.menuIDE.addAction(self.runact)
+        self.mainWindow.menuIDE.addSeparator()
+        self.mainWindow.menuIDE.addAction(self.undoact)
+        self.mainWindow.menuIDE.addAction(self.redoact)
+        self.mainWindow.menuIDE.addAction(self.commentact)
+        self.mainWindow.menuIDE.addAction(self.uncommentact)
 
     def g_display(self):
         self.splitter = QSplitter()
@@ -141,7 +156,7 @@ class Ide(QWidget, Ui_Ide):
     
     def open(self, path=None):
         if path == None:
-            sFileName = QFileDialog.getOpenFileName(self.parent, self.openFile, "/home")
+            sFileName = QFileDialog.getOpenFileName(self.mainWindow, self.openFile, "/home")
         else:
             sFileName = path
         if sFileName:

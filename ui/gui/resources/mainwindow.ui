@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -49,10 +49,10 @@
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>About</string>
+     <string>?</string>
     </property>
-    <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionHelp"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -95,7 +95,7 @@
   </widget>
   <action name="actionAbout">
    <property name="text">
-    <string>?</string>
+    <string>About DFF ...</string>
    </property>
   </action>
   <action name="actionLoadModule">
@@ -193,7 +193,7 @@
      <normaloff>:/help.png</normaloff>:/help.png</iconset>
    </property>
    <property name="text">
-    <string>Help</string>
+    <string>DFF Documentation</string>
    </property>
   </action>
   <action name="actionIdeOpen">
