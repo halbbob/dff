@@ -22,6 +22,8 @@
 #include "node.hpp"
 #include "../data_structure/includes/Inode.h"
 
+typedef std::map<std::string, Variant* > Attributes;
+
 class	MfsoAttrib
 {
 public :

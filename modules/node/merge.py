@@ -33,8 +33,8 @@ class MergeNode(Node):
       fm.push(0, self.file1.size(), self.file1, 0)
       fm.push(self.file1.size(), self.file2.size(), self.file2, 0)
       
-   def extendedAttributes(self, attr):
-      print "extended attr"
+   def _attributes(self):
+      attr = VMap()
       f1_size = Variant(self.file1.size())
       f2_size = Variant(self.file2.size())
       f1_name = Variant(self.file1.name())
@@ -44,11 +44,11 @@ class MergeNode(Node):
       f2_size.thisown = False
       f1_name.thisown = False
       f2_name.thisown = False
-      attr.push("1st file name", f1_name)
-      attr.push("2nd file name", f2_name)
-      attr.push("1st file size", f1_size)
-      attr.push("2nd file size", f2_size)
-
+      attr["1st file name"] = f1_name
+      attr["2nd file name"] = f2_name
+      attr["1st file size"] = f1_size
+      attr["2nd file size"] = f2_size
+      return attr 
 
 #      fatstart = Variant(self.partTable.start)
 #      fatstart.thisown = False

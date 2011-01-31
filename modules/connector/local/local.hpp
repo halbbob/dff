@@ -42,7 +42,7 @@ private:
   int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
 #ifndef WIN32
-  class ULocalNode*	__root;
+  class ULocalNode*	__root; 
 #else
   class WLocalNode*	__root;
 #endif

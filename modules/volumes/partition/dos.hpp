@@ -20,6 +20,7 @@
 #include "exceptions.hpp"
 #include "vfile.hpp"
 #include "node.hpp"
+#include "partition.hpp"
 
 #define is_ext(t) ((((t) == 0x05) || ((t) == 0x0F) || ((t) == 0x85)) ? 1 : 0)
 
@@ -68,17 +69,17 @@ typedef struct
 class DosPartitionNode: public Node
 {
 private:
+  Node*		origin;
+public:
   uint64_t	entryoffset;
   dos_pte*	pte;
-  Node*		origin;
-  uint8_t	type;
   uint32_t	base;
-public:
-  DosPartitionNode(std::string name, uint64_t size, Node* parent, fso* fsobj, Node* origin);
+  uint8_t	type;
+  DosPartitionNode(std::string name, uint64_t size, Node* parent, class Partition* fsobj, Node* origin);
   ~DosPartitionNode();
   void		setCtx(uint64_t entryoffset, dos_pte* pte, uint8_t type, uint32_t base=0);
   virtual void	fileMapping(class FileMapping* fm);
-  virtual void	extendedAttributes(Attributes* attr);
+  virtual Attributes		 _attributes(void);
 };
 
 #define PRIMARY		0x01
@@ -92,7 +93,7 @@ private:
   //vector<partition_info*>	parts;
   Node*				root;
   Node*				origin;
-  mfso*				fsobj;
+  class Partition*		fsobj;
   VFile*			vfile;
   //Pte*				pte;
   bool				mbrBadMagic;
@@ -105,7 +106,7 @@ private:
 public:
   DosPartition();
   ~DosPartition();
-  void			open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, Node* origin);
+  void			open(VFile* vfile, uint64_t offset, Node* root, Partition* fsobj, Node* origin);
   void			readEbr(uint32_t cur, uint32_t shift=0);
   void			readMbr(uint64_t offset);
 };

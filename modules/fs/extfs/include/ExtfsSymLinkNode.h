@@ -30,7 +30,6 @@ public :
   ~ExtfsSymLinkNode();
 
   virtual void		fileMapping(FileMapping* fm);
-  virtual void		extendedAttributes(Attributes* attr);
 
 private :
   uint64_t	__offset;

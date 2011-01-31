@@ -34,7 +34,6 @@ public:
   class FatTree*	tree;
   class BootSector*	bs;
   class FileAllocationTable*	fat;
-
   VFile*		vfile;
   virtual void		start(argument *arg);
   void			setContext(argument* arg);

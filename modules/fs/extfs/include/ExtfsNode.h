@@ -36,21 +36,14 @@ class	ExtfsNode : public Node
   virtual void 	fileMapping(FileMapping* fm);
 
   //! return NULL if an error occurs.
-  virtual void	extendedAttributes(Attributes* attr);
-
-  void		modifiedTime(vtime * t);
-  void		accessedTime(vtime * t);
-  void		createdTime(vtime * t);
-  void		changedTime(vtime * t);
-
   void		push_block_pointers(Inode * inode, FileMapping * file_mapping);
   void		setTimeToNull(vtime * t);
   void		set_i_nb(uint64_t i_id);
   uint64_t	i_nb() const;
 
+  virtual Attributes	 _attributes();
  private :
   Inode *	read_inode();
-
   uint64_t	__inode_addr;
   uint64_t	__i_nb;
   Extfs *	__extfs;

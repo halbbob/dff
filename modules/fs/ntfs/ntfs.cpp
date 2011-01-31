@@ -1148,7 +1148,6 @@ void		Ntfs::start(argument *arg)
   try
     {
       arg->get("parent", &_node);
-      
       _vfile = _node->open();
       
       _boot = new Boot(_vfile);

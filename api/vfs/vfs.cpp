@@ -92,3 +92,14 @@ Node* VFS::GetNode(string path)
   }  while (tmp && rpath.size());
   return (tmp);
 }
+
+
+void	VFS::AddNode(Node *parent, Node* head) /* peut m ettre un s du coup mouahhaha
+ou alors chopper une lsite ce qui evite les for ....... koi ct comme ca avant ????
+*/
+{
+   parent->addChild(head);
+ 
+   DEvent* e = new DEvent(head);
+   this->notify(e);
+}

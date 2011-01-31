@@ -84,6 +84,3 @@ void	ExtfsSymLinkNode::fileMapping(FileMapping* fm)
     }
 }
 
-void	ExtfsSymLinkNode::extendedAttributes(Attributes *attr)
-{
-}

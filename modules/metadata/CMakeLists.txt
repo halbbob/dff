@@ -11,29 +11,11 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory (metaexif)
 
-# compiled
-add_subdirectory (exceptions)
-add_subdirectory (env)
-add_subdirectory (loader)
-add_subdirectory (module)
-add_subdirectory (type)
-add_subdirectory (vfs)
-add_subdirectory (search)
-add_subdirectory (variant)
-add_subdirectory (tree)
-# python only
-add_subdirectory (taskmanager)
-add_subdirectory (manager)
-add_subdirectory (datatype)
-add_subdirectory (gui)
-add_subdirectory (devices)
-
-#### Deploying python __init__ script
-set(api_srcs
+set(metadata_srcs
   __init__.py
 )
 
-install_file(api ${api_srcs})
+install_file(metadata ${metadata_srcs})

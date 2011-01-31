@@ -32,17 +32,17 @@ class CutNode(Node):
      Node.__init__(self, name + "-" + hex(startOff), self.ssize, None, mfso)
      self.__disown__()
      self.name = name
-     setattr(self, "extendedAttributes", self.extendedAttributes)
-     setattr(self, "fileMapping", self.fileMapping)
 
    def fileMapping(self, fm):
      fm.push(0, self.ssize, self.pparent, self.startOff) 
       
-   def extendedAttributes(self, attr):
+   def _attributes(self):
+      attr = VMap()
       attr.thisown = False
       nstart = Variant(self.startOff)
       nstart.thisown = False
-      attr.push("start offset", nstart) 
+      attr["start offset"] = nstart
+      return attr
  
 
 class Cut(mfso):

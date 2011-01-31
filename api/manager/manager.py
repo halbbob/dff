@@ -18,12 +18,14 @@ from api.type.libtype import Path
 from api.env.env import env
 from api.env.libenv import argument
 from api.search import libsearch
+from api.datatype import libdatatype
 from api.vfs import vfs, libvfs
 from api.type import OS
 from dircache import listdir
 from api.loader import loader
 from api.variant import libvariant
 from api.taskmanager.taskmanager import TaskManager
+from api.datatype.magichandler import MagicHandler
 from api.tree import libtree
 
 class ApiManager():

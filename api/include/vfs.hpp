@@ -26,8 +26,8 @@
 #include "export.hpp"
 #include "exceptions.hpp"
 #include "type.hpp"
-#include "node.hpp"
 #include "DEventHandler.hpp"
+#include "node.hpp"
 
 #include <vector>
 #include <deque>
@@ -59,6 +59,7 @@ public:
   EXPORT Node* 	        GetCWD(void);
   EXPORT Node*	        GetNode(string path);
   EXPORT Node*	        GetNode(string path, Node* where);
+  EXPORT void		AddNode(Node *parent, Node* head);
 };
 
 #endif
