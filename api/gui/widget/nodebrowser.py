@@ -280,9 +280,9 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
             self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
        if node.hasChildren() or node.isDir():
-         self.opendirasnewtab.setEnabled(True)
+         self.actionOpen_in_new_tab.setEnabled(True)
        else:
-         self.opendirasnewtab.setEnabled(False)
+         self.actionOpen_in_new_tab.setEnabled(False)
        self.submenuFile.popup(QCursor.pos())
        self.submenuFile.show()       
 

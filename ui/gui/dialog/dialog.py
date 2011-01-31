@@ -51,12 +51,12 @@ class Dialog(QObject):
 	 if dev.selectedDevice:
            arg = self.env.libenv.argument("gui_input")
            arg.thisown = 0
-	   arg.add_path("path", str(dev.selectedDevice.blockDevice())) 
-           arg.add_node("parent", self.vfs.getnode("/"))
+	   arg.add_path("path", str(dev.selectedDevice.blockDevice()))
+           arg.add_node("parent", self.vfs.getnode("/Local devices"))
            arg.add_uint64("size", long(dev.selectedDevice.size())) 
 	   exec_type = ["thread", "gui"]
            if os.name == "nt":
-             arg.add_string("name", str(dev.selectedDevice.model()))	   
+             arg.add_string("name", str(dev.selectedDevice.model()))
              self.taskmanager.add("windevices", arg, exec_type)	
            else:	   
              self.taskmanager.add("local", arg, exec_type)
@@ -80,24 +80,24 @@ class Dialog(QObject):
                 arg.thisown = 0
                 exec_type = ["thread", "gui"]
                 if dtype == 'ewf':
-                  arg.add_path("file", str(name))
+                  arg.add_path("file", str(name.toUtf8()))
                   self.taskmanager.add("ewf", arg, exec_type)
                 else:
-                  arg.add_path("path", str(name))
-                  arg.add_node("parent", self.vfs.getnode("/"))
+                  arg.add_path("path", str(name.toUtf8()))
+                  arg.add_node("parent", self.vfs.getnode("/Logical files"))
                   self.taskmanager.add("local", arg, exec_type)
             else:
               arg = self.env.libenv.argument("gui_input")
               arg.thisown = 0
               exec_type = ["thread", "gui"]
-              arg.add_path("path", str(sFiles))
-              arg.add_node("parent", self.vfs.getnode("/"))
+              arg.add_path("path", str(sFiles.toUtf8()))
+              arg.add_node("parent", self.vfs.getnode("/Logical files"))
               self.taskmanager.add("local", arg, exec_type)
  
   def loadDriver(self):
         sFileName = QFileDialog.getOpenFileName(self.parent, self.parent.actionLoadModule.toolTip(), os.path.expanduser('~'),  "Modules(*.py)")
         if (sFileName) :
-            self.loader.do_load(str(sFileName))
+            self.loader.do_load(str(sFileName.toUtf8()))
 
   def about(self):
         """ Open a About Dialog """

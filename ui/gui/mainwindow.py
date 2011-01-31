@@ -25,7 +25,8 @@ from PyQt4 import QtCore, QtGui
 
 from api.type import *
 from api.vfs.libvfs import *
-from api.taskmanager import scheduler 
+from api.taskmanager import scheduler
+from api.vfs import vfs
 
 from api.gui.widget.textedit import TextEdit
 from api.gui.widget.dockwidget import DockWidget 
@@ -67,7 +68,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.app = app
         self.debug = debug
         self.sched = scheduler.sched
-        self.vfs = VFS.Get()
+#        self.vfs = VFS.Get()
+        self.vfs = vfs.vfs()
+        self.createRootNodes()
 
         self.dialog = Dialog(self)
 	
@@ -357,6 +360,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for action in self.toolbarList:
 	   self.addToolBars(action)
 
+    def createRootNodes(self):
+        root = self.vfs.getnode('/')
+        self.devicenode = deviceNode(root, str('Local devices'))
+        self.logicalenode = logicalNode(root, str('Logical files'))
+        self.searchednode = searchNode(root, str('Searched items'))
+        self.booknode = bookNode(root, str('Bookmarks'))
+
     def changeEvent(self, event):
         """ Search for a language change event
 
@@ -367,3 +377,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.retranslateUi(self)
         else:
             QMainWindow.changeEvent(self, event)
+
+class deviceNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":dev_hd.png")
+
+class logicalNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":folder_documents_128.png")
+    
+class bookNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":bookmark.png")
+
+class searchNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":hex_search.png")
+
