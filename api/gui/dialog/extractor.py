@@ -27,8 +27,7 @@ class Extractor(QDialog, Ui_ExtractDialog):
         QDialog.__init__(self, parent)
         self.setupUi(self)
 
-# Hide label used for translators
-        self.warningLabel.setVisible(False)
+        self.translation()
         
         self.nodes = None
 
@@ -62,7 +61,7 @@ class Extractor(QDialog, Ui_ExtractDialog):
             self.emit(SIGNAL("filled"))
         else:
             msg = QMessageBox(self)
-            msg.setText(self.syspathLine.toolTip())
+            msg.setText(self.pathMandatoryText)
             msg.setIcon(QMessageBox.Warning)
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
@@ -71,7 +70,7 @@ class Extractor(QDialog, Ui_ExtractDialog):
         self.connect(self.syspathBrowse, SIGNAL("clicked()"), self.getExtractFolder)
 
     def getExtractFolder(self):
-        dialog = QFileDialog(self, self.syspathBrowse.toolTip(),  "/home")
+        dialog = QFileDialog(self, self.browseTitleText,  "/home")
         dialog.setFileMode(QFileDialog.DirectoryOnly)
         dialog.setViewMode(QFileDialog.Detail)
         ret = dialog.exec_()
@@ -98,9 +97,10 @@ class Extractor(QDialog, Ui_ExtractDialog):
             if node.name() in content:
                 same.append(str(node.name()))
         if len(same) > 0:
-            msg = QMessageBox(self.warningLabel.text())
-            msg.setText(self.warningLabel.toolTip() + '\n' + str(self.path))
-            msg.setInformativeText(self.warningLabel.statusTip())
+            msg = QMessageBox()
+            msg.setWindowTitle(self.warningTitleText)
+            msg.setText(self.warningExistText + '\n' + str(self.path))
+            msg.setInformativeText(self.warningOWText)
             msg.setIcon(QMessageBox.Warning)
             items = "".join(s.join(["", "\n"]) for s in same)
             msg.setDetailedText(items)
@@ -114,7 +114,13 @@ class Extractor(QDialog, Ui_ExtractDialog):
         else:
             self.selectedNodes = self.nodes
 
-
+    def translation(self):
+        self.pathMandatoryText = self.tr('Extraction path is mandatory')
+        self.browseTitleText = self.tr('Choose the destination folder for extraction')
+        self.warningTitleText = self.tr('Overwrite attempt')
+        self.warningExistText = self.tr('Some selected files or folders already exist in the destination folder')
+        self.warningOWText = self.tr('Overwrite with selected ones ?')
+        
     def changeEvent(self, event):
         """ Search for a language change event
         
@@ -123,6 +129,7 @@ class Extractor(QDialog, Ui_ExtractDialog):
         """
         if event.type() == QEvent.LanguageChange:
             self.retranslateUi(self)
+            self.translation()
         else:
             QDialog.changeEvent(self, event)
 
