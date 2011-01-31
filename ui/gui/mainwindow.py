@@ -141,6 +141,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def addDockWidgets(self, widget, internalName, master=True):
         if widget is None:
             return
+        if self.last_state is not None:
+            self.maximizeDockwidget()
         dockwidget = DockWidget(self, widget, widget.name)
         docIndex, docTitle = self.getWidgetName(widget.name)
         dockwidget.setWindowTitle(docTitle)
