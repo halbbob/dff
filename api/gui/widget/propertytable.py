@@ -26,25 +26,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     self.setupUi(self)
     self.node = None
 
-# Hide labels used for translators
-    self.itemName.setVisible(False)
-    self.itemType.setVisible(False)
-    self.itemFolder.setVisible(False)
-    self.itemFile.setVisible(False)
-    self.itemModApplied.setVisible(False)
-    self.itemEmpty.setVisible(False)
-    self.itemDeleted.setVisible(False)
-    self.itemGeneratedBy.setVisible(False)
-    self.itemSize.setVisible(False)
-    self.itemRelevantMod.setVisible(False)
-    self.itemChildren.setVisible(False)
-    self.itemFiles.setVisible(False)
-    self.itemTotal.setVisible(False)
-    self.itemBytes.setVisible(False)
-    self.itemFolders.setVisible(False)
-    self.itemTimes.setVisible(False)
-    self.itemExtAttr.setVisible(False)
-    self.itemStaAttr.setVisible(False)
+    self.translation()
     
     self.ft = FILETYPE()
 
@@ -55,33 +37,33 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     if fsobj != None:
       fsobjname = fsobj.name
     itemName = QTreeWidgetItem(self)
-    itemName.setText(0, self.itemName.text())
+    itemName.setText(0, self.nameText)
     itemName.setText(1, str(node.name()))
 
     itemName = QTreeWidgetItem(self)
-    itemName.setText(0, self.itemType.text())
+    itemName.setText(0, self.typeText)
     typestr = ""
     if node.isFile():
-      typestr += self.itemFile.text()
+      typestr += self.fileText
       if node.hasChildren():
-        typestr += self.itemModApplied.text()
+        typestr += self.modAppliedText
         self.fillChildren(node)
       self.fillCompatModule(node)
         
     if node.isDir():
-      typestr += self.itemFolder.text()
+      typestr += self.folderText
       if not node.hasChildren():
-        typestr += self.itemEmpty.text()
+        typestr += self.emptyText
     if node.isDeleted():
-      typestr += self.itemDeleted.text()
+      typestr += self.deletedText
     itemName.setText(1, typestr)
 
     itemModule = QTreeWidgetItem(self)
-    itemModule.setText(0, self.itemGeneratedBy.text())
+    itemModule.setText(0, self.generatedByText)
     itemModule.setText(1, str(fsobjname))
     
     itemSize = QTreeWidgetItem(self)
-    itemSize.setText(0, self.itemSize.text())
+    itemSize.setText(0, self.sizeText)
     itemSize.setText(1, str(node.size()))
 
 
@@ -89,7 +71,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     l = self.ft.findcompattype(node)
     if len(l) > 0:
       itemCompat = QTreeWidgetItem(self)
-      itemCompat.setText(0, self.itemRelevantMod.text())
+      itemCompat.setText(0, self.relevantModText)
       buff = ""
       for i in l:
         buff += str(i) + " " 
@@ -97,7 +79,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
 
   def fillChildren(self, node):
     itemChildren = QTreeWidgetItem(self)
-    itemChildren.setText(0, self.itemChildren.text())
+    itemChildren.setText(0, self.childrenText)
     itemChildren.setText(1, str(node.childCount()))
     children = node.children()
     filessize = 0
@@ -111,11 +93,11 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
         dircount += 1
     if filecount > 0:
       itemFile = QTreeWidgetItem(itemChildren)
-      itemFile.setText(0, self.itemFiles.text())
-      itemFile.setText(1, str(filecount) + self.itemTot.text() + str(filessize) + self.itemBytes())
+      itemFile.setText(0, self.filesText)
+      itemFile.setText(1, str(filecount) + self.totalText + str(filessize) + self.itemBytes())
     if dircount > 0:
       itemFolder = QTreeWidgetItem(itemChildren)
-      itemFolder.setText(0, self.itemFolders.text())
+      itemFolder.setText(0, self.foldersText)
       itemFolder.setText(1, str(dircount))
     self.expandItem(itemChildren)    
     
@@ -124,7 +106,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
       try:
         ntimes = node.times()
         itemTimes = QTreeWidgetItem(self)
-        itemTimes.setText(0, self.itemTimes.text())
+        itemTimes.setText(0, self.timesText)
         for timetype, t in ntimes.iteritems():
           itemTime = QTreeWidgetItem(itemTimes)
           itemTime.setText(0, str(timetype))
@@ -141,7 +123,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     map = attrs.attributes()
     if len(map) > 0:
       itemExtendedAttr = QTreeWidgetItem(self)
-      itemExtendedAttr.setText(0, self.itemExtAttr.text())
+      itemExtendedAttr.setText(0, self.extAttrText)
       for key, value in map.iteritems():
         item = QTreeWidgetItem(itemExtendedAttr)
         item.setText(0, str(key))
@@ -167,7 +149,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
       attrs = node.staticAttributes()
       map = attrs.attributes()
       itemStaticAttr = QTreeWidgetItem(self)
-      itemStaticAttr.setText(0, self.itemStaAttr.text())
+      itemStaticAttr.setText(0, self.staAttrText)
       for key, value in map.iteritems():
         item = QTreeWidgetItem(itemStaticAttr)
         item.setText(0, str(key))
@@ -230,7 +212,26 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
       self.fillStaticAttributes(node)
       self.fillExtendedAttributes(node)
 
-
+  def translation(self):
+    self.bytesText = self.tr(' bytes')
+    self.childrenText = self.tr('children')
+    self.deletedText = self.tr(' deleted')
+    self.emptyText = self.tr(' empty')
+    self.extAttrText = self.tr('extended attributes')
+    self.fileText = self.tr('file')
+    self.filesText = self.tr('file(s)')
+    self.folderText = self.tr('folder')
+    self.foldersText = self.tr('folder(s)')
+    self.generatedByText = self.tr('generated by')
+    self.modAppliedText = self.tr(' with module(s) applied on it')
+    self.nameText = self.tr('name')
+    self.relevantModText = self.tr('relevant module(s)')
+    self.sizeText = self.tr('size')
+    self.staAttrText = self.tr('static attributes')
+    self.timesText = self.tr('default timestamp')
+    self.totalText = self.tr(' totalizing ')
+    self.typeText = self.tr('type')
+    
   def changeEvent(self, event):
     """ Search for a language change event
     
@@ -239,6 +240,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     """
     if event.type() == QEvent.LanguageChange:
       self.retranslateUi(self)
+      self.translation()
       if self.node is not None:
         self.fill()
 

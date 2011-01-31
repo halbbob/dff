@@ -23,6 +23,7 @@ FORMS           += ../../../ui/gui/resources/taskmanager.ui
 SOURCES         += ../../../ui/gui/ide/ide.py
 SOURCES         += ../../../ui/gui/ide/idewizard.py
 SOURCES         += ../../../api/gui/model/vfsitemmodel.py
+SOURCES         += ../../../api/gui/widget/propertytable.py
 
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts
