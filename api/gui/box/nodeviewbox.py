@@ -1,4 +1,4 @@
-# DFF -- An Open Source Digital Forensics Framework
+4# DFF -- An Open Source Digital Forensics Framework
 # Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
@@ -31,14 +31,27 @@ class NodeViewBox(QWidget):
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
     self.button = {}
-    
-    # self.bookdiag = bookmarkDialog(self)
+ 
+    self.history = []
+    self.history.append("/")
+    self.currentPathId = -1
+
     self.bookmarkCategories = []
 
     self.gridLayout = QHBoxLayout(self)
     self.gridLayout.setAlignment(Qt.AlignLeft)
     self.addPropertyTable()
-    self.createButton("top", self.moveToTop, self.tr("Previous"), ":previous.png")
+    self.createButton("previous", self.moveToPrevious, self.tr("Previous"), ":previous.png")
+    self.createPrevDropButton()
+#    self.createButton("previous", self.moveToPrevious, self.tr("Previous"), ":previous.png")
+
+    self.createButton("next", self.moveToNext, self.tr("Previous"), ":next.png")
+    self.createNextDropButton()
+    self.createButton("top", self.moveToTop, self.tr("Previous"), ":top.png")
+
+    self.button["previous"].setEnabled(False)
+    self.button["next"].setEnabled(False)
+
     self.createButton("root", self.goHome,  self.tr("Return to root"), ":home.png")
 
     self.createPathEdit()
@@ -89,6 +102,52 @@ class NodeViewBox(QWidget):
     self.gridLayout.addWidget(self.button[name])
     self.parent.connect(self.button[name], SIGNAL("clicked()"), func)
 
+  def createPrevDropButton(self):
+    self.prevdrop = QPushButton(self)
+    self.prevdrop.setFixedSize(QSize(20, 32))
+    self.prevdrop.setEnabled(False)
+    self.prevdrop.setFlat(True)
+    self.prevmenu = QMenu()
+    self.prevdrop.setMenu(self.prevmenu)
+    self.connect(self.prevmenu, SIGNAL("triggered(QAction*)"), self.prevMenuTriggered)
+
+    self.gridLayout.addWidget(self.prevdrop)
+
+  def setPrevMenu(self):
+    self.prevmenu.clear()
+    h = self.history[:self.currentPathId]
+    for path in h:
+      self.prevmenu.addAction(path)
+
+  def prevMenuTriggered(self, action):
+    self.parent.model.setRootPath(self.vfs.getnode(str(action.text())))
+
+  def createNextDropButton(self):
+    self.nextdrop = QPushButton(self)
+    self.nextdrop.setFixedSize(QSize(20, 32))
+    self.nextdrop.setEnabled(False)
+    self.nextdrop.setFlat(True)
+    self.nextmenu = QMenu()
+    self.nextdrop.setMenu(self.nextmenu)
+    self.connect(self.nextmenu, SIGNAL("triggered(QAction*)"), self.nextMenuTriggered)
+    self.gridLayout.addWidget(self.nextdrop)
+
+  def setNextMenu(self):
+    self.nextmenu.clear()
+    h = self.history[self.currentPathId+1:]
+    for path in h:
+      self.nextmenu.addAction(path)
+
+  def pathInHistory(self, path, hlist):
+    for p in hlist:
+      if p == path:
+        return True
+    return False
+
+  def nextMenuTriggered(self, action):
+    self.parent.model.setRootPath(self.vfs.getnode(str(action.text())))
+
+
   def goHome(self):
      self.parent.model.setRootPath(self.vfs.getnode("/"))    
 
@@ -123,6 +182,31 @@ class NodeViewBox(QWidget):
   def moveToTop(self):
      parent =  self.parent.model.rootItem.parent()
      self.parent.model.setRootPath(parent)
+     self.changeNavigationState()
+
+  def moveToPrevious(self):
+    if self.currentPathId > 0:
+      self.currentPathId = self.currentPathId - 1
+      path = self.history[self.currentPathId]
+      node = self.vfs.getnode(path)
+      self.parent.model.setRootPath(node, 1)
+      self.changeNavigationState()
+      self.pathedit.setCompleter(None)
+      self.pathedit.clear()
+      self.pathedit.insert(path[1:])
+      self.pathedit.setCompleter(self.completer)
+
+  def moveToNext(self):
+    if self.currentPathId < len(self.history) - 1:
+      self.currentPathId = self.currentPathId + 1
+      path = self.history[self.currentPathId]
+      node = self.vfs.getnode(path)
+      self.parent.model.setRootPath(node, 1)
+      self.changeNavigationState()
+      self.pathedit.setCompleter(None)
+      self.pathedit.clear()
+      self.pathedit.insert(path[1:])
+      self.pathedit.setCompleter(self.completer)
  
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
@@ -173,15 +257,39 @@ class NodeViewBox(QWidget):
 
     self.gridLayout.addWidget(self.pathedit)
 
+
   def rootpathchanged(self, node):
     path = node.absolute()
+    if len(self.history) > 0 and  self.history[len(self.history) - 1] != path:
+      if not self.pathInHistory(path, self.history):
+        self.history.append(str(node.absolute()))
+
+    self.currentPathId = len(self.history) - 1
+    self.changeNavigationState()
     if path != "/":
       path += "/"
-
     self.pathedit.setCompleter(None)
     self.pathedit.clear()
     self.pathedit.insert(path[1:])
     self.pathedit.setCompleter(self.completer)
+
+
+  def changeNavigationState(self):
+    self.setPrevMenu()
+    self.setNextMenu()
+    if self.currentPathId > 0:
+      self.button["previous"].setEnabled(True)
+      self.prevdrop.setEnabled(True)
+    else:
+      self.button["previous"].setEnabled(False)
+      self.prevdrop.setEnabled(False)
+    if self.currentPathId < len(self.history) -1:
+      self.button["next"].setEnabled(True)
+      self.nextdrop.setEnabled(True)
+    else:
+      self.button["next"].setEnabled(False)
+      self.nextdrop.setEnabled(False)
+
 
   def bookmark(self):
     bookdiag = bookmarkDialog(self)

@@ -10,22 +10,33 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Jeremy MOUNIER <jmo@digital-forensic.org>
 # 
 
 from PyQt4.QtGui import QDockWidget
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, SIGNAL
 
 class DockWidget(QDockWidget):
   def __init__(self, mainWindow, widget, name):
     QDockWidget.__init__(self, mainWindow)
-    self.init(widget, name)
+    self.mainwindow = mainWindow
+    self.init(widget)
     self.show()
     self.setObjectName(name)
 
-  def init(self, widget, name):
+  def init(self, widget):
+    self.name = widget.name
     self.setAllowedAreas(Qt.AllDockWidgetAreas)
-    self.setWindowTitle(name)
+    self.setFeatures(QDockWidget.AllDockWidgetFeatures)
     self.setWidget(widget)
- 
 
+    self.connect(self, SIGNAL("topLevelChanged(bool)"), self.toplevel_changed)
+ 
+  def toplevel_changed(self, state):
+    if not state:
+      self.mainwindow.refreshTabifiedDockWidgets()
+
+  def visibility_changed(self, enable):
+    if enable:
+      self.raise_()
+      self.setFocus()

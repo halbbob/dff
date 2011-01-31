@@ -18,7 +18,7 @@ from PyQt4.QtGui import QAction, QApplication, QDockWidget, QWidget, QVBoxLayout
 from PyQt4.QtCore import QSize, Qt, SIGNAL
 from ide import Ide
 
-class DockIde(QDockWidget):
+class DockIde(QWidget):
     def __init__(self,  mainWindow, actions):
         super(DockIde,  self).__init__(mainWindow)
         self.init(mainWindow, actions)
@@ -29,22 +29,22 @@ class DockIde(QDockWidget):
         
     def init(self, mainWindow, actions):
         self.type = "ide"
-        self.name = "ide"
-        self.setMaximumSize(QSize(3000, 3000))
+        self.name = "IDE"
         self.actions = actions
         self.__mainWindow = mainWindow
 
         self.configure()
 
     def configure(self):
-        self.setAllowedAreas(Qt.AllDockWidgetAreas)
         self.setObjectName("IDE")
-        self.setWindowTitle(self.tr("IDE", "IDE"))
 
     def g_display(self):
         self.ide = Ide(self)
-        self.ide.g_display()    
-        self.setWidget(self.ide)
+        self.ide.g_display()
+        layout = QVBoxLayout()
+        layout.addWidget(self.ide)
+        self.setLayout(layout)
+
 
     def initCallbacks(self):
         self.connect(self, SIGNAL("visibilityChanged(bool)"), self.visibility)

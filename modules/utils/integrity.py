@@ -16,7 +16,7 @@
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
-from modules.parser.hashmod.hash import HASH
+from modules.hash.hash import HASH
 
 import traceback
 
