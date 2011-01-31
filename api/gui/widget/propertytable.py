@@ -15,8 +15,7 @@
 
 from PyQt4.QtCore import Qt, QString
 from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem#, QHeaderView 
-from api.vfs.libvfs import Attributes
-from api.magic.filetype import FILETYPE
+#from api.vfs.libvfs import Attributes
 
 class PropertyTable(QTreeWidget):
   def __init__(self, parent):
@@ -24,8 +23,6 @@ class PropertyTable(QTreeWidget):
     self.setColumnCount(2)
     self.setHeaderLabels([self.tr("Attribute"), self.tr("Value")])
     self.setAlternatingRowColors(True)
-    self.ft = FILETYPE()
-
 
   def fillBase(self, node):
     fsobj = node.fsobj()
@@ -37,14 +34,15 @@ class PropertyTable(QTreeWidget):
     itemName.setText(1, str(node.name()))
 
     itemName = QTreeWidgetItem(self)
-    itemName.setText(0, self.tr("type"))
+    itemName.setText(0, self.tr("node type"))
     typestr = ""
     if node.isFile():
       typestr += self.tr("file")
       if node.hasChildren():
         typestr += " " + self.tr("with module(s) applied on it")
-        self.fillChildren(node)
       self.fillCompatModule(node)
+    if node.hasChildren():
+      self.fillChildren(node)
         
     if node.isDir():
       typestr += self.tr("folder")
@@ -64,7 +62,7 @@ class PropertyTable(QTreeWidget):
 
 
   def fillCompatModule(self, node):
-    l = self.ft.findcompattype(node)
+    l = node.compatibleModules()
     if len(l) > 0:
       itemCompat = QTreeWidgetItem(self)
       itemCompat.setText(0, self.tr("relevant module(s)"))
@@ -73,7 +71,7 @@ class PropertyTable(QTreeWidget):
         buff += str(i) + " " 
       itemCompat.setText(1, buff)
 
-  def fillChildren(self, node):
+  def fillChildren(self, node): 
     itemChildren = QTreeWidgetItem(self)
     itemChildren.setText(0, "children")
     itemChildren.setText(1, str(node.childCount()))
@@ -82,10 +80,10 @@ class PropertyTable(QTreeWidget):
     filecount = 0
     dircount = 0
     for child in children:
-      if child.isFile():
+      if child.size():
         filessize += child.size()
         filecount += 1
-      elif child.isDir():
+      elif child.isDir() or child.hasChildren():
         dircount += 1
     if filecount > 0:
       itemFile = QTreeWidgetItem(itemChildren)
@@ -97,29 +95,12 @@ class PropertyTable(QTreeWidget):
       itemFolder.setText(1, str(dircount))
     self.expandItem(itemChildren)    
     
-
-  def fillTimes(self, node):
-      try:
-        ntimes = node.times()
-        itemTimes = QTreeWidgetItem(self)
-        itemTimes.setText(0, self.tr("default times"))
-        for timetype, t in ntimes.iteritems():
-          itemTime = QTreeWidgetItem(itemTimes)
-          itemTime.setText(0, str(timetype))
-          itemTime.setText(1, str(t.get_time()))
-        self.expandItem(itemTimes)
-      except IndexError, AttributeError:
-        pass
-
-
-  def fillExtendedAttributes(self, node):
-    attrs = Attributes()
-    attrs.thisown = False
-    node.extendedAttributes(attrs)
-    map = attrs.attributes()
+  def fillAttributes(self, node):
+    map = node.attributes()
+    map.thisown = False
     if len(map) > 0:
       itemExtendedAttr = QTreeWidgetItem(self)
-      itemExtendedAttr.setText(0, self.tr("extended attributes"))
+      itemExtendedAttr.setText(0, self.tr("attributes"))
       for key, value in map.iteritems():
         item = QTreeWidgetItem(itemExtendedAttr)
         item.setText(0, str(key))
@@ -138,35 +119,6 @@ class PropertyTable(QTreeWidget):
           else:
             item.setText(1, str(value))
       self.expandItem(itemExtendedAttr)
-
-  
-  def fillStaticAttributes(self, node):
-    try:
-      attrs = node.staticAttributes()
-      map = attrs.attributes()
-      itemStaticAttr = QTreeWidgetItem(self)
-      itemStaticAttr.setText(0, self.tr("static attributes"))
-      for key, value in map.iteritems():
-        item = QTreeWidgetItem(itemStaticAttr)
-        item.setText(0, str(key))
-        if str(type(value)).find("Variant") != -1:
-          if str(type(value.value())).find("VMap") != -1:
-            self.fillMap(item, value.value())
-          elif str(type(value.value())).find("VList") != -1:
-            self.fillList(item, value.value())
-          elif str(value).find("vtime") != -1:
-            item.setText(1, str(value.value().get_time()))
-          else:
-            item.setText(1, str(value))
-        else:
-          if str(value).find("vtime") != -1:
-            item.setText(1, str(value.value().get_time()))
-          else:
-            item.setText(1, str(value))
-      self.expandItem(itemStaticAttr)
-    except (IndexError, AttributeError):
-      pass
-
 
   def fillMap(self, parent, map):
     for key, value in map.iteritems():
@@ -201,7 +153,4 @@ class PropertyTable(QTreeWidget):
     self.clear()
     if self.isVisible():
       self.fillBase(node)
-      self.fillTimes(node)
-      self.fillStaticAttributes(node)
-      self.fillExtendedAttributes(node)
-
+      self.fillAttributes(node)

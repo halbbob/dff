@@ -216,7 +216,6 @@ class Firmware(Node):
      self.nor = nor 
      self.noroffset = noroffset
      self.setFile()
-     setattr(self, "fileMapping", self.fileMapping)
 
    def fileMapping(self, fm):
      fm.push(0, self.noroffset, self.nor, 0) 
@@ -229,7 +228,6 @@ class NorFs(Node):
      self.__disown__()
      self.nor = nor 
      self.setFile()
-     setattr(self, "fileMapping", self.fileMapping)
 
    def fileMapping(self, fm):
      fm.push(0, self.ssize, self.nor, self.noroffset) 
@@ -243,7 +241,6 @@ class GDFS(Node):
      self.nor = nor 
      self.noroffset = self.boot.norfsoffset
      self.setFile()
-     setattr(self, "fileMapping", self.fileMapping)
 
   def fileMapping(self, fm):
      fm.push(0, self.ssize, self.nor, self.noroffset + self.boot.segment[0].size) 
@@ -258,8 +255,6 @@ class FullFs(Node):
      self.norfs = norfs 
      self.nandfs = nandfs
      self.setFile()
-     setattr(self, "fileMapping", self.fileMapping)
-     setattr(self, "extendedAttributes", self.extendedAttributes)
 
    def fileMapping(self, fm):
      fm.push(0, self.norfs.size(), self.norfs, 0)
@@ -267,7 +262,8 @@ class FullFs(Node):
      fm.push(self.norfs.size() + (448*512*8), self.nandfs.size(), self.nandfs, 0) 
      #fm.push(self.norfs.size() , self.nandfs.size(), self.nandfs, 0) 
 
-   def extendedAttributes(self, attr):
+   def _attributes(self):
+      attr = VMap()
       attr.thisown = False
 
       for i in xrange(0, 2):
@@ -297,8 +293,8 @@ class FullFs(Node):
       
         v = Variant(vmap)
         v.thisown = False
-        attr.push(name[i], v)
-
+        attr[name[i]] = v
+      return attr
 
 class VirtualMap(Node):
    def __init__(self, mfso, parent, fullfs, tables, name, blockSize):
@@ -311,8 +307,6 @@ class VirtualMap(Node):
      self.blockSize = blockSize
      self.mapTable()
      self.setFile()
-     setattr(self, "extendedAttributes", self.extendedAttributes)
-     setattr(self, "fileMapping", self.fileMapping)
 
    def mapTable(self): 
     self.map = {}
@@ -345,7 +339,8 @@ class VirtualMap(Node):
        else:
          fm.push(block * self.blockSize, self.blockSize, self.fullfs, realblock * self.blockSize) 
       
-   def extendedAttributes(self, attr):
+   def _attributes(self):
+      attr = VMap()
       attr.thisown = False
       vmap = VMap()
       vmap.thisown = False
@@ -355,10 +350,11 @@ class VirtualMap(Node):
         vmap[hex(t)] = v
       m = Variant(vmap)
       m.thisown = False
-      attr.push("tables", m)
+      attr["tables"] = m
       al = Variant(self.aalloc)
       al.thisown = False
-      attr.push("reallocated blocks", al)
+      attr["reallocated blocks"] = al
+      return attr	
 
 class Partition(Node):
    def __init__(self, mfso, parent, virtual, partTable, blockSize):
@@ -369,8 +365,6 @@ class Partition(Node):
      self.blockSize = blockSize
      self.partTable = partTable
      self.setFile()
-     setattr(self, "extendedAttributes", self.extendedAttributes)
-     setattr(self, "fileMapping", self.fileMapping)
 
    def fileMapping(self, fm):
      startOff = (self.partTable.start - 1) * self.blockSize
@@ -382,18 +376,19 @@ class Partition(Node):
      else:
        fm.push(0, self.ssize, self.virtual, startOff) 
       
-   def extendedAttributes(self, attr):
+   def _attributes(self):
+      attr = VMap()
       attr.thisown = False
       fatstart = Variant(self.partTable.start)
       fatstart.thisown = False
-      attr.push("partition start", fatstart)
+      attr["partition start"] = fatstart
       blocksize = Variant(self.partTable.blocksize)
       blocksize.thisown = False
-      attr.push("blocksize", blocksize)
+      attr["blocksize"] = blocksize
       size = Variant(self.partTable.size)
       size.thisown = False
-      attr.push("size in block", size)
- 
+      attr["size in block"] = size
+      return attr
 
 class K800I(mfso):
     def __init__(self):

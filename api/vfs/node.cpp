@@ -213,54 +213,12 @@ uint64_t	FileMapping::mappedFileSize()
   return this->__mappedFileSize;
 }
 
-Attributes::Attributes()
-{
-}
-
-Attributes::~Attributes()
-{
-}
-
-void					Attributes::push(std::string key, class Variant *value)
-{
-  if (value != NULL)
-    this->__attrs[key] = value;
-}
-
-std::list<std::string>			Attributes::keys()
-{
-  std::list<std::string>		keys;
-  std::map<std::string, class Variant*>::iterator it;
-
-  for (it = this->__attrs.begin(); it != this->__attrs.end(); it++)
-    keys.push_back(it->first);
-  return keys;
-}
-
-Variant*				Attributes::value(std::string key)
-{
-  std::map<std::string, class Variant*>::iterator it;
-
-  it = this->__attrs.find(key);
-  if (it != this->__attrs.end())
-    return (it->second);
-  else
-    return NULL;
-}
-
-std::map<std::string, class Variant*>	Attributes::attributes()
-{
-  return this->__attrs;
-}
-
-
 Node::Node()
 {
 }
 
 Node::Node(std::string name, uint64_t size, Node* parent, fso* fsobj)
 {
-  this->__static_attributes = NULL;
   this->__common_attributes = 0;
   this->__childcount = 0;
   this->__at = 0;
@@ -330,65 +288,122 @@ void   Node::fileMapping(FileMapping *)
 {
 }
 
-void			Node::setStaticAttribute(std::string key, class Variant* value)
+Attributes	Node::_attributes(void)
 {
-  if (this->__static_attributes == NULL)
-    this->__static_attributes = new Attributes();
-  this->__static_attributes->push(key, value);
+  Attributes attr;
+
+  return (attr);
 }
 
 
-Attributes*			Node::staticAttributes()
+void 	Node::attributesByTypeFromVariant(Variant* variant, uint8_t type, Attributes* result)
 {
-  return this->__static_attributes;
+   if (variant->type() == typeId::List)
+   {
+     std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+     std::list<Variant*>::iterator it = lvariant.begin();
+     for (; it != lvariant.end(); it++)
+	this->attributesByTypeFromVariant((*it), type, result); 
+   }
+   else if (variant->type() == typeId::Map)
+   {
+     Attributes mvariant = variant->value<Attributes >();
+     Attributes::iterator it = mvariant.begin();
+     for (; it != mvariant.end(); it++)
+       if ((*it).second->type() == type)
+	 (*result)[(*it).first] = (*it).second;
+       else
+	 this->attributesByTypeFromVariant((*it).second, type, result);
+   }
+}
+
+void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Variant** result)
+{
+   if (variant->type() == typeId::List)
+   {
+     std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+     std::list<Variant*>::iterator it = lvariant.begin();
+     for (; it != lvariant.end(); it++)
+	this->attributesByNameFromVariant((*it), name, result); 
+   }
+   else if (variant->type() == typeId::Map)
+   {
+     Attributes mvariant = variant->value<Attributes >();
+     Attributes::iterator it = mvariant.begin();
+     for (; it != mvariant.end(); it++)
+     {
+       if ((*it).first == name)
+       {
+	  *result = (*it).second;
+	  return;
+       }
+       else
+	 this->attributesByNameFromVariant((*it).second, name, result);
+     }
+   }
+}
+
+Variant*			Node::attributesByName(std::string name)
+{
+ Attributes*			attr = this->attributes();
+ Variant*			var = new Variant(*attr);
+ Variant**			result = new Variant *; 
+
+ *result = NULL; 
+ this->attributesByNameFromVariant(var, name, result);
+
+ return (*result);
+}
+
+Attributes*			Node::attributesByType(uint8_t type)
+{
+ Attributes*			result = new Attributes;
+ Attributes*			attr = this->attributes();
+ Variant*			var = new Variant(*attr);
+  
+ this->attributesByTypeFromVariant(var, type, result);
+
+ return result;
 }
 
 
-void			Node::extendedAttributes(Attributes *)
+Attributes*			Node::attributes() //rajouter un wait times ->bloquant ou pas 
+{
+  Attributes* attr = new std::map<std::string, Variant*>;
+//UNICODE
+   (*attr)[std::string("type")] = this->dataType(); //TYPE A REGISTER DS LE NODE OU AVOIR UN REGISTER GLOBAL ?
+
+  std::list<AttributesHandler*>::iterator handler;
+  Attributes	nodeAttributes = this->_attributes();
+  if (!(nodeAttributes.empty()))
+    (*attr)[this->fsobj()->name] = new Variant(nodeAttributes);
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+  {
+    (*attr)[(*handler)->name()] = new Variant((*handler)->attributes(this));	
+  } 	
+
+  return attr;
+}
+
+AttributesHandler::AttributesHandler(std::string handlerName)
+{
+  this->__handlerName = handlerName;
+}
+
+std::string AttributesHandler::name(void)
+{
+  return (this->__handlerName);
+}
+
+
+AttributesHandler::~AttributesHandler()
 {
 }
 
-void			Node::modifiedTime(vtime *)
+bool			Node::registerAttributes(AttributesHandler* ah)
 {
-}
-
-void			Node::accessedTime(vtime *)
-{
-}
-
-void			Node::createdTime(vtime *)
-{
-}
-
-void			Node::changedTime(vtime *)
-{
-}
-
-std::map<std::string, vtime*>	Node::times()
-{
-  std::map<std::string, vtime*>	t;
-
-  //t["modified"] = this->modifiedTime(new vtime);
-  vtime *mod = new vtime;
-  this->modifiedTime(mod);
-  t["modified"] = mod;
-
-  //t["accessed"] = this->accessedTime(new vtime);
-  vtime *acc = new vtime;
-  this->accessedTime(acc);
-  t["accessed"] = acc;
-
-  //t["created"] = this->createdTime(new vtime);
-  vtime *crea = new vtime;
-  this->createdTime(crea);
-  t["created"] = crea;
-
-  //t["changed"] = this->changedTime(new vtime);
-  vtime *chan = new vtime;
-  this->changedTime(chan);
-  t["changed"] = chan;
-
-  return t;
+   this->__attributesHandlers.push_back(ah);
+   return true;
 }
 
 uint64_t	Node::size()
@@ -546,6 +561,84 @@ uint32_t	Node::id()
   return this->__id;
 }
 
+string Node::icon(void)
+{
+  if (!(this->hasChildren()))
+  {
+    if (this->isDir())
+      return (":folder_128.png");
+    if (!(this->size()))
+      return (":folder_empty_128.png");
+    return (":folder_empty_128.png");
+  }
+  else
+  {
+    if (this->size() != 0)
+      return (":folder_documents_128.png");
+    else
+      return (":folder_128.png");
+  }
+}
+
+Variant*	Node::dataType(/*uint32_t wait = 0*event callback*/) /*au lieux de void mettre type mime ou ...? */
+{
+  Variant*	types = NULL;
+  std::map<std::string, Variant*>	attributes;
+
+//threader ? 
+//  if thread.wait(wait) 
+//{
+
+  class DataTypeManager&	typeDB = DataTypeManager::Get();
+  types = typeDB.type(this);  //dynamic type
+ //}
+
+  //ret none if types    
+  return types; 
+}
+
+std::list<std::string>*		Node::compatibleModules(void)
+{
+   class env*	environ    = env::Get();
+   v_key*  keys  	   = environ->vars_db["mime-type"];
+   list<class v_val*> vals = keys->val_l;  
+   list<std::string > *res = new list<std::string>(); 
+   std::list<class v_val*>::iterator val;
+   std::list<Variant *>::iterator var;
+
+   for (val = vals.begin(); val != vals.end(); val++)
+   {
+     if ((*val)->type == "string")
+     {
+       std::list<Variant*>  vars = this->dataType()->value<std::list< Variant *>  >();
+       for (var = vars.begin(); var != vars.end(); var++)
+       { 
+         if ((*var)->value<std::string>().find((*val)->get_string()) != -1)
+         {
+           res->push_back((*val)->from);
+         }
+       }
+     }
+   }
+  return res;
+}
+
+bool	Node::isCompatibleModule(string modname)
+{
+   list<std::string > *mods = this->compatibleModules();
+   std::list<std::string>::iterator it;
+
+   for (it = mods->begin(); it != mods->end(); it++)
+     if (modname == (*it))
+	return true;
+//   if node.size() and modules["modname"].conf == data:
+// HASH prob because NONE 
+//XXX file me use reverse arg methode
+/*    std::string type = 
+    if node.dataType.find(modname)	
+      return true;*/
+    return false;
+}
 
 
 VfsRoot::VfsRoot(std::string name): Node(name)
@@ -581,46 +674,6 @@ VLink::VLink(Node* linkedNode, Node* parent, std::string newname)
 void		VLink::fileMapping(FileMapping *fm)
 {
   this->__linkedNode->fileMapping(fm);
-}
-
-void		VLink::setStaticAttribute(std::string key, class Variant* value)
-{
-  this->__linkedNode->setStaticAttribute(key, value);
-}
-
-Attributes*	VLink::staticAttributes()
-{
-  return this->__linkedNode->staticAttributes();
-}
-
-void		VLink::extendedAttributes(Attributes *attr)
-{
-  this->__linkedNode->extendedAttributes(attr);
-}
-
-void		VLink::modifiedTime(vtime *t)
-{
-  this->__linkedNode->modifiedTime(t);
-}
-
-void		VLink::accessedTime(vtime *t)
-{
-  this->__linkedNode->accessedTime(t);
-}
-
-void 		VLink::createdTime(vtime *t)
-{
-  this->__linkedNode->createdTime(t);
-}
-
-void		VLink::changedTime(vtime *t)
-{
-  this->__linkedNode->changedTime(t);
-}
-
-std::map<std::string, vtime*> VLink::times()
-{
-  return this->__linkedNode->times();
 }
 
 uint64_t	VLink::size()
@@ -701,6 +754,31 @@ Node*		VLink::linkNode()
 VFile*		VLink::open()
 {
   return this->__linkedNode->open();
+}
+
+Variant*	VLink::dataType(void)
+{
+  return this->__linkedNode->dataType();
+}
+
+Attributes*	VLink::attributes(void)
+{
+  return this->__linkedNode->attributes();
+}
+
+std::string	VLink::icon(void)
+{
+  return this->__linkedNode->icon();
+}
+
+std::list<std::string>*	VLink::compatibleModules(void)
+{
+  return this->__linkedNode->compatibleModules();
+}
+
+bool			VLink::isCompatibleModule(std::string moduleName)
+{
+  return this->__linkedNode->isCompatibleModule(moduleName);
 }
 
 VLink::~VLink()

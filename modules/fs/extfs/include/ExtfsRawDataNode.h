@@ -27,10 +27,8 @@ public:
   ExtfsRawDataNode(std::string name, uint64_t size, Node * parent, Extfs * fsobj,
 		   uint64_t offset);
   ~ExtfsRawDataNode();
-  
   virtual void	fileMapping(FileMapping* fm);
 
-  virtual void 	extendedAttributes(Attributes* attr);
 
 private:
   uint64_t	__offset;

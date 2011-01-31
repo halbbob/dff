@@ -17,7 +17,7 @@
 #ifndef __VARIANT_HPP__
 #define __VARIANT_HPP__
 
-#include "node.hpp"
+//#include "node.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else

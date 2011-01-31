@@ -21,23 +21,23 @@
 #include "local.hpp"
 #include "node.hpp"
 
+
+
 class ULocalNode: public Node
 {
 private:
-  void				utimeToVtime(time_t* t1, vtime* vt);
-  struct stat*			localStat();
+  struct stat*			localStat(void);
+  vtime*			utimeToVtime(time_t* t1);
 public:
   enum Type
     {
       FILE,
       DIR
     };
-  ULocalNode(std::string name, uint64_t size, Node* parent, fso* fsobj, uint8_t type, uint32_t id);
+
+  ULocalNode(std::string name, uint64_t size, Node* parent, class local* fsobj, uint8_t type, uint32_t id);
+  virtual Attributes	_attributes();
   ~ULocalNode();
-  virtual void			extendedAttributes(Attributes* attr);
-  virtual void			modifiedTime(vtime* mt);
-  virtual void			accessedTime(vtime* at);
-  virtual void			changedTime(vtime* ct);
 };
 
 #endif

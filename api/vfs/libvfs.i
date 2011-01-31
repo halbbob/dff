@@ -434,16 +434,6 @@ on the vfile.
 FileMapping can be filled up by calling their push() method.
 "
 
-%feature("docstring") Node::setStaticAttribute
-"
-Set static attributes to a node.
-"
-
-%feature("docstring") Node::staticAttributes
-"
-Get the static attributes from the node.
-"
-
 %feature("docstring") Node::extendedAttributes
 "
 This method is used to set extended attributes to a node. It takes a pointer
@@ -705,6 +695,7 @@ Open the node and return a pointer to a VFile instance
 %feature("director") Node;
 %feature("director") VLink;
 %feature("director") DEventHandler;
+%feature("director") AttributesHandler;
 
 %newobject Node::open();
 %newobject VFile::search();
@@ -784,12 +775,14 @@ namespace std
   %template(ListNode)   list<Node*>;
   %template(SetNode)    set<Node *>;
   %template(VectChunck)  vector<chunck *>;
+  %template(ListString)  list<std::string>;
 #ifdef 64_BITS
   %template(Listui64)	list<unsigned long int>;
 #else
   %template(Listui64)	list<uint64_t>;
 #endif
   //%template(MapTime)	map<string, vtime*>;
+//  %template(MapAttributes) map<std::string, Variant*>;
 };
 
 

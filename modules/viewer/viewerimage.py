@@ -20,13 +20,11 @@ from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayo
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
-from api.magic.filetype import FILETYPE
+from modules.metadata.metaexif import EXIF
 
 import sys
 import time
 import re
-
-import EXIF
 
 class LoadedImage(QLabel):
   def __init__(self, parent):
@@ -210,7 +208,7 @@ class ImageView(QWidget, Script):
     self.type = "imageview"
     self.icon = None
     self.vfs = vfs.vfs()
-    self.ft = FILETYPE()
+    #self.ft = FILETYPE()
     self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.sceneWidth = 0
 
@@ -229,14 +227,15 @@ class ImageView(QWidget, Script):
     if node.size() != 0:
       try:
         #XXX temporary patch for windows magic
-        f = str(node.staticAttributes().attributes()["mime-type"])
-      except (IndexError, AttributeError):
+        #f = str(node.staticAttributes().attributes()["mime-type"])
+        type = node.dataType()
+      except (IndexError, AttributeError, IOError):
         #XXX temporary patch for windows magic
-        self.ft.filetype(node)
-        f = str(node.staticAttributes().attributes()["mime-type"])
-      res = self.reg_viewer.search(str(f))
-      if res != None:
-        return True
+        #self.ft.filetype(node)
+	return False
+        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX me pas tres verifier avec datatype fix vite fait
+      if  self.reg_viewer.search(str(type)):
+           return True
     return False
 
 

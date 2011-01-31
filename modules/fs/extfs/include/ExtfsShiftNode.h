@@ -29,7 +29,6 @@ public :
   ~ExtfsShiftNode();
   
   virtual void	fileMapping(FileMapping* fm);
-  virtual void	extendedAttributes(Attributes* attr);
 
 private :
   Extfs	*	__extfs;

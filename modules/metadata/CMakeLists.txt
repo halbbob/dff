@@ -11,28 +11,11 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory (metaexif)
 
-add_subdirectory (volumes)
-add_subdirectory (fs)
-add_subdirectory (builtins)
-add_subdirectory (parser)
-add_subdirectory (process)
-add_subdirectory (search)
-add_subdirectory (viewer)
-add_subdirectory (phone)
-add_subdirectory (statistics)
-add_subdirectory (crypto)
-add_subdirectory (archives)
-add_subdirectory (mem)
-add_subdirectory (utils)
-add_subdirectory (node)
-add_subdirectory (connector)
-add_subdirectory (metadata)
-
-set(module_srcs
+set(metadata_srcs
   __init__.py
 )
 
-install_file(module2 ${module_srcs})
+install_file(metadata ${metadata_srcs})

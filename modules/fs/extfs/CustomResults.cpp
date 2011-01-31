@@ -66,15 +66,15 @@ void    CustomResults::set(Attributes * attr, Inode * inode)
   m["group descriptor size"]
     = new Variant((inode->SB()->getSuperBlock()->s_desc_size ?
 		   inode->SB()->getSuperBlock()->s_desc_size : 32));
-  attr->push("File system size", new Variant(m));
+  (*attr)["File system size"] = new Variant(m);
   m.clear();
 
   m["Last mount time"] = add_time(inode->SB()->last_mount_time());
   m["Last written time"] = add_time(inode->SB()->last_written_time());
   m["Last consistency check time"] = add_time(inode->SB()->l_consistency_ct());
   m["Forced consistency interval"] = add_time(inode->SB()->consitency_forced_interval());
-  attr->push("Time", new Variant(m));
-  m.clear();
+  (*attr)["Time"] = new Variant(m);
+  m.clear(); 
 
   auth_uid_gid << inode->SB()->gid_reserved_block() <<  " / "
 	       << inode->SB()->uid_reserved_block();
@@ -86,22 +86,22 @@ void    CustomResults::set(Attributes * attr, Inode * inode)
   m["Unallocated blocks"] =  new Variant(inode->SB()->u_blocks_number());
   m["Unallocated inodes"] = new Variant(inode->SB()->u_inodes_number());
   m["Group 0's block"] =  new Variant(inode->SB()->first_block());
-  attr->push("Content", new Variant(m));
+  (*attr)["Content"] = new Variant(m);
   m.clear();
 
   std::string jr_id = (char *)inode->SB()->journal_id();
   m["Journal ID"] =  new Variant(jr_id);
   m["Journal inode"] = new Variant(inode->SB()->journal_inode());
   m["journal device"] =  new Variant(inode->SB()->journal_device());
-  attr->push("Journal", new Variant(m));
+  (*attr)["Journal"] = new Variant(m);
   m.clear();
 
-  attr->push("Flags", getFlags(inode->SB()));
+  (*attr)["Flags"] = getFlags(inode->SB()); 
 
   m["Compatible features"] = getCompatibleFeatures(inode->SB());
   m["Incompatible features"] = getIncompatibleFeatures(inode->SB());
   m["Read only features"] = getReadOnlyFeatures(inode->SB());
-  attr->push("Features", new Variant(m));
+  (*attr)["Features"] = new Variant(m);
   m.clear();
 
   FsStat	fs_stat;

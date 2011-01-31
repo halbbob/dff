@@ -18,7 +18,6 @@ from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCac
 from PyQt4 import QtCore
 
 import re
-from api.magic.filetype import *
 from api.vfs import libvfs, iodevice
 from api.variant.libvariant import Variant
 
@@ -42,7 +41,7 @@ class ImageThumb():
     buff = ""
     tags = None
     img = QImage()
-    if type == "image/jpeg":
+    if type.find('jpeg') != -1:
       try:
         buff = self.getThumb(node)
         load = img.loadFromData(buff, type)
@@ -82,7 +81,6 @@ class ImageThumb():
 class TypeWorker(QThread):
   def __init__(self, *args):
     QThread.__init__(self)
-    self.ft = FILETYPE()
     self.typeQueue = Queue()
     self.regImage = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.typeQueue = []
@@ -123,19 +121,17 @@ class TypeWorker(QThread):
      while True:
        (parent, index, node) = self.get()
        if node.size():
-         self.ft.filetype(node) #ret plustrapide?
-         attrs = node.staticAttributes()
-         map = attrs.attributes()
-         ftype = str(map["mime-type"])
+         ftype = str(node.dataType())
          if parent.imagesthumbnails and self.isImage(ftype):
            thumb = ImageThumb()
            img = thumb.getImage(ftype, node, index)
            if img:
              parent.emit(SIGNAL('dataImage'), index, node, img)
            else:
-             val = Variant("broken " + str(ftype))
-             val.thisown = False
-             node.setStaticAttribute("mime-type", val)
+	     pass #XXX there is not setStaticAttribute now !
+             #val = Variant("broken " + str(ftype))
+             #val.thisown = False
+             #node.setStaticAttribute("type", val)
 
 typeWorker = TypeWorker()
 typeWorker.start()
@@ -143,15 +139,12 @@ typeWorker.start()
 class VFSItemModel(QAbstractItemModel):
   #numberPopulated = QtCore.pyqtSignal(int)
   def __init__(self, __parent = None, event=False, fm = False):
-    pass
     QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
     self.VFS = libvfs.VFS.Get()
     self.map = {}
     self.imagesthumbnails = None
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
-    #self.connect(self, SIGNAL("dataType"), self.setDataType)
-    #self.connect(self, SIGNAL("refresh"), self.layoutChanged)
     self.fetchedItems = 0
     self.thumbQueued = {}
     self.fm = fm
@@ -160,18 +153,11 @@ class VFSItemModel(QAbstractItemModel):
     if self.fm == True:
 	setattr(self, "canFetchMore", self.scanFetchMore)
         setattr(self, "fetchMore", self.sfetchMore)
-  #def modelRefresh(self):
-  #  self.emit(SIGNAL("layoutChanged()"))
-
-  #def setDataType(self, index, node, type = None):
-     #self.__parent.currentView().viewport().update()
-     #self.__parent.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
-     self.__parent.currentView().viewport().update()
-     #self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index) fait segfault ...
+     self.__parent.currentView().update(index)
 
   def imagesThumbnails(self):
      return self.imagesthumbnails
@@ -188,20 +174,18 @@ class VFSItemModel(QAbstractItemModel):
     self.rootItem = node
     self.rootChildCount = node.childCount()
     self.fetchedItems = 0
-    typeWorker.clear()  #find a way to clear the queue / must have a queue by browser
+    typeWorker.clear() 
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
 
     self.reset()
  
   def scanFetchMore(self, parent):
-    print "can fetch more"
     if not parent.isValid():
 	parentItem = self.rootItem
     else:
          parentItem = self.VFS.getNodeFromPointer(parent.internalId())
     if self.fetchedItems < parentItem.childCount():
-        #print "can fetchmore"
         return True
     #print "can't fetchmore"
     return False
@@ -213,18 +197,12 @@ class VFSItemModel(QAbstractItemModel):
       return y
 
   def sfetchMore(self, parent):
-     print "fetch moore"
      if not parent.isValid():
-        #print "get rooot"
 	parentItem = self.rootItem
      else:
-        #print "get node vrom pointer"
         parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-     #print parent
      remainder = parentItem.childCount() - self.fetchedItems
      itemsToFetch = self.qMin(50, remainder)
-     #print "item fetched" + str(self.fetchedItems)
-     #print "item to fetch " + str(itemsToFetch)
      self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
      self.fetchedItems += itemsToFetch
      self.endInsertRows()
@@ -257,12 +235,10 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant(self.tr('Module'))
 
   def data(self, index, role):
-    #print "getting data"
     if not index.isValid():
       return QVariant()
 #XXX
     if self.fm == True:
-      print "data fetch"
       if index.row() > self.rootItem.childCount() or index.row() < 0:
 	 return QVariant()
     node = self.VFS.getNodeFromPointer(index.internalId())
@@ -273,27 +249,28 @@ class VFSItemModel(QAbstractItemModel):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-        if column == HACCESSED:
-          time = node.times()
-          accessed = time['accessed']
-          if accessed != None:
-            return QVariant(QDateTime(accessed.get_time()))
-          else:
-            return QVariant()
-        if column == HCHANGED:
-          time = node.times()
-          changed = time['changed']
-          if changed != None:
-            return QVariant(QDateTime(changed.get_time()))
-          else:
-            return QVariant()
-        if column == HMODIFIED:
-          time = node.times()
-          modified = time['modified']
-          if modified != None:
-            return QVariant(QDateTime(modified.get_time()))
-          else:
-            return QVariant()
+	return QVariant()
+        #if column == HACCESSED:
+          #time = node.times()
+          #accessed = time['accessed']
+          #if accessed != None:
+            #return QVariant(QDateTime(accessed.get_time()))
+          #else:
+            #return QVariant()
+        #if column == HCHANGED:
+          #time = node.times()
+          #changed = time['changed']
+          #if changed != None:
+            #return QVariant(QDateTime(changed.get_time()))
+          #else:
+            #return QVariant()
+        #if column == HMODIFIED:
+          #time = node.times()
+          #modified = time['modified']
+          #if modified != None:
+            #return QVariant(QDateTime(modified.get_time()))
+          #else:
+            #return QVariant()
       except IndexError:
         return QVariant()
       if column == HMODULE:
@@ -312,20 +289,12 @@ class VFSItemModel(QAbstractItemModel):
           #return  QVariant(QColor(Qt.blue))
     if role == Qt.DecorationRole:
       if column == HNAME:
-        if not node.hasChildren():
-          if node.isDir():
-            return QVariant(QIcon(":folder_128.png"))
-          if not node.size():
-            return QVariant(QIcon(":folder_empty_128.png"))
-          if self.imagesthumbnails:
-            try:
-              attrs = node.staticAttributes()
-              map = attrs.attributes()
-              mtype = str(map["mime-type"])
-            except (IndexError, AttributeError):
-              typeWorker.enqueue(self, index, node)
-              return QVariant(QIcon(":file_temporary.png"))
-            if mtype[0:6] == "broken":
+	if not self.imagesthumbnails:
+          return QVariant(QIcon(node.icon()))
+        else:
+            mtype = str(node.dataType())
+            if mtype.find("broken") != -1:
+
               return QVariant(QIcon(":file_broken.png"))
             pixmap = pixmapCache.find(str(node.this))
             if pixmap:
@@ -333,12 +302,7 @@ class VFSItemModel(QAbstractItemModel):
             elif typeWorker.isImage(mtype): #c koi le pluys spped isImage ou pixmap cache find ?
               typeWorker.enqueue(self, index, node)
               return QVariant(QIcon(":file_temporary.png"))
-          return QVariant(QIcon(":folder_empty_128.png"))
-        else:
-          if node.size() != 0:
-	    return QVariant(QIcon(":folder_documents_128.png"))
-          else:
-	    return QVariant(QIcon(":folder_128.png"))
+            return QVariant(QIcon(node.icon()))
     if role == Qt.CheckStateRole:
       if column == HNAME:
 	if (long(node.this), 0) in self.checkedNodes:
@@ -359,7 +323,6 @@ class VFSItemModel(QAbstractItemModel):
      return 6
 
   def index(self, row, column, parent = QModelIndex()):
-     #print "getting index"
      if not self.hasIndex(row, column, parent):
        return QModelIndex()
      if parent.isValid():
@@ -371,7 +334,6 @@ class VFSItemModel(QAbstractItemModel):
      return index
 
   def parent(self, index):
-     #print "getting parent"
      if not index.isValid():
        return QModelIndex()
      childItem = self.VFS.getNodeFromPointer(index.internalId())
@@ -380,12 +342,6 @@ class VFSItemModel(QAbstractItemModel):
        return QModelIndex()
      n = 0
      children = parentItem.parent().children()
-     #for node in children:
-        #if parentItem.this == node.this:
-	  #break
-	#n += 1
-     #print n
-     #index = self.createIndex(n , 0, long(parentItem.this))
      index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
      return index
 
@@ -419,10 +375,8 @@ class VFSItemModel(QAbstractItemModel):
                 self.checkedNodes.remove((long(node.this), 0))
                 self.checkedNodes.add((long(node.this), 1))
             else:
-              self.checkedNodes.add((long(node.this) , 1)) 
-         #self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
-	#XXX attention buggy bugger en vue thumbnails et refresh pas la vue tree 
-     #^^^ utiliser pour le refresh du contenue des icons ? au lieu de refresh tous le model pour le thumbnails ? 
+              self.checkedNodes.add((long(node.this) , 1))
+ 
      return True #return true if ok 	
 
   def flags(self, flag):

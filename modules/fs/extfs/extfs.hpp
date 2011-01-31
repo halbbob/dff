@@ -165,6 +165,7 @@ public:
   void	       for_aiur() { __nb_parsed_inode++; }
   uint32_t	alloc_inode() { return __alloc_inode; }
 
+
 private:
   void		__reserved_inodes();
   void		__add_meta_nodes();

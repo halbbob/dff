@@ -19,7 +19,7 @@ from api.vfs.libvfs import FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
 from api.type.libtype import vtime
-from api.variant.libvariant import Variant
+from api.variant.libvariant import Variant, VMap
 
 import os
 from ctypes import CDLL, c_char_p, c_int, pointer, c_ulonglong, c_ulong, create_string_buffer, byref, pointer
@@ -34,7 +34,8 @@ class EWFVolume(Node):
     self.ewf = fsobj
     self.ssize = size
     
-  def extendedAttributes(self, attr):
+  def _attributes(self):
+    attr = VMap()
     properties = ["case_number", "description", "examinier_name",
                       "evidence_number", "notes", "acquiry_date",
                       "system_date", "acquiry_operating_system",
@@ -48,14 +49,14 @@ class EWFVolume(Node):
        val = buf.value
        var = Variant(val)
        var.thisown = False
-       attr.push(key, var)
+       attr[key] = var
 
     if libewf.libewf_get_md5_hash(self.ewf.ghandle, buf, 16) == 1:
        val = buf.raw[:16]
        var = Variant(hexlify(val))
        var.thisown = False
-       attr.push('md5', var)
- 
+       attr['md5'] = var
+    return attr	 
 
 class EWF(fso):
   def __init__(self):

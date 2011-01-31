@@ -297,7 +297,7 @@ void	FsStat::attr_stat(const SuperBlock * SB, VFile * vfile,
       m["Details"] = new Variant(details);
       l[std::string("Group ") + oss.str()] = new Variant(m);
     }
-  attr->push(std::string("File system layout"), new Variant(l));
+ (*attr)[std::string("File system layout")] = new Variant(l);
 }
 
 std::pair<uint32_t, uint32_t> FsStat::sb_gd_backups(bool sparse, 

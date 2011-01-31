@@ -295,7 +295,7 @@ std::string	uint64ToStr(uint64_t ui64)
   return os.str();
 }
 
-DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, fso* fsobj, Node* origin):  Node(name, size, parent, fsobj)
+DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, Partition* fsobj, Node* origin):  Node(name, size, parent, fsobj)
 {
   this->origin = origin;
   this->setFile();
@@ -319,35 +319,38 @@ void	DosPartitionNode::fileMapping(FileMapping* fm)
     fm->push(0, this->size(), this->origin, offset);
 }
 
-void	DosPartitionNode::extendedAttributes(Attributes* attr)
+
+Attributes	DosPartitionNode::_attributes(void)
 {
-  std::string		str_type;
-  std::string		startsect;
-  uint64_t		startoffset;
+  std::string				str_type;
+  std::string				startsect;
+  uint64_t				startoffset;
+  std::map<std::string, Variant* >	vmap; 
+
 
   if ((this->type & LOGICAL) == LOGICAL)
     {
       //memset(startsect, 0, 64);
       startsect = uint32ToStr(this->base) + "+" + uint32ToStr(this->pte->lba);
       //sprintf(startsect, "%u+%d", this->base, this->pte->lba);
-      attr->push("starting sector", new Variant(std::string(startsect)));
+      vmap["starting sector"] = new Variant(std::string(startsect));
       startoffset = ((uint64_t)this->base + (uint64_t)this->pte->lba) * 512;
-      attr->push("starting offset", new Variant(startoffset));
+      vmap["starting offset"] = new Variant(startoffset);
     }
   else
     {
-      attr->push("starting sector", new Variant(this->pte->lba));
-      attr->push("starting offset", new Variant((uint64_t)this->pte->lba * 512));
+      vmap["starting sector"] = new Variant(this->pte->lba);
+      vmap["starting offset"] = new Variant((uint64_t)this->pte->lba * 512);
     }
-  attr->push("total sectors", new Variant(this->pte->total_blocks));
-  attr->push("total size (bytes)", new Variant((uint64_t)this->pte->total_blocks * 512));
-  attr->push("entry offset", new Variant(this->entryoffset));
+  vmap["total sectors"] = new Variant(this->pte->total_blocks);
+  vmap["total size (bytes)"] = new Variant((uint64_t)this->pte->total_blocks * 512);
+  vmap["entry offset"] = new Variant(this->entryoffset);
   if (this->pte->status == 0x80)
-    attr->push("status", new Variant("bootable"));
+    vmap["status"] = new Variant(std::string("bootable"));
   else if (this->pte->status == 0x00)
-    attr->push("status", new Variant("non bootable"));
+    vmap["status"] = new Variant(std::string("non bootable"));
   else
-    attr->push("status", new Variant("invalid"));
+    vmap["status"] = new Variant(std::string("invalid"));
   str_type = "";
   if ((this->type & PRIMARY) == PRIMARY)
     str_type += "(primary";
@@ -359,8 +362,10 @@ void	DosPartitionNode::extendedAttributes(Attributes* attr)
     str_type += " | hidden)";
   else
     str_type += ") ";
-  str_type += partition_types[pte->type];
-  attr->push("type", new Variant(str_type));
+  str_type += partition_types[this->pte->type];
+  vmap["type"] = new Variant(str_type);
+
+  return (vmap);
 }
 
 void	DosPartitionNode::setCtx(uint64_t entryoffset, dos_pte* pte, uint8_t type, uint32_t base)
@@ -395,7 +400,7 @@ DosPartition::~DosPartition()
     }
 }
 
-void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, mfso* fsobj, Node* origin)
+void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, Partition* fsobj, Node* origin)
 {
   if (vfile != NULL)
     {

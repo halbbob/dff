@@ -14,7 +14,6 @@
 # 
 
 from api.vfs import *
-from api.magic.filetype import *
 from api.module.script import *
 from api.module.module import *
 
@@ -122,9 +121,8 @@ class FILESCHART(Script, QWidget):
 
 
   def addEntry(self, node):
-    res = self.ft.filetype(node)
-    mtype = res["mime-type"]
-    idx = mtype.find("; ")
+    mtype = node.dataType() 
+    idx = mtype.find(", ") #XXX fix a l arrache pas tester
     if idx != -1:
       mtype = mtype[:idx]
     if mtype not in self.typestat:

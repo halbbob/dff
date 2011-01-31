@@ -21,10 +21,11 @@ from forensics.win32.network import *
 from api.vfs import *
 from api.module.module import *
 from api.env.libenv import *
-from api.variant.libvariant import Variant
+from api.variant.libvariant import Variant, VMap
 from api.vfs.libvfs import *
 from api.exceptions import *
 from api.type import *
+from api.type.libtype import vtime
 from datetime import *
 
 class NodeProcessus(Node):
@@ -40,8 +41,6 @@ class NodeProcessus(Node):
      Node.__init__(self, name, self.ssize, parent, mfso)
      self.__disown__()
      self.setFile()
-     setattr(self, "extendedAttributes", self.extendedAttributes)
-     setattr(self, "accessedTime", self.accessedTime)
      setattr(self, "addMapping", self.addMapping)
      self.virtMapping = []
      setattr(self, "fileMapping", self.fileMapping)
@@ -57,31 +56,32 @@ class NodeProcessus(Node):
      self.ssize += size
      self.setSize(self.ssize)
 
-  def extendedAttributes(self, attr):
+  def _attributes(self):
+      attr = VMap()
       attr.thisown = False
       if self.pid != None:
         pidattr = Variant(self.pid)
         pidattr.thisown = False
-        attr.push("pid", pidattr)
+        attr["pid"] = pidattr
       if self.active_threads:
         atattr = Variant(self.active_threads)
         atattr.thisown = False
-        attr.push("threads", atattr)
+        attr["threads"] = atattr
       if self.inherited_from:
         ifattr = Variant(self.inherited_from)
         ifattr.thisown = False
-        attr.push("ppid", ifattr)  
+        attr["ppid"] = ifattr
       if self.handle_count:
         hcattr = Variant(self.handle_count)
         hcattr.thisown = False
-        attr.push("handle count", hcattr)
+        attr["handle count"] = hcattr
       if self.connections:
         cnattr = Variant(self.connections)
         cnattr.thisown = False
-        attr.push("connection", cnattr)  
- 
-  def accessedTime(self, at):
+        attr["connection"] = cnattr
       if self.create_time:
+       at = vtime() 
+       at.thisown = False
        d = datetime.fromtimestamp(self.create_time).timetuple()
        at.year = d[0]
        at.month = d[1]
@@ -90,6 +90,10 @@ class NodeProcessus(Node):
        at.minute = d[4]
        at.second = d[5]
        at.usecond = 0
+       vat = Variant(at)
+       vat.thisown = False	
+       attr["creation"] = vat
+      return attr
 
   def setMeta(self, active_threads, inherited_from, handle_count, create_time):
      self.active_threads = active_threads 

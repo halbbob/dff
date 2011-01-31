@@ -19,7 +19,6 @@ from PyQt4.QtGui import *
 
 from api.vfs import *
 from api.vfs.libvfs import VFS, DEventHandler
-from api.magic.filetype import *
 from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.env import *
@@ -101,7 +100,6 @@ class NodeBrowser(QWidget, DEventHandler):
     self.VFS = VFS.Get()
     #register to event from vfs
     self.VFS.connection(self)
-    self.ft = FILETYPE()
     self.env = env.env()	
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
@@ -114,7 +112,7 @@ class NodeBrowser(QWidget, DEventHandler):
     self.createSubMenu()
     self.createLayout()
     self.addModel("/")
-    self.addProxyModel()
+    #self.addProxyModel()
     self.addNodeLinkTreeView()
     self.addNodeView()
 
@@ -199,7 +197,8 @@ class NodeBrowser(QWidget, DEventHandler):
 
   def addTableView(self): 
     self.tableView = NodeTableView(self)
-    self.tableView.setModel(self.proxyModel)
+#   self.tableView.setModel(self.proxyModel)
+    self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
@@ -215,7 +214,8 @@ class NodeBrowser(QWidget, DEventHandler):
 
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
-    self.thumbsView.setModel(self.proxyModel) 
+    #self.thumbsView.setModel(self.proxyModel)
+    self.thumbsView.setModel(self.model) 
     self.thumbsView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
 #    self.thumbsView.setMinimumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.thumbsView)
@@ -235,9 +235,11 @@ class NodeBrowser(QWidget, DEventHandler):
 
   def currentModel(self):
      if self.thumbsView.isVisible():
-       return self.thumbsView.model().sourceModel()
+       #return self.thumbsView.model().sourceModel()
+       return self.thumbsView.model()
      elif self.tableView.isVisible():
-       return self.tableView.model().sourceModel()
+       return self.tableView.model()
+       #return self.tableView.model().sourceModel()
  
   def currentView(self):
      if self.thumbsView.isVisible():
@@ -250,14 +252,14 @@ class NodeBrowser(QWidget, DEventHandler):
      nodeList = []
      for index in indexList:
        if index.isValid():
-	 index = self.currentProxyModel().mapToSource(index)
+	 #index = self.currentProxyModel().mapToSource(index)
          nodeList.append(self.VFS.getNodeFromPointer(index.internalId()))
      return nodeList
 
   def currentNode(self):
      index = self.currentView().selectionModel().currentIndex()
      if index.isValid():
-	 index = self.currentProxyModel().mapToSource(index)
+	 #index = self.currentProxyModel().mapToSource(index)
          return self.VFS.getNodeFromPointer(index.internalId())
 
   def nodePressed(self, key, node, index = None):
@@ -273,7 +275,7 @@ class NodeBrowser(QWidget, DEventHandler):
       else:
         self.openDefault(node)
     if key == Qt.Key_Backspace:
-      print node.absolute(), node.parent().absolute()
+      #print node.absolute(), node.parent().absolute()
       self.currentModel().setRootPath(node.parent().parent())
 
   def nodeClicked(self, mouseButton, node, index = None):
@@ -304,11 +306,11 @@ class NodeBrowser(QWidget, DEventHandler):
 
   def sizeChanged(self, string):
      if string == self.tr("Small"):
-       self.thumbsView.setIconSize(64, 64)
+       self.thumbsView.setIconGridSize(64, 64)
      elif string == self.tr("Medium"):
-       self.thumbsView.setIconSize(96, 96)
+       self.thumbsView.setIconGridSize(96, 96)
      elif string == self.tr("Large"):
-       self.thumbsView.setIconSize(128, 128)
+       self.thumbsView.setIconGridSize(128, 128)
 
   def openDefault(self, node = None):
      if not node:
@@ -318,7 +320,7 @@ class NodeBrowser(QWidget, DEventHandler):
      arg = self.env.libenv.argument("gui_input")
      arg.thisown = 0 
      try:
-       mod = self.ft.findcompattype(node)[0]
+       mod = node.compatibleModules()[0]
        if self.lmodules[mod]:
          conf = self.lmodules[mod].conf
          cdl = conf.descr_l

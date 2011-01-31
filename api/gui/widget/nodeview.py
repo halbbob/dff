@@ -34,7 +34,7 @@ class NodeViewEvent():
 
   def mouseReleaseEvent(self, e):
      index = self.indexAt(e.pos())
-     index = self.model().mapToSource(index)
+     #index = self.model().mapToSource(index)
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
        self.emit(SIGNAL("nodeClicked"), e.button(), node)
@@ -42,7 +42,7 @@ class NodeViewEvent():
 
   def mouseDoubleClickEvent(self, e):
      index = self.indexAt(e.pos())
-     index = self.model().mapToSource(index)
+     #index = self.model().mapToSource(index)
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
        self.emit(SIGNAL("nodeDoubleClicked"), e.button(), node) 
@@ -53,15 +53,15 @@ class NodeViewEvent():
 
 class NodeThumbsView(QListView, NodeViewEvent):
   def __init__(self, parent):
-     QListView.__init__(self, parent)
+     #QListView.__init__(self, parent)
+     super(NodeThumbsView, self).__init__(parent)
      self.origView = QListView
      NodeViewEvent.__init__(self, parent)
      width = 64
      height = 64
-     self.setIconSize(width, height)
-     self.setLayoutMode(QListView.SinglePass)
+     self.setIconGridSize(width, height)
+     self.setLayoutMode(QListView.Batched)
      self.setViewMode(QListView.IconMode)
-     self.setUniformItemSizes(False)
      self.setResizeMode(QListView.Adjust)
      self.setEnterInDirectory(True)
      self.setFlow(QListView.LeftToRight)
@@ -69,9 +69,15 @@ class NodeThumbsView(QListView, NodeViewEvent):
      self.setSelectionMode(QAbstractItemView.ExtendedSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-  def setIconSize(self, width, height):
-    QListView.setIconSize(self, QSize(width, height))
-    self.setGridSize(QSize(width + 18, height + 20))
+     self.setBatchSize(10) #augmenter ? 
+     self.setWordWrap(False)
+     self.setTextElideMode(1)	
+     self.setUniformItemSizes(True)
+     self.setWrapping(True)
+
+  def setIconGridSize(self, width, height):
+     self.setIconSize(QSize(width, height))
+     self.setGridSize(QSize(width + 18, height + 20))
 
 class NodeLinkTreeView(QTreeView):
   def __init__(self, parent):
@@ -112,4 +118,3 @@ class NodeTableView(QTableView, NodeViewEvent):
       self.setAlternatingRowColors(True)
       self.setSelectionMode(QAbstractItemView.ExtendedSelection)
       self.setSelectionBehavior(QAbstractItemView.SelectRows)
-#changer les font ?

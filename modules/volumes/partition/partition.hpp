@@ -32,7 +32,7 @@ private:
   std::ostringstream		Result;
   Node				*parent;
   Node				*__root;
-  DosPartition*			dos;
+  class DosPartition*			dos;
 //   int				SetResult();
 //   int				getParts();
 //   Node				*createPart(Node *parent, unsigned int sector_start, unsigned int size);

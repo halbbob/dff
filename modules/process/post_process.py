@@ -17,25 +17,19 @@ from api.module.script import *
 from api.taskmanager.taskmanager import *
 from api.module.module import *
 
-def cb_pp(node):
-  tm = TaskManager()
-  args = libenv.argument("post_process")
-#check node name, != file
-  args.add_node("file", node)
-  tm.add(mod, args, ["console", "thread"])
-  return 
-
 class POST_PROCESS(Script):
   def __init__(self):
     Script.__init__(self, "post_process")
     self.vfs = VFS.Get()
+    self.tm = TaskManager()
 
   def start(self, args):
-#if add script -> add to list func x
+#lister les files / add / remove etc... ca serait plus pratique ..
+#dif add script -> add to list func x
 #if arg script -> del -> del func x
-    global mod
     mod = args.get_string("modules")
-    self.vfs.set_callback("post_process", cb_pp)
+    #self.vfs.set_callback("post_process", cb_pp)
+    self.tm.addPostProcess(mod)
     return
 
 class post_process(Module):
