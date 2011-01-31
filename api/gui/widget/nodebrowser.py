@@ -302,11 +302,11 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
   def sizeChanged(self, string):
      if self.nodeViewBox.thumbSize.currentIndex() == 0:
-       self.thumbsView.setIconSize(64, 64)
+       self.thumbsView.setIconGridSize(64, 64)
      elif self.nodeViewBox.thumbSize.currentIndex() == 1:
-       self.thumbsView.setIconSize(96, 96)
+       self.thumbsView.setIconGridSize(96, 96)
      elif self.nodeViewBox.thumbSize.currentIndex() == 2:
-       self.thumbsView.setIconSize(128, 128)
+       self.thumbsView.setIconGridSize(128, 128)
 
   def openDefault(self, node = None):
      if not node:
