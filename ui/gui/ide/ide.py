@@ -141,7 +141,7 @@ class Ide(QWidget, Ui_Ide):
     
     def open(self, path=None):
         if path == None:
-            sFileName = QFileDialog.getOpenFileName(self.parent, self.openFile, "/home")
+            sFileName = QFileDialog.getOpenFileName(self.mainWindow, self.openFile, "/home")
         else:
             sFileName = path
         if sFileName:
