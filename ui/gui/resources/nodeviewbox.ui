@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>667</width>
+    <width>785</width>
     <height>146</height>
    </rect>
   </property>
@@ -29,9 +29,6 @@
        </property>
        <property name="toolTip">
         <string>Previous</string>
-       </property>
-       <property name="text">
-        <string notr="true"/>
        </property>
        <property name="icon">
         <iconset resource="gui.qrc">
@@ -76,9 +73,6 @@
        <property name="toolTip">
         <string>Next</string>
        </property>
-       <property name="text">
-        <string notr="true"/>
-       </property>
        <property name="icon">
         <iconset resource="gui.qrc">
          <normaloff>:/next.png</normaloff>:/next.png</iconset>
@@ -114,9 +108,6 @@
      <property name="toolTip">
       <string>Move to top</string>
      </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
      <property name="icon">
       <iconset resource="gui.qrc">
        <normaloff>:/top.png</normaloff>:/top.png</iconset>
@@ -136,9 +127,6 @@
     <widget class="QPushButton" name="root">
      <property name="toolTip">
       <string>Return to root</string>
-     </property>
-     <property name="text">
-      <string notr="true"/>
      </property>
      <property name="icon">
       <iconset resource="gui.qrc">
@@ -201,9 +189,6 @@
      <property name="toolTip">
       <string>Add to bookmarks</string>
      </property>
-     <property name="text">
-      <string notr="true"/>
-     </property>
      <property name="icon">
       <iconset resource="gui.qrc">
        <normaloff>:/bookmark_add.png</normaloff>:/bookmark_add.png</iconset>
@@ -223,9 +208,6 @@
     <widget class="QPushButton" name="search">
      <property name="toolTip">
       <string>Display search engine</string>
-     </property>
-     <property name="text">
-      <string notr="true"/>
      </property>
      <property name="icon">
       <iconset resource="gui.qrc">
@@ -249,9 +231,6 @@
      </property>
      <property name="toolTip">
       <string>Active thumbnails</string>
-     </property>
-     <property name="text">
-      <string notr="true"/>
      </property>
      <property name="icon">
       <iconset resource="gui.qrc">
