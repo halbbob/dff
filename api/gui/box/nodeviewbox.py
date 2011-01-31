@@ -40,6 +40,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.currentPathId = -1
 
     self.bookmarkCategories = []
+    self.bookmarkNode = self.vfs.getnode('/Bookmarks/')
 
     self.addPropertyTable()
 
@@ -246,7 +247,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     iReturn = bookdiag.exec_()
     if iReturn == 1:
       selectedCategory = bookdiag.getSelectedCategory()
-      print selectedCategory
       # Check is is new or existing category
       try:
         i = self.bookmarkCategories.index(selectedCategory)
@@ -255,7 +255,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
           return
 
       selectedBookName = selectedCategory
-      selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName))
+      selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName.toUtf8()))
       for (pnode, state) in self.parent.model.checkedNodes:
         p = self.VFS.getNodeFromPointer(pnode)
         n = VLink(p, selectedBookmark)
@@ -272,13 +272,13 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def createCategory(self, category):
     if category != "":
       # Create bookmark node in root directory if first creation
-      if len(self.bookmarkCategories) == 0:
-        self.bookmarkNode = Node(str('Bookmarks'))
-        self.bookmarkNode.__disown__()
-        root = self.vfs.getnode('/')
-        root.addChild(self.bookmarkNode)
+#      if len(self.bookmarkCategories) == 0:
+#        self.bookmarkNode = Node(str('Bookmarks'))
+#        self.bookmarkNode.__disown__()
+#        root = self.vfs.getnode('/')
+#        root.addChild(self.bookmarkNode)
 
-      newNodeBook = Node(str(category))
+      newNodeBook = Node(str(category.toUtf8()))
       newNodeBook.__disown__()
       self.bookmarkNode.addChild(newNodeBook)
       self.bookmarkCategories.append(category)
