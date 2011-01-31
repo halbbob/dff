@@ -144,6 +144,12 @@ Variant::Variant(void *user)
   this->_type = typeId::VoidStar;
 }
 
+// bool	Variant::operator==(Variant* v)
+// {
+//   std::cout << "operator == Variant*" << std::endl;
+//   this->operator==(v->value<int16_t>());
+// }
+
 // bool  Variant::operator==(Variant* v)
 // {
 //   if (v->value() == this->value())

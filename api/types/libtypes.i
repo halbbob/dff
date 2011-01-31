@@ -56,6 +56,8 @@
 Variant*  pyObjectToVariant(PyObject* val, uint8_t t);
  %}
 
+%ignore Variant::operator==(T val);
+   
 %include "../include/variant.hpp"
 %include "../include/argument.hpp"
 %include "../include/export.hpp"
@@ -753,69 +755,206 @@ bool validateDefault (PyObject* val, uint8_t t)
   }
 }
 
-%rename(__eq__) Variant::operator==;
+%extend std::list<Variant * >
+{
+  bool operator==(PyObject* obj)
+  {
+    //printf("MY OVERLOAD == OPERATOR FOR STD::LIST<VARIANT*>\n");
+    if (PyList_Check(obj))
+      {
+	if (self->size() == PyList_Size(obj))
+	  {
+	    std::list<Variant *>::const_iterator it;
+	    int i;
+	    PyObject* item;
+	    for (it = self->begin(), i = 0; it != self->end(); it++, i++)
+	      {
+		item = PyList_GetItem(obj, i);
+		if (!Variant_operator_Se__Se_(*it, item))
+		  return false;
+	      }
+	    return true;
+	  }
+	else
+	  return false;
+      }
+    else
+      return false;
+  }
+    /* if (ob_type->tp_name != NULL) */
+    /*   { */
+    /* 	if (strncmp("VList", ob_type->tp_name, 5) == 0) */
+    /* 	  { */
+    /* 	    printf("VList Provided\n"); */
+    /* 	    void* argp1 = 0; */
+    /* 	    std::list< Variant *> *arg1 = (std::list< Variant * > *) 0 ; */
+    /* 	    int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_std__listT_Variant_p_std__allocatorT_Variant_p_t_t, 0 | 0); */
+    /* 	    if (SWIG_IsOK(res1)) */
+    /* 	      { */
+    /* 		arg1 = reinterpret_cast< std::list<Variant * > * >(argp1); */
+    /* 		printf("VList provided\n"); */
+    /* 		return false; */
+    /* 		//return self->operator==(*arg1); */
+    /* 	      } */
+    /* 	  } */
+    /*   } */
+      /* } */
+};
+
 
 %extend Variant
 {
 
-  /* bool	operator==(PyObject* val) */
-  /* { */
-  /*   Variant*	v; */
+  bool	operator==(PyObject* obj)
+  {
+    Variant*	v;
 
-  /*   PyTypeObject*	ob_type; */
-  /*   if ((ob_type = val->ob_type) != NULL) */
-  /*     { */
-  /* 	printf("ob_type->tp_name: %s\n", ob_type->tp_name); */
-  /* 	//if (ob_type->tp_name) */
-  /* 	if (ob_type->tp_name != NULL) */
-  /* 	  { */
-  /* 	    if (strncmp("Variant", ob_type->tp_name, 7) == 0) */
-  /* 	      { */
-  /* 		void* argp1 = 0; */
-  /* 		Variant *arg1 = (Variant *) 0 ; */
-  /* 		int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_Variant, 0 | 0); */
-  /* 		if (SWIG_IsOK(res1)) */
-  /* 		  { */
-  /* 		    arg1 = reinterpret_cast< Variant * >(argp1); */
-  /* 		    printf("Variant provided, subtype GetOriginalType: %d\n", arg1->type()); */
-  /* 		    return self->operator==(arg1->value()); */
-  /* 		  } */
-  /* 	      } */
-  /* 	    else if (strncmp("VList", ob_type->tp_name, 5) == 0) */
-  /* 	      { */
-  /* 		void* argp1 = 0; */
-  /* 		std::list< Variant *> *arg1 = (std::list< Variant * > *) 0 ; */
-  /* 		int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_std__listT_Variant_p_std__allocatorT_Variant_p_t_t, 0 | 0); */
-  /* 		if (SWIG_IsOK(res1)) */
-  /* 		  { */
-  /* 		    arg1 = reinterpret_cast< std::list<Variant * > * >(argp1); */
-  /* 		    printf("VList provided\n"); */
-  /* 		    return self->operator==(*arg1); */
-  /* 		  } */
-  /* 	      } */
-  /* 	    else if (strncmp("VMap", ob_type->tp_name, 4) == 0) */
-  /* 	      { */
-  /* 		void* argp1 = 0; */
-  /* 		std::map< std::string, Variant *> *arg1 = (std::map< std::string, Variant * > *) 0 ; */
-  /* 		int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_std__mapT_std__string_Variant_p_std__lessT_std__string_t_std__allocatorT_std__pairT_std__string_const_Variant_p_t_t_t, 0 | 0); */
-  /* 		if (SWIG_IsOK(res1)) */
-  /* 		  { */
-  /* 		    arg1 = reinterpret_cast< std::map<std::string, Variant * > * >(argp1); */
-  /* 		    printf("VMap provided\n"); */
-  /* 		    return self->operator==(*arg1); */
-  /* 		  } */
-  /* 	      } */
-  /* 	    else if ((v = pyObjectToVariant(val, self->type())) != NULL) */
-  /* 	      { */
-  /* 		return self->operator==(v); */
-  /* 	      } */
-  /* 	    else */
-  /* 	      return false; */
-  /* 	  } */
-  /*     } */
-  /*   else */
-  /*     return false; */
-  /* } */
+    PyTypeObject*	ob_type;
+    if ((ob_type = obj->ob_type) != NULL)
+      {
+  	//printf("ob_type->tp_name: %s\n", ob_type->tp_name);
+  	//if (ob_type->tp_name)
+  	if (ob_type->tp_name != NULL)
+  	  {
+  	    /* if (strncmp("Variant", ob_type->tp_name, 7) == 0) */
+  	    /*   { */
+  	    /* 	void* argp1 = 0; */
+  	    /* 	Variant *arg1 = (Variant *) 0 ; */
+  	    /* 	int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_Variant, 0 | 0); */
+  	    /* 	if (SWIG_IsOK(res1)) */
+  	    /* 	  { */
+  	    /* 	    arg1 = reinterpret_cast< Variant * >(argp1); */
+  	    /* 	    printf("Variant provided, subtype GetOriginalType: %d\n", arg1->type()); */
+	    /* 	    return false; */
+  	    /* 	    //return self->operator==(arg1->value<self->type()>()); */
+  	    /* 	  } */
+  	    /*   } */
+  	    if (strncmp("VList", ob_type->tp_name, 5) == 0)
+  	      {
+		//printf("VList Provided\n");
+  	    	void* argp1 = 0;
+  	    	std::list< Variant *> *arg1 = (std::list< Variant * > *) 0 ;
+  	    	int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_std__listT_Variant_p_std__allocatorT_Variant_p_t_t, 0 | 0);
+  	    	if (SWIG_IsOK(res1))
+  	    	  {
+  	    	    arg1 = reinterpret_cast< std::list<Variant * > * >(argp1);
+  	    	    //printf("VList provided\n");
+		    return false;
+  	    	    //return self->operator==(*arg1);
+  	    	  }
+  	      }
+  	    /* else if (strncmp("VMap", ob_type->tp_name, 4) == 0) */
+  	    /*   { */
+  	    /* 	void* argp1 = 0; */
+  	    /* 	std::map< std::string, Variant *> *arg1 = (std::map< std::string, Variant * > *) 0 ; */
+  	    /* 	int res1 = SWIG_ConvertPtr(val, &argp1, SWIGTYPE_p_std__mapT_std__string_Variant_p_std__lessT_std__string_t_std__allocatorT_std__pairT_std__string_const_Variant_p_t_t_t, 0 | 0); */
+  	    /* 	if (SWIG_IsOK(res1)) */
+  	    /* 	  { */
+  	    /* 	    arg1 = reinterpret_cast< std::map<std::string, Variant * > * >(argp1); */
+  	    /* 	    printf("VMap provided\n"); */
+  	    /* 	    return self->operator==(*arg1); */
+  	    /* 	  } */
+  	    /*   } */
+  	    else if (PyLong_Check(obj) || PyInt_Check(obj))//if ((v = pyObjectToVariant(val, self->type())) != NULL)
+  	      {
+		//printf("PyLong or PyInt provided my type is %d\n", self->type());
+		switch (self->type())
+		  {
+		  case uint8_t(typeId::Int16):
+		    {
+		      int16_t	v;
+		      int ecode = SWIG_AsVal_short(obj, &v);
+		      if (SWIG_IsOK(ecode))
+			return self->operator==(v);
+		      else
+			return false;
+		    }
+	          case uint8_t(typeId::UInt16):
+		    {
+		      uint16_t	v;
+		      int ecode = SWIG_AsVal_unsigned_SS_short(obj, &v);
+		      if (SWIG_IsOK(ecode))
+			return self->operator==(v); 
+		      else
+			return false;
+		    }
+		  case uint8_t(typeId::Int32):
+		    {
+		      int32_t	v;
+		      int ecode = SWIG_AsVal_int(obj, &v);
+		      if (SWIG_IsOK(ecode))
+			return self->operator==(v); 
+		      else
+			return false;
+		    }
+		  case uint8_t(typeId::UInt32):
+		    {
+		      uint32_t	v;
+		      int ecode = SWIG_AsVal_unsigned_SS_int(obj, &v);
+		      if (SWIG_IsOK(ecode))
+			return self->operator==(v);
+		      else
+			return false;
+		    }
+		  case uint8_t(typeId::Int64):
+		    {
+		      int64_t	v;
+		      int ecode = SWIG_AsVal_long_SS_long(obj, &v);
+		      if (SWIG_IsOK(ecode))
+			return self->operator==(v);
+		      else
+			return false;
+		    }
+		  case uint8_t(typeId::UInt64):
+		    {
+		      uint64_t	v;
+		      int ecode = SWIG_AsVal_unsigned_SS_long_SS_long(obj, &v);
+		      if (SWIG_IsOK(ecode))
+			return self->operator==(v);
+		      else
+			return false;
+		    }
+		  default:
+		    return false;
+		  }
+  	      }
+	    else if (PyList_Check(obj))
+	      {
+		//printf("PYLIST PROVIDED IN WRAPPER\n");
+		if (self->type() == typeId::List)
+		  {
+		    //printf("MY TYPE IS LIST\n");
+		    std::list<Variant *> selflist;
+		    std::list<Variant *>::iterator it;
+		    selflist = self->value<std::list< Variant * > >();
+		    int i;
+		    
+		    if (selflist.size() == PyList_Size(obj))
+		      {
+			//printf("SIZE IS THE SAME\n");
+			PyObject* item;
+			for (it = selflist.begin(), i = 0; it != selflist.end(); it++, i++)
+			  {
+			    item = PyList_GetItem(obj, i);
+			    if (!Variant_operator_Se__Se_(*it, item))
+			      return false;
+			  }
+			return true;
+		      }
+		    else
+		      return false;
+		  }
+		else
+		  return false;
+	      }
+	    //else if (PyDict_Check())
+  	    else
+  	      return false;
+  	  }
+      }
+    else
+      return false;
+  }
 
   /* Variant(PyObject*) */
   /*   { */

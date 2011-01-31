@@ -114,7 +114,10 @@ vvl = Variant(vl)
 vvl.thisown = False
 vm["path"] = vvl
 
-l.start(vm)
+try:
+    l.start(**vm)
+except TypeError:
+    l.start(vm)
 
 vm = VMap()
 vm.thisown = False
@@ -124,7 +127,101 @@ vn = Variant(n)
 vn.thisown = False
 
 vm["node"] = vn
-#vm["option"] = 
+vb = Variant(True)
+vb.thisown = True
+vm["long"] = vb
+vm["recursive"] = vb
 
 ls = LS()
-ls.start(vm)
+ls.start(**vm)
+
+vlist = VList()
+vlist.thisown = False
+pylist = []
+import time
+
+t = time.time()
+for i in xrange(0, 100000):
+    vi = Variant(i)
+    vi.thisown = False
+    vlist.append(vi)
+    pylist.append(i)
+print "Creating vlist and pylist took", time.time() - t
+
+print "=" * 25
+print "VLIST == PYLIST 1 ???"
+t = time.time()
+print vlist == pylist
+print "=" * 25
+print "Comparison between vlist and pylist took", time.time() - t
+
+print
+
+print "=" * 25
+print "VLIST == PYLIST 2 ???"
+t = time.time()
+pylist2 = pylist
+pylist2[99999] = 10000
+print vlist == pylist2
+print "Comparison between vlist and pylist2 took", time.time() - t
+print "=" * 25
+
+print
+
+
+print "=" * 25
+print "VVLIST == PYLIST 1 ???"
+vvlist = Variant(vlist)
+vvlist.thisown = False
+t = time.time()
+print vvlist == pylist
+print "comparison between vvlist and pylist took", time.time() - t
+print "=" * 25
+
+print
+
+print "=" * 25
+print "100000 in vlist ???"
+t = time.time()
+print 100000 in vlist
+print "finding 100000 in vlist took", time.time() - t
+print "=" * 25
+
+
+#print "=" * 25
+#print "100000 in vvlist ???"
+#t = time.time()
+#print 100000 in vvlist
+#print "finding 100000 in vvlist took", time.time() - t
+#print "=" * 25
+
+
+vmap = VMap()
+from string import ascii_letters
+i = 0
+for char in ascii_letters:
+    vmap[str(char)] = i
+    i += 1
+
+
+print
+
+print "=" * 25
+print "123456789 in vvl ???"
+print 123456789 == vvl
+print "=" * 25
+
+
+print
+
+print "=" * 25
+print "Vairant(10) in vlist ???"
+val = Variant(10)
+val.thisown = False
+print val in vlist
+print "=" * 25
+
+#print vmap
+#print vmap.keys()
+#print vmap.values()
+#print 10 in vmap.values()
