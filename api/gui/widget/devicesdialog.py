@@ -11,10 +11,10 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
-#  Pablo Rogina <pablojr@gmail.com>
+#  Jeremy MOUNIER <sja@digital-forensic.org>
 # 
 
-from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog, QTableWidget, QTableWidgetItem, QDialog, QHBoxLayout, QPushButton, QVBoxLayout, QSplitter
+from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog, QTableWidget, QTableWidgetItem, QDialog, QHBoxLayout, QPushButton, QVBoxLayout, QSplitter, QDialogButtonBox, QFormLayout, QWidget, QComboBox, QLabel, QPixmap
 from PyQt4.QtCore import QString, Qt, SIGNAL, SLOT
 
 from api.taskmanager import *
@@ -26,41 +26,31 @@ from api.devices.devices import Devices
 from ui.gui.resources.ui_devicesdialog import Ui_DevicesDialog
 
 class DevicesDialog(QDialog, Ui_DevicesDialog):
-    def __init__(self, parent = None):
-        QDialog.__init__(self)
+  def __init__(self, parent = None):
+    QDialog.__init__(self)
 
-        # Set up the user interface from Qt Designer
-        self.setupUi(self)
+    self.setupUi(self)
 
-        # Fill the table with available devices
-        self.devices = Devices()
-        self.deviceTable.setRowCount(len(self.devices))
+    self.selectedDevice = None
 
-        # No device selected by default
-        self.selectedDevice = None
+    self.listdevices = {}
 
-        for n in range(0, len(self.devices)):
-            item = QTableWidgetItem(self.devices[n].blockDevice())
-            self.deviceTable.setItem(n, 0, item)
-            item = QTableWidgetItem(self.devices[n].model())
-            self.deviceTable.setItem(n, 1, item)
-            item = QTableWidgetItem(str(self.devices[n].size()))
-            self.deviceTable.setItem(n, 2, item)
-            item = QTableWidgetItem(self.devices[n].serialNumber())
-            self.deviceTable.setItem(n, 3, item)
+    self.devices = Devices()
+    for n in range(0, len(self.devices)):
+      self.combodevice.addItem(self.devices[n].model())
+      self.listdevices[n] = self.devices[n]
 
-        self.deviceTable.horizontalHeader().setStretchLastSection(True)
-        self.deviceTable.resizeColumnsToContents()
+    self.connect(self.combodevice, SIGNAL("currentIndexChanged(int)"), self.deviceChanged) 
 
-        self.connect(self.deviceTable, SIGNAL("clicked(const QModelIndex&)"), self.setDevice)
-        self.connect(self.deviceTable, SIGNAL("doubleClicked(const QModelIndex&)"), self.rowSelected)
+    self.setDeviceInformations(self.devices[0], True)
+    self.selectedDevice = self.devices[0]
 
-    def rowSelected(self, modelIndex):
-        self.setDeviceAndAccept(modelIndex.row())
-
-    def setDeviceAndAccept(self, row):
-        self.selectedDevice = self.devices[row]
-        self.accept()
-
-    def setDevice(self, modelIndex):
-        self.selectedDevice = self.devices[modelIndex.row()]
+  def setDeviceInformations(self, device, init=False):
+      self.blockdevice.setText(str(device.blockDevice()))
+      self.model.setText(str(device.model()))
+      self.serial.setText(str(device.serialNumber()))
+      self.size.setText(str(device.size()))
+      
+  def deviceChanged(self, index):
+    self.setDeviceInformations(self.listdevices[index])
+    self.selectedDevice = self.listdevices[index]
