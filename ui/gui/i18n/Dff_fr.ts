@@ -24,27 +24,27 @@
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="6"/>
         <source>Add bookmark</source>
-        <translation type="unfinished">Ajouter un favoris</translation>
+        <translation>Ajouter un favoris</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="26"/>
         <source>Add a bookmark from the Virtual File System</source>
-        <translation type="unfinished">Ajouter un favoris depuis le Système de Fichier Virtuel</translation>
+        <translation>Ajouter un favoris depuis le Système de Fichier Virtuel</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="50"/>
         <source>Create a new category</source>
-        <translation type="unfinished">Créer une nouvelle catégorie</translation>
+        <translation>Créer une nouvelle catégorie</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="87"/>
         <source>Category name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom de la catégorie :</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="75"/>
         <source>Add in an existing category</source>
-        <translation type="unfinished">Ajouter dans une catégorie existante</translation>
+        <translation>Ajouter dans une catégorie existante</translation>
     </message>
 </context>
 <context>
@@ -227,17 +227,17 @@
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="14"/>
         <source>Extract</source>
-        <translation type="unfinished">Extraire</translation>
+        <translation>Extraire</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="60"/>
         <source>Recursive mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Mode récursif</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="73"/>
         <source>Destination folder:</source>
-        <translation type="unfinished"></translation>
+        <translation>Répertoire de destination :</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="80"/>
@@ -267,7 +267,7 @@
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="120"/>
         <source>Browse</source>
-        <translation type="unfinished">Parcourir</translation>
+        <translation>Parcourir</translation>
     </message>
 </context>
 <context>
@@ -1160,29 +1160,29 @@
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="16"/>
+        <location filename="../../../ui/gui/resources/propertytable.ui" line="24"/>
         <source>Attribute</source>
-        <translation type="unfinished">Attribut</translation>
+        <translation>Attribut</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="21"/>
+        <location filename="../../../ui/gui/resources/propertytable.ui" line="29"/>
         <source>Value</source>
-        <translation type="unfinished">Valeur</translation>
+        <translation>Valeur</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="34"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="227"/>
         <source>name</source>
-        <translation type="unfinished">nom</translation>
+        <translation>nom</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="50"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="233"/>
         <source>type</source>
-        <translation type="unfinished">type</translation>
+        <translation>type</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="82"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="221"/>
         <source>file</source>
-        <translation type="unfinished">fichier</translation>
+        <translation>fichier</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="45"/>
@@ -1190,9 +1190,9 @@
         <translation type="obsolete">avec modules appliqué dessus</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="69"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="223"/>
         <source>folder</source>
-        <translation type="unfinished">répertoire</translation>
+        <translation>répertoire</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="52"/>
@@ -1205,19 +1205,19 @@
         <translation type="obsolete">effacé</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="134"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="225"/>
         <source>generated by</source>
-        <translation type="unfinished">généré par</translation>
+        <translation>généré par</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="147"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="229"/>
         <source>size</source>
-        <translation type="unfinished">taille</translation>
+        <translation>taille</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="160"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="228"/>
         <source>relevant module(s)</source>
-        <translation type="unfinished">module(s) conseillé(s)</translation>
+        <translation>module(s) conseillé(s)</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="105"/>
@@ -1225,59 +1225,59 @@
         <translation type="obsolete">dates par défaut</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="251"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="220"/>
         <source>extended attributes</source>
-        <translation type="unfinished">attributs étendus</translation>
+        <translation>attributs étendus</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="264"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="230"/>
         <source>static attributes</source>
-        <translation type="unfinished">attributs statiques</translation>
+        <translation>attributs statiques</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="95"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="226"/>
         <source> with module(s) applied on it</source>
-        <translation type="unfinished"></translation>
+        <translation> avec modules appliqué dessus</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="108"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="219"/>
         <source> empty</source>
-        <translation type="unfinished"></translation>
+        <translation> vide</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="121"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="218"/>
         <source> deleted</source>
-        <translation type="unfinished"></translation>
+        <translation> effacé</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="173"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="217"/>
         <source>children</source>
-        <translation type="unfinished"></translation>
+        <translation>fils</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="186"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="222"/>
         <source>file(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>fichier(s)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="199"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="232"/>
         <source> totalizing </source>
-        <translation type="unfinished"></translation>
+        <translation> totalisant </translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="212"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="216"/>
         <source> bytes</source>
-        <translation type="unfinished"></translation>
+        <translation> octets</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="225"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="224"/>
         <source>folder(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>répertoire(s)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="238"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="231"/>
         <source>default timestamp</source>
-        <translation type="unfinished"></translation>
+        <translation>dates par défaut</translation>
     </message>
 </context>
 <context>

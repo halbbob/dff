@@ -75,29 +75,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="syspathLine">
-       <property name="toolTip">
-        <string>Extraction path is mandatory</string>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="syspathLine"/>
      </item>
     </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QLabel" name="warningLabel">
-       <property name="toolTip">
-        <string>Some selected files or folders already exist in the destination folder</string>
-       </property>
-       <property name="statusTip">
-        <string>Overwrite with selected ones ?</string>
-       </property>
-       <property name="text">
-        <string>Overwrite attempt</string>
-       </property>
-      </widget>
-     </item>
      <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
@@ -113,9 +96,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="syspathBrowse">
-       <property name="toolTip">
-        <string>Choose the destination folder for extraction</string>
-       </property>
        <property name="text">
         <string>Browse</string>
        </property>
