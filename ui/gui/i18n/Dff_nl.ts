@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS>
+<TS version="2.0" language="nl">
 <context>
     <name>About</name>
     <message>
@@ -8,7 +9,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/about.ui" line="68"/>
+        <location filename="../../../ui/gui/resources/about.ui" line="55"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,32 +230,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="80"/>
-        <source>Extraction path is mandatory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="91"/>
-        <source>Some selected files or folders already exist in the destination folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="94"/>
-        <source>Overwrite with selected ones ?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="97"/>
-        <source>Overwrite attempt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="117"/>
-        <source>Choose the destination folder for extraction</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="120"/>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="100"/>
         <source>Browse</source>
         <translation type="unfinished">Surf</translation>
     </message>
@@ -266,6 +242,31 @@
         <source>MainWindow</source>
         <comment>Choose the destination folder for extraction</comment>
         <translation type="obsolete">Kies uw &apos;uitpak&apos; bestemmings folder</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="118"/>
+        <source>Extraction path is mandatory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="119"/>
+        <source>Choose the destination folder for extraction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="120"/>
+        <source>Overwrite attempt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="121"/>
+        <source>Some selected files or folders already exist in the destination folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="122"/>
+        <source>Overwrite with selected ones ?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -371,7 +372,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="256"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="271"/>
         <source>Open file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -411,17 +412,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="254"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="269"/>
         <source>Save document ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="255"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="270"/>
         <source>No file found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="257"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="272"/>
         <source>Save file as</source>
         <translation type="unfinished"></translation>
     </message>
@@ -567,7 +568,7 @@
         <translation type="unfinished">Email auteur&apos;s</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/idewizard.py" line="58"/>
+        <location filename="../../../ui/gui/ide/idewizard.py" line="59"/>
         <source>Location</source>
         <translation type="unfinished">Lokatie</translation>
     </message>
@@ -703,9 +704,9 @@
         <translation type="obsolete">Bestandslijst</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="52"/>
+        <location filename="../resources/mainwindow.ui" line="52"/>
         <source>About</source>
-        <translation>Omschrijving</translation>
+        <translation type="obsolete">Omschrijving</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="115"/>
@@ -778,7 +779,7 @@
         <translation type="obsolete">Stap vooruit</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="98"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="52"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -800,11 +801,6 @@
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="178"/>
         <source>Shell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="196"/>
-        <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -830,6 +826,16 @@
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="87"/>
         <source>Toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="98"/>
+        <source>About DFF ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="196"/>
+        <source>DFF Documentation</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -930,72 +936,72 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="31"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="77"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="115"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="138"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
         <source>Return to root</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="165"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="183"/>
         <source>List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="174"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="192"/>
         <source>Icons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="183"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="201"/>
         <source>Tree</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="195"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="213"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="202"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="226"/>
         <source>Add to bookmarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="225"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="252"/>
         <source>Display search engine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="251"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="281"/>
         <source>Active thumbnails</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="278"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="305"/>
         <source>Small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="283"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="310"/>
         <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="288"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="315"/>
         <source>Large</source>
         <translation type="unfinished"></translation>
     </message>
