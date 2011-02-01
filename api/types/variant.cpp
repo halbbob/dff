@@ -222,3 +222,8 @@ uint8_t		Variant::type()
 {
   return this->_type;
 }
+
+bool	Variant::operator==(Variant* v)
+{
+  std::cout << "Variant::operator==(Variant*)" << std::endl;
+}

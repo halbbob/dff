@@ -319,13 +319,15 @@ public:
   template<typename T>
   bool operator==(T val)
   {
+    std::string	ptype = typeid(static_cast<T*>(0)).name();
+    std::cout << "   * Variant::operator==(T) with [T = " << ptype  << " ]" << std::endl;
     T mine;
     mine = this->value<T>();
-    //std::cout << "CALL OF TEMPLATED OPERATOR==" << std::endl;
-    //std::cout << "val: " << val << " mine: " << mine << std::endl;
     return (val == mine);
   }
 
+  bool	operator==(Variant* v);
+  
   template<typename T>
   T	value(void)
   {
