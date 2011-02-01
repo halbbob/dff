@@ -29,7 +29,8 @@ class Processus(QTreeWidget, Ui_TaskManager):
     def __init__(self, parent):
         super(QTreeWidget, self).__init__()
         self.setupUi(self)
-        
+        self.__mainWindow = parent        
+
         self.name = "Task manager"
         self.tm = TaskManager()
 
