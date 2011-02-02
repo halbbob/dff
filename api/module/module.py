@@ -26,6 +26,7 @@ class Module(object):
     self.env = env.env() 
     self.cl = icl
     self.name = name
+    self.single = None
     try :
      if issubclass(self.cl, Script):
        self.conf = self.env.libenv.config(name)
@@ -67,6 +68,10 @@ class Module(object):
 	pass
 
   def create(self):
+    if "single" in self.flags:
+	if self.single == None:
+	   self.single = self.cl()
+        return self.single
     try :
      if issubclass(self.cl, Script):
        return self.cl()

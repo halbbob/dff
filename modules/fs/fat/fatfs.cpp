@@ -43,7 +43,7 @@ void		Fatfs::setContext(argument* arg)
 {
   try
     {
-      arg->get("parent", &(this->parent));
+      arg->get("file", &(this->parent));
     }
   catch(envError e)
     {

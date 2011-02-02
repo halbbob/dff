@@ -48,6 +48,7 @@ class EXIFHandler(AttributesHandler):
         vv = Variant(m)
         vv.thisown = False
         attr[ifd] = vv 
+    print "returning exif attributes " 
     return attr
 
 class MetaEXIF(Script):
@@ -56,7 +57,8 @@ class MetaEXIF(Script):
    self.handler = EXIFHandler() 
 
   def start(self, args):
-    node = args.get_node('file') 
+    node = args.get_node('file')
+##CHECK IF NOT YET REGISTRED !!!!! 
     node.registerAttributes(self.handler)
 
 class metaexif(Module): 
@@ -66,4 +68,5 @@ class metaexif(Module):
     self.conf.add("file", "node", False, "File to decode.")
     self.conf.add_const("mime-type", "jpeg")
     self.conf.add_const("mime-type", "TIFF")
+    self.flags = "single"
     self.tags = "Metadata"

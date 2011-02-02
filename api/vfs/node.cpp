@@ -373,7 +373,7 @@ Attributes*			Node::attributes() //rajouter un wait times ->bloquant ou pas
 //UNICODE
    (*attr)[std::string("type")] = this->dataType(); //TYPE A REGISTER DS LE NODE OU AVOIR UN REGISTER GLOBAL ?
 
-  std::list<AttributesHandler*>::iterator handler;
+  std::set<AttributesHandler*>::iterator handler;
   Attributes	nodeAttributes = this->_attributes();
   if (!(nodeAttributes.empty()))
     (*attr)[this->fsobj()->name] = new Variant(nodeAttributes);
@@ -402,8 +402,7 @@ AttributesHandler::~AttributesHandler()
 
 bool			Node::registerAttributes(AttributesHandler* ah)
 {
-   this->__attributesHandlers.push_back(ah);
-   return true;
+   return (this->__attributesHandlers.insert(ah).second);
 }
 
 uint64_t	Node::size()
@@ -616,6 +615,7 @@ std::list<std::string>*		Node::compatibleModules(void)
          if ((*var)->value<std::string>().find((*val)->get_string()) != -1)
          {
            res->push_back((*val)->from);
+	   delete (*var);
          }
        }
      }
@@ -630,7 +630,11 @@ bool	Node::isCompatibleModule(string modname)
 
    for (it = mods->begin(); it != mods->end(); it++)
      if (modname == (*it))
+     {
+        delete mods;
 	return true;
+     }
+   delete mods;
 //   if node.size() and modules["modname"].conf == data:
 // HASH prob because NONE 
 //XXX file me use reverse arg methode

@@ -153,7 +153,7 @@ void Partition::start(argument* arg)
 {
   try
     {
-      arg->get("parent", &this->parent);
+      arg->get("files", &this->parent);
       if (this->parent->size() != 0)
 	{
 	  this->__root = new Node("partition");
