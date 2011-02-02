@@ -22,7 +22,12 @@
 #else
 #include "wstdint.h"
 #endif
+
 #include <iostream>
+#include <sstream>
+#include <string> 
+#include <iomanip>
+
 #include <list>
 #include <map>
 #include <typeinfo>
@@ -33,8 +38,9 @@ class typeId
 {
 private:
   
-  static typeId			*_instance;
-  std::map<char*, uint8_t>	mapping;
+  static typeId				*_instance;
+  std::map<char*, uint8_t>		mapping;
+  std::map<uint8_t, std::string>	rmapping;
 
   typeId();
   ~typeId();
@@ -65,7 +71,7 @@ public:
       Node = 14,
       Path = 15,
       // user types
-      VoidStar = 16
+      VoidPtr = 16
     };
 
   static typeId   *Get()
@@ -84,6 +90,17 @@ public:
       return it->second;
     else
       return 0;
+  }
+
+  std::string	typeToName(uint8_t t)
+  {
+    std::map<uint8_t, std::string>::iterator it;
+    
+    it = this->rmapping.find(t);
+    if (it != this->rmapping.end())
+      return it->second;
+    else
+      return "";
   }
 };
 
@@ -113,205 +130,101 @@ public:
 
   bool	convert(uint8_t itype, void *res)
   {
-    switch (itype)
+    bool	ret;
+
+    try
       {
-      case uint8_t(typeId::Int16):
-	{
-	  int16_t *s = static_cast<int16_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Int16:
-	      {
-		*s = this->__data.us;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::UInt16):
-	{
-	  uint16_t *s = static_cast<uint16_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::UInt16:
-	      {
-		*s = this->__data.s;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Int32):
-	{
-	  int32_t *s = static_cast<int32_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Int32:
-	      {
-		*s = this->__data.i;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::UInt32):
-	{
-	  uint32_t *s = static_cast<uint32_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::UInt32:
-	      {
-		*s = this->__data.ui;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Int64):
-	{
-	  int64_t *s = static_cast<int64_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Int64:
-	      {
-		*s = this->__data.ll;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::UInt64):
-	{
-	  uint64_t *s = static_cast<uint64_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::UInt64:
-	      {
-		*s = this->__data.ull;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Char):
-	{
-	  char *s = static_cast<char*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Char:
-	      {
-		*s = this->__data.c;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::CArray):
-	{
-	  char **s = static_cast<char**>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::CArray:
-	      {
-		*s = (char*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::String):
-      {
-	  std::string *str = static_cast<std::string*>(res);
-          switch (this->_type)
-	    {
-	    case typeId::String:
-	      {
-		*str = ((std::string*)(this->__data.ptr))->c_str();
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Node):
-      {
-      	  class Node **n = static_cast<class Node**>(res);
-          switch (this->_type)
-      	    {
-      	    case typeId::Node:
-      	      {
-      		*n = (class Node*)this->__data.ptr;
-      		return true;
-      	      }
-      	    default:
-      	      return false;
-      	    }
-      	}
-      case uint8_t(typeId::Path):
-      {
-	  class Path **p = static_cast<Path**>(res);
-          switch (this->_type)
-	    {
-	    case typeId::Path:
-	      {
-		*p = (Path*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::VTime):
-      {
-	  vtime **vt = static_cast<vtime**>(res);
-          switch (this->_type)
-	    {
-	    case typeId::VTime:
-	      {
-		*vt = (vtime*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
+	ret = false;
+	if (itype == typeId::Int16)
+	  {
+	    int16_t *s = static_cast<int16_t*>(res);
+	    *s = this->toInt16();
+	    ret = true;
+	  }
+	else if (itype == typeId::UInt16)
+	  {
+	    uint16_t *us = static_cast<uint16_t*>(res);
+	    *us = this->toUInt16();
+	    ret = true;
+	  }
+	else if (itype == typeId::Int32)
+	  {
+	    int32_t *i = static_cast<int32_t*>(res);
+	    *i = this->toInt32();
+	    ret = true;
+	  }
+	else if (itype == typeId::UInt32)
+	  {
+	    uint32_t *ui = static_cast<uint32_t*>(res);
+	    *ui = this->toUInt32();
+	    ret = true;
+	  }
+	else if (itype == typeId::Int64)
+	  {
+	    int64_t *ll = static_cast<int64_t*>(res);
+	    *ll = this->toInt64();
+	    ret = true;
+	  }
+	else if (itype == typeId::UInt64)
+	  {
+	    uint64_t *ull = static_cast<uint64_t*>(res);
+	    *ull = this->toUInt64();
+	    ret = true;
+	  }
+	else if (itype == typeId::Char)
+	  {
+	    char *c = static_cast<char*>(res);
+	    *c = this->toChar();
+	    ret = true;
+	  }
+	else if (itype == typeId::CArray)
+	  {
+	    char **cstr = static_cast<char**>(res);
+	    *cstr = this->toCArray();
+	    ret = true;
+	  }
+	else if (itype == typeId::String)
+	  {
+	    std::string *str = static_cast<std::string*>(res);
+	    *str = this->toString();
+	    ret = true;
+	  }
+	else if ((itype == typeId::Node) && (this->_type == typeId::Node))
+	  {
+	    class Node **n = static_cast<class Node**>(res);
+	    *n = (class Node*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::Path) && (this->_type == typeId::Path))
+	  {
+	    class Path **p = static_cast<Path**>(res);
+	    *p = (Path*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::VTime) && (this->_type == typeId::VTime))
+	  {
+	    vtime **vt = static_cast<vtime**>(res);
+	    *vt = (vtime*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::List) && (this->_type == typeId::List))
+	  {
+	    std::list<Variant*> *l = static_cast<std::list<Variant*>*>(res);
+	    *l = *((std::list<Variant*>*)this->__data.ptr);
+	    ret = true;
+	  }
+	else if ((itype == typeId::Map) && (this->_type == typeId::Map))
+	  {
+	    std::map<std::string, Variant*> *m = static_cast<std::map<std::string, Variant*>*>(res);
+	    *m = *((std::map<std::string, Variant*>*)this->__data.ptr);
+	    ret = true;
+	  }
+	else
+	  ret = false;
+	return ret;
       }
-      case uint8_t(typeId::List):
+    catch (std::string e)
       {
-	std::list<Variant*> *l = static_cast<std::list<Variant*>*>(res);
-	switch (this->_type)
-	  {
-	  case typeId::List:
-	    {
-	      *l = *((std::list<Variant*>*)this->__data.ptr);
-	      return true;
-	    }
-	  default:
-	    return false;
-	  }
-	}
-      case uint8_t(typeId::Map):
-      {
-	std::map<std::string, Variant*> *m = static_cast<std::map<std::string, Variant*>*>(res);
-	switch (this->_type)
-	  {
-	  case typeId::Map:
-	    {
-	      *m = *((std::map<std::string, Variant*>*)this->__data.ptr);
-	      return true;
-	    }
-	  default:
-	    return false;
-	  }
-	}
-      default:
 	return false;
       }
   }
@@ -347,15 +260,19 @@ public:
       return T();
   }
 
-  std::string	toString();
-  uint16_t	toUInt16();
-  int16_t	toInt16();
-  uint32_t	toUInt32();
-  int32_t	toInt32();
-  uint64_t	toUInt64();
-  int64_t	toInt64();
-  bool		toBool();
+  std::string	toString() throw (std::string);
+  std::string	toHexString() throw (std::string);
+  std::string	toOctString() throw (std::string);
+  uint16_t	toUInt16() throw (std::string);
+  int16_t	toInt16() throw (std::string);
+  uint32_t	toUInt32() throw (std::string);
+  int32_t	toInt32() throw (std::string);
+  uint64_t	toUInt64() throw (std::string);
+  int64_t	toInt64() throw (std::string);
+  char*		toCArray() throw (std::string);
+  char		toChar() throw (std::string);
   uint8_t	type();
+  std::string	typeName();
 
 private:  
   uint8_t	_type;

@@ -135,93 +135,67 @@ vm["recursive"] = vb
 ls = LS()
 ls.start(**vm)
 
+import time, traceback
+
 vlist = VList()
-vlist.thisown = False
+vlist2 = VList()
 pylist = []
-import time
-
-t = time.time()
-for i in xrange(0, 100000):
-    vi = Variant(i)
-    vi.thisown = False
-    vlist.append(vi)
-    pylist.append(i)
-print "Creating vlist and pylist took", time.time() - t
-
-print "=" * 25
-print "VLIST == PYLIST 1 ???"
-t = time.time()
-print vlist == pylist
-print "=" * 25
-print "Comparison between vlist and pylist took", time.time() - t
-
-print
-
-print "=" * 25
-print "VLIST == PYLIST 2 ???"
-t = time.time()
-pylist2 = pylist
-pylist2[99999] = 10000
-print vlist == pylist2
-print "Comparison between vlist and pylist2 took", time.time() - t
-print "=" * 25
-
-print
-
-
-print "=" * 25
-print "VVLIST == PYLIST 1 ???"
-vvlist = Variant(vlist)
-vvlist.thisown = False
-t = time.time()
-print vvlist == pylist
-print "comparison between vvlist and pylist took", time.time() - t
-print "=" * 25
-
-print
-
-print "=" * 25
-print "100000 in vlist ???"
-t = time.time()
-print 100000 in vlist
-print "finding 100000 in vlist took", time.time() - t
-print "=" * 25
-
-
-#print "=" * 25
-#print "100000 in vvlist ???"
-#t = time.time()
-#print 100000 in vvlist
-#print "finding 100000 in vvlist took", time.time() - t
-#print "=" * 25
-
-
 vmap = VMap()
-from string import ascii_letters
-i = 0
-for char in ascii_letters:
-    vmap[str(char)] = i
-    i += 1
+pymap = {}
 
+nbitem = 10
 
-print
+print "=" * 50
+print "Creating vlist, vvlist, pylist, pylist2, vmap, vvmap, pymap and pymap2 with", nbitem, "items :"
+t = time.time()
+for i in xrange(0, nbitem):
+    vlist.append(i)
+    vlist2.append(i)
+    pylist.append(i)
+    vmap[str(i)] = i
+    pymap[str(i)] = i
 
-print "=" * 25
-print "123456789 in vvl ???"
-print 123456789 == vvl
-print "=" * 25
+vlist2[nbitem-1] = nbitem
+vvlist = Variant(vlist)
+vvlist2 = Variant(vlist2)
+vvmap = Variant(vmap)
+pylist2 = pylist
+pylist2[nbitem - 1] = 0
+pymap2 = pymap
+pymap2[str(nbitem - 1)] = 0
 
+ultimvmap = VMap()
+ultimvmap["ULTIMATE TESTING"] = vvlist
+ultimpymap = {}
+ultimpymap["ULTIMATE TESTING"] = vlist
 
-print
+extime = time.time() - t
+print "exec time:", extime
+print ("=" * 50) + "\n"
 
-print "=" * 25
-print "Vairant(10) in vlist ???"
-val = Variant(10)
-val.thisown = False
-print val in vlist
-print "=" * 25
+tests = ["vlist == pylist", "vlist == pylist2", "vlist == vlist", "vvlist == vlist", "vvlist == vvlist", "nbitem - 1 in vlist", "Variant(nbitem - 1) in vlist", "nbitem in vlist", "Variant(nbitem) in vlist", "vmap == pymap", "vmap == vmap", "vmap == vvmap", "vmap == pymap2", "ultimvmap == ultimpymap"]
 
-#print vmap
-#print vmap.keys()
-#print vmap.values()
-#print 10 in vmap.values()
+print "=" * 50
+print "Starting tests:"
+print tests
+print ("=" * 50) + "\n"
+
+for test in tests:
+    print "=" * 50
+    print "Current test ---> " + test
+    t = time.time()
+    try:
+        res = eval(test)
+    except:
+        print "error with test", test
+        traceback.print_exc(file=sys.stdout)
+    extime = time.time() - t
+    print "\n< " + test + " > terminated"
+    print "result:" + (" " * 3), res
+    print "exec time:", extime
+    print ("=" * 50) + "\n"
+
+v = Variant("10000")
+print v.toUInt16()
+
+print vvlist == vvlist2
