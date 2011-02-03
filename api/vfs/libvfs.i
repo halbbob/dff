@@ -783,12 +783,7 @@ namespace std
   %template(ListNode)   list<Node*>;
   %template(SetNode)    set<Node *>;
   %template(VectChunck)  vector<chunck *>;
-  %template(ListString)  list<std::string>;
-#ifdef 64_BITS
-  %template(Listui64)	list<unsigned long int>;
-#else
   %template(Listui64)	list<uint64_t>;
-#endif
   //%template(MapTime)	map<string, vtime*>;
 //  %template(MapAttributes) map<std::string, Variant*>;
 };
@@ -828,7 +823,7 @@ namespace std
 
 %extend VFS
 {
-#ifdef 64_BITS
+#ifdef SWIGWORDSIZE64
   PyObject* getNodeFromPointer(unsigned long pnode)
   {
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;

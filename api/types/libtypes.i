@@ -1045,7 +1045,11 @@ bool validateDefault (PyObject* val, uint8_t t)
 	  case uint8_t(typeId::Int64):
 	  {
 	    int64_t	v;
+#ifdef SWIGWORDSIZE64
+	    int ecode = SWIG_AsVal_long(obj, &v);
+#else
 	    int ecode = SWIG_AsVal_long_SS_long(obj, &v);
+#endif
 	    if (SWIG_IsOK(ecode))
 	      return self->operator==<int64_t>(v);
 	    else
@@ -1054,7 +1058,11 @@ bool validateDefault (PyObject* val, uint8_t t)
 	  case uint8_t(typeId::UInt64):
 	  {
 	    uint64_t	v;
+#ifdef SWIGWORDSIZE64
+	    int ecode = SWIG_AsVal_unsigned_SS_long(obj, &v);
+#else
 	    int ecode = SWIG_AsVal_unsigned_SS_long_SS_long(obj, &v);
+#endif
 	    if (SWIG_IsOK(ecode))
 	      return self->operator==<uint64_t>(v);
 	    else
