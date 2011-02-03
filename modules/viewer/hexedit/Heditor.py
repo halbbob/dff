@@ -108,7 +108,8 @@ class Heditor(QWidget):
     def initShape(self):
         #General Layout : Header + View + Footer
         self.vlayout = QVBoxLayout()
-
+        self.vlayout.setSpacing(0)
+        self.vlayout.setMargin(0)
 
         self.vsplitter = QSplitter()
         self.lhsplitter = QSplitter()

@@ -15,22 +15,22 @@
 
 import os
 
-from PyQt4.QtCore import QSize, SIGNAL, pyqtSignature
+from PyQt4.QtCore import QSize, SIGNAL, pyqtSignature, QEvent
 from PyQt4.QtGui import QDockWidget, QWidget, QVBoxLayout, QHBoxLayout, QIcon, QComboBox, QPushButton, QSortFilterProxyModel
 from PyQt4.Qt import *
 
+from ui.gui.resources.ui_extractdialog import Ui_ExtractDialog
 
 #Need some APIs functionnalities
-class Extractor(QDialog):
+class Extractor(QDialog, Ui_ExtractDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
+        self.setupUi(self)
+
+        self.translation()
+        
         self.nodes = None
-        self.grid = QGridLayout()
-        self.vbox = QVBoxLayout()
-        self.vbox.addLayout(self.grid)
-        self.hbox = QHBoxLayout()
-        self.setLayout(self.vbox)
-        self.vbox.addLayout(self.hbox)
+
         self.actions()
         self.showArgs()
         self.path = ""
@@ -50,12 +50,8 @@ class Extractor(QDialog):
         return args
 
     def actions(self):
-        self.validate = QPushButton("Ok")
-        self.cancel = QPushButton("Cancel")
-        self.hbox.addWidget(self.validate)
-        self.hbox.addWidget(self.cancel)
-        self.connect(self.validate, SIGNAL("clicked()"), self.verify)
-        self.connect(self.cancel, SIGNAL("clicked()"), self.close)
+        self.connect(self.buttonBox, SIGNAL("accepted()"), self.verify)
+        self.connect(self.buttonBox, SIGNAL("rejected()"), self.close)
 
 
     def verify(self):
@@ -65,26 +61,16 @@ class Extractor(QDialog):
             self.emit(SIGNAL("filled"))
         else:
             msg = QMessageBox(self)
-            msg.setText("Extraction path is mandatory")
+            msg.setText(self.pathMandatoryText)
             msg.setIcon(QMessageBox.Warning)
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
 
     def showArgs(self):
-        self.syspathLabel = QLabel("destination folder")
-        self.syspathLine = QLineEdit()
-        self.syspathLine.setReadOnly(True)
-        self.syspathBrowse = QPushButton("Browse")
-        self.recurseCheck = QCheckBox("recursive mode")
         self.connect(self.syspathBrowse, SIGNAL("clicked()"), self.getExtractFolder)
-        self.grid.addWidget(self.syspathLabel, 0, 0)
-        self.grid.addWidget(self.syspathLine, 0, 1)
-        self.grid.addWidget(self.syspathBrowse, 0, 2)
-        self.grid.addWidget(self.recurseCheck, 1, 0)
-
 
     def getExtractFolder(self):
-        dialog = QFileDialog(self, self.tr("MainWindow", "Choose the destination folder for extraction"),  "/home")
+        dialog = QFileDialog(self, self.browseTitleText,  "/home")
         dialog.setFileMode(QFileDialog.DirectoryOnly)
         dialog.setViewMode(QFileDialog.Detail)
         ret = dialog.exec_()
@@ -101,7 +87,6 @@ class Extractor(QDialog):
                 res.append(node)
         return res
 
-
     def checkIfExist(self):
         same = []
         content = os.listdir(self.path)
@@ -112,9 +97,10 @@ class Extractor(QDialog):
             if node.name() in content:
                 same.append(str(node.name()))
         if len(same) > 0:
-            msg = QMessageBox(self)
-            msg.setText("Some selected files or folders already exist in the destination folder\n" + str(self.path))
-            msg.setInformativeText("Overwrite with selected ones ?")
+            msg = QMessageBox()
+            msg.setWindowTitle(self.warningTitleText)
+            msg.setText(self.warningExistText + '\n' + str(self.path))
+            msg.setInformativeText(self.warningOWText)
             msg.setIcon(QMessageBox.Warning)
             items = "".join(s.join(["", "\n"]) for s in same)
             msg.setDetailedText(items)
@@ -127,5 +113,24 @@ class Extractor(QDialog):
                 self.selectedNodes = self.nodes
         else:
             self.selectedNodes = self.nodes
+
+    def translation(self):
+        self.pathMandatoryText = self.tr('Extraction path is mandatory')
+        self.browseTitleText = self.tr('Choose the destination folder for extraction')
+        self.warningTitleText = self.tr('Overwrite attempt')
+        self.warningExistText = self.tr('Some selected files or folders already exist in the destination folder')
+        self.warningOWText = self.tr('Overwrite with selected ones ?')
+        
+    def changeEvent(self, event):
+        """ Search for a language change event
+        
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            self.translation()
+        else:
+            QDialog.changeEvent(self, event)
 
 

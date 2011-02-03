@@ -1,18 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS>
+<TS version="2.0" language="de">
+<context>
+    <name>About</name>
+    <message>
+        <location filename="../../../ui/gui/resources/about.ui" line="20"/>
+        <source>About Digital Forensics Framework</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/about.ui" line="55"/>
+        <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AddBookmark</name>
+    <message>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="6"/>
+        <source>Add bookmark</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="26"/>
+        <source>Add a bookmark from the Virtual File System</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="50"/>
+        <source>Create a new category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="87"/>
+        <source>Category name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="75"/>
+        <source>Add in an existing category</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 <context>
     <name>ApplyModule</name>
     <message>
         <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>Missing Arguments</comment>
-        <translation>Fehlende Argumente</translation>
+        <translation type="obsolete">Fehlende Argumente</translation>
     </message>
     <message>
         <location filename="applymodule.py" line="86"/>
         <source>ApplyModule</source>
         <comment>There are missing arguments.</comment>
-        <translation>Argumente unvollständig.</translation>
+        <translation type="obsolete">Argumente unvollständig.</translation>
     </message>
 </context>
 <context>
@@ -21,13 +63,13 @@
         <location filename="applymoduletable.py" line="48"/>
         <source>applyModule</source>
         <comment>Name</comment>
-        <translation type="unfinished">Module anwenden</translation>
+        <translation type="obsolete">Module anwenden</translation>
     </message>
     <message>
         <location filename="applymoduletable.py" line="52"/>
         <source>applyModule</source>
         <comment>Tags</comment>
-        <translation type="unfinished">Module anwenden</translation>
+        <translation type="obsolete">Module anwenden</translation>
     </message>
 </context>
 <context>
@@ -36,50 +78,65 @@
         <location filename="configure.py" line="47"/>
         <source>Configure</source>
         <comment>Choose Your Directory For Extraction</comment>
-        <translation>Verzeichnis für Extraktion auswählen</translation>
+        <translation type="obsolete">Verzeichnis für Extraktion auswählen</translation>
     </message>
 </context>
 <context>
     <name>DevicesDialog</name>
     <message>
-        <location filename="selectdevices.py" line="32"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="14"/>
         <source>Select Device</source>
         <translation>Gerät auswählen</translation>
     </message>
     <message>
-        <location filename="selectdevices.py" line="38"/>
-        <source>OK</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="selectdevices.py" line="40"/>
         <source>Cancel</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation type="obsolete">Abbrechen</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="72"/>
         <source>Select device:</source>
-        <translation>Gerät auswählen: </translation>
+        <translation type="obsolete">Gerät auswählen: </translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="73"/>
         <source>Block device:</source>
-        <translation>Block-Device:</translation>
+        <translation type="obsolete">Block-Device:</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="74"/>
         <source>Model:</source>
-        <translation>Modell:</translation>
+        <translation type="obsolete">Modell:</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="75"/>
         <source>Serial:</source>
-        <translation>Serien-Nr.:</translation>
+        <translation type="obsolete">Serien-Nr.:</translation>
     </message>
     <message>
         <location filename="selectdevices.py" line="76"/>
         <source>Size:</source>
-        <translation>Größe:</translation>
+        <translation type="obsolete">Größe:</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="30"/>
+        <source>Device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="35"/>
+        <source>Model</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="40"/>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="45"/>
+        <source>Serial number</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -87,36 +144,86 @@
     <message>
         <location filename="dialog.py" line="73"/>
         <source>Load module</source>
-        <translation>Modul laden</translation>
+        <translation type="obsolete">Modul laden</translation>
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
         <source>About</source>
-        <translation>Über</translation>
+        <translation type="obsolete">Über</translation>
     </message>
     <message>
         <location filename="dialog.py" line="79"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.</source>
-        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; Falls Du Probleme hast, besuche bitte unsere &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;Support Seiten&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; im Freenode Netzwerk.&lt;br&gt;Weitere Informationen: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software entwickelt von: &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; und &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;der DFF Gemeinschaft&lt;/a&gt;.</translation>
+        <translation type="obsolete">&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt; Falls Du Probleme hast, besuche bitte unsere &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;Support Seiten&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; im Freenode Netzwerk.&lt;br&gt;Weitere Informationen: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software entwickelt von: &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; und &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;der DFF Gemeinschaft&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="dialog.py" line="47"/>
         <source>Add evidence directory</source>
-        <translation>Beweismittel-Verzeichnis hinzufügen</translation>
+        <translation type="obsolete">Beweismittel-Verzeichnis hinzufügen</translation>
     </message>
     <message>
         <location filename="dialog.py" line="49"/>
         <source>Add evidence files</source>
-        <translation>Beweismittel-Datei hinzufügen</translation>
+        <translation type="obsolete">Beweismittel-Datei hinzufügen</translation>
     </message>
 </context>
 <context>
-    <name>DockIde</name>
+    <name>Env</name>
     <message>
-        <location filename="dockide.py" line="42"/>
-        <source>IDE</source>
-        <comment>IDE</comment>
+        <location filename="../../../ui/gui/resources/env.ui" line="20"/>
+        <source>Environment</source>
+        <translation type="unfinished">Umgebung</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/env.ui" line="31"/>
+        <source>Key</source>
+        <translation type="unfinished">Schlüssel</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/env.ui" line="36"/>
+        <source>Type</source>
+        <translation type="unfinished">Typ</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/env.ui" line="41"/>
+        <source>Value</source>
+        <translation type="unfinished">Wert</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/env.ui" line="46"/>
+        <source>From</source>
+        <translation type="unfinished">Von</translation>
+    </message>
+</context>
+<context>
+    <name>Errors</name>
+    <message>
+        <location filename="../../../ui/gui/resources/errors.ui" line="20"/>
+        <source>Errors</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExtractDialog</name>
+    <message>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="14"/>
+        <source>Extract</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="60"/>
+        <source>Recursive mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="73"/>
+        <source>Destination folder:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="100"/>
+        <source>Browse</source>
+        <translation type="unfinished">Durchsuchen</translation>
     </message>
 </context>
 <context>
@@ -125,7 +232,95 @@
         <location filename="extractor.py" line="87"/>
         <source>MainWindow</source>
         <comment>Choose the destination folder for extraction</comment>
-        <translation>Zielverzeichnis für Extraktion auswählen</translation>
+        <translation type="obsolete">Zielverzeichnis für Extraktion auswählen</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="118"/>
+        <source>Extraction path is mandatory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="119"/>
+        <source>Choose the destination folder for extraction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="120"/>
+        <source>Overwrite attempt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="121"/>
+        <source>Some selected files or folders already exist in the destination folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/dialog/extractor.py" line="122"/>
+        <source>Overwrite with selected ones ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FindFile</name>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="9"/>
+        <source>Find file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="19"/>
+        <source>Pattern:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="26"/>
+        <source>Syntax:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="43"/>
+        <source>Regular expression</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="48"/>
+        <source>Fixed string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="53"/>
+        <source>Wildcard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="61"/>
+        <source>Attribute:</source>
+        <translation type="unfinished">Attribute:</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="69"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="74"/>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="79"/>
+        <source>Date</source>
+        <translation type="unfinished">Datum</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="108"/>
+        <source>Case sensitive sorting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="115"/>
+        <source>Case sensitive filter</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -133,19 +328,94 @@
     <message>
         <location filename="ide.py" line="90"/>
         <source>New script</source>
-        <translation>Neues Script</translation>
+        <translation type="obsolete">Neues Script</translation>
     </message>
     <message>
         <location filename="ide.py" line="142"/>
         <source>MainWindow</source>
         <comment>open</comment>
-        <translation>Öffnen</translation>
+        <translation type="obsolete">Öffnen</translation>
     </message>
     <message>
         <location filename="ide.py" line="179"/>
         <source>MainWindow</source>
         <comment>Save as</comment>
-        <translation>Speichern unter</translation>
+        <translation type="obsolete">Speichern unter</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="14"/>
+        <source>IDE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="30"/>
+        <source>IDE toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="51"/>
+        <source>New empty file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="60"/>
+        <source>Generate skeleton</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="271"/>
+        <source>Open file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="78"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="87"/>
+        <source>Save as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="96"/>
+        <source>Load</source>
+        <translation type="unfinished">Laden</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="105"/>
+        <source>Undo</source>
+        <translation type="unfinished">Rückgängig</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="114"/>
+        <source>Redo</source>
+        <translation type="unfinished">Wiederholen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="123"/>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/ide.ui" line="132"/>
+        <source>Uncomment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="269"/>
+        <source>Save document ?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="270"/>
+        <source>No file found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/ide.py" line="272"/>
+        <source>Save file as</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -153,50 +423,140 @@
     <message>
         <location filename="actions.py" line="54"/>
         <source>New script</source>
-        <translation>Neues Skript</translation>
+        <translation type="obsolete">Neues Skript</translation>
     </message>
     <message>
         <location filename="actions.py" line="57"/>
         <source>Open script</source>
-        <translation>Skript öffnen</translation>
+        <translation type="obsolete">Skript öffnen</translation>
     </message>
     <message>
         <location filename="actions.py" line="67"/>
         <source>Save script</source>
-        <translation>Skript speichern</translation>
+        <translation type="obsolete">Skript speichern</translation>
     </message>
     <message>
         <location filename="actions.py" line="70"/>
         <source>Save script as</source>
-        <translation>Skript speichern unter</translation>
+        <translation type="obsolete">Skript speichern unter</translation>
     </message>
     <message>
         <location filename="actions.py" line="73"/>
         <source>Load script</source>
-        <translation>Skript laden</translation>
+        <translation type="obsolete">Skript laden</translation>
     </message>
     <message>
         <location filename="actions.py" line="76"/>
         <source>Undo</source>
-        <translation>Rückgängig</translation>
+        <translation type="obsolete">Rückgängig</translation>
     </message>
     <message>
         <location filename="actions.py" line="79"/>
         <source>Redo</source>
-        <translation>Wiederholen</translation>
-    </message>
-    <message>
-        <location filename="actions.py" line="134"/>
-        <source>IDE</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Wiederholen</translation>
     </message>
 </context>
 <context>
     <name>IdeWizard</name>
     <message>
-        <location filename="idewizard.py" line="25"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="14"/>
         <source>Integrated Development Environment Wizard</source>
-        <translation>IDE-Assistent</translation>
+        <translation type="unfinished">IDE-Assistent</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="22"/>
+        <source>General Informations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="25"/>
+        <source>Fill all script information such as name, type and saving location.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="31"/>
+        <source>Name:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="41"/>
+        <source>Category:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="55"/>
+        <source>Work location:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="71"/>
+        <source>Browse</source>
+        <translation type="unfinished">Durchsuchen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="83"/>
+        <source>Type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="111"/>
+        <source>Script</source>
+        <translation type="unfinished">Skript</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="121"/>
+        <source>Graphical</source>
+        <translation type="unfinished">Grafisch</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="128"/>
+        <source>Driver</source>
+        <translation type="unfinished">Treiber</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="152"/>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="155"/>
+        <source>Describe here the goal of the module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="161"/>
+        <source>Module&apos;s description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="172"/>
+        <source>Author informations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="175"/>
+        <source>Fill all author&apos;s informations in order to complete header</source>
+        <translation type="unfinished">Zum Vervollständigen des Kopfteils bitte Informationen zum Autor ausfüllen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="183"/>
+        <source>Author&apos;s first name:</source>
+        <translation type="unfinished">Vorname des Autors</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="190"/>
+        <source>Author&apos;s last name:</source>
+        <translation type="unfinished">Nachname des Autors</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="197"/>
+        <source>Author&apos;s electronic mail:</source>
+        <translation type="unfinished">E-Mail-Adresse des Autors</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/ide/idewizard.py" line="59"/>
+        <source>Location</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -204,74 +564,64 @@
     <message>
         <location filename="info.py" line="250"/>
         <source>Info</source>
-        <translation>Information</translation>
-    </message>
-    <message>
-        <location filename="info.py" line="249"/>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Information</translation>
     </message>
     <message>
         <location filename="info.py" line="198"/>
         <source>Key</source>
-        <translation>Schlüssel</translation>
+        <translation type="obsolete">Schlüssel</translation>
     </message>
     <message>
         <location filename="info.py" line="200"/>
         <source>Value</source>
-        <translation>Wert</translation>
+        <translation type="obsolete">Wert</translation>
     </message>
     <message>
         <location filename="info.py" line="199"/>
         <source>Type</source>
-        <translation>Typ</translation>
+        <translation type="obsolete">Typ</translation>
     </message>
     <message>
         <location filename="info.py" line="123"/>
         <source>Modules</source>
-        <translation>Module</translation>
+        <translation type="obsolete">Module</translation>
     </message>
     <message>
         <location filename="info.py" line="201"/>
         <source>From</source>
-        <translation>Von</translation>
+        <translation type="obsolete">Von</translation>
     </message>
     <message>
         <location filename="info.py" line="204"/>
         <source>Environment</source>
-        <translation>Umgebung</translation>
+        <translation type="obsolete">Umgebung</translation>
     </message>
     <message>
         <location filename="info.py" line="249"/>
         <source>PID</source>
-        <translation>Prozess-ID</translation>
+        <translation type="obsolete">Prozess-ID</translation>
     </message>
     <message>
         <location filename="info.py" line="250"/>
         <source>State</source>
-        <translation>Status</translation>
-    </message>
-    <message>
-        <location filename="info.py" line="254"/>
-        <source>Task Manager</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Status</translation>
     </message>
     <message>
         <location filename="info.py" line="251"/>
         <source>Exec Time</source>
-        <translation>Ausführungszeit</translation>
+        <translation type="obsolete">Ausführungszeit</translation>
     </message>
 </context>
 <context>
     <name>Interpreter</name>
     <message>
-        <location filename="interpreter.py" line="344"/>
-        <source>Interpreter</source>
+        <location filename="../../../ui/gui/resources/interpreter.ui" line="84"/>
+        <source>Python interpreter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="interpreter.py" line="351"/>
-        <source>DFF interpreter</source>
+        <location filename="../../../ui/gui/resources/interpreter.ui" line="97"/>
+        <source>Python Interpreter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -279,168 +629,388 @@
     <name>InterpreterActions</name>
     <message>
         <location filename="interpreter.py" line="366"/>
-        <source>Interpreter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="interpreter.py" line="366"/>
         <source>Open Interpreter</source>
-        <translation>Interpreter öffnen</translation>
-    </message>
-</context>
-<context>
-    <name>InterpreterView</name>
-    <message>
-        <location filename="interpreter.py" line="58"/>
-        <source>Python Interpreter
-</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Interpreter öffnen</translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.py" line="73"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="28"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="88"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="133"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="89"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="103"/>
         <source>Load</source>
         <translation>Laden</translation>
     </message>
     <message>
         <location filename="mainwindow.py" line="91"/>
         <source>List Files</source>
-        <translation>Dateien auflisten</translation>
+        <translation type="obsolete">Dateien auflisten</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="102"/>
+        <location filename="../resources/mainwindow.ui" line="52"/>
         <source>About</source>
-        <translation>Über</translation>
+        <translation type="obsolete">Über</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="86"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="115"/>
         <source>Open evidence file(s)</source>
         <translation>Öffne Beweismittel-Datei(en)</translation>
     </message>
     <message>
-        <location filename="mainwindow.py" line="87"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="124"/>
         <source>Open local device</source>
         <translation>Öffne lokales Gerät</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="14"/>
+        <source>Digital Forensics Framework</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="59"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="38"/>
+        <source>Module</source>
+        <translation type="unfinished">Module</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="45"/>
+        <source>IDE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="142"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../resources/mainwindow.ui" line="123"/>
+        <source>Open script</source>
+        <translation type="obsolete">Skript öffnen</translation>
+    </message>
+    <message>
+        <location filename="../resources/mainwindow.ui" line="135"/>
+        <source>Save script</source>
+        <translation type="obsolete">Skript speichern</translation>
+    </message>
+    <message>
+        <location filename="../resources/mainwindow.ui" line="147"/>
+        <source>Save script as</source>
+        <translation type="obsolete">Skript speichern unter</translation>
+    </message>
+    <message>
+        <location filename="../resources/mainwindow.ui" line="159"/>
+        <source>Load script</source>
+        <translation type="obsolete">Skript laden</translation>
+    </message>
+    <message>
+        <location filename="../resources/mainwindow.ui" line="171"/>
+        <source>Undo</source>
+        <translation type="obsolete">Rückgängig</translation>
+    </message>
+    <message>
+        <location filename="../resources/mainwindow.ui" line="183"/>
+        <source>Redo</source>
+        <translation type="obsolete">Wiederholen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="52"/>
+        <source>?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="178"/>
+        <source>Shell</source>
+        <translation type="unfinished">Shell</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="65"/>
+        <source>View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="151"/>
+        <source>Maximize</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="160"/>
+        <source>Fullscreen mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="169"/>
+        <source>Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="187"/>
+        <source>Python interpreter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="106"/>
+        <source>Load module</source>
+        <translation type="unfinished">Modul laden</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="205"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="87"/>
+        <source>Toolbar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="98"/>
+        <source>About DFF ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="196"/>
+        <source>DFF Documentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Modules</name>
+    <message>
+        <location filename="../../../ui/gui/resources/modules.ui" line="20"/>
+        <source>Modules</source>
+        <translation type="unfinished">Module</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modules.ui" line="31"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modules.ui" line="36"/>
+        <source>Key</source>
+        <translation type="unfinished">Schlüssel</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modules.ui" line="41"/>
+        <source>Value</source>
+        <translation type="unfinished">Wert</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modules.ui" line="46"/>
+        <source>Info</source>
+        <translation type="unfinished">Information</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modules.ui" line="51"/>
+        <source>Type</source>
+        <translation type="unfinished">Typ</translation>
     </message>
 </context>
 <context>
     <name>NodeBrowser</name>
     <message>
-        <location filename="nodebrowser.py" line="96"/>
-        <source>nodebrowser</source>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="25"/>
+        <source>Open in new tab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodebrowser.py" line="306"/>
-        <source>Small</source>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="34"/>
+        <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodebrowser.py" line="308"/>
-        <source>Medium</source>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="43"/>
+        <source>Open with</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodebrowser.py" line="310"/>
-        <source>Large</source>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="52"/>
+        <source>Hex viewer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="61"/>
+        <source>Extract</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="14"/>
+        <source>Browser</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>NodeFilterBox</name>
     <message>
-        <location filename="nodefilterbox.py" line="44"/>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="nodefilterbox.py" line="45"/>
         <source>Size</source>
-        <translation>Größe</translation>
+        <translation type="obsolete">Größe</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="46"/>
         <source>Date</source>
-        <translation>Datum</translation>
+        <translation type="obsolete">Datum</translation>
     </message>
     <message>
         <location filename="nodefilterbox.py" line="48"/>
         <source>Attribute:</source>
-        <translation>Attribute:</translation>
+        <translation type="obsolete">Attribute:</translation>
     </message>
 </context>
 <context>
     <name>NodeViewBox</name>
     <message>
-        <location filename="nodeviewbox.py" line="41"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="14"/>
+        <source>Node View Box</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="42"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
+        <source>Next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
+        <source>Move to top</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
         <source>Return to root</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="48"/>
-        <source>Add to bookmarks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="49"/>
-        <source>Display search engine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="50"/>
-        <source>Active thumbnails</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="59"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="183"/>
         <source>List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="60"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="192"/>
         <source>Icons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="61"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="201"/>
         <source>Tree</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="98"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="213"/>
+        <source>Attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="226"/>
+        <source>Add to bookmarks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="252"/>
+        <source>Display search engine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="281"/>
+        <source>Active thumbnails</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="305"/>
         <source>Small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="99"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="310"/>
         <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="nodeviewbox.py" line="100"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="315"/>
         <source>Large</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>Output</name>
     <message>
-        <location filename="nodeviewbox.py" line="106"/>
-        <source>Attributes</source>
+        <location filename="../../../ui/gui/resources/output.ui" line="20"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PreferencesDialog</name>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="14"/>
+        <source>Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="24"/>
+        <source>Global</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
+        <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="38"/>
+        <source>History file full path:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <source>No history file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="80"/>
+        <source>Other settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="88"/>
+        <source>No footprint</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="137"/>
+        <source>Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="143"/>
+        <source>Interface language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="151"/>
+        <source>Use interface language:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -450,109 +1020,154 @@
         <location filename="property.py" line="85"/>
         <source>PropertyDialog</source>
         <comment>Folder</comment>
-        <translation>Verzeichnis</translation>
+        <translation type="obsolete">Verzeichnis</translation>
     </message>
     <message>
         <location filename="property.py" line="88"/>
         <source>PropertyDialog</source>
         <comment>File</comment>
-        <translation>Datei</translation>
+        <translation type="obsolete">Datei</translation>
     </message>
     <message>
         <location filename="property.py" line="91"/>
         <source>PropertyDialog</source>
         <comment>items, total</comment>
-        <translation>Elemente, gesamt</translation>
+        <translation type="obsolete">Elemente, gesamt</translation>
     </message>
     <message>
         <location filename="property.py" line="93"/>
         <source>PropertyDialog</source>
         <comment>Folders</comment>
-        <translation>Verzeichnisse</translation>
+        <translation type="obsolete">Verzeichnisse</translation>
     </message>
     <message>
         <location filename="property.py" line="95"/>
         <source>PropertyDialog</source>
         <comment>Files</comment>
-        <translation>Dateien</translation>
+        <translation type="obsolete">Dateien</translation>
     </message>
 </context>
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="propertytable.py" line="25"/>
-        <source>Attribute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="propertytable.py" line="25"/>
+        <location filename="../../../ui/gui/resources/propertytable.ui" line="29"/>
         <source>Value</source>
-        <translation>Wert</translation>
+        <translation type="unfinished">Wert</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="36"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="227"/>
         <source>name</source>
-        <translation>Name</translation>
+        <translation type="unfinished">Name</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="40"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="233"/>
         <source>type</source>
-        <translation>Typ</translation>
+        <translation type="unfinished">Typ</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="43"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="221"/>
         <source>file</source>
-        <translation>Datei</translation>
+        <translation type="unfinished">Datei</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="45"/>
         <source>with module(s) applied on it</source>
-        <translation>angewandte(s) Modul(e)</translation>
+        <translation type="obsolete">angewandte(s) Modul(e)</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="50"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="223"/>
         <source>folder</source>
-        <translation>Verzeichnis</translation>
+        <translation type="unfinished">Verzeichnis</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="52"/>
         <source>empty</source>
-        <translation>leer</translation>
+        <translation type="obsolete">leer</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="54"/>
         <source>deleted</source>
-        <translation>gelöscht</translation>
+        <translation type="obsolete">gelöscht</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="58"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="225"/>
         <source>generated by</source>
-        <translation>erzeugt von</translation>
+        <translation type="unfinished">erzeugt von</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="62"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="229"/>
         <source>size</source>
-        <translation>Größe</translation>
+        <translation type="unfinished">Größe</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="70"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="228"/>
         <source>relevant module(s)</source>
-        <translation>relevante(s) Modul(e)</translation>
+        <translation type="unfinished">relevante(s) Modul(e)</translation>
     </message>
     <message>
         <location filename="propertytable.py" line="105"/>
         <source>default times</source>
-        <translation>Standard-Zeiten</translation>
+        <translation type="obsolete">Standard-Zeiten</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="122"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="220"/>
         <source>extended attributes</source>
-        <translation>Erweiterte Attribute</translation>
+        <translation type="unfinished">Erweiterte Attribute</translation>
     </message>
     <message>
-        <location filename="propertytable.py" line="148"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="230"/>
         <source>static attributes</source>
-        <translation>statische Attribute</translation>
+        <translation type="unfinished">statische Attribute</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/propertytable.ui" line="24"/>
+        <source>Attribute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="226"/>
+        <source> with module(s) applied on it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="219"/>
+        <source> empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="218"/>
+        <source> deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="217"/>
+        <source>children</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="222"/>
+        <source>file(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="232"/>
+        <source> totalizing </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="216"/>
+        <source> bytes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="224"/>
+        <source>folder(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="231"/>
+        <source>default timestamp</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -560,12 +1175,12 @@
     <message>
         <location filename="pushbutton.py" line="29"/>
         <source>Browse</source>
-        <translation>Durchsuchen</translation>
+        <translation type="obsolete">Durchsuchen</translation>
     </message>
     <message>
         <location filename="pushbutton.py" line="35"/>
         <source>Add Dump</source>
-        <translation>Dump hinzufügen</translation>
+        <translation type="obsolete">Dump hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -574,13 +1189,56 @@
         <location filename="shell.py" line="383"/>
         <source>Shell</source>
         <comment>Shell</comment>
-        <translation>Shell</translation>
+        <translation type="obsolete">Shell</translation>
     </message>
     <message>
         <location filename="shell.py" line="390"/>
         <source>MainWindow</source>
         <comment>Shell</comment>
-        <translation>Shell</translation>
+        <translation type="obsolete">Shell</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/shell.ui" line="84"/>
+        <source>Shell</source>
+        <translation type="unfinished">Shell</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/shell.ui" line="97"/>
+        <source>Welcome to DFF shell</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TaskManager</name>
+    <message>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="28"/>
+        <source>PID</source>
+        <translation type="unfinished">Prozess-ID</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="33"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="38"/>
+        <source>State</source>
+        <translation type="unfinished">Status</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="43"/>
+        <source>Info</source>
+        <translation type="unfinished">Information</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="48"/>
+        <source>Exec Time</source>
+        <translation type="unfinished">Ausführungszeit</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="20"/>
+        <source>Task Manager</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -589,7 +1247,7 @@
         <location filename="uiapplymodule.py" line="46"/>
         <source>applyModule</source>
         <comment>Apply Module</comment>
-        <translation>Module anwenden</translation>
+        <translation type="obsolete">Module anwenden</translation>
     </message>
 </context>
 <context>
@@ -598,25 +1256,25 @@
         <location filename="_configure.py" line="85"/>
         <source>Configure</source>
         <comment>Configure</comment>
-        <translation>Einrichten</translation>
+        <translation type="obsolete">Einrichten</translation>
     </message>
     <message>
         <location filename="_configure.py" line="86"/>
         <source>Configure</source>
         <comment>Language:</comment>
-        <translation>Sprache:</translation>
+        <translation type="obsolete">Sprache:</translation>
     </message>
     <message>
         <location filename="_configure.py" line="87"/>
         <source>Configure</source>
         <comment>Extract Folder:</comment>
-        <translation>Ausgabe-Verzeichnis</translation>
+        <translation type="obsolete">Ausgabe-Verzeichnis</translation>
     </message>
     <message>
         <location filename="_configure.py" line="88"/>
         <source>Configure</source>
         <comment>Browser</comment>
-        <translation>Durchsuchen</translation>
+        <translation type="obsolete">Durchsuchen</translation>
     </message>
 </context>
 <context>
@@ -625,37 +1283,31 @@
         <location filename="uiproperty.py" line="130"/>
         <source>PropertyDialog</source>
         <comment>Property</comment>
-        <translation>Eigenschaft</translation>
-    </message>
-    <message>
-        <location filename="uiproperty.py" line="131"/>
-        <source>PropertyDialog</source>
-        <comment>Name:</comment>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Eigenschaft</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="132"/>
         <source>PropertyDialog</source>
         <comment>Type:</comment>
-        <translation>Typ:</translation>
+        <translation type="obsolete">Typ:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="133"/>
         <source>PropertyDialog</source>
         <comment>Location:</comment>
-        <translation>Fundstelle:</translation>
+        <translation type="obsolete">Fundstelle:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="134"/>
         <source>PropertyDialog</source>
         <comment>Contents:</comment>
-        <translation>Inhalte:</translation>
+        <translation type="obsolete">Inhalte:</translation>
     </message>
     <message>
         <location filename="uiproperty.py" line="135"/>
         <source>PropertyDialog</source>
         <comment>Close</comment>
-        <translation>Schließen</translation>
+        <translation type="obsolete">Schließen</translation>
     </message>
 </context>
 <context>
@@ -664,58 +1316,58 @@
         <location filename="uiselectnodes.py" line="84"/>
         <source>selectNode</source>
         <comment>Select a node</comment>
-        <translation>Knoten auswählen:</translation>
+        <translation type="obsolete">Knoten auswählen:</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="85"/>
         <source>selectNode</source>
         <comment>Look in:</comment>
-        <translation>Nachschauen in:</translation>
+        <translation type="obsolete">Nachschauen in:</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="86"/>
         <source>selectNode</source>
         <comment>Select</comment>
-        <translation>Auswählen</translation>
+        <translation type="obsolete">Auswählen</translation>
     </message>
     <message>
         <location filename="uiselectnodes.py" line="87"/>
         <source>selectNode</source>
         <comment>Cancel</comment>
-        <translation>Abbrechen</translation>
+        <translation type="obsolete">Abbrechen</translation>
     </message>
 </context>
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="vfsitemmodel.py" line="247"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="393"/>
+        <source>Size</source>
+        <translation type="unfinished">Größe</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="394"/>
+        <source>Accessed time</source>
+        <translation type="unfinished">Zugriffszeit (A)</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="395"/>
+        <source>Changed time</source>
+        <translation type="unfinished">Änderungszeit (C)</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="396"/>
+        <source>Modified time</source>
+        <translation type="unfinished">Modifikationszeitpunkt (M)</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="397"/>
+        <source>Module</source>
+        <translation type="unfinished">Module</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="392"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="vfsitemmodel.py" line="249"/>
-        <source>Size</source>
-        <translation>Größe</translation>
-    </message>
-    <message>
-        <location filename="vfsitemmodel.py" line="251"/>
-        <source>Accessed time</source>
-        <translation>Zugriffszeit (A)</translation>
-    </message>
-    <message>
-        <location filename="vfsitemmodel.py" line="253"/>
-        <source>Changed time</source>
-        <translation>Änderungszeit (C)</translation>
-    </message>
-    <message>
-        <location filename="vfsitemmodel.py" line="255"/>
-        <source>Modified time</source>
-        <translation>Modifikationszeitpunkt (M)</translation>
-    </message>
-    <message>
-        <location filename="vfsitemmodel.py" line="257"/>
-        <source>Module</source>
-        <translation>Module</translation>
     </message>
 </context>
 <context>
@@ -723,32 +1375,32 @@
     <message>
         <location filename="idewizardpages.py" line="88"/>
         <source>Author Informations</source>
-        <translation>Informationen über den Autor</translation>
+        <translation type="obsolete">Informationen über den Autor</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="89"/>
         <source>Fill all author&apos;s informations in order to complete header</source>
-        <translation>Zum Vervollständigen des Kopfteils bitte Informationen zum Autor ausfüllen</translation>
+        <translation type="obsolete">Zum Vervollständigen des Kopfteils bitte Informationen zum Autor ausfüllen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="95"/>
         <source>Author&apos;s first name:</source>
-        <translation>Vorname des Autors</translation>
+        <translation type="obsolete">Vorname des Autors</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="99"/>
         <source>Author&apos;s last name:</source>
-        <translation>Nachname des Autors</translation>
+        <translation type="obsolete">Nachname des Autors</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="102"/>
         <source>Author&apos;s electronic mail:</source>
-        <translation>E-Mail-Adresse des Autors</translation>
+        <translation type="obsolete">E-Mail-Adresse des Autors</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="123"/>
         <source>Location</source>
-        <translation>Standort</translation>
+        <translation type="obsolete">Standort</translation>
     </message>
 </context>
 <context>
@@ -756,52 +1408,115 @@
     <message>
         <location filename="idewizardpages.py" line="26"/>
         <source>Script Informations</source>
-        <translation>Skript Informationen</translation>
+        <translation type="obsolete">Skript Informationen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="27"/>
         <source>Fill all script information such as name, type and saving location</source>
-        <translation>Alle Skript-Informationen (Name, Typ, Speicherort) ausfüllen</translation>
+        <translation type="obsolete">Alle Skript-Informationen (Name, Typ, Speicherort) ausfüllen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="33"/>
         <source>Script name:</source>
-        <translation>Skript-Name</translation>
+        <translation type="obsolete">Skript-Name</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="37"/>
         <source>Select script type:</source>
-        <translation>Skript-Typ auswählen:</translation>
+        <translation type="obsolete">Skript-Typ auswählen:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="38"/>
         <source>Script</source>
-        <translation>Skript</translation>
+        <translation type="obsolete">Skript</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="39"/>
         <source>Graphical</source>
-        <translation>Grafisch</translation>
+        <translation type="obsolete">Grafisch</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="40"/>
         <source>Driver</source>
-        <translation>Treiber</translation>
+        <translation type="obsolete">Treiber</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="44"/>
         <source>Select script location:</source>
-        <translation>Ablage für Skript auswählen:</translation>
+        <translation type="obsolete">Ablage für Skript auswählen:</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="46"/>
         <source>Browse</source>
-        <translation>Durchsuchen</translation>
+        <translation type="obsolete">Durchsuchen</translation>
     </message>
     <message>
         <location filename="idewizardpages.py" line="75"/>
         <source>Location</source>
-        <translation>Speicherort</translation>
+        <translation type="obsolete">Speicherort</translation>
+    </message>
+</context>
+<context>
+    <name>applyModule</name>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="12"/>
+        <source>Apply module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="18"/>
+        <source>Informations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="24"/>
+        <source>Module</source>
+        <translation type="unfinished">Module</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="104"/>
+        <source>Type</source>
+        <translation type="unfinished">Typ</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="52"/>
+        <source>Purpose</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="82"/>
+        <source>Arguments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="97"/>
+        <source>Activate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="111"/>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="127"/>
+        <source>Browse</source>
+        <translation type="unfinished">Durchsuchen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="118"/>
+        <source>Select evidence file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="121"/>
+        <source>There are missing arguments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="124"/>
+        <source>This box is already open</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -842,64 +1557,6 @@
         <comment>Description</comment>
         <translation type="obsolete">Beschreibung</translation>
     </message>
-    <message>
-        <location filename="bookmark.py" line="67"/>
-        <source>Address</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="bookmark.py" line="68"/>
-        <source>Length (dec)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="bookmark.py" line="69"/>
-        <source>Length (hex)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="bookmark.py" line="70"/>
-        <source>Hex value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="bookmark.py" line="71"/>
-        <source>Ascii value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="bookmark.py" line="72"/>
-        <source>Description</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>bookmarkDialog</name>
-    <message>
-        <location filename="nodeviewbox.py" line="242"/>
-        <source>Add bookmark</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="255"/>
-        <source>Add a bookmark from the Virtual File System</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="266"/>
-        <source>Create a new category</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="286"/>
-        <source>Category name :</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="nodeviewbox.py" line="277"/>
-        <source>Add in an existing category</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>browseButton</name>
@@ -907,13 +1564,13 @@
         <location filename="applymodule.py" line="284"/>
         <source>BrowserButton</source>
         <comment>Add Dump</comment>
-        <translation>Abbild hinzufügen</translation>
+        <translation type="obsolete">Abbild hinzufügen</translation>
     </message>
     <message>
         <location filename="applymodule.py" line="278"/>
         <source>Browse</source>
         <comment>Browse</comment>
-        <translation>Durchsuchen</translation>
+        <translation type="obsolete">Durchsuchen</translation>
     </message>
 </context>
 <context>
@@ -933,12 +1590,55 @@
     <message>
         <location filename="decodeValues.py" line="45"/>
         <source>Type</source>
-        <translation type="unfinished">Typ</translation>
+        <translation type="obsolete">Typ</translation>
     </message>
     <message>
         <location filename="decodeValues.py" line="46"/>
         <source>Value</source>
-        <translation type="unfinished">Wert</translation>
+        <translation type="obsolete">Wert</translation>
+    </message>
+</context>
+<context>
+    <name>evidenceDialog</name>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="14"/>
+        <source>Select evidence type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="42"/>
+        <source>Select data type to open in the VFS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="53"/>
+        <source>Data type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="67"/>
+        <source>RAW files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="72"/>
+        <source>EWF files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="77"/>
+        <source>Local directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
+        <source>Add evidence directory</source>
+        <translation type="unfinished">Beweismittel-Verzeichnis hinzufügen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="102"/>
+        <source>Add evidence files</source>
+        <translation type="unfinished">Beweismittel-Datei hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -956,14 +1656,9 @@
         <translation type="obsolete">Wert</translation>
     </message>
     <message>
-        <location filename="navigation.py" line="53"/>
-        <source>Current</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="navigation.py" line="54"/>
         <source>Value</source>
-        <translation type="unfinished">Wert</translation>
+        <translation type="obsolete">Wert</translation>
     </message>
 </context>
 </TS>

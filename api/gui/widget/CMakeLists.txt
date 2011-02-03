@@ -11,18 +11,17 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
-
+#  Christophe Malinge <cma@digital-forensic.org>
 
 #### Deploying python __init__ script
 set(apiguiwidget_srcs
   __init__.py
-  applymoduletable.py
   dockwidget.py
   nodebrowser.py
   nodeview.py
   propertytable.py
   textedit.py
-  selectdevices.py
+  devicesdialog.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

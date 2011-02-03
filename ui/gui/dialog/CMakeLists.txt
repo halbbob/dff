@@ -11,10 +11,12 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
+#  Christophe Malinge <cma@digital-forensic.org>
 
 set(ui_dialog_srcs
   __init__.py
   dialog.py
+  preferences.py
 )
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/dialog.py ${CMAKE_CURRENT_BINARY_DIR}/dialog.py)

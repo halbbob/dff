@@ -15,14 +15,13 @@
 
 set(ide_srcs
   editor.py
-  dockide.py
   ide.py
+  highlighter.py
+  explorer.py
   __init__.py
   generatecode.py
   messagebox.py
-  actions.py
   idewizard.py
-  idewizardpages.py
 )
 
 install_file(ide ${ide_srcs})

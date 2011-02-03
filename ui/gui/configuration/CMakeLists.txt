@@ -17,8 +17,6 @@ set(configuration_srcs
   __init__.py
   conf.py
   translator.py
-  configure.py
-  _configure.py
 )
 
 install_file(configuration ${configuration_srcs})

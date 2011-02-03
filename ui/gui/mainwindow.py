@@ -19,24 +19,23 @@ import sys
 from Queue import *
 
 # Form Custom implementation of MAINWINDOW
-from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit
+from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
 from api.type import *
 from api.vfs.libvfs import *
-from api.taskmanager import scheduler 
+from api.taskmanager import scheduler
+from api.vfs import vfs
 
 from api.gui.widget.textedit import TextEdit
 from api.gui.widget.dockwidget import DockWidget 
-from api.gui.dialog.property import Property
 from api.gui.widget.nodebrowser import NodeBrowser
 from api.gui.dialog.applymodule import ApplyModule
 
-from ui.gui.configuration.configure import ConfigureDialog
 from ui.gui.configuration.conf import Conf
 from ui.gui.configuration.translator import Translator
-from ui.gui.ide.actions import IdeActions
+from ui.gui.ide.ide import Ide
 
 from ui.gui.widget.taskmanager import Processus
 from ui.gui.widget.modules import Modules
@@ -49,6 +48,7 @@ from ui.gui.widget.interpreter import InterpreterActions
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
+from ui.gui.resources.ui_mainwindow import Ui_MainWindow
 
 try:
     from ui.gui.widget.help import Help
@@ -62,61 +62,90 @@ except ImportError:
     HELP = False
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self,  app, debug = False):
         super(MainWindow,  self).__init__()
         self.app = app
         self.debug = debug
         self.sched = scheduler.sched
-        self.vfs = VFS.Get()
+#        self.vfs = VFS.Get()
+        self.vfs = vfs.vfs()
+        self.createRootNodes()
 
         self.dialog = Dialog(self)
 	
 	self.initCallback()
-	#menu
-	self.menuList = [[self.tr("File"), ["New_Dump", "New_Device", "Exit"]],
-                         ["Modules", ["Load"]],
-                         ["View", ["Maximize", "Fullscreen mode"]],
-                         ] 
 
-	#icon 
-        self.toolbarList = [["New_Dump"],
-                            ["New_Device"],
-                            ["List_Files"],
-                            ["Maximize"],
-                            ["Fullscreen mode"]
-                            ]
         if HELP:
             self.toolbarList.append(["help"])
-
-        self.actionList = [
-            ["New_Dump", self.tr("Open evidence file(s)"), self.dialog.addFiles, ":add_image.png", "Add image"],
-            ["New_Device", self.tr("Open local device"), self.dialog.addDevices, ":add_device.png", "Add device(s)"],
-            ["Maximize", self.tr("Maximize"), self.maximizeDockwidget,  ":maximize.png", "Maximize"],
-            ["Fullscreen mode", self.tr("Fullscreen mode"), self.fullscreenMode,  ":randr.png", "Fullscreen mode"],
-            ["Exit", self.tr("Exit"), None,  ":exit.png", "Exit"], 
-            ["Load", self.tr("Load"), self.dialog.loadDriver, None, None ],
-            ["About", "?", self.dialog.about, None, None ],
-            ["List_Files", self.tr("List Files"), self.addNodeBrowser, ":view_detailed.png", "Open List"]
-            ] 
         if HELP:
             self.actionList.append(["help", "Help", self.addHelpWidget, ":help.png", "Open Help"])
 
-        self.setupUi()
-        self.ideActions = IdeActions(self)
+        # Set up the user interface from Qt Designer
+        self.setupUi(self)
+
+        # Customization
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.resize(QtCore.QSize(QtCore.QRect(0,0,1014,693).size()).expandedTo(self.minimumSizeHint()))
+
 	self.shellActions = ShellActions(self)
 	self.interpreterActions = InterpreterActions(self)
-	self.addMenu(*[self.tr("About"), ["About"]])
         self.initDockWidgets()
         self.setCentralWidget(None)
 
+        # Signals handling
+        ## File menu
+        self.connect(self.actionOpen_evidence, SIGNAL("triggered()"), self.dialog.addFiles)
+        self.connect(self.actionOpen_device, SIGNAL("triggered()"), self.dialog.addDevices)
+        self.connect(self.actionExit, SIGNAL("triggered()"), self.close)
+        ## Edit menu
+        self.connect(self.actionPreferences, SIGNAL("triggered()"), self.dialog.preferences)
+        ## Module menu
+        self.connect(self.actionLoadModule, SIGNAL("triggered()"), self.dialog.loadDriver)
+        ## Ide menu
+        self.connect(self.actionIdeOpen, SIGNAL("triggered()"), self.addIde)        
+        ## View menu
+        self.connect(self.actionMaximize, SIGNAL("triggered()"), self.maximizeDockwidget)
+        self.connect(self.actionFullscreen_mode, SIGNAL("triggered()"), self.fullscreenMode)
+        self.connect(self.actionNodeBrowser, SIGNAL("triggered()"), self.addNodeBrowser)
+        self.connect(self.actionShell, SIGNAL("triggered()"), self.shellActions.create)
+        self.connect(self.actionPython_interpreter, SIGNAL("triggered()"), self.interpreterActions.create)        ## About menu
+        self.connect(self.actionHelp, SIGNAL("triggered()"), self.addHelpWidget)
+        self.connect(self.actionAbout, SIGNAL("triggered()"), self.dialog.about)
+
+        # list used to build toolbar
+        # None will be a separator
+        self.toolbarList = [self.actionOpen_evidence,
+                            self.actionOpen_device,
+                            None,
+                            self.actionNodeBrowser,
+                            self.actionShell,
+                            self.actionPython_interpreter,
+                            self.actionIdeOpen,
+                            self.actionHelp,
+                            None,
+                            self.actionMaximize,
+                            self.actionFullscreen_mode,
+                            ]
+
+        # Set up toolbar
+        self.setupToolBar()
+
+        # Set up modules menu
+        self.MenuTags = MenuTags(self, self)
+
+        self.refreshTabifiedDockWidgets()
+
 #############  DOCKWIDGETS FUNCTIONS ###############
 
-    def addDockWidgets(self, widget, master=True):
+    def addDockWidgets(self, widget, internalName, master=True):
         if widget is None:
             return
+        if self.last_state is not None:
+            self.maximizeDockwidget()
         dockwidget = DockWidget(self, widget, widget.name)
-        name = self.getWidgetName(widget.name)
+        docIndex, docTitle = self.getWidgetName(widget.name)
+        dockwidget.setWindowTitle(docTitle)
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
         self.addDockWidget(self.masterArea, dockwidget)
@@ -125,31 +154,36 @@ class MainWindow(QMainWindow):
         else:
             self.tabifyDockWidget(self.second, dockwidget)
 
-        self.dockWidget[str(widget.name)] = dockwidget
+        if docIndex:
+            self.dockWidget[internalName + str(docIndex)] = dockwidget
+        else:
+            self.dockWidget[internalName] = dockwidget
+        self.refreshTabifiedDockWidgets()
 
     def getWidgetName(self, name):
         did = 0
         for d in self.dockWidget:
-            if d.startswith(str(name)):
+            if self.dockWidget[d].windowTitle().startsWith(QString(name)):
                 did += 1
         if did > 0:
-            name = name + str(did)
-        return name
+            name = name + ' ' + str(did)
+        return (did, name)
 
-    def addSingleDock(self, name, cl):
-        try :
-	   self.dockWidget[name].show()
+    def addSingleDock(self, name, cl, master=False):
+        try:
+            self.dockWidget[name].show()
+            self.refreshTabifiedDockWidgets()
         except KeyError:
             w = cl(self)
-            self.addDockWidgets(w, master=False)
+            self.addDockWidgets(w, name, master)
            
     def addNodeBrowser(self, rootpath=None):
         if rootpath == None:
-            self.addDockWidgets(NodeBrowser(self)) 
+            self.addDockWidgets(NodeBrowser(self), 'nodeBrowser')
         else:
             nb = NodeBrowser(self)
             nb.model.setRootPath(nb.vfs.getnode(rootpath))
-            self.addDockWidgets(nb)
+            self.addDockWidgets(nb, 'nodeBrowser')
 
     def addHelpWidget(self):
         path = DOC_PATH
@@ -161,17 +195,20 @@ class MainWindow(QMainWindow):
                 dialog = QMessageBox.warning(self, "Error while loading help", QString("Documentation path not found.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
             return
 
-        self.addDockWidgets(Help(self, path=path))
+        self.addDockWidgets(Help(self, path=path), 'help')
 
     def addInterpreter(self):
        self.addSingleDock("Interpreter", Interpreter)
+
+    def addIde(self):
+       self.addSingleDock("IDE", Ide, master=True)
  
     def initDockWidgets(self):
         """Init Dock in application and init DockWidgets"""
         widgetPos = [ ( Qt.TopLeftCorner, Qt.LeftDockWidgetArea, QTabWidget.North),
 	 (Qt.BottomLeftCorner, Qt.BottomDockWidgetArea, QTabWidget.North), 
 	 (Qt.TopLeftCorner, Qt.TopDockWidgetArea, QTabWidget.North), 
-	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.South) ]
+	 (Qt.BottomRightCorner, Qt.RightDockWidgetArea, QTabWidget.North) ]
 
         for corner, area, point in widgetPos:
             self.setCorner(corner, area)
@@ -193,10 +230,12 @@ class MainWindow(QMainWindow):
 	self.nodeBrowser = NodeBrowser(self)
         self.master = DockWidget(self, self.nodeBrowser, self.nodeBrowser.name)
         self.master.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.master.setWindowTitle(self.nodeBrowser.windowTitle())
         self.dockWidget["nodebrowser"] = self.master
         self.wprocessus = Processus(self)
         self.second = DockWidget(self, self.wprocessus, "Task manager")
         self.second.setAllowedAreas(Qt.AllDockWidgetAreas)
+        self.second.setWindowTitle(self.wprocessus.windowTitle())
         self.dockWidget["Task manager"] = self.second
         self.addDockWidget(self.masterArea, self.master)
         self.addDockWidget(self.secondArea, self.second)
@@ -208,13 +247,14 @@ class MainWindow(QMainWindow):
         self.wstdout = STDOut(self, self.debug)
         self.wstderr = STDErr(self, self.debug)
 
-        self.addDockWidgets(self.wstdout, master=False)
-        self.addDockWidgets(self.wstderr, master=False)
+        self.addDockWidgets(self.wstdout, 'stdout', master=False)
+        self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
-        self.addDockWidgets(self.wmodules, master=False)
+        self.addDockWidgets(self.wmodules, 'modules', master=False)
         self.wenv = Env(self)
-        self.addDockWidgets(self.wenv, master=False)
+        self.addDockWidgets(self.wenv, 'env', master=False)
         self.refreshSecondWidgets()
+        self.refreshTabifiedDockWidgets()
 
     def maximizeDockwidget(self):
         if self.last_state is None:
@@ -228,6 +268,11 @@ class MainWindow(QMainWindow):
             self.last_dockwidget.toggleViewAction().setDisabled(True)
             self.setCentralWidget(self.last_dockwidget.widget())
             self.last_dockwidget.visibility_changed(True)
+            self.actionNodeBrowser.setEnabled(False)
+            self.actionShell.setEnabled(False)
+            self.actionPython_interpreter.setEnabled(False)
+            self.actionIdeOpen.setEnabled(False)
+            self.actionHelp.setEnabled(False)
         else:
             self.last_dockwidget.setWidget(self.last_widget)
             self.last_dockwidget.toggleViewAction().setEnabled(True)
@@ -237,19 +282,33 @@ class MainWindow(QMainWindow):
             self.last_state = None
             self.last_widget = None
             self.last_dockwidget = None
+            self.refreshTabifiedDockWidgets()
+            self.actionNodeBrowser.setEnabled(True)
+            self.actionShell.setEnabled(True)
+            self.actionPython_interpreter.setEnabled(True)
+            self.actionIdeOpen.setEnabled(True)
+            self.actionHelp.setEnabled(True)
 
     def fullscreenMode(self):
         if self.isFullScreen():
             self.showNormal()
         else:
             self.showFullScreen()
-        
-#############  END OF DOCKWIDGETS FUNCTIONS ###############
 
     def refreshSecondWidgets(self):
 	self.wprocessus.LoadInfoProcess()
         self.wmodules.LoadInfoModules()
-	self.wenv.LoadInfoEnv()
+	self.wenv.LoadInfoEnv()        
+
+    def refreshTabifiedDockWidgets(self):
+        allTabs = self.findChildren(QTabBar)
+        for tabGroup in allTabs:
+            for i in range(tabGroup.count()):
+                for v in self.dockWidget.values():
+                    if tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
+                        tabGroup.setTabIcon(i, v.widget().windowIcon()) 
+
+#############  END OF DOCKWIDGETS FUNCTIONS ###############
 
     def applyModule(self, modname, modtype, selected):
         appMod = ApplyModule(self)
@@ -268,7 +327,7 @@ class MainWindow(QMainWindow):
     def qwidgetResultView(self, proc):
 	try :
            proc.inst.g_display()
-           self.addDockWidgets(proc.inst)
+           self.addDockWidgets(proc.inst, proc.name)
 	except :
 	   trace = sys.exc_info()
 	   proc.error(trace)
@@ -288,33 +347,16 @@ class MainWindow(QMainWindow):
 	    pass   
 	if res and res != '':
 	   widget.emit(SIGNAL("puttext"), res)
-           self.addDockWidgets(widget)
+           self.addDockWidgets(widget, proc.name)
 
-    def addToolBars(self, toolbar):
+    def addToolBars(self, action):
         """ Init Toolbar"""
-        for action in toolbar:
-           self.toolBarMain.addAction(self.action[action])
+        if not action:
+            #Add separator
+            self.toolBar.addSeparator()
+        else:
+            self.toolBar.addAction(action)
 
-    def addMenu(self, name, actionList = None):
-        self.menu[name] = QMenu(self.menubar)
-        self.menu[name].setObjectName(name)
-        self.menu[name].setTitle(name)
-        if actionList:
-          for action in actionList:
-            self.menu[name].addAction(self.action[action])
-            self.menu[name].addSeparator()
-            self.menubar.addAction(self.menu[name].menuAction())
-
-    def setupMenu(self, menuList):
-        self.menubar = QtGui.QMenuBar(self)
-        self.menubar.setGeometry(QtCore.QRect(0,0,1014,32))
-        self.menubar.setDefaultUp(False)
-        self.menubar.setObjectName("menubar")
-        self.setMenuBar(self.menubar)
-
-        for menu in menuList:
-          self.addMenu(*menu) 
-          
     def addAction(self, name, text, func = None, iconName = None, iconText = None):
         self.action[name] = QtGui.QAction(self)
         self.action[name].setObjectName("action" + name)
@@ -326,55 +368,61 @@ class MainWindow(QMainWindow):
         if func:
           self.connect(self.action[name], SIGNAL("triggered()"), func)
 
-    def setupAction(self, actionList):
-        for action in actionList:
-          self.addAction(*action)
-        self.actionTools = QtGui.QAction(self)
-        self.actionTools.setCheckable(True)
-        self.actionTools.setChecked(True)
-        self.actionTools.setObjectName("actionTools")
+    def setupToolBar(self):
+        for action in self.toolbarList:
+	   self.addToolBars(action)
+
+    def createRootNodes(self):
+        root = self.vfs.getnode('/')
+        self.devicenode = deviceNode(root, str('Local devices'))
+        self.logicalenode = logicalNode(root, str('Logical files'))
+        self.searchednode = searchNode(root, str('Searched items'))
+        self.booknode = bookNode(root, str('Bookmarks'))
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+        else:
+            QMainWindow.changeEvent(self, event)
+
+class deviceNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":dev_hd.png")
+
+class logicalNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":folder_documents_128.png")
     
-    def setupFont(self):
-        font = QtGui.QFont()
-        font.setFamily("Metal")
-        font.setWeight(70)
-        font.setBold(False)
-        self.setFont(font)
+class bookNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
 
-    def setupStatusBar(self):
-        self.statusbar = QtGui.QStatusBar(self)
-        self.statusbar.setSizeGripEnabled(False)
-        self.statusbar.setObjectName("statusbar")
-        self.setStatusBar(self.statusbar)
- 
-    def setupUi(self):
-        self.menu = {}          
-        self.action = {}
-        self.setObjectName("MainWindow")
-        self.setWindowModality(QtCore.Qt.ApplicationModal)
-        self.resize(QtCore.QSize(QtCore.QRect(0,0,1014,693).size()).expandedTo(self.minimumSizeHint()))
-        self.setWindowTitle("Digital Forensics Framework ")
-      
-        self.setupFont()
- 
-        self.setAnimated(True)
-        self.setDockNestingEnabled(True)
-        self.setDockOptions(QtGui.QMainWindow.AllowNestedDocks|QtGui.QMainWindow.AllowTabbedDocks|QtGui.QMainWindow.AnimatedDocks)
-        self.setUnifiedTitleAndToolBarOnMac(False)
-        self.setupAction(self.actionList)
-	self.setupMenu(self.menuList)    
- 
-        self.MenuTags = MenuTags(self, self)
-        QtCore.QObject.connect(self.action["Exit"],QtCore.SIGNAL("triggered()"),self.close)
-        QtCore.QMetaObject.connectSlotsByName(self)
+    def icon(self):
+        return (":bookmark.png")
 
-        self.setupStatusBar()
- 
-        self.toolBarMain = QtGui.QToolBar(self)
-        self.toolBarMain.setWindowTitle("toolBar")
-        self.toolBarMain.setObjectName("toolBar")
-        self.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBarMain)
-        for toolbar in self.toolbarList:
-	   self.addToolBars(toolbar)
- 
+class searchNode(Node):
+    def __init__(self, parent, name):
+        Node.__init__(self, name, 0, parent, None)
+        self.__disown__()
+        self.setDir()
+
+    def icon(self):
+        return (":hex_search.png")
 

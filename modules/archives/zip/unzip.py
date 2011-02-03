@@ -19,13 +19,12 @@ from api.vfs.libvfs import FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
 from api.type.libtype import vtime
-from api.variant.libvariant import Variant
+from api.variant.libvariant import Variant, VMap
 
 import traceback
 import mzipfile
 
 class ZipNode(Node):
-
   __slots__ = (
     'orig_filename',
     'filename',
@@ -51,31 +50,35 @@ class ZipNode(Node):
     self.zipfile = zipfile
     self.setFile()
     self.reader = fsobj
+    self.__disown__()
 
-
-  def createdTime(self, vt):
-    zipattr = self.reader.zipcontent.getinfo(self.zipfile)
-    vt.year = zipattr.date_time[0]
-    vt.month = zipattr.date_time[1]
-    vt.day = zipattr.date_time[2]
-    vt.hour = zipattr.date_time[3]
-    vt.minute = zipattr.date_time[4]
-    vt.second = zipattr.date_time[5]
-
-
-  def extendedAttributes(self, attr):
+  def _attributes(self):
+    attr = VMap()
     zipattr = self.reader.zipcontent.getinfo(self.zipfile)
     for key in ZipNode.__slots__:
       val = getattr(zipattr, key)
       if key != "date_time":
         vval = Variant(val)
         vval.thisown = False
-        attr.push(key, vval)
+        attr[key] = vval
+    vt = vtime()
+    vt.thisown = False
+    vt.year = zipattr.date_time[0]
+    vt.month = zipattr.date_time[1]
+    vt.day = zipattr.date_time[2]
+    vt.hour = zipattr.date_time[3]
+    vt.minute = zipattr.date_time[4]
+    vt.second = zipattr.date_time[5]
+    vvt = Variant(vt) 
+    vvt.thisown = False 
+    attr["create"] = vvt
+    return attr
 
 
 class UNZIP(fso):
   def __init__(self):
     fso.__init__(self, "unzip")
+    self.name = "unzip"
     self.vfs = vfs.vfs()
     self.fdm = FdManager()
     self.origin = None
@@ -142,6 +145,8 @@ class UNZIP(fso):
 
 
   def vopen(self, node):
+    if not node.size():
+      return 0
     zipfile = self.nodeToZipFile(node)
     if zipfile in self.mapped_files.keys():
       buff = self.mapped_files[zipfile]["buff"]

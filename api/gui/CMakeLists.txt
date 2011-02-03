@@ -17,7 +17,6 @@
 add_subdirectory (dialog)
 add_subdirectory (widget)
 add_subdirectory (box)
-add_subdirectory (button)
 add_subdirectory (model)
 
 #### Deploying python __init__ script

@@ -16,7 +16,7 @@
 from types import *
 
 from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
-from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString
+from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString, QEvent
 
 # CORE
 from api.loader import *
@@ -32,34 +32,33 @@ from api.gui.box.nodecombobox import NodeComboBox
 from api.gui.box.stringcombobox import StringComboBox
 from api.gui.box.boolcombobox import BoolComboBox
 from api.gui.box.checkbox import checkBoxWidget
-from api.gui.dialog.uiapplymodule import UiApplyModule 
+from ui.gui.resources.ui_applymodule import Ui_applyModule 
 
 from ui.gui.utils.utils import Utils
 
 
-class ApplyModule(QDialog,  UiApplyModule):
+class ApplyModule(QDialog, Ui_applyModule):
     def __init__(self,  mainWindow):
-        QDialog.__init__(self,  mainWindow)
-        UiApplyModule.__init__(self)
+        super(QDialog, self).__init__()
         self.setupUi(self)
+
+# Hide labels and button used for translators
+        self.labActivate.setVisible(False)
+        self.labType.setVisible(False)
+        self.labDescription.setVisible(False)
+        self.browseButton.setVisible(False)
 
         self.__mainWindow = mainWindow
         self.loader = loader.loader()
         self.env = env.env()
         self.vfs = vfs.vfs()
-        self.initDialog()
-        self.initCallback()
-        
-    def initDialog(self):
+
         self.initArguments()
-        self.vlayout = QVBoxLayout(self)
-        self.vlayout.addWidget(self.infoContainer)
-        self.vlayout.addWidget(self.argumentsContainer)
-        self.vlayout.addWidget(self.buttonBox)
+        self.initCallback()
+        self.nameModule = ''
+
 
     def initArguments(self):
-        self.infoContainer = QGroupBox("Informations", self)
-        self.argumentsContainer = QGroupBox("Arguments", self)
         self.valueArgs = {}
     
     def initCallback(self):
@@ -83,47 +82,30 @@ class ApplyModule(QDialog,  UiApplyModule):
                         v = self.valueArgs[i].currentText().toInt()
                         value = v[0]
         if len(errorArg) > 0:
-            QMessageBox.warning(self, self.tr("ApplyModule", "Missing Arguments"), self.tr("ApplyModule", "There are missing arguments."))
+            QMessageBox.warning(self, self.browseButton.statusTip(), self.browseButton.statusTip())
         else:
             self.accept()
     
     def initAllInformations(self, nameModule, typeModule, nodesSelected):
         self.__nodesSelected = nodesSelected
+        self.nameModule = nameModule
         self.currentModName = str(nameModule)
 
-        title = "Apply module " + str(nameModule)
+        title = self.windowTitle() + ' ' + str(nameModule)
         self.setWindowTitle(title)
 
-        infolayout = QFormLayout()
-
-        infolayout.addRow("Module", QLabel(nameModule))
-        infolayout.addRow("Type", QLabel(typeModule))
-        tedit = QTextEdit(self.loader.modules[str(nameModule)].conf.description)
-        tedit.setReadOnly(True)
-        tedit.setFixedHeight(50)
-
-        infolayout.addRow("Purpose", tedit)
-        self.infoContainer.setLayout(infolayout)
+        self.nameModuleField.setText(nameModule)
+        self.typeModuleField.setText(typeModule)
+        self.textEdit.setText(self.loader.modules[str(nameModule)].conf.description)
+        self.textEdit.setFixedHeight(50)
 
         args = Utils.getArgs(str(nameModule))
         self.createArgShape(args)
     
     def createArgShape(self, args):
-        self.argslayout = QSplitter()
-        self.stackedargs = QStackedWidget()
-        self.listargs = QListWidget()
-
         self.connect(self.listargs, SIGNAL("currentItemChanged(QListWidgetItem*,QListWidgetItem*)"), self.argChanged)
-
         for arg in args:
             self.createArgument(arg)
-
-        self.argslayout.addWidget(self.listargs)
-        self.argslayout.addWidget(self.stackedargs)
-
-        container = QVBoxLayout()
-        container.addWidget(self.argslayout)
-        self.argumentsContainer.setLayout(container)
 
     def createArgument(self, arg):
         warg = QWidget()
@@ -131,15 +113,15 @@ class ApplyModule(QDialog,  UiApplyModule):
     
         widget = self.getWidgetFromType(arg)
 
-        if arg.optional :
+        if arg.optional:
             checkBox =  checkBoxWidget(arglayout, widget)
-            arglayout.addRow("Activate", checkBox)
+            arglayout.addRow(self.labActivate.text(), checkBox)
 
-        arglayout.addRow("Type", QLabel(str(arg.type)))
+        arglayout.addRow(self.labType.text(), QLabel(str(arg.type)))
         tedit = QTextEdit(str(arg.description))
         tedit.setReadOnly(True)
         tedit.setFixedHeight(50)
-        arglayout.addRow("Description", tedit)
+        arglayout.addRow(self.labDescription.text(), tedit)
         arglayout.addRow(str(arg.name), widget)
 
         warg.setLayout(arglayout)
@@ -154,7 +136,7 @@ class ApplyModule(QDialog,  UiApplyModule):
         if arg.type == "node" :
             widget = QLineEdit()
             self.valueArgs[arg] = widget
-            button = browseButton(self.argumentsContainer, widget, arg.name, 0)
+            button = browseButton(self, widget, arg.name, 0)
             # Check if a node is selected
             currentNode = self.__mainWindow.nodeBrowser.currentNode()
             if currentNode != None:
@@ -189,7 +171,7 @@ class ApplyModule(QDialog,  UiApplyModule):
             for i in range(0, len(list)) :
                 widget.addPath(list[i])
             self.valueArgs[arg] = widget
-            button = browseButton(self.argumentsContainer,  widget, arg.name, 1)
+            button = browseButton(self,  widget, arg.name, 1)
             wl = QHBoxLayout()
             wl.addWidget(widget)
             wl.addWidget(button)
@@ -228,19 +210,34 @@ class ApplyModule(QDialog,  UiApplyModule):
         self.taskmanager.add(str(modules), self.arg, ["thread", "gui"])
         return
 
-    def openApplyModule(self,  nameModule = None, typeModule = None, nodesSelected = None):
-        if(self.isVisible()):
-            QMessageBox.critical(self, "Erreur", u"This box is already open")
+    def openApplyModule(self, nameModule = None, typeModule = None, nodesSelected = None):
+        if (self.isVisible()):
+            QMessageBox.critical(self, self.browseButton.whatsThis(), self.browseButton.whatsThis())
         else:
-            self.initAllInformations(nameModule, typeModule,  nodesSelected)
+            self.initAllInformations(nameModule, typeModule, nodesSelected)
             iReturn = self.exec_()
-            if iReturn :
+            if iReturn:
                 script = nameModule
                 arg = self.getArguments()
 
     def currentModuleName(self):
         return self.currentModName
-    
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            title = self.windowTitle() + ' ' + self.nameModule
+            self.setWindowTitle(title)
+        else:
+            QDialog.changeEvent(self, event)
+
+
+
 class VFSDialog(QDialog):
     def __init__(self):
         QDialog.__init__(self)
@@ -271,18 +268,19 @@ class VFSDialog(QDialog):
 # vtype 0 Normal, 1 VFS
 class browseButton(QPushButton):
     def __init__(self, parent, targetResult, arg_name, vtype = 0):
-        QPushButton.__init__(self,  parent)
+        QPushButton.__init__(self,  parent.argumentsContainer)
         self.targetResult = targetResult
+        self.parent = parent
         self.vtype = vtype
         self.setObjectName("Button" + arg_name)
-        self.setText(self.tr("Browse", "Browse"))
+        self.setText(parent.browseButton.text())
         self.setFixedSize(QSize(80,  28))
         self.connect(self,  SIGNAL("clicked()"), self.click)
         
     def click(self):
         if self.vtype == 1:
-            sFileName = QFileDialog.getOpenFileName(self, self.tr("BrowserButton", "Add Dump"),  "/home")
-            if (sFileName) :
+            sFileName = QFileDialog.getOpenFileName(self, self.parent.browseButton.toolTip(),  "/home")
+            if (sFileName):
                 self.targetResult.addPathAndSelect(sFileName)
         else:
             BrowseVFSDialog = VFSDialog()

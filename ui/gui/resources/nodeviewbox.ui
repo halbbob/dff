@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NodeViewBox</class>
+ <widget class="QWidget" name="NodeViewBox">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>785</width>
+    <height>146</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Node View Box</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="previous">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Previous</string>
+       </property>
+       <property name="icon">
+        <iconset resource="gui.qrc">
+         <normaloff>:/previous.png</normaloff>:/previous.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="prevdrop">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="next">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Next</string>
+       </property>
+       <property name="icon">
+        <iconset resource="gui.qrc">
+         <normaloff>:/next.png</normaloff>:/next.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="nextdrop">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="top">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Move to top</string>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/top.png</normaloff>:/top.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="root">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Return to root</string>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/home.png</normaloff>:/home.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="pathedit"/>
+   </item>
+   <item>
+    <widget class="QComboBox" name="viewbox">
+     <item>
+      <property name="text">
+       <string>List</string>
+      </property>
+      <property name="icon">
+       <iconset resource="gui.qrc">
+        <normaloff>:/view_detailed.png</normaloff>:/view_detailed.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Icons</string>
+      </property>
+      <property name="icon">
+       <iconset resource="gui.qrc">
+        <normaloff>:/view_icon.png</normaloff>:/view_icon.png</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Tree</string>
+      </property>
+      <property name="icon">
+       <iconset resource="gui.qrc">
+        <normaloff>:/view_choose.png</normaloff>:/view_choose.png</iconset>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkboxAttribute">
+     <property name="text">
+      <string>Attributes</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="addToBookmark">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Add to bookmarks</string>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/bookmark_add.png</normaloff>:/bookmark_add.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="search">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Display search engine</string>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/filefind.png</normaloff>:/filefind.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="imagethumb">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::NoContextMenu</enum>
+     </property>
+     <property name="toolTip">
+      <string>Active thumbnails</string>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/image.png</normaloff>:/image.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="thumbSize">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>Small</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Medium</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Large</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
+ <connections/>
+</ui>

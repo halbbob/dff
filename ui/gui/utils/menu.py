@@ -28,19 +28,19 @@ class MenuTags():
        self.mainWindow = mainWindow
        self.selectItem = selectItem	
        self.Load()
-       self.parent.menu["Modules"].connect(self.parent.menu["Modules"], SIGNAL("aboutToShow()"), self.refreshQMenuModules)
+       self.parent.menuModule.connect(self.parent.menuModule, SIGNAL("aboutToShow()"), self.refreshQMenuModules)
  
    def Load(self):   
        self.listMenuAction = []
        setags = Utils.getSetTags()
        for tags in setags:
           if not tags == "builtins":
-            self.listMenuAction.append(self.parent.menu["Modules"].addMenu(MenuModules(self.parent, self.mainWindow, tags, self.selectItem)))
+            self.listMenuAction.append(self.parent.menuModule.addMenu(MenuModules(self.parent, self.mainWindow, tags, self.selectItem)))
         
    def refreshQMenuModules(self):
         setags = Utils.getSetTags()
 	for menu in self.listMenuAction:
-	   self.parent.menu["Modules"].removeAction(menu)
+	   self.parent.menuModule.removeAction(menu)
 	self.Load()
    
 class MenuModules(QMenu):

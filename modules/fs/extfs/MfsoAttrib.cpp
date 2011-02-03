@@ -37,35 +37,35 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
 			     uint64_t i_addr)
 {
   if (inode->delete_time())
-      attr->push("Deletion time",
-		 new Variant(vtime_from_timestamp(inode->delete_time())));
+      (*attr)["Deletion time"] =
+		 new Variant(vtime_from_timestamp(inode->delete_time()));
   if (!i_nb)
     return ;
-  attr->push("Number", new Variant(i_nb));
+  (*attr)["Number"] = new Variant(i_nb);
 
   std::ostringstream	oss;
   oss << i_addr << " ( 0x" << std::hex << i_addr << ") ";
 
-  attr->push("Address", new Variant(oss.str()));
-  attr->push("Group", new Variant(inode->groupNumber(i_nb)));
-  attr->push("UID / GID",
-     new Variant(inode->uid_gid(inode->lower_uid(), inode->lower_gid())));
-  attr->push("File mode", new Variant(inode->type_mode(inode->file_mode())));
-  attr->push("Set UID / GID ?",
-	     new Variant(inode->set_uid_gid(inode->file_mode())));
+  (*attr)["Address"] = new Variant(oss.str());
+  (*attr)["Group"] = new Variant(inode->groupNumber(i_nb));
+  (*attr)["UID / GID"] =
+     new Variant(inode->uid_gid(inode->lower_uid(), inode->lower_gid()));
+  (*attr)["File mode"] =  new Variant(inode->type_mode(inode->file_mode()));
+  (*attr)["Set UID / GID ?"] =
+	     new Variant(inode->set_uid_gid(inode->file_mode()));
   if (inode->flags() & 0x80000)
-    attr->push("Inode uses extents", new Variant(std::string("yes")));
+    (*attr)["Inode uses extents"] = new Variant(std::string("yes"));
   else
-    attr->push("Inode uses extents", new Variant(std::string("no")));
-  attr->push("Link number", new Variant(inode->link_coun()));
-  attr->push("NFS generation number",
-	     new Variant(inode->generation_number_nfs()));
-  attr->push("Fragment block",
-	     new Variant(inode->fragment_addr()));
-  attr->push("Fragment index",
-	     new Variant(inode->fragment_index()));
-  attr->push("Fragment size",
-	     new Variant(inode->fragment_size()));
+    (*attr)["Inode uses extents"] = new Variant(std::string("no"));
+  (*attr)["Link number"] = new Variant(inode->link_coun());
+  (*attr)["NFS generation number"] =
+	     new Variant(inode->generation_number_nfs());
+  (*attr)["Fragment block"] =
+	     new Variant(inode->fragment_addr());
+  (*attr)["Fragment index"] =
+	     new Variant(inode->fragment_index());
+  (*attr)["Fragment size"] =
+	     new Variant(inode->fragment_size());
   if (inode->file_acl_ext_attr())
     {
       __add_xtd_attr(inode, attr);
@@ -96,8 +96,8 @@ void	MfsoAttrib::__add_xtd_attr(Inode * inode, Attributes * attr)
 {
   ExtendedAttr *	xtd_attr;
 
-  attr->push("Extended attribute header",
-	     new Variant(inode->file_acl_ext_attr()));
+  (*attr)["Extended attribute header"] =
+	     new Variant(inode->file_acl_ext_attr());
 
   xtd_attr = new ExtendedAttr(inode->file_acl_ext_attr(),
 			      inode->SB()->block_size());
@@ -111,13 +111,13 @@ void	MfsoAttrib::__add_xtd_attr(Inode * inode, Attributes * attr)
   user = xtd_attr->getUserXAttr().begin();
   for (; user != xtd_attr->getUserXAttr().end(); user++)
     m["user." + (*user).second.first] = new Variant((*user).second.second);
-  attr->push(xtd, new Variant(m));
+  (*attr)[xtd] = new Variant(m);
 }
 
 void	MfsoAttrib::__add_acl(Inode * inode, Attributes * attr)
 {
-  attr->push(std::string("Posix ACL"), new Variant(std::string("Not handled yet. \
-			Please use the --istat option.")));
+  (*attr)[std::string("Posix ACL")] = new Variant(std::string("Not handled yet. \
+			Please use the --istat option."));
   // TODO
 }
 
@@ -176,7 +176,7 @@ void		MfsoAttrib::__block_pointers(Inode * inode, Attributes * attr)
 	    }
 	}
     }
-  attr->push(std::string("Block pointers"), new Variant(m));
+  (*attr)[std::string("Block pointers")] = new Variant(m);
 }
 
 void	MfsoAttrib::__symlink_path(Inode * inode, Attributes * attr)
@@ -196,9 +196,9 @@ void	MfsoAttrib::__symlink_path(Inode * inode, Attributes * attr)
       addr = inode->block_pointers()[0] * inode->SB()->block_size();
       inode->extfs()->v_seek_read(addr, tab, size);
       path.insert(0, (char *)tab, size);
-      attr->push("Link block", new Variant(inode->block_pointers()[0]));
+      (*attr)["Link block"] = new Variant(inode->block_pointers()[0]);
     }
-  attr->push("Link target", new Variant(path));
+  (*attr)["Link target"] = new Variant(path);
 }
 
 void	MfsoAttrib::__extents_block(Inode * inode, Attributes * attr)
@@ -223,7 +223,7 @@ void	MfsoAttrib::__extents_block(Inode * inode, Attributes * attr)
       it++;
     }
   if (!blk_l.empty())
-    attr->push("Extent blocks", new Variant(blk_l));
+    (*attr)["Extent blocks"] = new Variant(blk_l);
   else
-    attr->push("Extent blocks", NULL);
+    (*attr)["Extent blocks"] = NULL;
 }

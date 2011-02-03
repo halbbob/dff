@@ -26,14 +26,19 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
-
 enum event {OPEN = 0, CLOSE = 1, READ = 2, WRITE = 3, SEEK = 4, OTHER = 5};
 
-typedef struct	s_DEvent
+class	DEvent
 {
+public:
+  EXPORT 	DEvent() {};
+  EXPORT 	DEvent(class Node* v) { value = v;};
+ // EXPORT	DEvent(std::string t, class Node* v);
+//  EXPORT	std::string		stype;
+  EXPORT	Node*		value;
   event		type;
   uint64_t	seek;
-}		DEvent;
+};
 
 class DEventHandler
 {

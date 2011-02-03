@@ -19,6 +19,7 @@
 #ifndef __NTFSNONE_HPP__
 #define __NTFSNONE_HPP__
 
+#include "ntfs.hpp"
 #include "node.hpp"
 #include "vfile.hpp"
 #include "mftentry.hpp"
@@ -29,48 +30,43 @@ class NtfsNode : public Node
 {
 public:
 
-  NtfsNode(std::string, uint64_t, Node *, fso *, bool, AttributeFileName *,
+  NtfsNode(std::string, uint64_t, Node *, class Ntfs *, bool, AttributeFileName *,
 	   AttributeStandardInformation *, MftEntry *);
-  NtfsNode(std::string, uint64_t, Node *, fso *, bool, AttributeFileName *,
+  NtfsNode(std::string, uint64_t, Node *, Ntfs *, bool, AttributeFileName *,
 	   AttributeStandardInformation *, MftEntry *, uint32_t, uint64_t);
   ~NtfsNode();
   virtual void			fileMapping(FileMapping *);
-  virtual void			extendedAttributes(Attributes *);
-  virtual void			modifiedTime(vtime *);
-  virtual void			accessedTime(vtime *);
-  virtual void			changedTime(vtime *);
-
   void				node(Node *node) { _node = node; };
   void				contentOffset(uint64_t offset) { _contentOffset = offset; };
   void				data(AttributeData *data) { _data = data; };
   uint32_t			getMftEntry() { return _mftEntry; };
-
+  Attributes			_attributes(void);
 private:
+  bool						_isFile;
+  AttributeStandardInformation			*_SI;
+  uint32_t					_mftEntry;
+  uint64_t					_physOffset;
+  Variant					*_dataToAttr(uint32_t);
+  Variant					*_dataToAttr(uint64_t);
+  MftEntry					*_mft;
+  std::map<std::string, class Variant *>	_headerToAttribute(Attribute *);
+  void						_standardInformation(std::map<std::string, class Variant *> *, AttributeStandardInformation *);
 
   FileMapping	*_fm;
   Node		*_node;
-  MftEntry	*_mft;
   AttributeData	*_data;
   uint64_t	_contentOffset;
 
   void		_offsetResident(FileMapping *);
   void		_offsetFromRunList(FileMapping *);
   std::pair<std::string, class Variant *>	_dataToAttr(std::string, uint32_t);
-  Variant					*_dataToAttr(uint32_t);
   std::pair<std::string, class Variant *>	_dataToAttr(std::string, uint64_t);
-  Variant					*_dataToAttr(uint64_t);
   std::pair<std::string, class Variant *>	_dataToVTime(std::string, uint64_t);
   std::pair<std::string, class Variant *>	_dataToAttr(std::string, uint8_t);
   std::pair<std::string, class Variant *>	_dataToAttr(std::string, uint16_t);
 
-  std::map<std::string, class Variant *>	_headerToAttribute(Attribute *);
-  void						_standardInformation(std::map<std::string, class Variant *> *, AttributeStandardInformation *);
   
-  bool			_isFile;
   AttributeFileName	*_metaFileName;
-  AttributeStandardInformation	*_SI;
-  uint32_t	_mftEntry;
-  uint64_t	_physOffset;
 };
 
 #endif

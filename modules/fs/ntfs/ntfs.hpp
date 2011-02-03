@@ -59,12 +59,11 @@ public:
   Ntfs();
   ~Ntfs();
   virtual void		start(argument *);
-  
 private:
   Node		*_node;
   uint64_t	_mftDecode;
   uint64_t	_indexDecode;
-  NtfsNode	*_root;
+  class NtfsNode	*_root;
   NtfsNode	*_orphan;
   VFile		*_vfile;
   Boot		*_boot;

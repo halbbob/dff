@@ -122,98 +122,48 @@ void		ExtfsNode::push_block_pointers(Inode * inode,
     }
 }
 
-void	ExtfsNode::extendedAttributes(Attributes* attr)
+Attributes 	ExtfsNode::_attributes()
 {
-  Inode	*	inode = read_inode();
+  Attributes	attr;
+  Inode	*	inode = this->read_inode();
 
   if (!inode)
-    return ;
-  if (__is_root)
+    return (attr);
+  if (this->__is_root)
     {
       CustomResults c_res;
-      c_res.set(attr, inode);
+      c_res.set(&attr, inode);
     }
   else
     {
       MfsoAttrib * c_attr = new MfsoAttrib;
-      c_attr->setAttrs(inode, attr, __i_nb, __inode_addr);
+      c_attr->setAttrs(inode, &attr, this->__i_nb, this->__inode_addr);
+      vtime* modified = new vtime;	
+      c_attr->vtime_from_timestamp(inode->modif_time(), modified);
+      attr["modified"] = new Variant(modified);
+      vtime* accessed = new vtime;	
+      c_attr->vtime_from_timestamp(inode->access_time(), accessed);
+      attr["accessed"] = new Variant(accessed);
+      vtime* changed = new vtime;	
+      c_attr->vtime_from_timestamp(inode->change_time(), changed);
+      attr["changed"] = new Variant(changed);
+      if (inode->SB()->inodes_struct_size() > sizeof(inodes_t))
+      {
+        uint8_t * tab = (uint8_t *)operator new(sizeof(__inode_reminder_t));
+        __inode_reminder_t * i_reminder = (__inode_reminder_t *)tab;
+
+        inode->extfs()->vfile()->read(tab, sizeof(__inode_reminder_t));
+        vtime* creation = new vtime;	
+        creation = c_attr->vtime_from_timestamp(i_reminder->creation_time, creation);
+	attr["creation"] = new Variant(creation); 
+      }
       delete c_attr;
     }
   delete inode->inode();
   delete inode;
+  return (attr);
 }
 
-void		ExtfsNode::modifiedTime(vtime * t)
-{
-  Inode	*	inode = read_inode();
-
-  if (!inode)
-    {
-      setTimeToNull(t);
-      return ;
-    }
-  MfsoAttrib * c_attr = new MfsoAttrib;
-  c_attr->vtime_from_timestamp(inode->modif_time(), t);
-  delete inode->inode();
-  delete inode;
-}
-
-void		ExtfsNode::accessedTime(vtime * t)
-{
-  Inode	*	inode = read_inode();
-
-  if (!inode)
-    {
-      setTimeToNull(t);
-      return ;
-    }
-
-  MfsoAttrib * c_attr = new MfsoAttrib;
-  c_attr->vtime_from_timestamp(inode->access_time(), t);
-  delete inode->inode();
-  delete inode;
-}
-
-void		ExtfsNode::createdTime(vtime * t)
-{
-  Inode * inode = read_inode();
-  if (!inode)
-    {
-      setTimeToNull(t);
-      return ;
-    }
-  
-  if (inode->SB()->inodes_struct_size() > sizeof(inodes_t))
-    {
-      uint8_t * tab = (uint8_t *)operator new(sizeof(__inode_reminder_t));
-      __inode_reminder_t * i_reminder = (__inode_reminder_t *)tab;
-
-      inode->extfs()->vfile()->read(tab, sizeof(__inode_reminder_t));
-      MfsoAttrib * c_attr = new MfsoAttrib;
-      t = c_attr->vtime_from_timestamp(i_reminder->creation_time, t);
-    }
-  else
-    setTimeToNull(t);
-  delete inode->inode();
-  delete inode;
-  
-}
-
-void		ExtfsNode::changedTime(vtime * t)
-{
-  Inode	*	inode = read_inode();
-
-  if (!inode)
-    {
-      setTimeToNull(t);
-      return ;
-    }
-
-  MfsoAttrib * c_attr = new MfsoAttrib;
-  c_attr->vtime_from_timestamp(inode->change_time(), t);
-  delete inode->inode();
-  delete inode;
-}
 
 void	ExtfsNode::set_i_nb(uint64_t i_id)
 {
@@ -241,7 +191,7 @@ Inode *	ExtfsNode::read_inode()
     }
   catch (vfsError & e)
     {
-      std::cerr << "Exception caught in ExtfsNode::extendedAttributes() : "
+      std::cerr << "Exception caught in ExtfNode::_attributes() : "
 		<< e.error << std::endl;
       delete i;
       delete inode;

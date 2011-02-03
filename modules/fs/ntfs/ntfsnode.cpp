@@ -21,7 +21,7 @@
 #include <sstream>
 
 NtfsNode::NtfsNode(std::string Name, uint64_t size, Node *parent,
-		   fso *fsobj, bool isFile, AttributeFileName *metaFileName,
+		   Ntfs *fsobj, bool isFile, AttributeFileName *metaFileName,
 		   AttributeStandardInformation *metaStandardInformation,
 		   MftEntry *mft):
   Node(Name, size, parent, fsobj)
@@ -48,7 +48,7 @@ NtfsNode::NtfsNode(std::string Name, uint64_t size, Node *parent,
 }
 
 NtfsNode::NtfsNode(std::string Name, uint64_t size, Node *parent,
-		   fso *fsobj, bool isFile, AttributeFileName *metaFileName,
+		   Ntfs *fsobj, bool isFile, AttributeFileName *metaFileName,
 		   AttributeStandardInformation *metaStandardInformation,
 		   MftEntry *mft, uint32_t mftEntry, uint64_t offset):
   Node(Name, size, parent, fsobj)
@@ -118,48 +118,63 @@ std::map<std::string, class Variant *>	NtfsNode::_headerToAttribute(Attribute *a
   return headerMap;
 }
 
-void						NtfsNode::extendedAttributes(Attributes	*attr)
-{
-  DEBUG(INFO, "in extended attributes\n");
-  if (_isFile)
-    attr->push("size", new Variant(size()));
 
-  if (!_SI) {
-    return ;
+Attributes				NtfsNode::_attributes()
+{
+  Attributes	attr;
+
+  DEBUG(INFO, "in extended attributes\n");
+  //if (ntfsNode->_isFile)
+    //attr["size"] = new Variant(ntfsNode->size());
+
+  if (!(this->_SI)) {
+    return attr;
   }
 
-  attr->push("MFT entry number", _dataToAttr(_mftEntry));
-  attr->push("MFT physical offset", _dataToAttr(_physOffset));
+  attr["MFT entry number"] = this->_dataToAttr(this->_mftEntry);
+  attr["MFT physical offset"] = this->_dataToAttr(this->_physOffset);
 
   Attribute	*attribute;
 
+  vtime* alt = new vtime;
+  this->_SI->setDateToVTime(this->_SI->data()->fileAlteredTime, alt);
+  attr["altered"] = new Variant(alt);
+
+  vtime* act = new vtime;
+  this->_SI->setDateToVTime(this->_SI->data()->fileAccessedTime, act);
+  attr["accessed"] = new Variant(act);
+
+  vtime* crt = new vtime;
+  this->_SI->setDateToVTime(this->_SI->data()->creationTime, crt);
+  attr["creation"] = new Variant(crt);
   /*
   mftData->clusterSize(4096);
   mftData->indexRecordSize(4096);
   mftData->sectorSize(512);
   mftData->mftEntrySize(1024);
   */
-  if (!_mft->decode(_physOffset)) {
-    return ;
+  if (!(this->_mft->decode(this->_physOffset))) {
+    return attr;
   }
 
   //  _mft->readHeader();
-  while ((attribute = _mft->getNextAttribute())) {
+  while ((attribute = (this->_mft->getNextAttribute()))) {
     std::map<std::string, class Variant *>	attributeMap;
     std::string					attributeFullName;
     std::map<std::string, class Variant *>	attributeHeaderMap;
     
     attribute->readHeader();
     attributeFullName = attribute->getFullName();
-    attributeHeaderMap = _headerToAttribute(attribute);
+    attributeHeaderMap = this->_headerToAttribute(attribute);
 
     if (attribute->getType() == ATTRIBUTE_STANDARD_INFORMATION) {
-      _standardInformation(&attributeMap, new AttributeStandardInformation(*attribute));
+      this->_standardInformation(&attributeMap, new AttributeStandardInformation(*attribute));
     }
     DEBUG(INFO, "got name: %s\n", attributeFullName.c_str());
     attributeMap.insert(std::pair<std::string, class Variant *>("Header", new Variant(attributeHeaderMap)));
-    attr->push(attributeFullName, new Variant(attributeMap));
+    attr[attributeFullName] = new Variant(attributeMap);
   }
+  return attr;
 }
 
 void	NtfsNode::_standardInformation(std::map<std::string, class Variant *> *map, AttributeStandardInformation *nAttr)
@@ -373,23 +388,3 @@ void		NtfsNode::_offsetFromRunList(FileMapping *fm)
 }
 
 
-void	NtfsNode::modifiedTime(vtime *vt)
-{
-  if (_SI) {
-    _SI->setDateToVTime(_SI->data()->fileAlteredTime, vt);
-  }
-}
-
-void	NtfsNode::accessedTime(vtime *vt)
-{
-  if (_SI) {
-    _SI->setDateToVTime(_SI->data()->fileAccessedTime, vt);
-  }
-}
-
-void	NtfsNode::changedTime(vtime *vt)
-{
-  if (_SI) {
-    _SI->setDateToVTime(_SI->data()->creationTime, vt);
-  }
-}

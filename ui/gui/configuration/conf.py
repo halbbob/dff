@@ -10,46 +10,38 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Francois Percot <percot@gmail.com>
+#  Christophe Malinge <cma@digital-forensic.org>
 # 
 
 import sys
 
-class Conf(object):
+class Conf():
+    class __Conf():
+        def __init__(self):
+            """ Initial configuration
+
+            FIXME based on an ini file, args provided, etc.
+            """
+            self.initLanguage()
+
+        def initLanguage(self):
+            self.language = "en"
+            
     __instance = None
     
-    def __new__(self): 
-        if self.__instance is None:
-            self.__instance = object.__new__(self)
-        return self.__instance
-        
     def __init__(self):
-        self.initLanguage()
-        self.extractFolder = ""
-        
-    def initLanguage(self):
-        try :
-            fd = open('dff.conf',  'r')
-        except IOError, (errno, strerror):
-            self.language = "EN"
-            return
-        string = fd.readline()
-        tab = string.split("=")
-        self.language = str(tab[1])
-        fd.close()
+        if Conf.__instance is None:
+            Conf.__instance = Conf.__Conf()
+
+    def __setattr__(self, attr, value):
+	setattr(self.__instance, attr, value)
+  
+    def __getattr__(self, attr):
+	return getattr(self.__instance, attr)
     
-    def backupConfig(self, lConf):
-        if lConf[0] == 0 :
-            code_return = 0
-        else :
-            fd = open('dff.conf',  'w')
-            code_return = 1
-            if self.language == "FR" :
-                self.language = "EN"
-                fd.write("LANGUAGE=EN")
-            else :
-                self.language = "FR"
-                fd.write("LANGUAGE=FR")
-            fd.close()
-        self.extractFolder = lConf[1]
-        return code_return
+    def setLanguage(self, lang):
+        self.language = lang
+
+    def getLanguage(self):
+        return self.language
+

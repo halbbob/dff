@@ -27,7 +27,7 @@ add_subdirectory (tree)
 # python only
 add_subdirectory (taskmanager)
 add_subdirectory (manager)
-add_subdirectory (magic)
+add_subdirectory (datatype)
 add_subdirectory (gui)
 add_subdirectory (devices)
 

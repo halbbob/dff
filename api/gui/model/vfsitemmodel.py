@@ -18,7 +18,6 @@ from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCac
 from PyQt4 import QtCore
 
 import re
-from api.magic.filetype import *
 from api.vfs import libvfs, iodevice
 from api.variant.libvariant import Variant
 
@@ -42,7 +41,7 @@ class ImageThumb():
     buff = ""
     tags = None
     img = QImage()
-    if type == "image/jpeg":
+    if type.find('jpeg') != -1:
       try:
         buff = self.getThumb(node)
         load = img.loadFromData(buff, type)
@@ -82,7 +81,6 @@ class ImageThumb():
 class TypeWorker(QThread):
   def __init__(self, *args):
     QThread.__init__(self)
-    self.ft = FILETYPE()
     self.typeQueue = Queue()
     self.regImage = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.typeQueue = []
@@ -123,19 +121,17 @@ class TypeWorker(QThread):
      while True:
        (parent, index, node) = self.get()
        if node.size():
-         self.ft.filetype(node) #ret plustrapide?
-         attrs = node.staticAttributes()
-         map = attrs.attributes()
-         ftype = str(map["mime-type"])
+         ftype = str(node.dataType())
          if parent.imagesthumbnails and self.isImage(ftype):
            thumb = ImageThumb()
            img = thumb.getImage(ftype, node, index)
            if img:
              parent.emit(SIGNAL('dataImage'), index, node, img)
            else:
-             val = Variant("broken " + str(ftype))
-             val.thisown = False
-             node.setStaticAttribute("mime-type", val)
+	     pass #XXX there is not setStaticAttribute now !
+             #val = Variant("broken " + str(ftype))
+             #val.thisown = False
+             #node.setStaticAttribute("type", val)
 
 typeWorker = TypeWorker()
 typeWorker.start()
@@ -276,6 +272,8 @@ class VFSItemModel(QAbstractItemModel):
 
     self.imagesthumbnails = None
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
+    self.translation()
+
     self.fetchedItems = 0
     self.thumbQueued = {}
     self.fm = fm
@@ -288,7 +286,7 @@ class VFSItemModel(QAbstractItemModel):
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
-     self.__parent.currentView().viewport().update()
+     self.__parent.currentView().update(index)
 
   def imagesThumbnails(self):
      return self.imagesthumbnails
@@ -297,7 +295,6 @@ class VFSItemModel(QAbstractItemModel):
     self.fetchedItems = 0
     typeWorker.clear()
     self.rootItem = node
-    del self.node_list[:]
     self.sort(HNAME, Qt.AscendingOrder)
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
@@ -323,30 +320,23 @@ class VFSItemModel(QAbstractItemModel):
 
   def rowCount(self, parent):
     return self.fetchedItems
-    if self.fm == True:
-	return self.fetchedItems
-    if not parent.isValid():
-	parentItem = self.rootItem
-    else:
-        parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    return parentItem.childCount()
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
       return QVariant()
     if orientation == Qt.Horizontal:
       if section == HNAME:
-        return QVariant(self.tr('Name'))
+        return QVariant(self.nameTr)
       if section == HSIZE:
-        return QVariant(self.tr('Size'))
+        return QVariant(self.sizeTr)
       if section == HACCESSED:
-        return QVariant(self.tr('Accessed time'))
+        return QVariant(self.ATimeTr)
       if section == HCHANGED:
-        return QVariant(self.tr('Changed time'))
+        return QVariant(self.CTimeTr)
       if section == HMODIFIED:
-        return QVariant(self.tr('Modified time'))
+        return QVariant(self.MTimeTr)
       if section == HMODULE:
-        return QVariant(self.tr('Module'))
+        return QVariant(self.moduleTr)
 
   def data(self, index, role):
     if not index.isValid():
@@ -361,27 +351,28 @@ class VFSItemModel(QAbstractItemModel):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-        if column == HACCESSED:
-          time = node.times()
-          accessed = time['accessed']
-          if accessed != None:
-            return QVariant(QDateTime(accessed.get_time()))
-          else:
-            return QVariant()
-        if column == HCHANGED:
-          time = node.times()
-          changed = time['changed']
-          if changed != None:
-            return QVariant(QDateTime(changed.get_time()))
-          else:
-            return QVariant()
-        if column == HMODIFIED:
-          time = node.times()
-          modified = time['modified']
-          if modified != None:
-            return QVariant(QDateTime(modified.get_time()))
-          else:
-            return QVariant()
+	return QVariant()
+        #if column == HACCESSED:
+          #time = node.times()
+          #accessed = time['accessed']
+          #if accessed != None:
+            #return QVariant(QDateTime(accessed.get_time()))
+          #else:
+            #return QVariant()
+        #if column == HCHANGED:
+          #time = node.times()
+          #changed = time['changed']
+          #if changed != None:
+            #return QVariant(QDateTime(changed.get_time()))
+          #else:
+            #return QVariant()
+        #if column == HMODIFIED:
+          #time = node.times()
+          #modified = time['modified']
+          #if modified != None:
+            #return QVariant(QDateTime(modified.get_time()))
+          #else:
+            #return QVariant()
       except IndexError:
         return QVariant()
       if column == HMODULE:
@@ -396,20 +387,11 @@ class VFSItemModel(QAbstractItemModel):
           return  QVariant(QColor(Qt.red))
     if role == Qt.DecorationRole:
       if column == HNAME:
-        if not node.hasChildren():
-          if node.isDir():
-            return QVariant(QIcon(":folder_128.png"))
-          if not node.size():
-            return QVariant(QIcon(":folder_empty_128.png"))
-          if self.imagesthumbnails:
-            try:
-              attrs = node.staticAttributes()
-              map = attrs.attributes()
-              mtype = str(map["mime-type"])
-            except (IndexError, AttributeError):
-              typeWorker.enqueue(self, index, node)
-              return QVariant(QIcon(":file_temporary.png"))
-            if mtype[0:6] == "broken":
+	if not self.imagesthumbnails:
+          return QVariant(QIcon(node.icon()))
+        else:
+            mtype = str(node.dataType())
+            if mtype.find("broken") != -1:
               return QVariant(QIcon(":file_broken.png"))
             pixmap = pixmapCache.find(str(node.this))
             if pixmap:
@@ -417,12 +399,7 @@ class VFSItemModel(QAbstractItemModel):
             elif typeWorker.isImage(mtype):
               typeWorker.enqueue(self, index, node)
               return QVariant(QIcon(":file_temporary.png"))
-          return QVariant(QIcon(":folder_empty_128.png"))
-        else:
-          if node.size() != 0:
-	    return QVariant(QIcon(":folder_documents_128.png"))
-          else:
-	    return QVariant(QIcon(":folder_128.png"))
+            return QVariant(QIcon(node.icon()))
     if role == Qt.CheckStateRole:
       if column == HNAME:
 	if (long(node.this), 0) in self.checkedNodes:
@@ -496,8 +473,8 @@ class VFSItemModel(QAbstractItemModel):
                 self.checkedNodes.remove((long(node.this), 0))
                 self.checkedNodes.add((long(node.this), 1))
             else:
-              self.checkedNodes.add((long(node.this) , 1)) 
-     return True
+              self.checkedNodes.add((long(node.this) , 1))
+     return True #return true if ok 	
 
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
@@ -520,14 +497,22 @@ class VFSItemModel(QAbstractItemModel):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
-    elif column == HACCESSED:
-      self.node_list = sorted(children_list, key=lambda Node: Node.times()["accessed"], reverse=Reverse)
-    elif column == HCHANGED:
-      self.node_list = sorted(children_list, key=lambda Node: Node.times()["changed"], reverse=Reverse)
-    elif column == HMODIFIED:
-      self.node_list = sorted(children_list, key=lambda Node: Node.times()["modified"], reverse=Reverse)
-    elif column == HMODULE:
-      self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
-    else:
-      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+    #elif column == HACCESSED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["accessed"], reverse=Reverse)
+    #elif column == HCHANGED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["changed"], reverse=Reverse)
+    #elif column == HMODIFIED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["modified"], reverse=Reverse)
+    #elif column == HMODULE:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
+    #else:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
+
+  def translation(self):
+    self.nameTr = self.tr('Name')
+    self.sizeTr = self.tr('Size')
+    self.ATimeTr = self.tr('Accessed time')
+    self.CTimeTr = self.tr('Changed time')
+    self.MTimeTr = self.tr('Modified time')
+    self.moduleTr = self.tr('Module')

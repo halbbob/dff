@@ -29,6 +29,7 @@
 #include "variant.hpp"
 #include "vtime.hpp"
 #include "exceptions.hpp"
+#include "datatype.hpp"
 
 typedef struct
 {
@@ -62,17 +63,16 @@ public:
 };
 
 
-class Attributes
+typedef std::map<std::string, class Variant* > Attributes; 
+
+class AttributesHandler
 {
-private:
-  std::map<std::string, class Variant*> __attrs;
+  	std::string	__handlerName;
 public:
-  EXPORT Attributes();
-  EXPORT ~Attributes();
-  EXPORT void                                  push(std::string key, class Variant *value);
-  EXPORT std::list<std::string>                keys();
-  EXPORT Variant*                              value(std::string key);
-  EXPORT std::map<std::string, class Variant*> attributes();   
+  EXPORT			AttributesHandler(std::string handlerName);
+  EXPORT virtual		~AttributesHandler();
+  EXPORT virtual Attributes 	attributes(class Node*) = 0;
+  EXPORT std::string		name(void);
 };
 
 #define ISFILE		0x01
@@ -89,6 +89,7 @@ protected:
   //    Ex: Raid reconstruction based on two nodes which
   //    are aggregated to only one Node
   class Node*			__parent;
+  list<AttributesHandler*>	__attributesHandlers;
 
   std::vector<class Node *>	__children;
   uint32_t			__childcount;
@@ -96,10 +97,12 @@ protected:
   uint64_t			__size;
   class fso*			__fsobj;
   uint64_t			__common_attributes;
-  Attributes*			__static_attributes;
+  std::map<std::string, class Variant*> __static_attributes;
   //unsigned char			__checkState;
   uint32_t			__id; //FIX for local and mfso / fso mess in reimplation of vopen 
-
+  EXPORT virtual Attributes	_attributes();
+  EXPORT void			attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
+  EXPORT void	 		attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
 public:
   uint32_t			__at;
   EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
@@ -119,18 +122,6 @@ public:
   EXPORT void				setParent(Node* parent);
 
   EXPORT virtual void			fileMapping(FileMapping *);
-  EXPORT virtual void			setStaticAttribute(std::string key, class Variant* value);
-  EXPORT virtual Attributes*		staticAttributes();
-  EXPORT virtual void			extendedAttributes(Attributes *);
-
-  EXPORT virtual void			modifiedTime(vtime *);
-  EXPORT virtual void			accessedTime(vtime *);
-  EXPORT virtual void			createdTime(vtime *);
-  EXPORT virtual void			changedTime(vtime *);
-
-  EXPORT virtual std::map<std::string, vtime*>	times();
-
-
   EXPORT virtual uint64_t		size();
 
   EXPORT std::string			path();
@@ -154,6 +145,17 @@ public:
 
   EXPORT virtual class VFile*		open();
   EXPORT uint32_t			at();
+
+
+  EXPORT bool					registerAttributes(AttributesHandler*);
+  EXPORT virtual class Variant*			dataType(void); 
+  EXPORT virtual Attributes*			attributes();	
+  EXPORT virtual Variant*			attributesByName(std::string);
+  EXPORT virtual Attributes*			attributesByType(uint8_t type);
+
+  EXPORT virtual string				icon();
+  EXPORT virtual std::list<std::string>*	compatibleModules(void);
+  EXPORT virtual bool				isCompatibleModule(string);
 };
 
 class VfsRoot: public Node
@@ -167,23 +169,10 @@ class VLink : public Node
 {
 private :
   Node* 			__linkedNode;
-
 public :
 
   EXPORT uint32_t			id();
   EXPORT void				fileMapping(FileMapping *);
-  EXPORT void				setStaticAttribute(std::string key, class Variant* value);
-  EXPORT Attributes*			staticAttributes();
-  EXPORT void				extendedAttributes(Attributes *);
-
-  EXPORT void				modifiedTime(vtime *);
-  EXPORT void				accessedTime(vtime *);
-  EXPORT void				createdTime(vtime *);
-  EXPORT void				changedTime(vtime *);
-
-  EXPORT std::map<std::string, vtime*>	times();
-
-
   EXPORT uint64_t			size();
 
   EXPORT std::string			linkPath();
@@ -199,13 +188,19 @@ public :
   EXPORT class fso*			fsobj();
   EXPORT class VFile*			open();
 
-  EXPORT  VLink(Node *linkedNode, Node* parent, std::string newname = "");
-  EXPORT  ~VLink();
-  EXPORT Node*				linkParent();
+  EXPORT VLink(Node *linkedNode, Node* parent, std::string newname = "");
+  EXPORT ~VLink();
+  EXPORT  Node*				linkParent();
   EXPORT std::vector<class Node*>	linkChildren();
   EXPORT bool				linkHasChildren();
   EXPORT uint32_t			linkChildCount();
   EXPORT Node*				linkNode();
+
+  EXPORT Variant*			dataType(void); 
+  EXPORT Attributes*			attributes(void);	
+  EXPORT std::string			icon(void);
+  EXPORT std::list<std::string>*	compatibleModules(void);
+  EXPORT bool				isCompatibleModule(std::string);
 };
 
 

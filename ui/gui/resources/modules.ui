@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Modules</class>
+ <widget class="QTreeWidget" name="Modules"> <widget class="QWidget" name="useless" native="true" /> 
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Modules</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="gui.qrc">
+    <normaloff>:/hex_page.png</normaloff>:/hex_page.png</iconset>
+  </property>
+  <property name="alternatingRowColors">
+   <bool>true</bool>
+  </property>
+  <column>
+   <property name="text">
+    <string>Name</string>
+   </property>
+  </column>
+  <column>
+   <property name="text">
+    <string>Key</string>
+   </property>
+  </column>
+  <column>
+   <property name="text">
+    <string>Value</string>
+   </property>
+  </column>
+  <column>
+   <property name="text">
+    <string>Info</string>
+   </property>
+  </column>
+  <column>
+   <property name="text">
+    <string>Type</string>
+   </property>
+  </column>
+ </widget>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
+ <connections/>
+</ui>

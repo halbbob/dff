@@ -36,6 +36,3 @@ void	ExtfsRawDataNode::fileMapping(FileMapping* fm)
   fm->push(0, size(), __node, __offset);
 }
 
-void	ExtfsRawDataNode::extendedAttributes(Attributes* attr)
-{
-}

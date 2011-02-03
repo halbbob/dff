@@ -78,56 +78,43 @@ void		FatNode::fileMapping(FileMapping* fm)
     }
 }
 
-void            FatNode::extendedAttributes(Attributes* attr)
+
+
+Attributes	FatNode::_attributes()
 {
+  Attributes	attr; 
   std::vector<uint32_t>	clusters;
   std::list<Variant*>	clustlist;
   int			i;
 
   //attr->push("dos name", new Variant())
-  attr->push("lfn entries start offset", new Variant(this->lfnmetaoffset));
-  attr->push("dos entry offset", new Variant(this->dosmetaoffset));
-  try
-    {
-      clusters = this->fs->fat->clusterChain(this->cluster);
-      for (i = 0; i != clusters.size(); i++)
-	clustlist.push_back(new Variant(clusters[i]));
-      attr->push("allocated clusters", new Variant(clustlist));
-    }
-  catch(vfsError e)
-    {
-    }
-}
+  attr["lfn entries start offset"] =  new Variant(this->lfnmetaoffset);
+  attr["dos entry offset"] = new Variant(this->dosmetaoffset);
 
-void            FatNode::modifiedTime(vtime* mt)
-{
   uint16_t	mtime;
   uint16_t	mdate;
   uint8_t	mbuff[4];
-
+  vtime* mt = new vtime;
   this->fs->vfile->seek(this->dosmetaoffset+22);
   this->fs->vfile->read(mbuff, 4);
   memcpy(&mtime, mbuff, 2);
   memcpy(&mdate, mbuff+2, 2);
   this->dosToVtime(mt, mtime, mdate);
-}
+  attr["modified"] = new Variant(mt);
 
-void            FatNode::accessedTime(vtime* at)
-{
   uint16_t	adate;
-
+  vtime* at = new vtime;
   this->fs->vfile->seek(this->dosmetaoffset+18);
   this->fs->vfile->read(&adate, 2);
   this->dosToVtime(at, 0, adate);
-}
+  attr["accessed"] = new Variant(at);
 
-void            FatNode::createdTime(vtime* ct)
-{
   uint8_t	ctimetenth;
   uint16_t	ctime;
   uint16_t	cdate;
   uint8_t	cbuff[5];
 
+  vtime* ct = new vtime;
   this->fs->vfile->seek(this->dosmetaoffset+13);
   this->fs->vfile->read(cbuff, 5);
 //   for (int i = 0; i != 5; i++)
@@ -141,4 +128,18 @@ void            FatNode::createdTime(vtime* ct)
   memcpy(&ctime, cbuff+1, 2);
   memcpy(&cdate, cbuff+3, 2);
   this->dosToVtime(ct, ctime, cdate);
+  attr["changed"] = new Variant(ct);
+
+  try
+    {
+      clusters = this->fs->fat->clusterChain(this->cluster);
+      for (i = 0; i != clusters.size(); i++)
+	clustlist.push_back(new Variant(clusters[i]));
+      attr["allocated clusters"] = new Variant(clustlist);
+    }
+  catch(vfsError e)
+    {
+	return attr;
+    }
+  return attr;
 }

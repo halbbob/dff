@@ -18,7 +18,7 @@ from struct import unpack
 from api.vfs import *
 from api.module.module import *
 from api.env.libenv import *
-from api.variant.libvariant import Variant
+from api.variant.libvariant import Variant, VMap
 from api.vfs.libvfs import *
 
 class SpareNode(Node):
@@ -34,8 +34,6 @@ class SpareNode(Node):
      self.nparent = parent
      self.pageSize = pageSize
      self.spareSize = spareSize
-     setattr(self, "fileMapping", self.fileMapping)
-     setattr(self, "extendedAttributes", self.extendedAttributes)
 
    def fileMapping(self, fm):
       fm.thisown = False
@@ -54,14 +52,16 @@ class SpareNode(Node):
 	  offset += (self.spareSize + self.pageSize)
           voffset += self.spareSize 
 
-   def extendedAttributes(self, attr):
+   def _attributes(self):
+      attr = VMap()
       attr.thisown = False
       ps = Variant(self.pageSize)
       ps.thisown = False
-      attr.push("page size", ps)
+      attr["page size"] = ps
       sps = Variant(self.spareSize)
       sps.thisown = False
-      attr.push("spare size", sps)
+      attr["spare size"] = sps
+      return attr	
 
 class Spare(mfso):
    def __init__(self):

@@ -17,9 +17,26 @@ import hashlib
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
-from api.variant.libvariant import Variant
+from api.variant.libvariant import Variant, VMap
+from api.vfs.libvfs import AttributesHandler
 
-class HASH(Script):
+class AttributeHash(AttributesHandler):
+    def __init__(self, modname, value):
+       AttributesHandler.__init__(self, modname)
+       self.value = value
+       self.__disown__()	
+
+    def attributes(self, node):
+       print "hashing node" + node.name()
+       m = VMap()	
+       m['md5'] = self.value 
+       m.thisown = False
+       return m
+
+    def __del__(self):
+	print "deleting attributes hash"
+
+class HASH(Script): ##Script existe encore ? (Script, Single) ? heriter d un singleton c++ ? 
     def __init__(self):
         Script.__init__(self, "hash")    
         self.vfs = vfs.vfs() 
@@ -41,29 +58,32 @@ class HASH(Script):
             return -1
      
     def start(self, args):
-        node = args.get_node("file")
-	try :
+      	try :
           algorithm = args.get_string("algorithm")
 	except KeyError:
 	  algorithm = "md5"
         if algorithm == "":
 	  algorithm = "md5"
-        attr = node.staticAttributes()
-        res = ""
-        algmap = "hash-" + algorithm
-        try:
-            map = attr.attributes()
-            file_hash = map[algmap]
-            res = file_hash + "  " + node.absolute()
-        except:
-            file_hash = self.hashCalc(node, algorithm)
-            if file_hash != "":
-                value = Variant(file_hash)
-                value.thisown = False
-                node.setStaticAttribute(algmap, value)
-                res = file_hash + "  " + node.absolute()
-            else:
-                res = algorithm + " hashing failed on " + node.absolute()  
+        node = args.get_node("file")
+	self.calculatedHash = {}		#XXX modules singleton ?
+        #attr = node.staticAttributes()
+        #res = ""
+        #algmap = "hash-" + algorithm
+        #try:
+            #map = attr.attributes()
+            #file_hash = map[algmap]
+            #res = file_hash + "  " + node.absolute()
+        #except:
+        file_hash = self.hashCalc(node, algorithm)
+        if file_hash != "":
+           value = Variant(file_hash)
+           value.thisown = False
+           res = file_hash + "  " + node.absolute()
+ 	   ah = AttributeHash("hash", value) #passer la node ici et auto register here #XXX 
+	   ah.thisown = 0
+	   node.registerAttributes(ah)
+        else:
+           res = algorithm + " hashing failed on " + node.absolute() 
         self.res.add_const("result", res)
 
 
@@ -102,4 +122,5 @@ ex: hash /myfile"""
     self.conf.add_const("algorithm",  "sha256")
     self.conf.add_const("algorithm",  "sha384")
     self.conf.add_const("algorithm",  "sha512")
+    #self.conf.add_const("mime-type", "data")
     self.tags = "Hash"

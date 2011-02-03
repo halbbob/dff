@@ -12,7 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-
 set(widget_srcs
   __init__.py
   help.py

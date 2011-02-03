@@ -14,22 +14,45 @@
 # 
 
 from PyQt4.QtGui import QDockWidget
-from PyQt4.QtCore import Qt, SIGNAL
+from PyQt4.QtCore import Qt, SIGNAL, QEvent
 
 class DockWidget(QDockWidget):
   def __init__(self, mainWindow, widget, name):
     QDockWidget.__init__(self, mainWindow)
-    self.init(widget, name)
+    self.mainwindow = mainWindow
+    self.init(widget)
     self.show()
     self.setObjectName(name)
 
-  def init(self, widget, name):
+  def init(self, widget):
+    self.name = widget.name
     self.setAllowedAreas(Qt.AllDockWidgetAreas)
     self.setFeatures(QDockWidget.AllDockWidgetFeatures)
-    self.setWindowTitle(name)
+
     self.setWidget(widget)
+
+    self.connect(self, SIGNAL("topLevelChanged(bool)"), self.toplevel_changed)
  
+  def toplevel_changed(self, state):
+    if not state:
+      self.mainwindow.refreshTabifiedDockWidgets()
+
   def visibility_changed(self, enable):
     if enable:
       self.raise_()
       self.setFocus()
+      
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+#      self.widget().retranslateUi(self.widget())
+      try:
+        self.widget().retranslateUi(self)
+      except AttributeError:
+        pass
+    else:
+      QDockWidget.changeEvent(self, event)

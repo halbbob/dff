@@ -16,7 +16,6 @@
 from api.vfs import *
 from api.module.module import *
 from api.exceptions.libexceptions import *
-from api.magic.filetype import *
 from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.env import *
@@ -37,9 +36,8 @@ class Open(Script):
   def open(self, node):
     arg = self.env.libenv.argument("gui_input")
     arg.thisown = 0 
-    ft = FILETYPE()
     try:
-      mod = ft.findcompattype(node)[0]
+      mod = node.compatibleModules()[0]
       if self.lmodules[mod]:
         conf = self.lmodules[mod].conf
         cdl = conf.descr_l
