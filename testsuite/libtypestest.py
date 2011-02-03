@@ -140,8 +140,11 @@ import time, traceback
 vlist = VList()
 vlist2 = VList()
 pylist = []
+pylist2 = []
 vmap = VMap()
+vmap2 = VMap()
 pymap = {}
+pymap2 = {}
 
 nbitem = 10
 
@@ -151,29 +154,71 @@ t = time.time()
 for i in xrange(0, nbitem):
     vlist.append(i)
     vlist2.append(i)
-    pylist.append(i)
-    vmap[str(i)] = i
-    pymap[str(i)] = i
 
+    pylist.append(i)
+    pylist2.append(i)
+
+    vmap[str(i)] = i
+    vmap2[str(i)] = i
+
+    pymap[str(i)] = i
+    pymap2[str(i)] = i
+
+pylist2[nbitem - 1] = 0
 vlist2[nbitem-1] = nbitem
+
+pymap2[str(nbitem - 1)] = 0
+vmap2[str(nbitem-1)] = nbitem
+
 vvlist = Variant(vlist)
 vvlist2 = Variant(vlist2)
-vvmap = Variant(vmap)
-pylist2 = pylist
-pylist2[nbitem - 1] = 0
-pymap2 = pymap
-pymap2[str(nbitem - 1)] = 0
 
-ultimvmap = VMap()
-ultimvmap["ULTIMATE TESTING"] = vvlist
-ultimpymap = {}
-ultimpymap["ULTIMATE TESTING"] = vlist
+vvmap = Variant(vmap)
+vvmap2 = Variant(vmap2)
+
+vstr1 = Variant("str1")
+vstr2 = Variant("str2")
+
+vmaplist = VMap()
+vmaplist2 = VMap()
+
+vmaplist["LIST"] = vvlist
+vmaplist["str"] = vstr1
+
+vmaplist2["LIST"] = vvlist2
+vmaplist2["str"] = vstr2
+
+vvmaplist = Variant(vmaplist)
+vvmaplist2 = Variant(vmaplist2)
+
+vlistmap = VList()
+vlistmap2 = VList()
+vlistmap.append(vmap)
+vlistmap2.append(vmap2)
+
+vvlistmap = Variant(vlistmap)
+vvlistmap2 = Variant(vlistmap2)
 
 extime = time.time() - t
 print "exec time:", extime
 print ("=" * 50) + "\n"
 
-tests = ["vlist == pylist", "vlist == pylist2", "vlist == vlist", "vvlist == vlist", "vvlist == vvlist", "nbitem - 1 in vlist", "Variant(nbitem - 1) in vlist", "nbitem in vlist", "Variant(nbitem) in vlist", "vmap == pymap", "vmap == vmap", "vmap == vvmap", "vmap == pymap2", "ultimvmap == ultimpymap"]
+tests = [
+    "vstr1 == vstr1", "vstr2 == vstr1", "vstr1 == 'str1'", "vstr1 == ''", "vstr1 == 'different'",
+
+    "vlist == vlist", "vlist == vlist2", "vlist == pylist", "vlist == pylist2",
+    "vvlist == vvlist", "vvlist == vvlist2",  "vvlist == vlist", "vvlist == vlist2", "vvlist == pylist", "vvlist == pylist2",
+    "nbitem - 1 in vlist", "Variant(nbitem - 1) in vlist", "nbitem in vlist", "Variant(nbitem) in vlist",
+
+    "vmap == vmap", "vmap == vmap2", "vmap == pymap", "vmap == pymap2",
+    "vvmap == vvmap", "vvmap == vvmap2", "vvmap == vmap", "vvmap == vmap2", "vvmap == pymap", "vvmap == pymap2",
+    
+    "vlistmap == vlistmap", "vlistmap == vlistmap2", 
+    "vvlistmap == vvlistmap", "vvlistmap == vvlistmap2",
+
+    "vmaplist == vmaplist", "vmaplist == vmaplist2",
+    "vvmaplist == vvmaplist", "vvmaplist == vvmaplist2"]
+
 
 print "=" * 50
 print "Starting tests:"
@@ -183,6 +228,14 @@ print ("=" * 50) + "\n"
 for test in tests:
     print "=" * 50
     print "Current test ---> " + test
+    idx = test.find("==")
+    key = "=="
+    if idx == -1:
+        idx = test.find("in")
+        key = "in"
+    print eval(test[:idx])
+    print "\n", 25*" ", key, "\n"
+    print eval(test[idx+2:]), "\n"
     t = time.time()
     try:
         res = eval(test)
@@ -195,7 +248,9 @@ for test in tests:
     print "exec time:", extime
     print ("=" * 50) + "\n"
 
-v = Variant("10000")
-print v.toUInt16()
-
-print vvlist == vvlist2
+print "==", Variant(123456) == Variant(123456), 123456 == 123456
+print "!=", Variant(123456) != Variant(123456), 123456 != 123456
+print ">", Variant(123456) > Variant(123456), 123456 > 123456
+print "<", Variant(123456) < Variant(123456), 123456 < 123456
+print ">=", Variant(123456) >= Variant(123456), 123456 >= 123456
+print "<=", Variant(123456) <= Variant(123456), 123456 <= 123456

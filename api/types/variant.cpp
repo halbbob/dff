@@ -380,7 +380,7 @@ uint32_t	Variant::toUInt32() throw (std::string)
       res = static_cast<uint32_t>(this->__data.ull);
     else
       err << "value [ " << this->__data.ull;
-  if (this->_type == typeId::Int16)
+  else if (this->_type == typeId::Int16)
     if (this->__data.s >= 0)
       res = static_cast<uint32_t>(this->__data.s);
     else
@@ -699,16 +699,16 @@ std::string	Variant::typeName()
 
 bool	Variant::operator==(Variant* v)
 {
-  std::cout << "Variant::operator==(Variant*)" << std::endl;
+  //std::cout << "Variant::operator==(Variant*)" << std::endl;
   std::stringstream	tmp;
 
-  bool	ret;
+  if (v == NULL)
+    return false;
 
   try
     {
-      ret = false;
       if (this->_type == typeId::Char)
-	ret = (this->toChar() == v->toChar());
+	return (this->toChar() == v->toChar());
 
       else if (this->_type == typeId::Int16)
 	return this->toInt16() == v->toInt16();
@@ -721,8 +721,8 @@ bool	Variant::operator==(Variant* v)
 
       else if (this->_type == typeId::UInt16)
 	{
-	  tmp << "this value: " << this->toUInt16() << " --- v value: " << v->toUInt16();
-	  std::cout << tmp.str() << std::endl;
+	  //tmp << "this value: " << this->toUInt16() << " --- v value: " << v->toUInt16();
+	  //std::cout << tmp.str() << std::endl;
 	  return this->toUInt16() == v->toUInt16();
 	}
 
@@ -736,17 +736,40 @@ bool	Variant::operator==(Variant* v)
 	;
 
       else if (this->_type == typeId::String)
-	;//if (v->_type)
-	  
+	{
+	  if ((v->type() == typeId::String) || (v->type() == typeId::CArray) || (v->type() == typeId::Char))
+	    {
+	      std::string	mine;
+	      std::string	other;
+	      
+	      mine = this->toString();
+	      other = v->toString();
+	      return (mine == other);
+	    }
+	  else
+	    return false;
+	}
 
       else if (this->_type == typeId::Map)
 	{
-	  std::map<std::string, Variant* >	mine;
-	  std::map<std::string, Variant* >	other;
-
+	  std::map<std::string, Variant* >		mine;
+	  std::map<std::string, Variant* >		other;
+	  std::map<std::string, Variant* >::iterator	mit;
+	  std::map<std::string, Variant* >::iterator	oit;
+	  
 	  mine = *(static_cast<std::map<std::string, Variant*> * >(this->__data.ptr));
 	  other = v->value<std::map<std::string, Variant* > >();
-	  return mine == other;
+	  if (other.size() == mine.size())
+	    {
+	      for (mit = mine.begin(), oit = other.begin();
+		   mit != mine.end(), oit != other.end();
+		   mit++, oit++)
+		if ((mit->first != oit->first) || (!(*(mit->second) == oit->second)))
+		  return false;
+	      return true;
+	    }
+	  else
+	    return false;
 	}
       else if (this->_type == typeId::List)
 	{
@@ -759,34 +782,134 @@ bool	Variant::operator==(Variant* v)
 	  other = v->value<std::list<Variant* > >();
 	  if (other.size() == mine.size())
 	    {
-	      std::cout << "   * same size" << std::endl;
 	      for (mit = mine.begin(), oit = other.begin(); 
 		   mit != mine.end(), oit != other.end();
 		   mit++, oit++)
-		{
-		  std::cout << "BON TU PASSES OU BIEN" << std::endl;
-		  //if (!((*mit)->operator==(*oit)))
-		  if (!(*mit == *oit))
-		    {
-		      std::cout << "Im drunk !!!" << std::endl;
-		      return false;
-		    }
-		  else
-		    {
-		      std::cout << "OYE OYE" << std::endl;
-		    }
-		}
+		if (!(*(*mit) == *oit))
+		  return false;
+	      return true;
 	    }
 	  else
 	    return false;
 	}
       else
-	ret = false;
-      return ret;
+	return false;
     }
   catch (std::string e)
     {
-      std::cout << "ARG ARG ARG" << std::endl;
       return false;
     }
+}
+
+bool	Variant::operator!=(Variant* v)
+{
+  return !(this->operator==(v));
+}
+
+bool	Variant::operator>(Variant* v)
+{
+  int64_t	ll;
+  uint64_t	ull;
+
+  int64_t	oll;
+  uint64_t	oull;
+  uint8_t	otype;
+
+  if (v == NULL)
+    return true;
+
+  if (this->operator==(v))
+    return false;
+
+  otype = v->type();
+  if ((this->_type == typeId::Char) ||
+      (this->_type == typeId::Int16) ||
+      (this->_type == typeId::Int32) ||
+      (this->_type == typeId::Int64))
+    {
+      ll = this->toInt64();
+      if ((otype == typeId::Char) ||
+	  (otype == typeId::Int16) ||
+	  (otype == typeId::Int32) ||
+	  (otype == typeId::Int64))
+	return (ll > v->toInt64());
+      
+      else if ((ll >= 0) &&
+	       ((otype == typeId::UInt16) ||
+		(otype == typeId::UInt32) ||
+		(otype == typeId::UInt64)))
+	{
+	  ull = static_cast<uint64_t>(ll);
+	  return (ull > v->toUInt64());
+	}
+      //else if (otype == typeId::Bool)
+      //	return True;
+      else
+	return false;
+    }
+  else if ((this->_type == typeId::UInt16) ||
+	   (this->_type == typeId::UInt32) ||
+	   (this->_type == typeId::UInt64))
+    {
+      ull = this->toUInt64();
+      if ((otype == typeId::UInt16) ||
+	  (otype == typeId::UInt32) ||
+	  (otype == typeId::UInt64))
+	return (ull > v->toUInt64());
+      else if ((otype == typeId::Char) ||
+	       (otype == typeId::Int16) ||
+	       (otype == typeId::Int32) ||
+	       (otype == typeId::Int64))
+	{
+	  oll = v->toInt64();
+	  if (oll >= 0)
+	    {
+	      oull = static_cast<uint64_t>(oll);
+	      return (ull > oull);
+	    }
+	  else
+	    return true;
+	}
+      else
+	return false;
+    }
+  //else if (this->_type == typeId::Bool)
+  else if (this->_type == typeId::String)
+    {
+      if ((v->type() == typeId::String) || (v->type() == typeId::CArray) || (v->type() == typeId::Char))
+	{
+	  std::string	mine;
+	  std::string	other;
+	  
+	  mine = this->toString();
+	  other = v->toString();
+	  return (mine > other);
+	}
+      else
+	return true;
+    }
+}
+
+bool	Variant::operator>=(Variant* v)
+{
+  if (this->operator>(v) || this->operator==(v))
+    return true;
+  else
+    return false;
+}
+
+bool	Variant::operator<(Variant* v)
+{
+  if (this->operator==(v))
+    return false;
+  else
+    return !(this->operator>(v));
+}
+
+bool	Variant::operator<=(Variant* v)
+{
+  if (this->operator<(v) || this->operator==(v))
+    return true;
+  else
+    return false;  
 }

@@ -232,14 +232,123 @@ public:
   template<typename T>
   bool operator==(T val)
   {
-    std::string	ptype = typeid(static_cast<T*>(0)).name();
-    std::cout << "   * Variant::operator==(T) with [T = " << ptype  << " ]" << std::endl;
-    T mine;
-    mine = this->value<T>();
-    return (val == mine);
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine == val);
+	else
+	  return false;
+      }
+    else
+      return false;
+  }
+
+  template<typename T>
+  bool operator!=(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine != val);
+	else
+	  return true;
+      }
+    else
+      return true;
+  }
+
+  template<typename T>
+  bool operator>(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine > val);
+	else
+	  return true;
+      }
+    else
+      return true;
+  }
+
+  template<typename T>
+  bool operator>=(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine >= val);
+	else
+	  return true;
+      }
+    else
+      return true;
+  }
+
+  template<typename T>
+  bool operator<(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine < val);
+	else
+	  return false;
+      }
+    else
+      return false;
+  }
+
+  template<typename T>
+  bool operator<=(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine <= val);
+	else
+	  return false;
+      }
+    else
+      return false;
   }
 
   bool	operator==(Variant* v);
+  bool	operator!=(Variant* v);
+  bool	operator>(Variant* v);
+  bool	operator>=(Variant* v);
+  bool	operator<(Variant* v);
+  bool	operator<=(Variant* v);
   
   template<typename T>
   T	value(void)
