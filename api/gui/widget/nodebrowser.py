@@ -31,14 +31,41 @@ from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
 from api.gui.widget.propertytable import PropertyTable
-from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
 
 from ui.gui.utils.menu import MenuTags
 
-class NodeTreeProxyModel(QSortFilterProxyModel):
+class SortProxy(QSortFilterProxyModel):
+  """
+  Class used to sort the nodes by attributes (size, MAC times, names, etc).
+
+  [TESTING]
+  """
+
+  def __init__(self, parent = None):
+    """
+    Initialization : call the parent constructor and get the VFS.
+    """
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()
+
+  def sort(self, column, order):
+    """
+    Overload of the method QSortFilterProxyModel.sort()
+    """
+    
+    #Q_Q(QSortFilterProxyModel);
+    self.layoutAboutToBeChanged.emit()
+
+    self.layoutChanged.emit()
+
+class NodeTreeProxyModelBackup(QSortFilterProxyModel):
+  """
+  For testting, this will probably be modified [TESTING]
+  """
   def __init__(self, parent = None):
     QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()  
+    self.VFS = VFS.Get()
 
   def data(self, index, role):
     if index.isValid():
@@ -60,6 +87,38 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
        if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
 	 return True
      return False
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
+
+class NodeTreeProxyModel(QSortFilterProxyModel):
+  def __init__(self, parent = None):
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()
+
+  def data(self, index, role):
+    if index.isValid():
+      if role == Qt.CheckStateRole:
+        return QVariant()
+      else:
+        origindex = self.mapToSource(index)
+        if origindex.isValid():
+          return self.sourceModel().data(origindex, role)
+        else:
+          return QVariant()
+    else:
+      return QVariant()
+
+  def filterAcceptsRow(self, row, parent):
+     index = self.sourceModel().index(row, 0, parent) 
+     if index.isValid():
+       node = self.VFS.getNodeFromPointer(index.internalId())
+       if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
+	 return True
+     return False
+
+#  def sort(self, column, order):
+#    pass
 
   def columnCount(self, parent = QModelIndex()):
      return 1
@@ -99,6 +158,7 @@ class NodeBrowser(QWidget, DEventHandler):
 
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
+
     #register to event from vfs
     self.VFS.connection(self)
     self.ft = FILETYPE()
@@ -114,34 +174,14 @@ class NodeBrowser(QWidget, DEventHandler):
     self.createSubMenu()
     self.createLayout()
     self.addModel("/")
-    self.addProxyModel()
+    # self.addProxyModel()
     self.addNodeLinkTreeView()
     self.addNodeView()
 
     self.addOptionsView()
-#    self.browserLayout.addWidget(self.thumbsView)
-#    self.browserLayout.addWidget(self.tableView)
-
-#    self.browserLayout.setOpaqueResize(False)
-
-#    siz = self.mainwindow.width() / 3
-#    sizelist = [siz, siz * 3]
-#    self.browserLayout.setSizes(sizelist)
-#    self.browserLayout.setSizes(sizelist)
-
-#    si = self.browserLayout.sizes()
-#    for s in si:
-#      print s
-
-
-  #def refresh(self, node):
-     #self.thumbsView.model().sourceModel().emit(SIGNAL("refresh"), None)
-     #self.tableView.model().sourceModel().emit(SIGNAL("refresh"), None)
-     #self.treeModel.emit(SIGNAL("refresh"), node)	
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
-
 
   def Event(self, e):
     self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
@@ -168,7 +208,7 @@ class NodeBrowser(QWidget, DEventHandler):
     self.model.setRootPath(self.vfs.getnode(path))
 
   def addProxyModel(self):
-    self.proxyModel = QSortFilterProxyModel(self)
+    self.proxyModel = SortProxy(self)
     self.proxyModel.setSourceModel(self.model)
 
   ###### View searhing #####
@@ -177,33 +217,36 @@ class NodeBrowser(QWidget, DEventHandler):
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
   def addNodeLinkTreeView(self):
-    self.treeModel = VFSItemModel(self, True)
+    """
+    [TESTING] that's the stuff !
+    """
+    #self.treeModel = VFSItemModel(self, True)
+    self.treeModel = TreeModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
+
+
     self.treeProxyModel = NodeTreeProxyModel()
     self.treeProxyModel.setSourceModel(self.treeModel)
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
 
-#    self.treeView.setMaximumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.treeView)
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
 
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-#    self.connect(self.treeView, SIGNAL("resizeEvent"), self.treeResized)
+#    self.connect(self.treeView, SIGNAL(""), self.nodeTreeDoubleClicked)
 
   def addNodeView(self):
-#    self.nodeView = QStackedLayout(self.browserLayout)
     self.addTableView()
     self.addThumbsView()
 
   def addTableView(self): 
     self.tableView = NodeTableView(self)
-    self.tableView.setModel(self.proxyModel)
+    self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
-#    self.tableView.setMinimumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.tableView)
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.tableView), 1)
@@ -211,18 +254,15 @@ class NodeBrowser(QWidget, DEventHandler):
     self.connect(self.tableView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
-    #self.model.setImagesThumbnails(True)
 
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
-    self.thumbsView.setModel(self.proxyModel) 
+    self.thumbsView.setModel(self.model) 
     self.thumbsView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
-#    self.thumbsView.setMinimumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.thumbsView)
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.thumbsView), 1)
 
-#    self.nodeView.addWidget(self.thumbsView)
     self.connect(self.thumbsView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.thumbsView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.thumbsView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
@@ -235,9 +275,9 @@ class NodeBrowser(QWidget, DEventHandler):
 
   def currentModel(self):
      if self.thumbsView.isVisible():
-       return self.thumbsView.model().sourceModel()
+       return self.thumbsView.model() #.sourceModel()
      elif self.tableView.isVisible():
-       return self.tableView.model().sourceModel()
+       return self.tableView.model() #.sourceModel()
  
   def currentView(self):
      if self.thumbsView.isVisible():
@@ -250,14 +290,14 @@ class NodeBrowser(QWidget, DEventHandler):
      nodeList = []
      for index in indexList:
        if index.isValid():
-	 index = self.currentProxyModel().mapToSource(index)
+	 # index = self.currentProxyModel() #.mapToSource(index)
          nodeList.append(self.VFS.getNodeFromPointer(index.internalId()))
      return nodeList
 
   def currentNode(self):
      index = self.currentView().selectionModel().currentIndex()
      if index.isValid():
-	 index = self.currentProxyModel().mapToSource(index)
+	 #index = self.currentProxyModel().mapToSource(index)
          return self.VFS.getNodeFromPointer(index.internalId())
 
   def nodePressed(self, key, node, index = None):
@@ -348,7 +388,6 @@ class NodeBrowser(QWidget, DEventHandler):
      self.submenuFile.addAction(QIcon(":hexedit.png"), "Hex viewer", self.launchHexedit, "Hex viewer")
      self.submenuFile.addAction(QIcon(":extract.png"),  "Extract", self.extractNodes, "ExtractNode")
      self.submenuFile.addSeparator()
-#     self.submenuFile.addAction(QIcon(":info.png"),  "Property", self.launchProperty, "Property")
 
   def openAsNewTab(self):
     node = self.currentNode()
