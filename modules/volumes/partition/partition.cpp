@@ -153,7 +153,7 @@ void Partition::start(argument* arg)
 {
   try
     {
-      arg->get("files", &this->parent);
+      arg->get("file", &this->parent);
       if (this->parent->size() != 0)
 	{
 	  this->__root = new Node("partition");
@@ -166,7 +166,7 @@ void Partition::start(argument* arg)
   catch(envError e)
     {
       delete this->__root;
-      throw envError("[PARTITION] parent argument not provided\n" + e.error);
+      throw envError("[PARTITION] file argument not provided\n" + e.error);
     }
   catch(vfsError e)
     {

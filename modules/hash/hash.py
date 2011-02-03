@@ -150,6 +150,6 @@ ex: hash /myfile"""
     self.conf.add_const("algorithm",  "sha256")
     self.conf.add_const("algorithm",  "sha384")
     self.conf.add_const("algorithm",  "sha512")
+    self.conf.add_const("mime-type", "")
     self.flags = "single"
-    #self.conf.add_const("mime-type", "data")
     self.tags = "Hash"

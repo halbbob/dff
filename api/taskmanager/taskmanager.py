@@ -45,11 +45,12 @@ class TaskManager():
 
     def createProcessNode(self, mod, args, exec_flags, node):
        #print args, exec_flags, node.absolute()
-       print "Create post process"
-       print node.absolute()
-       print "is compatible"
+       #print "Create post process"
+       #print node.absolute()
+       #print "is compatible"
        #print node.isCompatibleModule(mod)
        if node.isCompatibleModule(mod):
+	 print "post_process add task " + mod + " on node " + str(node.name())
          if args == None:
            args = libenv.argument("post_process")
          if exec_flags == None:
