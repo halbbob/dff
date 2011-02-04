@@ -283,8 +283,6 @@ class VFSItemModel(QAbstractItemModel):
     setattr(self, "canFetchMore", self.canFetchMore)
     setattr(self, "fetchMore", self.fetchMore)
 
-    # tralala youpi
-
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
@@ -353,38 +351,42 @@ class VFSItemModel(QAbstractItemModel):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-        #if column == HACCESSED:
-        #  return QVariant(QDateTime(node.attributes()["Accessed time"]))
-          #time = node.times()
-          #accessed = time['accessed']
-          #if accessed != None:
-            #return QVariant(QDateTime(accessed.get_time()))
-          #else:
-            #return QVariant()
-        if column == HCHANGED:
-          changed = node.attributesByName("changed")
+        if column == HACCESSED:
+          changed = node.attributesByName("accessed")
           if changed != None:
-            changed_vtime = changed.value()
-            print changed.toString()
-            return QVariant(changed.toString())
+            if len(changed.toString()) == 0:
+              return QVariant("N / A")
+            else:
+              return QVariant(changed.toString())
           else:
             return QVariant()
-        #if column == HMODIFIED:
-          #time = node.times()
-          #modified = time['modified']
-          #if modified != None:
-            #return QVariant(QDateTime(modified.get_time()))
-          #else:
-            #return QVariant()
+        elif column == HCHANGED:
+          changed = node.attributesByName("changed")
+          if changed != None:
+            if len(changed.toString()) == 0:
+              return QVariant("N / A")
+            else:
+              return QVariant(changed.toString())
+          else:
+            return QVariant()
+        elif column == HMODIFIED:
+          changed = node.attributesByName("modified")
+          if changed != None:
+            if len(changed.toString()) == 0:
+              return QVariant("N / A")
+            else:
+              return QVariant(changed.toString())
+          else:
+            return QVariant()
+        elif column == HMODULE:
+          fsobj = node.fsobj()
+          if (fsobj != None):
+            return QVariant(fsobj.name)
+          else:
+            return QVariant()
         return QVariant()
       except IndexError:
         return QVariant()
-      if column == HMODULE:
-        fsobj = node.fsobj()
-        if (fsobj != None):
-          return QVariant(fsobj.name)
-        else:
-          return QVariant()
     if role == Qt.ForegroundRole:
       if column == 0:
         if node.isDeleted():
@@ -501,19 +503,16 @@ class VFSItemModel(QAbstractItemModel):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
-    #elif column == HCHANGED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("changed"), reverse=Reverse)
-
-  #    elif column == HACCESSED:
-  #      self.node_list = sorted(children_list, key=lambda Node: Node.attributes()["Accessed time"],
-  #                              reverse=Reverse)
-
-    #elif column == HMODIFIED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["modified"], reverse=Reverse)
-    #elif column == HMODULE:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
-    #else:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+    elif column == HMODULE:
+      self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
+    elif column == HCHANGED:
+      self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("changed"), reverse=Reverse)
+    elif column == HACCESSED:
+      self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("accessed"), reverse=Reverse)
+    elif column == HMODIFIED:
+      self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("modified"), reverse=Reverse)
+    else:
+      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
 
   def translation(self):
