@@ -265,6 +265,11 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     self.connect(self.tableView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
+    self.connect(self.tableView, SIGNAL(""), self.selectAttr)
+
+  def selectAttr(self):
+    print "select view"
+    
 
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)

@@ -283,6 +283,8 @@ class VFSItemModel(QAbstractItemModel):
     setattr(self, "canFetchMore", self.canFetchMore)
     setattr(self, "fetchMore", self.fetchMore)
 
+    # tralala youpi
+
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
@@ -351,8 +353,8 @@ class VFSItemModel(QAbstractItemModel):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-	return QVariant()
-        #if column == HACCESSED:
+        if column == HACCESSED:
+          return QVariant(QDateTime(node.attributes()["Accessed time"]))
           #time = node.times()
           #accessed = time['accessed']
           #if accessed != None:
@@ -373,6 +375,7 @@ class VFSItemModel(QAbstractItemModel):
             #return QVariant(QDateTime(modified.get_time()))
           #else:
             #return QVariant()
+        return QVariant()
       except IndexError:
         return QVariant()
       if column == HMODULE:
@@ -489,6 +492,7 @@ class VFSItemModel(QAbstractItemModel):
       self.emit(SIGNAL("layoutChanged()"))
       return
     children_list = parentItem.children()
+
     if order == Qt.DescendingOrder:
       Reverse = True
     else:
@@ -497,8 +501,9 @@ class VFSItemModel(QAbstractItemModel):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
-    #elif column == HACCESSED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["accessed"], reverse=Reverse)
+  #    elif column == HACCESSED:
+  #      self.node_list = sorted(children_list, key=lambda Node: Node.attributes()["Accessed time"],
+  #                              reverse=Reverse)
     #elif column == HCHANGED:
     #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["changed"], reverse=Reverse)
     #elif column == HMODIFIED:
