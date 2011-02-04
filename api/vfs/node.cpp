@@ -655,7 +655,7 @@ std::list<std::string>*		Node::compatibleModules(void)
          if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
          {
            res->push_back((*val)->from);
-	   delete (*var);
+	   //delete (*var);
          }
        }
      }
