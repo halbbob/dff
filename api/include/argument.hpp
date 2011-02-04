@@ -68,6 +68,7 @@ private:
 public:
   Argument(std::string name, uint16_t flags, std::string description = "");
   ~Argument();
+
   void				setName(std::string name);
   std::string			name();
 
@@ -92,6 +93,10 @@ public:
   void				setRequirementType(uint16_t ntype);
   uint16_t			requirementType();
 
+  void				setPreselectedParameters(std::list<Variant* >);
+  std::list<Variant* >		preselectedParameters();
+
+  
   //void				addPredefinedParameters(Variant *params);
 
   //void				setPreselected();

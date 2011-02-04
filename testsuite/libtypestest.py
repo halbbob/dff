@@ -68,8 +68,82 @@ print "neededtype:", hex(STRING_OptionalSingleInputWithFixedParam.requirementTyp
 
 print type(STRING_OptionalSingleInputWithFixedParam)
 
-pyListToVariant(["test", "for", "string", "weird behaviour if no =..."], 1)
+## conf = {"arg1": {"input": Optional|Custom|Single,
+##                  "type": Node,
+##                  "description": "optional and unique argument of type Node with parameter either provided by user or based on default",
+##                  "predefined": ["/", "/logical evidence", "/devices"], #predefined parameters are provided when user configure input
 
+##                  "default": "/" # default parameter is used at runtime (if argument is not filled by the user or if preconfigured for automation)
+##                  },
+
+
+##         "arg2": {"input": Optional|Fixed|Single,
+##                  "type": Int32,
+##                  "description": "optional argument of type Int32 with fixed parameter selected by user",
+
+##                  # !!! When parameter is fixed, "predefined" field MUST be filled !!!
+##                  "predefined": [512, 1024, 2048, 4096], #fixed predefined parameters, modules is not able to manage other type
+##                  },
+
+
+##         "arg3": {"input": Optional|Fixed|List,
+##                  "type": String,
+##                  "description": "optional list of argument of type String with fixed parameters selected by user",
+
+##                  # !!! When parameters are fixed, they MUST be setted in "predefined" field !!!
+##                  "predefined": ["md5", "sha1", "sha256", "sha512"], #fixed predefined parameters, modules is not able to manage other type
+
+##                  "default": ["md5", "sha512"] #md5 and sha512 parameters used by default (if not filled by user or if preconfigured for automation)
+##                  },
+
+
+##         "arg3": {"input": Optional|Custom|List,
+##                  "type": String,
+##                  "description": "optional list of argument of type String with parameters either provided by user or based on default",
+##                  "predefined": ["md5", "sha1", "sha256", "sha512"], #fixed predefined parameters, modules is not able to manage other type
+##                  "default": ["md5", "sha512"] #md5 and sha512 parameters used by default (if not filled by user or if preconfigured for automation)
+##                  },
+        
+        
+##         "arg2": {"input": Required|Fixed|Single,
+##                  "type": Int64,
+##                  "description": "required argument of type Int32 with fixed parameter selected by user",
+                 
+##                  # !!! When parameter is fixed, "predefined" field MUST be filled !!!
+##                  "predefined": [2**60, -(2**60)], #fixed predefined parameters, modules is not able to manage other type
+##                  },
+        
+        
+##         "arg3": {"input": Required|Custom|List,
+##                  "type": Path,
+##                  "description:": "required list of argument of types Path with parameters provided by user" #no predefined parameters, no default
+##                  # if predefined and default no defined, implicitly setted to None
+##                  #"predefined": None,
+##                  #"default": None
+##                  },
+
+##         "arg3": {"input": No,
+##                  "description": "optional argument with no parameter enabled by default",
+##                  "default": Enabled
+##                  },
+
+##         "arg4": {"input": No,
+##                  "description": "optional argument with no parameter disabled by default",
+##                  "default": Disabled
+##                  },
+        
+
+        
+##         "arg5": {"input": Required|Fixed|List,
+##                  "type": String,
+##                  "description": "required ",
+##                  "predefined": ["md5", "sha1", "sha256", "sha512"],
+##                  "default": ["md5", "sha512"]
+##                  }
+##         }
+
+pyListToVariant(["test", "for", "string", "weird behaviour if no =..."], 1)
+        
 res = pyListToVariant(["test", "for", "string", "weird behaviour if no =..."], 1)
 
 print type(res)
@@ -204,20 +278,20 @@ print "exec time:", extime
 print ("=" * 50) + "\n"
 
 tests = [
-    "vstr1 == vstr1", "vstr2 == vstr1", "vstr1 == 'str1'", "vstr1 == ''", "vstr1 == 'different'",
-
-    "vlist == vlist", "vlist == vlist2", "vlist == pylist", "vlist == pylist2",
-    "vvlist == vvlist", "vvlist == vvlist2",  "vvlist == vlist", "vvlist == vlist2", "vvlist == pylist", "vvlist == pylist2",
+    "vstr1 op vstr1", "vstr2 op vstr1", "vstr1 op 'str1'", "vstr1 op ''", "vstr1 op 'different'",
+    
+    "vlist op vlist", "vlist op vlist2", "vlist op pylist", "vlist op pylist2",
+    "vvlist op vvlist", "vvlist op vvlist2",  "vvlist op vlist", "vvlist op vlist2", "vvlist op pylist", "vvlist op pylist2",
     "nbitem - 1 in vlist", "Variant(nbitem - 1) in vlist", "nbitem in vlist", "Variant(nbitem) in vlist",
 
-    "vmap == vmap", "vmap == vmap2", "vmap == pymap", "vmap == pymap2",
-    "vvmap == vvmap", "vvmap == vvmap2", "vvmap == vmap", "vvmap == vmap2", "vvmap == pymap", "vvmap == pymap2",
+    "vmap op vmap", "vmap op vmap2", "vmap op pymap", "vmap op pymap2",
+    "vvmap op vvmap", "vvmap op vvmap2", "vvmap op vmap", "vvmap op vmap2", "vvmap op pymap", "vvmap op pymap2",
     
-    "vlistmap == vlistmap", "vlistmap == vlistmap2", 
-    "vvlistmap == vvlistmap", "vvlistmap == vvlistmap2",
+    "vlistmap op vlistmap", "vlistmap op vlistmap2", 
+    "vvlistmap op vvlistmap", "vvlistmap op vvlistmap2",
 
-    "vmaplist == vmaplist", "vmaplist == vmaplist2",
-    "vvmaplist == vvmaplist", "vvmaplist == vvmaplist2"]
+    "vmaplist op vmaplist", "vmaplist op vmaplist2",
+    "vvmaplist op vvmaplist", "vvmaplist op vvmaplist2"]
 
 
 print "=" * 50
@@ -225,28 +299,38 @@ print "Starting tests:"
 print tests
 print ("=" * 50) + "\n"
 
-for test in tests:
+def evalexpr(first, second, operator):
     print "=" * 50
-    print "Current test ---> " + test
-    idx = test.find("==")
-    key = "=="
-    if idx == -1:
-        idx = test.find("in")
-        key = "in"
-    print eval(test[:idx])
-    print "\n", 25*" ", key, "\n"
-    print eval(test[idx+2:]), "\n"
-    t = time.time()
+    real_test = first + operator + second
+    print "Current test --->", real_test
+    print eval(first)
+    print "\n", 25*" ", operator, "\n"
+    print eval(second), "\n"
     try:
-        res = eval(test)
+        t = time.time()
+        res = eval(real_test)
+        extime = time.time() - t
+        print "\n< " + real_test + " > terminated"
+        print "result:" + (" " * 3), res
+        print "exec time:", extime
+        print ("=" * 50) + "\n"
     except:
         print "error with test", test
-        traceback.print_exc(file=sys.stdout)
-    extime = time.time() - t
-    print "\n< " + test + " > terminated"
-    print "result:" + (" " * 3), res
-    print "exec time:", extime
-    print ("=" * 50) + "\n"
+        traceback.print_exc(file=sys.stdout)    
+
+
+for test in tests:
+    idx = test.find("op")
+    if idx != -1:
+        first = test[:idx]
+        second = test[idx+2:]
+        for operator in ["==", "!=", ">", "<", ">=", "<="]:
+            evalexpr(first, second, operator)
+    else:
+        idx = test.find("in")
+        operator = "in"
+        first = test[:idx]
+        second = test[idx+2:]
 
 print "==", Variant(123456) == Variant(123456), 123456 == 123456
 print "!=", Variant(123456) != Variant(123456), 123456 != 123456
