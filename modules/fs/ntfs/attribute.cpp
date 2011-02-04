@@ -335,20 +335,26 @@ uint32_t	Attribute::idFromOffset(uint64_t offset)
   uint32_t	i;
   uint8_t	mftIndex = 0;
 
+  uint16_t	runLength;
+  uint64_t	runOffset;
+
   for (i = 0; offsetRunIndex <= _offsetListSize; i++) {
-    if (currentRunIndex >= getOffsetRun(offsetRunIndex)->runLength) {
+    runLength = getOffsetRun(offsetRunIndex)->runLength;
+
+    if (currentRunIndex >= runLength) {
       offsetRunIndex++;
       offsetInRun = 0;
       mftIndex = 0;
     }
 
+    runOffset = (uint64_t)(getOffsetRun(offsetRunIndex)->runOffset * _clusterSize);
 #if __WORDSIZE == 64
-    DEBUG(INFO, "id %u (0x%x) is @ 0x%lx\n", i, i, (getOffsetRun(offsetRunIndex)->runOffset) * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
+    DEBUG(CRITICAL, "id %u (0x%x) is @ 0x%lx\n", i, i, runOffset + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
 #else
-    DEBUG(INFO, "id %u (0x%x) is @ 0x%llx\n", i, i, (getOffsetRun(offsetRunIndex)->runOffset) * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
+    DEBUG(CRITICAL, "id %u (0x%x) is @ 0x%llx\n", i, i, runOffset + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
 #endif
     //    if (offset == (getOffsetRun(offsetRunIndex)->runOffset) * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize))
-    if (offset == (uint64_t(getOffsetRun(offsetRunIndex)->runOffset * _clusterSize) + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize)))
+    if (offset == (runOffset + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize)))
       {
 	return i;
       }
