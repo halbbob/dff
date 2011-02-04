@@ -1011,6 +1011,11 @@ bool validateDefault (PyObject* val, uint8_t t)
 
   bool	operator!=(PyObject* obj)
   {
+    return (!Variant_operator_Se__Se___SWIG_1(self, obj));
+  }
+
+  bool	operator>(PyObject* obj)
+  {
     Variant*	v;
     uint8_t	type;
 
@@ -1030,30 +1035,30 @@ bool validateDefault (PyObject* val, uint8_t t)
       {
 	printf("    !!! obj->ob_type->tp_name is NULL !!!\n");
 	return false;
-      } 
+      }
     if (strncmp("Variant", obj->ob_type->tp_name, 7) == 0)
       {
-	printf("Variant::operator!=(PyObject* obj) ---> obj == Variant\n");
+	printf("Variant::operator>(PyObject* obj) ---> obj == Variant\n");
 	void* argp1 = 0;
 	Variant *arg1 = (Variant *) 0 ;
 	int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_Variant, 0 | 0);
 	if (SWIG_IsOK(res1))
 	  {
 	    arg1 = reinterpret_cast< Variant * >(argp1);
-	    return self->operator!=(arg1);
+	    return self->operator>(arg1);
 	  }
 	else
 	  return false;
       }
     else if (PyLong_Check(obj) || PyInt_Check(obj))
       {
-	printf("Variant::operator!=(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");
+	printf("Variant::operator>(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");
 	if (type == uint8_t(typeId::Int16))
 	  {
 	    int16_t	v;
 	    int ecode = SWIG_AsVal_short(obj, &v);
 	    if (SWIG_IsOK(ecode))
-	      return self->operator!=<int16_t>(v);
+	      return self->operator><int16_t>(v);
 	    else
 	      return false;
 	  }
@@ -1062,7 +1067,7 @@ bool validateDefault (PyObject* val, uint8_t t)
 	    uint16_t	v;
 	    int ecode = SWIG_AsVal_unsigned_SS_short(obj, &v);
 	    if (SWIG_IsOK(ecode))
-	      return self->operator!=<uint16_t>(v); 
+	      return self->operator><uint16_t>(v); 
 	    else
 	      return false;
 	  }
@@ -1071,7 +1076,7 @@ bool validateDefault (PyObject* val, uint8_t t)
 	    int32_t	v;
 	    int ecode = SWIG_AsVal_int(obj, &v);
 	    if (SWIG_IsOK(ecode))
-	      return self->operator!=<int32_t>(v); 
+	      return self->operator><int32_t>(v); 
 	    else
 	      return false;
 	  }
@@ -1080,7 +1085,7 @@ bool validateDefault (PyObject* val, uint8_t t)
 	    uint32_t	v;
 	    int ecode = SWIG_AsVal_unsigned_SS_int(obj, &v);
 	    if (SWIG_IsOK(ecode))
-	      return self->operator!=<uint32_t>(v);
+	      return self->operator><uint32_t>(v);
 	    else
 	      return false;
 	  }
@@ -1093,7 +1098,7 @@ bool validateDefault (PyObject* val, uint8_t t)
 	    int ecode = SWIG_AsVal_long_SS_long(obj, &v);
 #endif
 	    if (SWIG_IsOK(ecode))
-	      return self->operator!=<int64_t>(v);
+	      return self->operator><int64_t>(v);
 	    else
 	      return false;
 	  }
@@ -1106,7 +1111,7 @@ bool validateDefault (PyObject* val, uint8_t t)
 	    int ecode = SWIG_AsVal_unsigned_SS_long_SS_long(obj, &v);
 #endif
 	    if (SWIG_IsOK(ecode))
-	      return self->operator!=<uint64_t>(v);
+	      return self->operator><uint64_t>(v);
 	    else
 	      return false;
 	  }
@@ -1117,14 +1122,39 @@ bool validateDefault (PyObject* val, uint8_t t)
       {
 	char*		cstr;
 
-	printf("Variant::operator!=(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");	
+	printf("Variant::operator>(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");	
 	if ((cstr = PyString_AsString(obj)) != NULL)
-	  return self->operator!=<std::string>(cstr);
+	  return self->operator><std::string>(cstr);
 	else
 	  return false;
       }
     else
       return false;
+  }
+
+
+  bool	operator<(PyObject* obj)
+  {
+    if (Variant_operator_Se__Se___SWIG_1(self, obj))
+      return false;
+    else
+      return (!Variant_operator_Sg___SWIG_1(self, obj));
+  }
+
+  bool	operator>=(PyObject* obj)
+  {
+    if (Variant_operator_Sg___SWIG_1(self, obj) || Variant_operator_Se__Se___SWIG_1(self, obj))
+      return true;
+    else
+      return false;
+  }
+
+  bool	operator<=(PyObject* obj)
+  {
+    if (Variant_operator_Sl___SWIG_1(self, obj) || Variant_operator_Se__Se___SWIG_1(self, obj))
+      return true;
+    else
+      return false;    
   }
 
 
