@@ -21,6 +21,13 @@ from api.loader import *
 from api.exceptions.libexceptions import *
 import threading
 
+#class postProcess ? XXX
+#XXX results-> 
+# 10 fat modules applid
+# XXX node hashed
+#XXX node exif extracted ...
+# ....
+
 class TaskManager():
   class __TaskManager(DEventHandler):
     def __init__(self):
