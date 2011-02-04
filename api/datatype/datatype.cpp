@@ -48,7 +48,8 @@ bool		DataTypeManager::registerHandler(DataTypeHandler* handler)
 Variant*	DataTypeManager::type(Node* node)
 {
   std::list<DataTypeHandler* >::iterator	handler;
-  list<Variant *>				vars;
+  //std::map<Variant *>				vars;
+  std::list<Variant *>				vars;
 
   if ((this->nodeTypeId[node].empty()))
   {
@@ -59,11 +60,13 @@ Variant*	DataTypeManager::type(Node* node)
         std::string* res = (*handler)->type(node);
 	uint32_t id = uniq[*res];
 	if (id)
+	 //nodeTypeId[node].ids.push_back(id);
 	 nodeTypeId[node].push_back(id);
         else
 	{
 	  uniq[*res] = ++idCounter;
 	  typeIdString[idCounter] = *res;
+	  //nodeTypeId[node].ids.push_back(idCounter);
 	  nodeTypeId[node].push_back(idCounter);
         }
       } 
@@ -73,6 +76,7 @@ Variant*	DataTypeManager::type(Node* node)
   std::vector<uint32_t>::iterator end = nodeTypeId[node].end();
   for (; it != end; it++)
     vars.push_back(new Variant(typeIdString[*it]));
+    //vars[typeName] = new Variant(typeIdString[*it]);
    
   Variant* var	= new Variant(vars);
 
@@ -84,9 +88,11 @@ std::map<std::string, uint32_t>&	DataTypeManager::foundTypes()
   return (this->uniq);
 }
 
-DataTypeHandler::DataTypeHandler()
+DataTypeHandler::DataTypeHandler(std::string hname)
 {
   DataTypeManager& 	dataTypeManager =  DataTypeManager::Get();
+
+  this->name = hname;
   dataTypeManager.registerHandler(this);
 }
 

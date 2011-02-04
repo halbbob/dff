@@ -123,24 +123,15 @@ endif(UNIX)
 message(STATUS "Python in: ${PYTHON_BIN_PATH}")
 
 
-#XXX SIP TEST 
 FIND_PACKAGE(PythonLibrary REQUIRED)
-FIND_PACKAGE(SIP REQUIRED)
 FIND_PACKAGE(PyQt4 REQUIRED)
 INCLUDE(PythonMacros)
-INCLUDE(SIPMacros)
-separate_arguments(PYQT4_SIP_FLAGS)
-SET(SIP_INCLUDES ${PYQT4_SIP_DIR})
-SET(SIP_CONCAT_PARTS 1)
-SET(SIP_EXTRA_OPTIONS ${PYQT4_SIP_FLAGS})
 IF (NOT MSVC)
   ADD_DEFINITIONS(-fPIC)
 ENDIF ()
-# Useless ; only for SIP test
 #FIND_PACKAGE(Qt4 REQUIRED)
 #INCLUDE(${QT_USE_FILE})
 
-#XXX SIP TEST
 
 ## Python-magic check for Unix only
 if(UNIX)
@@ -469,3 +460,13 @@ add_subdirectory (ressources)
 if (NOT UNIX AND WINALL)
   add_subdirectory (Prerequisites)
 endif(NOT UNIX AND WINALL)
+
+if (UNIX)
+ADD_CUSTOM_COMMAND(
+ 	OUTPUT ${CMAKE_BINARY_DIR}/ctags
+	COMMAND ctags --languages=+C++,+Python --exclude=[*.cxx,*wrap.h] --recurse=yes ${CMAKE_SOURCE_DIR}
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+ADD_CUSTOM_TARGET(tags DEPENDS ${CMAKE_BINARY_DIR}/ctags)
+endif (UNIX)
