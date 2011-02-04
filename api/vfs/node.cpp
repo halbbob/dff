@@ -644,16 +644,16 @@ std::list<std::string>*		Node::compatibleModules(void)
    list<class v_val*> vals = keys->val_l;  
    list<std::string > *res = new list<std::string>(); 
    std::list<class v_val*>::iterator val;
-   std::list<Variant *>::iterator var;
+   Attributes::iterator var;
 
    for (val = vals.begin(); val != vals.end(); val++)
    {
      if ((*val)->type == "string")
      {
-       std::list<Variant*>  vars = this->dataType()->value<std::list< Variant *>  >();
+       Attributes 	vars = this->dataType()->value<Attributes >();
        for (var = vars.begin(); var != vars.end(); var++)
        { 
-         if ((*var)->value<std::string>().find((*val)->get_string()) != -1)
+         if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
          {
            res->push_back((*val)->from);
          }

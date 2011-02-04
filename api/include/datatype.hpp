@@ -31,13 +31,6 @@ public:
   std::string		name;
 };  //* == module->start(node*) ......
 
-//class NodeHandlerId
-//{
-//public:
-//std::vector< uint32_t >  ids;
-//DataTypeHandler	handler;
-//}
-
 class DataTypeManager /* : public DEventHandler*/
 {
 private:
@@ -51,6 +44,7 @@ private:
   //std::map<Node*, NodeHandlerId *>;		nodeTypeId
   std::map<std::string, uint32_t >		uniq; 
   std::map<uint32_t, std::string>		typeIdString;
+  std::map<uint32_t, DataTypeHandler*>		typeIdHandler; //XXX if typeIdString is same for x handlers
 public:
   static DataTypeManager& 	Get()
   {
