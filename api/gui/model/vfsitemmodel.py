@@ -353,21 +353,22 @@ class VFSItemModel(QAbstractItemModel):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-        if column == HACCESSED:
-          return QVariant(QDateTime(node.attributes()["Accessed time"]))
+        #if column == HACCESSED:
+        #  return QVariant(QDateTime(node.attributes()["Accessed time"]))
           #time = node.times()
           #accessed = time['accessed']
           #if accessed != None:
             #return QVariant(QDateTime(accessed.get_time()))
           #else:
             #return QVariant()
-        #if column == HCHANGED:
-          #time = node.times()
-          #changed = time['changed']
-          #if changed != None:
-            #return QVariant(QDateTime(changed.get_time()))
-          #else:
-            #return QVariant()
+        if column == HCHANGED:
+          changed = node.attributesByName("changed")
+          if changed != None:
+            changed_vtime = changed.value()
+            print changed.toString()
+            return QVariant(changed.toString())
+          else:
+            return QVariant()
         #if column == HMODIFIED:
           #time = node.times()
           #modified = time['modified']
@@ -492,7 +493,6 @@ class VFSItemModel(QAbstractItemModel):
       self.emit(SIGNAL("layoutChanged()"))
       return
     children_list = parentItem.children()
-
     if order == Qt.DescendingOrder:
       Reverse = True
     else:
@@ -501,11 +501,13 @@ class VFSItemModel(QAbstractItemModel):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
+    #elif column == HCHANGED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("changed"), reverse=Reverse)
+
   #    elif column == HACCESSED:
   #      self.node_list = sorted(children_list, key=lambda Node: Node.attributes()["Accessed time"],
   #                              reverse=Reverse)
-    #elif column == HCHANGED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["changed"], reverse=Reverse)
+
     #elif column == HMODIFIED:
     #  self.node_list = sorted(children_list, key=lambda Node: Node.times()["modified"], reverse=Reverse)
     #elif column == HMODULE:

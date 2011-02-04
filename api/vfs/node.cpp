@@ -319,7 +319,7 @@ void 	Node::attributesByTypeFromVariant(Variant* variant, uint8_t type, Attribut
 
 void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Variant** result)
 {
-   if (variant->type() == typeId::List)
+  if (variant->type() == typeId::List)
    {
      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
      std::list<Variant*>::iterator it = lvariant.begin();
