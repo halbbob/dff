@@ -469,3 +469,13 @@ add_subdirectory (ressources)
 if (NOT UNIX AND WINALL)
   add_subdirectory (Prerequisites)
 endif(NOT UNIX AND WINALL)
+
+if (UNIX)
+ADD_CUSTOM_COMMAND(
+ 	OUTPUT ${CMAKE_BINARY_DIR}/ctags
+	COMMAND ctags --languages=+C++,+Python --exclude=[*.cxx,*wrap.h] --recurse=yes ${CMAKE_SOURCE_DIR}
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+ADD_CUSTOM_TARGET(tags DEPENDS ${CMAKE_BINARY_DIR}/ctags)
+endif (UNIX)
