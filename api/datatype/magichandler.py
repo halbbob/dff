@@ -24,8 +24,8 @@ import os
 from libdatatype import DataTypeManager, DataTypeHandler
 
 class MagicHandler(DataTypeHandler):
-  def __init__(self, mtype):
-     DataTypeHandler.__init__(self)
+  def __init__(self, mtype, name):
+     DataTypeHandler.__init__(self, name)
      self.__disown__()
      self.vfs = vfs.vfs()
      self.env = env.env()
@@ -55,6 +55,6 @@ class MagicHandler(DataTypeHandler):
 #	print "magic handler error reading node " + node.absolute()
 
  
-magicMimeHandler = MagicHandler(magic.MAGIC_MIME)
-magicTypeHandler = MagicHandler(magic.MAGIC_NONE) #XXX pour magic pas en class ... voir avec lessyv
+magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")
+magicTypeHandler = MagicHandler(magic.MAGIC_NONE, "magic") 
 

@@ -116,7 +116,6 @@ private:
 
   class VFile*					vfileFromNode(Node* n);
   int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
-
 protected:
   //  std::string				name;
   //class Node					*_root;

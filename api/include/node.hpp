@@ -103,6 +103,7 @@ protected:
   EXPORT virtual Attributes	_attributes();
   EXPORT void			attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
   EXPORT void	 		attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
+  EXPORT void	 		attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
 public:
   uint32_t			__at;
   EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
@@ -152,6 +153,7 @@ public:
   EXPORT virtual Attributes*			attributes();	
   EXPORT virtual Variant*			attributesByName(std::string);
   EXPORT virtual Attributes*			attributesByType(uint8_t type);
+  EXPORT virtual std::list<std::string>*	attributesNames(void);
 
   EXPORT virtual string				icon();
   EXPORT virtual std::list<std::string>*	compatibleModules(void);

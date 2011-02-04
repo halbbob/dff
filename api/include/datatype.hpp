@@ -25,11 +25,18 @@
 class DataTypeHandler
 {
 public:
-  EXPORT		DataTypeHandler();
+  EXPORT		DataTypeHandler(std::string);
   EXPORT  virtual 	~DataTypeHandler();
   EXPORT  virtual	std::string* type(class Node*) = 0;
+  std::string		name;
 };  //* == module->start(node*) ......
 
+//class NodeHandlerId
+//{
+//public:
+//std::vector< uint32_t >  ids;
+//DataTypeHandler	handler;
+//}
 
 class DataTypeManager /* : public DEventHandler*/
 {
@@ -41,6 +48,7 @@ private:
   list<DataTypeHandler*>			handlers;
   uint32_t					idCounter;
   std::map<Node*, std::vector< uint32_t > >	nodeTypeId;
+  //std::map<Node*, NodeHandlerId *>;		nodeTypeId
   std::map<std::string, uint32_t >		uniq; 
   std::map<uint32_t, std::string>		typeIdString;
 public:

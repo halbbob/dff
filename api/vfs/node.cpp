@@ -343,6 +343,40 @@ void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Varia
    }
 }
 
+void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > *names)
+{
+   if (variant->type() == typeId::List)
+   {
+     std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+     std::list<Variant*>::iterator it = lvariant.begin();
+     for (; it != lvariant.end(); it++)
+	this->attributesNamesFromVariant((*it), names); 
+   }
+   else if (variant->type() == typeId::Map)
+   {
+     Attributes mvariant = variant->value<Attributes >();
+     Attributes::iterator it = mvariant.begin();
+     for (; it != mvariant.end(); it++)
+     {
+	 names->push_back((*it).first);
+	 this->attributesNamesFromVariant((*it).second, names);
+     }
+   }
+
+}
+
+
+std::list<std::string>*  Node::attributesNames(void)
+{
+ std::list<std::string>*	result = new std::list<std::string>;
+ Attributes*			attr = this->attributes();
+ Variant*			var = new Variant(*attr);
+
+ this->attributesNamesFromVariant(var, result);
+
+ return (result);
+}
+
 Variant*			Node::attributesByName(std::string name)
 {
  Attributes*			attr = this->attributes();
