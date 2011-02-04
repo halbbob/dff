@@ -298,6 +298,8 @@ Attributes	Node::_attributes(void)
 
 void 	Node::attributesByTypeFromVariant(Variant* variant, uint8_t type, Attributes* result)
 {
+   if (!(variant))
+     return ;
    if (variant->type() == typeId::List)
    {
      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
@@ -319,6 +321,8 @@ void 	Node::attributesByTypeFromVariant(Variant* variant, uint8_t type, Attribut
 
 void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Variant** result)
 {
+   if (!(variant))
+     return ;
    if (variant->type() == typeId::List)
    {
      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
@@ -345,6 +349,8 @@ void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Varia
 
 void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > *names)
 {
+   if (!(variant))
+     return ;
    if (variant->type() == typeId::List)
    {
      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
