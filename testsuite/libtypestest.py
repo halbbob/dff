@@ -68,79 +68,101 @@ print "neededtype:", hex(STRING_OptionalSingleInputWithFixedParam.requirementTyp
 
 print type(STRING_OptionalSingleInputWithFixedParam)
 
-## conf = {"arg1": {"input": Optional|Custom|Single,
-##                  "type": Node,
-##                  "description": "optional and unique argument of type Node with parameter either provided by user or based on default",
-##                  "predefined": ["/", "/logical evidence", "/devices"], #predefined parameters are provided when user configure input
+Customizable = CustomizableParam
+Single = SingleInput
+List = ListInput
+Fixed = FixedParam
 
-##                  "default": "/" # default parameter is used at runtime (if argument is not filled by the user or if preconfigured for automation)
-##                  },
+No = 0
+Enabled = True
+Disabled = False
 
+conf = {"arg1": {"input": Optional|Single|typeId.Node,
+                 "description": "optional and unique argument of type Node with parameter either provided by user or based on default",
+                 "parameters": {"type": Customizable,
+                                "predefined": ["/", "/logical evidences"],
+                                #"default": "/"#predefined parameters are provided when user configure input
+                                },
+                 "runtime": {"status": Disabled,
+                             "parameters": "/"
+                             }
+                 },
 
-##         "arg2": {"input": Optional|Fixed|Single,
-##                  "type": Int32,
-##                  "description": "optional argument of type Int32 with fixed parameter selected by user",
-
-##                  # !!! When parameter is fixed, "predefined" field MUST be filled !!!
-##                  "predefined": [512, 1024, 2048, 4096], #fixed predefined parameters, modules is not able to manage other type
-##                  },
-
-
-##         "arg3": {"input": Optional|Fixed|List,
-##                  "type": String,
-##                  "description": "optional list of argument of type String with fixed parameters selected by user",
-
-##                  # !!! When parameters are fixed, they MUST be setted in "predefined" field !!!
-##                  "predefined": ["md5", "sha1", "sha256", "sha512"], #fixed predefined parameters, modules is not able to manage other type
-
-##                  "default": ["md5", "sha512"] #md5 and sha512 parameters used by default (if not filled by user or if preconfigured for automation)
-##                  },
-
-
-##         "arg3": {"input": Optional|Custom|List,
-##                  "type": String,
-##                  "description": "optional list of argument of type String with parameters either provided by user or based on default",
-##                  "predefined": ["md5", "sha1", "sha256", "sha512"], #fixed predefined parameters, modules is not able to manage other type
-##                  "default": ["md5", "sha512"] #md5 and sha512 parameters used by default (if not filled by user or if preconfigured for automation)
-##                  },
-        
-        
-##         "arg2": {"input": Required|Fixed|Single,
-##                  "type": Int64,
-##                  "description": "required argument of type Int32 with fixed parameter selected by user",
+        "arg2": {"input": Optional|Single|typeId.Int32,
+                 "description": "optional argument of type Int32 with fixed parameter selected by user",
                  
-##                  # !!! When parameter is fixed, "predefined" field MUST be filled !!!
-##                  "predefined": [2**60, -(2**60)], #fixed predefined parameters, modules is not able to manage other type
-##                  },
+                 # !!! When parameter is fixed, "predefined" field MUST be filled !!!
+                 "parameters": {"type": Fixed,
+                                "predefined": [512, 1024, 2048, 4096], #fixed predefined parameters, modules is not able to manage other type
+                                },
+                 "runtime": {"status": Enabled,
+                             "parameters": 512
+                             }
+                 }
+        
+        "arg3": {"input": Optional|List|typeId.String,
+                 "description": "optional list of argument of type String with fixed parameters selected by user",
+                 
+                 # !!! When parameters are fixed, they MUST be setted in "predefined" field !!!
+                 "parameters": {"type": Fixed,
+                                "predefined": ["md5", "sha1", "sha256", "sha512"] #fixed predefined parameters, modules is not able to manage other type
+                                },
+                 
+                 "runtime": {"status": Enabled,
+                             "parameters": ["md5", "sha512"]
+                             }
+                 #md5 and sha512 parameters used by default (if not filled by user or if preconfigured for automation)
+                 },
         
         
-##         "arg3": {"input": Required|Custom|List,
-##                  "type": Path,
-##                  "description:": "required list of argument of types Path with parameters provided by user" #no predefined parameters, no default
-##                  # if predefined and default no defined, implicitly setted to None
-##                  #"predefined": None,
-##                  #"default": None
-##                  },
+        "arg3": {"input": Optional|List|typeId.String,
+                 "description": "optional list of argument of type String with parameters either provided by user or based on default",
+                 
+                 "parameters": {"type": Customizable,
+                                "predefined": ["md5", "sha1", "sha256", "sha512"] #fixed predefined parameters, modules is not able to manage other type
+                                },
+                 #default is used for run time execution. parameters defined here will be used as default when not specified or when configured
+                 #for automation
+                 "runtime": {"status": Enabled,
+                             "parameters": ["md5", "sha512"] #md5 and sha512 parameters used by default (if not filled by user or if preconfigured for automation)
+                             }
+                 },
+        
+        
+        "arg2": {"input": Required|Single|typeId.Int64,
+                 "description": "required argument of type Int64 with fixed parameter selected by user",
+                 "parameters": {"type": Fixed,
+                                "predefined": [2**60, -(2**60)], #fixed predefined parameters, modules is not able to manage other type
+                                },
+                 # !!! When parameter is fixed, "predefined" field MUST be filled !!!
+                 "runtime": {"parameters": 2**60}
+                 },
+        
+        
+        
+        "arg3": {"input": Required|List|typeId.Path,
+                 "description:": "required list of argument of types Path with parameters provided by user" #no predefined parameters, no default
+                 },
+        
+        "arg3": {"input": No,
+                 "description": "optional argument with no parameter enabled by default",
+                 "runtime": {"status": Enabled}
+                 },
+        
+        "arg4": {"input": No,
+                 "description": "optional argument with no parameter disabled by default",
+                 "runtime": {"status": Disabled}
+                 },
+        
+        "arg5": {"input": Required|Fixed|List|typeId.String,
+                 "description": "required ",
+                 "parameters": {"type": Fixed,
+                                "predefined": ["md5", "sha1", "sha256", "sha512"],
+                                }
+                 "runtime": {"parameters": ["md5", "sha512"]}
+                 }
+        }
 
-##         "arg3": {"input": No,
-##                  "description": "optional argument with no parameter enabled by default",
-##                  "default": Enabled
-##                  },
-
-##         "arg4": {"input": No,
-##                  "description": "optional argument with no parameter disabled by default",
-##                  "default": Disabled
-##                  },
-        
-
-        
-##         "arg5": {"input": Required|Fixed|List,
-##                  "type": String,
-##                  "description": "required ",
-##                  "predefined": ["md5", "sha1", "sha256", "sha512"],
-##                  "default": ["md5", "sha512"]
-##                  }
-##         }
 
 pyListToVariant(["test", "for", "string", "weird behaviour if no =..."], 1)
         
