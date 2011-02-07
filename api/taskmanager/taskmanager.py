@@ -57,7 +57,7 @@ class TaskManager():
        #print "is compatible"
        #print node.isCompatibleModule(mod)
        if node.isCompatibleModule(mod):
-	 print "post_process add task " + mod + " on node " + str(node.name())
+	 #print "post_process add task " + mod + " on node " + str(node.name())
          if args == None:
            args = libenv.argument("post_process")
          if exec_flags == None:
@@ -96,13 +96,13 @@ class TaskManager():
            if p.mod == mod:
 	    #print "Found singleton processus"
 	    proc = p
-	    proc.args = args #ben ouaip si non c tjrs le meme fichier
+	    #proc.args = args #ben ouaip si non c tjrs le meme fichier
          if not proc:
-           proc = Processus(mod, self.npid, args, exec_flags)
+           proc = Processus(mod, self.npid, None, exec_flags)
            self.lprocessus.append(proc)
            self.npid += 1
       else:
-        proc = Processus(mod, self.npid, args, exec_flags)
+        proc = Processus(mod, self.npid, None, exec_flags)
         self.lprocessus.append(proc)
         self.npid += 1
       if not "thread" in exec_flags:
@@ -114,7 +114,7 @@ class TaskManager():
 	    return proc
         except AttributeError:
 	    pass
-      sched.enqueue(proc)
+      sched.enqueue((proc, args))
       return proc
   __instance = None
 

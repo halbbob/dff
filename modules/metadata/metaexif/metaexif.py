@@ -10,7 +10,7 @@ class EXIFHandler(AttributesHandler):
     AttributesHandler.__init__(self, "exif")
     self.__disown__()
  
-  def  attributes(self, node):
+  def  attributes(self, node): #metaexif.status(decoding exif')
     attr = VMap()
     attr.thisown = False
     file = node.open()
@@ -58,7 +58,7 @@ class MetaEXIF(Script):
 
   def start(self, args):
     node = args.get_node('file')
-##CHECK IF NOT YET REGISTRED !!!!! 
+    self.stateinfo = "registering" + node.name()
     node.registerAttributes(self.handler)
 
 class metaexif(Module): 
