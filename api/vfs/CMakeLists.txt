@@ -27,7 +27,7 @@ SET_SOURCE_FILES_PROPERTIES(libvfs.i PROPERTIES CPLUSPLUS ON)
 if (HAVE_64_BIT)
    SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -D64_BITS)
 endif (HAVE_64_BIT)
-SWIG_ADD_MODULE(libvfs python libvfs.i node.cpp vfile.cpp vfs.cpp mfso.cpp DEventHandler.cpp)
+SWIG_ADD_MODULE(libvfs python libvfs.i node.cpp vlink.cpp filemapping.cpp vfile.cpp vfs.cpp mfso.cpp DEventHandler.cpp)
 SWIG_LINK_LIBRARIES(libvfs ${PYTHON_LIBRARIES} _libsearch _libexceptions _libtype _libenv)
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_libvfs_REAL_NAME} PROPERTIES

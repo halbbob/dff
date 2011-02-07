@@ -555,3 +555,9 @@ void	MftEntry::dumpChunks(OffsetRun *offsets, uint16_t runListSize) {
     runListIndex++;
   }
 }
+
+void	MftEntry::continueAt(uint16_t bufferOffset, uint16_t attributeOffset)
+{
+  _bufferOffset = bufferOffset;
+  _attributeOffset = attributeOffset;
+}
