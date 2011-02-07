@@ -98,7 +98,7 @@ conf = {"arg1": {"input": Optional|Single|typeId.Node,
                  "runtime": {"status": Enabled,
                              "parameters": 512
                              }
-                 }
+                 },
         
         "arg3": {"input": Optional|List|typeId.String,
                  "description": "optional list of argument of type String with fixed parameters selected by user",
@@ -158,7 +158,7 @@ conf = {"arg1": {"input": Optional|Single|typeId.Node,
                  "description": "required ",
                  "parameters": {"type": Fixed,
                                 "predefined": ["md5", "sha1", "sha256", "sha512"],
-                                }
+                                },
                  "runtime": {"parameters": ["md5", "sha512"]}
                  }
         }
