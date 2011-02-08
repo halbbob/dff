@@ -71,10 +71,10 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
       __add_xtd_attr(inode, attr);
       __add_acl(inode, attr);
     }
-  if (inode->type_mode(inode->file_mode())[0] != 'l') // file is not a symlink
+  /*if (inode->type_mode(inode->file_mode())[0] != 'l') // file is not a symlink
     __block_pointers(inode, attr);
   else
-    __symlink_path(inode, attr);
+  __symlink_path(inode, attr); */
 }
 
 vtime *	MfsoAttrib::vtime_from_timestamp(time_t UNIX_timestamp, vtime * v)
