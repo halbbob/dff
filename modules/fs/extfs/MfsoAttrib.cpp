@@ -67,14 +67,15 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
   (*attr)["Fragment size"] =
 	     new Variant(inode->fragment_size());
   if (inode->file_acl_ext_attr())
-    {
-      __add_xtd_attr(inode, attr);
-      __add_acl(inode, attr);
-    }
-  if (inode->type_mode(inode->file_mode())[0] != 'l') // file is not a symlink
-    __block_pointers(inode, attr);
-  else
+  {
+    __add_xtd_attr(inode, attr);
+    __add_acl(inode, attr);
+  }
+  if (inode->type_mode(inode->file_mode())[0] == 'l') // file is not a symlink
     __symlink_path(inode, attr);
+  //__block_pointers(inode, attr);
+  //else
+  //__symlink_path(inode, attr);
 }
 
 vtime *	MfsoAttrib::vtime_from_timestamp(time_t UNIX_timestamp, vtime * v)
@@ -121,63 +122,6 @@ void	MfsoAttrib::__add_acl(Inode * inode, Attributes * attr)
   // TODO
 }
 
-void		MfsoAttrib::__block_pointers(Inode * inode, Attributes * attr)
-{
-  uint32_t	block_number;
-  uint32_t	tmp = inode->SB()->block_size() / 4;
-  uint32_t	i;
-  std::map<std::string, class Variant *>	m;
-  std::list<Variant *>	blk_list;
-
-  if (inode->flags() & 0x80000) // extents, do nothing for now
-    __extents_block(inode, attr);
-  else
-    {
-      uint32_t	previous_block = 0, blk;
-
-      m["Direct"] = NULL;
-      m["Single indirect"] = NULL;
-      m["Double indirect"] = NULL;
-      m["Triple indirect"] = NULL;
-      for (i = 0; i <= (tmp * tmp); ++i)
-	{
-	  block_number = inode->goToBlock(i);
-	  if (!previous_block)
-	    blk = block_number;
-	  else if (block_number != (previous_block + 1))
-	    {
-	      std::ostringstream	oss;
-
-	      oss << blk << " -> " << previous_block;
-	      blk_list.push_back(new Variant(oss.str()));
-	      blk = previous_block;
-	    }	    
-	  previous_block = block_number;
-	  if ((i == 12) && !blk_list.empty())
-	    {
-	      m["Direct"] = new Variant(blk_list);
-	      blk_list.clear();
-	    }
-	  else if (((i - 12) == tmp) && !blk_list.empty() )
-	    {
-	      if (!blk_list.empty())
-		{
-		  m["Single indirect"] = new Variant(blk_list);
-		  blk_list.clear();
-		}
-	    }
-	  else if (((i - 12 - tmp) == (tmp * tmp)) && !blk_list.empty())
-	    {
-	      if (!blk_list.empty())
-		{
-		  m["Double indirect"] = new Variant(blk_list);
-		  blk_list.clear();
-		}
-	    }
-	}
-    }
-  (*attr)[std::string("Block pointers")] = new Variant(m);
-}
 
 void	MfsoAttrib::__symlink_path(Inode * inode, Attributes * attr)
 {
@@ -201,29 +145,4 @@ void	MfsoAttrib::__symlink_path(Inode * inode, Attributes * attr)
   (*attr)["Link target"] = new Variant(path);
 }
 
-void	MfsoAttrib::__extents_block(Inode * inode, Attributes * attr)
-{
-  Ext4Extents	extents(NULL);
-  std::list<std::pair<uint16_t, uint64_t> >   ext_list;
-  std::list<std::pair<uint16_t, uint64_t> >::const_iterator it;
-  std::map<std::string, class Variant *> m;
-  std::list<class Variant *>	blk_l;
 
-  extents.push_extended_blocks(inode);
-  ext_list = extents.extents_list();
-  it = ext_list.begin();
-  while (it != ext_list.end())
-    {
-      std::ostringstream oss;
-
-      oss << (*it).second;
-      oss << " -> ";
-      oss << (*it).first + (*it).second - 1;
-      blk_l.push_back(new Variant(oss.str()));
-      it++;
-    }
-  if (!blk_l.empty())
-    (*attr)["Extent blocks"] = new Variant(blk_l);
-  else
-    (*attr)["Extent blocks"] = NULL;
-}

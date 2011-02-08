@@ -166,6 +166,7 @@ public:
   uint32_t	alloc_inode() { return __alloc_inode; }
 
 
+  BlockPointerAttributes*	attributeHandler;
 private:
   void		__reserved_inodes();
   void		__add_meta_nodes();

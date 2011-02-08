@@ -24,6 +24,109 @@
 #include "include/MfsoAttrib.h"
 #include "include/CustomResults.h"
 
+void	BlockPointerAttributes::__extents_block(Inode * inode, Attributes * attr)
+{
+  Ext4Extents	extents(NULL);
+  std::list<std::pair<uint16_t, uint64_t> >   ext_list;
+  std::list<std::pair<uint16_t, uint64_t> >::const_iterator it;
+  std::map<std::string, class Variant *> m;
+  std::list<class Variant *>	blk_l;
+
+  extents.push_extended_blocks(inode);
+  ext_list = extents.extents_list();
+  it = ext_list.begin();
+  while (it != ext_list.end())
+    {
+      std::ostringstream oss;
+
+      oss << (*it).second;
+      oss << " -> ";
+      oss << (*it).first + (*it).second - 1;
+      blk_l.push_back(new Variant(oss.str()));
+      it++;
+    }
+  if (!blk_l.empty())
+    (*attr)["Extent blocks"] = new Variant(blk_l);
+  else
+    (*attr)["Extent blocks"] = NULL;
+}
+
+void		BlockPointerAttributes::__block_pointers(Inode * inode, Attributes * attr)
+{
+  uint32_t	block_number;
+  uint32_t	tmp = inode->SB()->block_size() / 4;
+  uint32_t	i;
+  std::map<std::string, class Variant *>	m;
+  std::list<Variant *>	blk_list;
+
+  if (inode->flags() & 0x80000) // extents, do nothing for now
+    __extents_block(inode, attr);
+  else
+    {
+      uint32_t	previous_block = 0, blk;
+
+      m["Direct"] = NULL;
+      m["Single indirect"] = NULL;
+      m["Double indirect"] = NULL;
+      m["Triple indirect"] = NULL;
+      for (i = 0; i <= (tmp * tmp); ++i)
+	{
+	  block_number = inode->goToBlock(i);
+	  if (!previous_block)
+	    blk = block_number;
+	  else if (block_number != (previous_block + 1))
+	    {
+	      std::ostringstream	oss;
+
+	      oss << blk << " -> " << previous_block;
+	      blk_list.push_back(new Variant(oss.str()));
+	      blk = previous_block;
+	    }	    
+	  previous_block = block_number;
+	  if ((i == 12) && !blk_list.empty())
+	    {
+	      m["Direct"] = new Variant(blk_list);
+	      blk_list.clear();
+	    }
+	  else if (((i - 12) == tmp) && !blk_list.empty() )
+	    {
+	      if (!blk_list.empty())
+		{
+		  m["Single indirect"] = new Variant(blk_list);
+		  blk_list.clear();
+		}
+	    }
+	  else if (((i - 12 - tmp) == (tmp * tmp)) && !blk_list.empty())
+	    {
+	      if (!blk_list.empty())
+		{
+		  m["Double indirect"] = new Variant(blk_list);
+		  blk_list.clear();
+		}
+	    }
+	}
+    }
+  (*attr)[std::string("Block pointers")] = new Variant(m);
+}
+
+BlockPointerAttributes::BlockPointerAttributes(std::string name) : AttributesHandler(name)
+{
+}
+
+Attributes	BlockPointerAttributes::attributes(Node* node) 
+{
+   Attributes	attr;
+
+   ExtfsNode*  enode = dynamic_cast<ExtfsNode*>(node);
+   Inode * inode = enode->read_inode();
+
+   if (inode->type_mode(inode->file_mode())[0] != 'l') // file is not a symlink
+     this->__block_pointers(inode, &attr);
+   return (attr);
+}
+
+
+
 ExtfsNode::ExtfsNode(std::string name, uint64_t size, Node* parent,
 		     Extfs * fsobj, uint64_t inode_addr, bool is_root)
   : Node (name, size, parent, fsobj)
@@ -32,6 +135,7 @@ ExtfsNode::ExtfsNode(std::string name, uint64_t size, Node* parent,
   this->__extfs = fsobj;
   this->__i_nb = 0;
   this->__is_root = is_root;
+  this->registerAttributes(fsobj->attributeHandler);
 }
 
 ExtfsNode::~ExtfsNode()
@@ -149,13 +253,13 @@ Attributes 	ExtfsNode::_attributes()
       attr["changed"] = new Variant(changed);
       if (inode->SB()->inodes_struct_size() > sizeof(inodes_t))
       {
-        uint8_t * tab = (uint8_t *)operator new(sizeof(__inode_reminder_t));
-        __inode_reminder_t * i_reminder = (__inode_reminder_t *)tab;
+	      uint8_t * tab = (uint8_t *)operator new(sizeof(__inode_reminder_t));
+	      __inode_reminder_t * i_reminder = (__inode_reminder_t *)tab;
 
-        inode->extfs()->vfile()->read(tab, sizeof(__inode_reminder_t));
-        vtime* creation = new vtime;	
-        creation = c_attr->vtime_from_timestamp(i_reminder->creation_time, creation);
-	attr["creation"] = new Variant(creation); 
+	      inode->extfs()->vfile()->read(tab, sizeof(__inode_reminder_t));
+	      vtime* creation = new vtime;	
+	      creation = c_attr->vtime_from_timestamp(i_reminder->creation_time, creation);
+	      attr["creation"] = new Variant(creation); 
       }
       delete c_attr;
     }

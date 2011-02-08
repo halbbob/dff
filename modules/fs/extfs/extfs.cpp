@@ -36,6 +36,7 @@ Extfs::Extfs()
     __first_inodes_nodes(NULL), __orphans_i(NULL)
 {
   __SB = NULL;
+  attributeHandler = new BlockPointerAttributes("extfs-extended"); //XXX if "extfs" shadow a parameters
 }
 
 Extfs::~Extfs()
