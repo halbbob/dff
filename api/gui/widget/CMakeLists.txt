@@ -18,6 +18,7 @@ set(apiguiwidget_srcs
   __init__.py
   dockwidget.py
   nodebrowser.py
+  layoutmanager.py
   nodeview.py
   propertytable.py
   textedit.py
