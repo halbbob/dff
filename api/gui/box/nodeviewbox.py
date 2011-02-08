@@ -23,8 +23,10 @@ from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, DEvent, VLink
 from api.vfs import libvfs
+from api.variant.libvariant import typeId
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
+from ui.gui.resources.ui_selectattr import Ui_SelectAttr
 
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
@@ -59,10 +61,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.connect(self.search, SIGNAL("clicked()"), self.searchActivated)
     self.connect(self.imagethumb, SIGNAL("clicked()"), self.imagethumbActivated)
 
+    self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
+
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
     self.tableActivated()
-
 
   def viewboxChanged(self, index):
     if index == 0:
@@ -71,7 +74,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.thumbActivated()
     elif index == 2:
       self.leftTreeActivated()
-
 
   def addPropertyTable(self):
     self.propertyTable = PropertyTable(self)
@@ -130,9 +132,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
 
   def checkboxAttributeChanged(self, state):
-     if state:
+    if state:
        self.propertyTable.setVisible(True)
-     else:
+    else:
         self.propertyTable.setVisible(False)	
 
   def moveToTop(self):
@@ -224,7 +226,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.pathedit.insert(path[1:])
     self.pathedit.setCompleter(self.completer)
 
-
   def changeNavigationState(self):
     self.setPrevMenu()
     self.setNextMenu()
@@ -269,6 +270,16 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       e = DEvent()
       self.VFS.notify(e)
 
+  def attrSelectView(self):
+    attrdiag = attrDialog(self)
+    iReturn = attrdiag.exec_()
+    header_list = attrdiag.selectedAttrs
+    for i in range(header_list.count()):
+      item = header_list.item(i)
+      self.model.header_list.append(item.text())
+      self.model.setHeaderData(i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
+      
+
   def createCategory(self, category):
     if category != "":
       # Create bookmark node in root directory if first creation
@@ -297,7 +308,63 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     else:
       QWidget.changeEvent(self, event)
 
+class attrDialog(QDialog, Ui_SelectAttr):
+  def __init__(self, nodeviewbox):
+    QDialog.__init__(self, nodeviewbox)
+    self.setupUi(self)
+    model = nodeviewbox.model
+    self.initAttrs(model)
+    self.connect(self.addAttr, SIGNAL("clicked()"), self.addAttrToList)
+    self.connect(self.removeAttr, SIGNAL("clicked()"), self.removeAttrFromList)
+    self.connect(self.buttonBox, SIGNAL("accepted()"), self.buttonClicked)
 
+  def buttonClicked(self):
+    self.hide()
+
+  def initAttrs(self, model):
+    nodes = model.node_list
+    node = nodes[0]
+    if node == None:
+      return
+    module = node.fsobj()
+    if module == None:
+      return
+    print module.name
+    attrs = node.attributes()[module.name].value()
+    attrs.thisown = False
+    for i in attrs:
+      if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
+        self.allAttrs.addItem(i)
+                 
+  def addAttrToList(self):
+    attr = self.allAttrs.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      print "ferf " + attr.text()
+      row = self.allAttrs.currentRow()
+      self.allAttrs.takeItem(row)
+      self.selectedAttrs.addItem(attr.text())
+
+  def removeAttrFromList(self):
+    attr = self.selectedAttrs.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.selectedAttrs.currentRow()
+      self.selectedAttrs.takeItem(row)
+      self.allAttrs.addItem(attr.text())
+
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+    else:
+      QDialog.changeEvent(self, event)
 
 class bookmarkDialog(QDialog, Ui_AddBookmark):
   def __init__(self, nodeviewbox):
@@ -351,7 +418,6 @@ class bookmarkDialog(QDialog, Ui_AddBookmark):
     else:
       QDialog.changeEvent(self, event)
         
-
 class kompleter(QCompleter):
     def __init__(self, parent, treemodel, model):
       QCompleter.__init__(self, treemodel) 

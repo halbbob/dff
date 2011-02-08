@@ -151,7 +151,7 @@ class TreeModel(QAbstractItemModel):
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
      pixmapCache.insert(str(node.this), pixmap)
-     self.__parent.currentView().viewport().update()
+     self.__parent.currentView().update(index)
 
   def setRootPath(self, node, kompleter = None):
     self.rootChildCount = node.childCount()
@@ -263,7 +263,7 @@ class TreeModel(QAbstractItemModel):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
 
 class VFSItemModel(QAbstractItemModel):
-  numberPopulated = QtCore.pyqtSignal(int)
+  #numberPopulated = QtCore.pyqtSignal(int)
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
@@ -280,8 +280,9 @@ class VFSItemModel(QAbstractItemModel):
     self.fm = False
     self.checkedNodes = set()
     self.node_list = []
-    setattr(self, "canFetchMore", self.canFetchMore)
-    setattr(self, "fetchMore", self.fetchMore)
+    self.header_list = []
+    #setattr(self, "canFetchMore", self.canFetchMore)
+    #setattr(self, "fetchMore", self.fetchMore)
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
@@ -300,18 +301,6 @@ class VFSItemModel(QAbstractItemModel):
       self.emit(SIGNAL("rootPathChanged"), node)
     self.reset()
 
-  def canFetchMore(self, parent):
-    if self.fetchedItems < len(self.node_list):
-      return True
-    return False
-
-  def fetchMore(self, parent):
-     remainder = len(self.node_list) - self.fetchedItems
-     itemsToFetch = self.qMin(50, remainder)
-     self.beginInsertRows(parent, self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
-     self.fetchedItems += itemsToFetch
-     self.endInsertRows()
-
   def qMin(self, x, y):
     if x < y:
       return x
@@ -319,6 +308,7 @@ class VFSItemModel(QAbstractItemModel):
       return y
 
   def rowCount(self, parent):
+   # return len(self.node_list)
     return self.fetchedItems
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
@@ -327,16 +317,32 @@ class VFSItemModel(QAbstractItemModel):
     if orientation == Qt.Horizontal:
       if section == HNAME:
         return QVariant(self.nameTr)
-      if section == HSIZE:
+      elif section == HSIZE:
         return QVariant(self.sizeTr)
-      if section == HACCESSED:
-        return QVariant(self.ATimeTr)
-      if section == HCHANGED:
-        return QVariant(self.CTimeTr)
-      if section == HMODIFIED:
-        return QVariant(self.MTimeTr)
-      if section == HMODULE:
-        return QVariant(self.moduleTr)
+      elif (section - 2) > len(self.header_list):
+        return QVariant()
+      else:
+        return QVariant(self.header_list[section - 2])
+      
+      #if section == HACCESSED:
+      #  return QVariant(self.ATimeTr)
+      #if section == HCHANGED:
+      #  return QVariant(self.CTimeTr)
+      #if section == HMODIFIED:
+      #  return QVariant(self.MTimeTr)
+      #if section == HMODULE:
+      #  return QVariant(self.moduleTr)
+  def canFetchMore(self, parent):
+    if self.fetchedItems < len(self.node_list):
+      return True
+    return False
+
+  def fetchMore(self, parent):
+    remainder = len(self.node_list) - self.fetchedItems
+    itemsToFetch = self.qMin(50, remainder)
+    self.beginInsertRows(parent, self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
+    self.fetchedItems += itemsToFetch
+    self.endInsertRows()
 
   def data(self, index, role):
     if not index.isValid():
@@ -351,42 +357,75 @@ class VFSItemModel(QAbstractItemModel):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-        if column == HACCESSED:
-          changed = node.attributesByName("accessed")
-          if changed != None:
-            if len(changed.toString()) == 0:
-              return QVariant("N / A")
-            else:
-              return QVariant(changed.toString())
-          else:
-            return QVariant()
-        elif column == HCHANGED:
-          changed = node.attributesByName("changed")
-          if changed != None:
-            if len(changed.toString()) == 0:
-              return QVariant("N / A")
-            else:
-              return QVariant(changed.toString())
-          else:
-            return QVariant()
-        elif column == HMODIFIED:
-          changed = node.attributesByName("modified")
-          if changed != None:
-            if len(changed.toString()) == 0:
-              return QVariant("N / A")
-            else:
-              return QVariant(changed.toString())
-          else:
-            return QVariant()
-        elif column == HMODULE:
-          fsobj = node.fsobj()
-          if (fsobj != None):
-            return QVariant(fsobj.name)
-          else:
-            return QVariant()
-        return QVariant()
+        if column - 2 > len(self.header_list):
+          print "out of range"
+          return QVariant()
+        #val = None
+        
+        m = node.attributes()[node.fsobj().name].value()
+        m.thisown = False
+        value = m[str(self.header_list[column - 2])]
+        value.thisown = False
+        val = value.value()
+        val.thisown = False
+#        val = value.get_time()
+#        print "vale : " + str(val)
+#        val.thisown = False
+        if val == None:
+          return QVariant(" N / A ")
+        return QVariant(QDateTime(val.get_time()))
+        
+        #              m = attr["local"].value()
+#<vertrex>           m.thisown = 0
+#<vertrex>           changed = m["changed"]
+#<vertrex>           changed.thisown = 0
+#<vertrex>           changed = changed.value()
+#<vertrex>           changed.thisown = 0
+#<vertrex>           changed = changed.get_time()
+        #if column == HACCESSED:
+          #changed = node.attributesByName("accessed")
+          #m = node.attributes()
+          #mm = m[node.fsobj().name()]
+          #changed = mm["changed"]
+          #changed.thisown = False
+          #changed = None
+          #if changed != None:
+          #  if len(changed.toString()) == 0:
+          #    return QVariant("N / A")
+          #  else:
+          #    return QVariant(changed.get_time())
+          #else:
+          #  return QVariant()
+       # elif column == HCHANGED:
+          #changed = node.attributesByName("changed")
+          #changed = None
+          #if changed != None:
+          #  if len(changed.toString()) == 0:
+          #    return QVariant() #("N / A")
+          #  else:
+          #    return QVariant(changed.toString())
+          #else:
+          #  return QVariant()
+        #elif column == HMODIFIED:
+          #changed =  node.attributesByName("modified")
+         # changed = None
+          #if changed != None:
+           # if len(changed.toString()) == 0:
+           #   return QVariant() #("N / A")
+           # else:
+           #   return QVariant(changed.toString())
+          #else:
+           # return QVariant()
+        #elif column == HMODULE:
+        #  fsobj = node.fsobj()
+        #  if (fsobj != None):
+        #    return QVariant(fsobj.name)
+        #  else:
+        #    return QVariant()
+        #return QVariant()
       except IndexError:
         return QVariant()
+      return QVariant()
     if role == Qt.ForegroundRole:
       if column == 0:
         if node.isDeleted():
@@ -423,7 +462,8 @@ class VFSItemModel(QAbstractItemModel):
     self.imagesthumbnails = flag
 
   def columnCount(self, parent = QModelIndex()):
-     return 6
+    return len(self.header_list) + 2 #2 is for columns names and sizes
+    return 6
 
   def index(self, row, column, parent = QModelIndex()):
     if not self.hasIndex(row, column, parent):
@@ -505,12 +545,12 @@ class VFSItemModel(QAbstractItemModel):
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
     elif column == HMODULE:
       self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
-    elif column == HCHANGED:
-      self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("changed"), reverse=Reverse)
-    elif column == HACCESSED:
-      self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("accessed"), reverse=Reverse)
-    elif column == HMODIFIED:
-      self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("modified"), reverse=Reverse)
+    #elif column == HCHANGED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("changed"), reverse=Reverse)
+    #elif column == HACCESSED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("accessed"), reverse=Reverse)
+    #elif column == HMODIFIED:
+    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("modified"), reverse=Reverse)
     else:
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
@@ -522,3 +562,4 @@ class VFSItemModel(QAbstractItemModel):
     self.CTimeTr = self.tr('Changed time')
     self.MTimeTr = self.tr('Modified time')
     self.moduleTr = self.tr('Module')
+

@@ -150,7 +150,7 @@ public:
 
   EXPORT bool					registerAttributes(AttributesHandler*);
   EXPORT virtual class Variant*			dataType(void); 
-  EXPORT virtual Attributes*			attributes();	
+  EXPORT virtual Attributes*			attributes();
   EXPORT virtual Variant*			attributesByName(std::string);
   EXPORT virtual Attributes*			attributesByType(uint8_t type);
   EXPORT virtual std::list<std::string>*	attributesNames(void);
