@@ -13,4 +13,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["loader", "env", "vfs", "scheduler", "magic", "module", "utils","type","exceptions", "manager", "gui", "devices", "tree"]
+__all__ = ["loader", "env", "vfs", "scheduler", "magic", "module", "utils","type","exceptions", "manager", "gui", "devices", "tree", "datatype"]

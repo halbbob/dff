@@ -177,9 +177,9 @@ else(QT_LANGUAGE_COMPILER)
 endif(QT_LANGUAGE_COMPILER)
 
 ## PyQt UI compiler check, to generate widgets
-find_program(PYTHON_QT4_UIC NAMES pyuic4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_UIC NAMES pyuic4 pyuic4.bat PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
 if(PYTHON_QT4_UIC)
-  message(STATUS "Python Qt4 user interface compiler found: ${PYTHON_QT4_RCC}")
+  message(STATUS "Python Qt4 user interface compiler found: ${PYTHON_QT4_UIC}")
 else(PYTHON_QT4_UIC)
   message(SEND_ERROR "Python Qt4 user interface compiler not found.")
 endif(PYTHON_QT4_UIC)
@@ -302,6 +302,7 @@ set(API_TREE_VERSION "1.0.0")
 set(API_TYPE_VERSION "1.0.0")
 set(API_VARIANT_VERSION "1.0.0")
 set(API_VFS_VERSION "2.7.0")
+set(API_DATATYPE_VERSION "1.0.0")
 # Premier commit de code sur le svn : 2007-12-17
 
 #### Project install for windows

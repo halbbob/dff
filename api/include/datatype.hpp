@@ -51,9 +51,9 @@ public:
     static DataTypeManager single;
     return single;
   } 
-  bool						registerHandler(DataTypeHandler*);
-  std::map<std::string, uint32_t>&		foundTypes();
-  class Variant*				type(Node*);
+  EXPORT bool						registerHandler(DataTypeHandler*);
+  EXPORT std::map<std::string, uint32_t>&		foundTypes();
+  EXPORT class Variant*				type(Node*);
 };
 
 

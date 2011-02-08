@@ -28,7 +28,7 @@ IF (WIN32)
   set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DWIN32)
 ENDIF(WIN32)
 SWIG_ADD_MODULE(libvariant python libvariant.i variant.cpp)
-SWIG_LINK_LIBRARIES(libvariant ${PYTHON_LIBRARIES} _libtype _libvfs)
+SWIG_LINK_LIBRARIES(libvariant ${PYTHON_LIBRARIES} _libtype)
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_libvariant_REAL_NAME} PROPERTIES
   PREFIX "../"

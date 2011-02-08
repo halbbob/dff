@@ -14,7 +14,10 @@
 #
 import platform
 
-import magic
+try:
+  from api.magic import magic
+except:
+  import magic
 from api.vfs import *
 from api.env import *
 from api.exceptions.libexceptions import *
@@ -32,7 +35,7 @@ class MagicHandler(DataTypeHandler):
      self.mime = magic.open(mtype)
      if os.name == "nt":
        import sys
-       self.mime.load(sys.path[0] + "./api/datatype/magic")
+       self.mime.load(sys.path[0] + "./api/magic/magic.mgc")
      else:
        self.mime.load()
 
