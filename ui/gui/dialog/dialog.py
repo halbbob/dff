@@ -74,28 +74,27 @@ class Dialog(QObject):
           elif dtype == 'ewf' or dtype == 'raw':
             sFiles = QFileDialog.getOpenFileNames(self.parent, edialog.actionAdd_evidence_files.text(),  os.path.expanduser('~'))
 
+          mod = ""
           if len(sFiles) > 0:
+            args = {}
+            exec_type = ["thread", "gui"]
+            pathes = []
             if dtype != 'dir':
               for name in sFiles:
-                arg = {"empty": None}
-                #arg = self.env.libenv.argument("gui_input")
-                #arg.thisown = 0
-                exec_type = ["thread", "gui"]
-                if dtype == 'ewf':
-                  #arg.add_path("file", str(name.toUtf8()))
-                  self.taskmanager.add("ewf", arg, exec_type)
-                else:
-                  #arg.add_path("path", str(name.toUtf8()))
-                  #arg.add_node("parent", self.vfs.getnode("/Logical files"))
-                  self.taskmanager.add("local", arg, exec_type)
+                pathes.append(str(name.toUtf8()))
+                #arg = {"empty": None}
+              if dtype == 'ewf':
+                mod = "ewf"
+                args["file"] = pathes
+              else:
+                mod = "local"
+                args["parent"] = self.vfs.getnode("/Logical files")
+                args["path"] = pathes
             else:
-              arg = {"empty": None}
-              #arg = self.env.libenv.argument("gui_input")
-              #arg.thisown = 0
-              exec_type = ["thread", "gui"]
-              #arg.add_path("path", str(sFiles.toUtf8()))
-              #arg.add_node("parent", self.vfs.getnode("/Logical files"))
-              self.taskmanager.add("local", arg, exec_type)
+              mod = "local"
+              args["parent"] = self.vfs.getnode("/Logical files")
+              args["path"] = [str(sFiles.toUtf8())]
+          self.taskmanager.add(mod, args, exec_type)
  
   def loadDriver(self):
         sFileName = QFileDialog.getOpenFileName(self.parent, self.parent.actionLoadModule.toolTip(), os.path.expanduser('~'),  "Modules(*.py)")

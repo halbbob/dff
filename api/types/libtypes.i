@@ -728,7 +728,8 @@ bool validateDefault (PyObject* val, uint8_t t)
 	    for (i = 0; i != lsize; i++)
 	      {
 		item = PyList_GetItem(predef_obj, i);
-		if ((v = pyObjectToVariant(item, itype)) == NULL)
+		//Maybe change this call with _wrap_new_Variant to not depend on swig overload method generation (at the moment it's SWIG_16 but could change if new Variant ctor implemented...). Then use Swig_ConvertPtr to get Variant from the returned PyObject.
+		if ((v = new_Variant__SWIG_16(item, itype)) == NULL)
 		  {
 		    err = true;
 		    break;
@@ -1083,6 +1084,79 @@ bool validateDefault (PyObject* val, uint8_t t)
 		  v = new Variant(c);
 		  err = false;
 		}
+	    }
+	  else if (type == typeId::Path)
+	    {
+	      std::string	str;
+	      Path*		p;
+
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      ecode = SWIG_AsVal_std_string(obj, &str);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  p = new Path(str);
+		  v = new Variant(p);
+		  err = false;
+		}
+	    }
+	}
+      else if (strncmp("Node", obj->ob_type->tp_name, 4) == 0)
+	{
+	  if (type == typeId::Node)
+	    { 
+	      void*	vptr;
+	      Node*	node;
+	      int res = SWIG_ConvertPtr(obj, &vptr, SWIGTYPE_p_Node, 0);
+	      if (SWIG_IsOK(res))
+		{
+		  node = reinterpret_cast< Node * >(vptr);
+		  v = new Variant(node);
+		  err = false;
+		}
+	    }
+	}
+      else if (strncmp("Path", obj->ob_type->tp_name, 4) == 0)
+	{
+	  if (type == typeId::Path)
+	    {
+	      void*	vptr;
+	      Path*	path;
+	      int res = SWIG_ConvertPtr(obj, &vptr, SWIGTYPE_p_Path, 0);
+	      if (SWIG_IsOK(res))
+		{
+		  path = reinterpret_cast< Path * >(vptr);
+		  v = new Variant(path);
+		  err = false;
+		}
+	    }
+	}
+      else if (PyList_Check(obj))
+	{
+	  Py_ssize_t		size = PyList_Size(obj);
+	  Py_ssize_t		it;
+	  PyObject*		item;
+	  std::list<Variant *>	vlist;
+	  Variant*		vvlist;
+	  Variant*		vitem;
+	  bool			lbreak = false;
+
+	  for (it = 0; it != size; it++)
+	    {
+	      item = PyList_GetItem(obj, it);
+	      if ((vitem = new_Variant__SWIG_16(item, type)) == NULL)
+	      	{
+	      	  lbreak = true;
+	      	  break;
+	      	}
+	      vlist.push_back(vitem);
+	    }
+	  if (lbreak)
+	    vlist.erase(vlist.begin(), vlist.end());
+	  else
+	    {
+	      v = new Variant(vlist);
+	      err = false;
 	    }
 	}
       if (err)

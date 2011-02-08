@@ -39,6 +39,7 @@
 %{
 from api.module.module import *
 from api.types.libtypes import *
+from api.vfs import vfs
 class LOCAL(Module):
   """Add file from your operating system to the VFS"""
   def __init__(self):
@@ -47,7 +48,7 @@ class LOCAL(Module):
 	                   "name": "parent", 
 	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
                            "parameters": {"type": Parameter.Customizable,
-	                                  "predefined": ["/", "/local evidences"]}
+                                          "predefined": [vfs.vfs().getnode("/")]}
                           })
     self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path, 
 	                   "name": "path", 

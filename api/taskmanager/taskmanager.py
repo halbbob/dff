@@ -16,7 +16,7 @@
 from api.events.libevents import EventHandler
 from api.taskmanager.scheduler import sched 
 from api.taskmanager.processus import *
-#from api.env import *
+from api.types.libtypes import Variant, typeId, Argument, Parameter
 from api.loader import *
 from api.exceptions.libexceptions import *
 import threading
@@ -115,7 +115,26 @@ class TaskManager():
 	    return proc
         except AttributeError:
 	    pass
-      sched.enqueue((proc, args))
+      marg = {}
+      arguments = mod.conf.arguments()
+      for arg in arguments:
+        arg_name = arg.name()
+        if arg.requirementType() == Argument.Required:
+          try:
+            value = args[arg_name]
+            v = Variant(value, arg.type())
+            marg[arg_name] = v
+          except KeyError:
+            raise KeyError
+        else:
+          try:
+            value = args[arg_name]
+            v = Variant(value, arg.type())
+            marg[arg_name] = v
+          except KeyError:
+            raise KeyError
+          
+      sched.enqueue((proc, marg))
       return proc
   __instance = None
 

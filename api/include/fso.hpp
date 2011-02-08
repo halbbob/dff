@@ -41,7 +41,7 @@ class fso
 private:
   std::list<class Node *>	__update_queue;
 public:
-  //Results*			res;
+  std::map<std::string, Variant* > res;
   std::string			stateinfo;
   std::string			name;
 
