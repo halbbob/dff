@@ -88,28 +88,26 @@ protected:
   //XXX parent could be a list of Node. 
   //    Ex: Raid reconstruction based on two nodes which
   //    are aggregated to only one Node
-  class Node*			__parent;
-  std::set<AttributesHandler*>	__attributesHandlers; //XXX set pour pas avoir de doublon 
-
-  std::vector<class Node *>	__children;
-  uint32_t			__childcount;
-  std::string			__name;
-  uint64_t			__size;
-  class fso*			__fsobj;
-  uint64_t			__common_attributes;
-  std::map<std::string, class Variant*> __static_attributes;
+  class Node*				__parent;
+  std::set<AttributesHandler*>		__attributesHandlers; //XXX set pour pas avoir de doublon 
+  std::vector<class Node *>		__children;
+  uint32_t				__childcount;
+  std::string				__name;
+  uint64_t				__size;
+  class fso*				__fsobj;
+  uint64_t				__common_attributes;
   //unsigned char			__checkState;
-  uint32_t			__id; //FIX for local and mfso / fso mess in reimplation of vopen 
-  EXPORT virtual Attributes	_attributes();
-  EXPORT void			attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
-  EXPORT void	 		attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
-  EXPORT void	 		attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
+  uint32_t				__id; //FIX for local and mfso / fso mess in reimplation of vopen 
+  EXPORT virtual Attributes		_attributes();
+  EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
+  EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
+  EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
 public:
-  uint32_t			__at;
-  EXPORT Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
-  EXPORT Node();
+  EXPORT 				Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
+  EXPORT 				Node();
   EXPORT virtual 			~Node();
 
+  uint32_t				__at;
 
   EXPORT void				setId(uint32_t	id);
   EXPORT virtual	uint32_t	id();
@@ -158,6 +156,8 @@ public:
   EXPORT virtual string				icon();
   EXPORT virtual std::list<std::string>*	compatibleModules(void);
   EXPORT virtual bool				isCompatibleModule(string);
+  EXPORT virtual Attributes*			dynamicAttributes();
+  EXPORT virtual Attributes			fsoAttributes();
 };
 
 class VfsRoot: public Node
@@ -192,7 +192,7 @@ public :
 
   EXPORT VLink(Node *linkedNode, Node* parent, std::string newname = "");
   EXPORT ~VLink();
-  EXPORT  Node*				linkParent();
+  EXPORT Node*				linkParent();
   EXPORT std::vector<class Node*>	linkChildren();
   EXPORT bool				linkHasChildren();
   EXPORT uint32_t			linkChildCount();

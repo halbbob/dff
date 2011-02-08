@@ -264,6 +264,7 @@ class TreeModel(QAbstractItemModel):
 
 class VFSItemModel(QAbstractItemModel):
   #numberPopulated = QtCore.pyqtSignal(int)
+  toto = (None, None)
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
@@ -281,6 +282,7 @@ class VFSItemModel(QAbstractItemModel):
     self.checkedNodes = set()
     self.node_list = []
     self.header_list = []
+    self.cacheAttr = (None, None)
     #setattr(self, "canFetchMore", self.canFetchMore)
     #setattr(self, "fetchMore", self.fetchMore)
 
@@ -344,6 +346,7 @@ class VFSItemModel(QAbstractItemModel):
     self.fetchedItems += itemsToFetch
     self.endInsertRows()
 
+
   def data(self, index, role):
     if not index.isValid():
       return QVariant()
@@ -358,71 +361,19 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant(node.size())
       try :
         if column - 2 > len(self.header_list):
-          print "out of range"
           return QVariant()
-        #val = None
-        
-        m = node.attributes()[node.fsobj().name].value()
-        m.thisown = False
-        value = m[str(self.header_list[column - 2])]
-        value.thisown = False
+	if self.cacheAttr[0] != long(node.this): 
+   	  self.cacheAttr = (long(node.this), node.fsoAttributes())
+  	attr = self.cacheAttr[1]
+        value = attr[str(self.header_list[column - 2])]
         val = value.value()
-        val.thisown = False
-#        val = value.get_time()
-#        print "vale : " + str(val)
-#        val.thisown = False
         if val == None:
           return QVariant(" N / A ")
-        return QVariant(QDateTime(val.get_time()))
-        
-        #              m = attr["local"].value()
-#<vertrex>           m.thisown = 0
-#<vertrex>           changed = m["changed"]
-#<vertrex>           changed.thisown = 0
-#<vertrex>           changed = changed.value()
-#<vertrex>           changed.thisown = 0
-#<vertrex>           changed = changed.get_time()
-        #if column == HACCESSED:
-          #changed = node.attributesByName("accessed")
-          #m = node.attributes()
-          #mm = m[node.fsobj().name()]
-          #changed = mm["changed"]
-          #changed.thisown = False
-          #changed = None
-          #if changed != None:
-          #  if len(changed.toString()) == 0:
-          #    return QVariant("N / A")
-          #  else:
-          #    return QVariant(changed.get_time())
-          #else:
-          #  return QVariant()
-       # elif column == HCHANGED:
-          #changed = node.attributesByName("changed")
-          #changed = None
-          #if changed != None:
-          #  if len(changed.toString()) == 0:
-          #    return QVariant() #("N / A")
-          #  else:
-          #    return QVariant(changed.toString())
-          #else:
-          #  return QVariant()
-        #elif column == HMODIFIED:
-          #changed =  node.attributesByName("modified")
-         # changed = None
-          #if changed != None:
-           # if len(changed.toString()) == 0:
-           #   return QVariant() #("N / A")
-           # else:
-           #   return QVariant(changed.toString())
-          #else:
-           # return QVariant()
-        #elif column == HMODULE:
-        #  fsobj = node.fsobj()
-        #  if (fsobj != None):
-        #    return QVariant(fsobj.name)
-        #  else:
-        #    return QVariant()
-        #return QVariant()
+        if value.type() == 13:
+            return QVariant(QDateTime(val.get_time()))
+	else:
+	    return QVariant(val)       
+ 
       except IndexError:
         return QVariant()
       return QVariant()
