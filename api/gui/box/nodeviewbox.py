@@ -26,7 +26,7 @@ from api.vfs import libvfs
 from api.variant.libvariant import typeId
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
-from ui.gui.resources.ui_selectattr import Ui_SelectAttr
+from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
 
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):

@@ -35,6 +35,7 @@ set(ui_resources_files
   propertytable.ui
   shell.ui
   taskmanager.ui
+  selectattrs.ui
 )
 
 # Generates ui_*.py files
@@ -71,6 +72,7 @@ set(resources_srcs
   ui_propertytable.py
   ui_shell.py
   ui_taskmanager.py
+  ui_selectattrs.py
 # Only for release because so huge file for versionning
 #  help.qhc
 #  help.qch
