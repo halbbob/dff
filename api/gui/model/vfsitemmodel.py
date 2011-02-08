@@ -136,13 +136,11 @@ class TypeWorker(QThread):
 typeWorker = TypeWorker()
 typeWorker.start()
 
-class TreeModel(QAbstractItemModel, DEventHandler):
+class TreeModel(QAbstractItemModel):
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
-    DEventHandler.__init__(self)
     self.__parent = __parent
     self.VFS = VFS.Get()
-    self.VFS.connection(self)
     self.map = {}
     self.imagesthumbnails = None
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
@@ -264,19 +262,19 @@ class TreeModel(QAbstractItemModel, DEventHandler):
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
 
-  def Event(self, e):
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.emit(SIGNAL("layoutChanged()"))
+  #def Event(self, e):
+    #self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    #self.emit(SIGNAL("layoutChanged()"))
 
 
-class VFSItemModel(QAbstractItemModel, DEventHandler):
+class VFSItemModel(QAbstractItemModel):
   #numberPopulated = QtCore.pyqtSignal(int)
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
-    DEventHandler.__init__(self)
+    #DEventHandler.__init__(self)
     self.__parent = __parent
     self.VFS = VFS.Get()
-    self.VFS.connection(self)
+    #self.VFS.connection(self)
     self.map = {}
 
     self.imagesthumbnails = None
@@ -294,9 +292,10 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     #setattr(self, "canFetchMore", self.canFetchMore)
     #setattr(self, "fetchMore", self.fetchMore)
 
-  def Event(self, e):
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.emit(SIGNAL("layoutChanged()"))
+  #def Event(self, e):
+    #print "EMITING SIGNAL vfsItemModel"
+    #self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    #self.emit(SIGNAL("layoutChanged()"))
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
