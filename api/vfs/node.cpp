@@ -211,16 +211,39 @@ Attributes*			Node::attributesByType(uint8_t type)
 }
 
 
-Attributes*			Node::attributes() //rajouter un wait times ->bloquant ou pas 
+Attributes*			Node::attributes()
 {
   Attributes* attr = new std::map<std::string, Variant*>;
-//UNICODE
-   (*attr)[std::string("type")] = this->dataType(); //TYPE A REGISTER DS LE NODE OU AVOIR UN REGISTER GLOBAL ?
 
-  std::set<AttributesHandler*>::iterator handler;
+
+  (*attr)[std::string("type")] = this->dataType();
+
+
   Attributes	nodeAttributes = this->_attributes();
   if (!(nodeAttributes.empty()))
     (*attr)[this->fsobj()->name] = new Variant(nodeAttributes);
+
+
+  std::set<AttributesHandler*>::iterator handler;
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+  {
+    (*attr)[(*handler)->name()] = new Variant((*handler)->attributes(this));	
+  } 	
+
+  return attr;
+}
+
+Attributes		Node::fsoAttributes()
+{
+  return this->_attributes();
+}
+
+Attributes*		Node::dynamicAttributes()
+{
+  Attributes* attr = new std::map<std::string, Variant*>;
+
+
+  std::set<AttributesHandler*>::iterator handler;
   for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
   {
     (*attr)[(*handler)->name()] = new Variant((*handler)->attributes(this));	
