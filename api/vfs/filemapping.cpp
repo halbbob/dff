@@ -15,6 +15,7 @@
  */
 
 #include "node.hpp"
+#include "filemapping.hpp"
 
 FileMapping::FileMapping()
 {
@@ -131,6 +132,7 @@ chunck*			FileMapping::chunckFromOffset(uint64_t offset)
 	}
     }
 }
+
 uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset, uint32_t providedidx)
 {
   uint32_t		begidx;

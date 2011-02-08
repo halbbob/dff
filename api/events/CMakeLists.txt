@@ -11,6 +11,7 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
+#  Solal Jacob <sja@digital-forensic.org>
 
 
 FIND_PACKAGE(SWIG REQUIRED)
@@ -22,25 +23,24 @@ INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
 
-SET_SOURCE_FILES_PROPERTIES(libvariant.i PROPERTIES CPLUSPLUS ON)
-set(CMAKE_SWIG_FLAGS -threads -fvirtual -fastdispatch)
-IF (WIN32)
-  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DWIN32)
-ENDIF(WIN32)
-SWIG_ADD_MODULE(libvariant python libvariant.i variant.cpp)
-SWIG_LINK_LIBRARIES(libvariant ${PYTHON_LIBRARIES} _libtype _libvfs)
+SET_SOURCE_FILES_PROPERTIES(libevents.i PROPERTIES CPLUSPLUS ON)
+if (HAVE_64_BIT)
+   SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -D64_BITS)
+endif (HAVE_64_BIT)
+SWIG_ADD_MODULE(libevents python libevents.i eventhandler.cpp)
+SWIG_LINK_LIBRARIES(libevents ${PYTHON_LIBRARIES} _libtypes)
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
-set_target_properties (${SWIG_MODULE_libvariant_REAL_NAME} PROPERTIES
+set_target_properties (${SWIG_MODULE_libevents_REAL_NAME} PROPERTIES
   PREFIX "../"
   SUFFIX ".pyd"
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
-set(variant_srcs
+set(events_srcs
   __init__.py
-  libvariant.py
+  libevents.py
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 
-install_file(variant ${variant_srcs})
-install_lib(${SWIG_MODULE_libvariant_REAL_NAME})
+install_lib(${SWIG_MODULE_libevents_REAL_NAME})
+install_file(events ${events_srcs})

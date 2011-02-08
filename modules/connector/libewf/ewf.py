@@ -18,8 +18,7 @@ from api.module.script import Script
 from api.vfs.libvfs import FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
-from api.type.libtype import vtime
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import vtime, Variant, VMap
 
 import os
 from ctypes import CDLL, c_char_p, c_int, pointer, c_ulonglong, c_ulong, create_string_buffer, byref, pointer

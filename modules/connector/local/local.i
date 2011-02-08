@@ -24,28 +24,41 @@
 %import "../../../api/vfs/libvfs.i"
 
 %{
-#include "../include/export.hpp"
+#include "fso.hpp"
+#include "mfso.hpp"
+#include "node.hpp"
+#include "vlink.hpp"
+#include "vfile.hpp"
 #include "local.hpp"
 %}
 
-%include "../include/export.hpp"
 %include "local.hpp"
 
-
-namespace std
-{
-  %template(ListString)         list<string>;
-};
 
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import *
 class LOCAL(Module):
   """Add file from your operating system to the VFS"""
   def __init__(self):
     Module.__init__(self, 'local', local)
-    self.conf.add("parent", "node", True, "The file will be added as son of this node or as the root node by default.")
-    self.conf.add("path", "path", False, "Path to the file or directory on your operating system.")
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.Node, 
+	                   "name": "parent", 
+	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
+                           "parameters": {"type": Parameter.Customizable,
+	                                  "predefined": ["/", "/local evidences"]}
+                          })
+    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path, 
+	                   "name": "path", 
+	                   "description": "Path to the file or directory on your operating system."})
+
+    #self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path, 
+    #	                   "name": "path",
+    #	  "description": "Path to the file or directory on your operating system.",
+    #	  "parameters": {"type": Parameter.Fixed}})
+
+
   # self.conf.add("size", "uint64", True, "Force size of the file.")
     self.tags = "Connectors"
 %}

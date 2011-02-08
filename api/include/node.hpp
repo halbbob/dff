@@ -17,51 +17,20 @@
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
-#include "mfso.hpp"
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
 #include <iostream>
 #include <sys/types.h>
+#include "fso.hpp"
 #include "export.hpp"
+#include "filemapping.hpp"
 #include "vfile.hpp"
 #include "variant.hpp"
 #include "vtime.hpp"
 #include "exceptions.hpp"
 #include "datatype.hpp"
-
-typedef struct
-{
-  uint64_t      offset;
-  uint64_t      size;
-  class Node*   origin;
-  uint64_t	originoffset;
-}               chunck;
-
-class FileMapping
-{
-private:
-  std::vector<chunck *> __chuncks;
-  uint64_t		__mappedFileSize;
-  chunck*		__prevChunck;
-  void			allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
-public:
-  EXPORT FileMapping();
-  EXPORT ~FileMapping();
-  EXPORT uint64_t		mappedFileSize();
-  EXPORT uint32_t		chunckCount();
-  EXPORT chunck*		firstChunck();
-  EXPORT chunck*		lastChunck();
-  EXPORT chunck*		chunckFromIdx(uint32_t idx);
-  EXPORT chunck*		chunckFromOffset(uint64_t offset);
-  EXPORT uint32_t		chunckIdxFromOffset(uint64_t offset, uint32_t begidx=0);
-  EXPORT std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
-  EXPORT std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
-  EXPORT std::vector<chunck *>	chuncks();
-  EXPORT void			push(uint64_t offset, uint64_t size, class Node* origin=NULL, uint64_t originoffset=0);
-};
-
 
 typedef std::map<std::string, class Variant* > Attributes; 
 
@@ -165,44 +134,6 @@ class VfsRoot: public Node
 public:
   VfsRoot(std::string name);
   ~VfsRoot();
-};
-
-class VLink : public Node
-{
-private :
-  Node* 			__linkedNode;
-public :
-
-  EXPORT uint32_t			id();
-  EXPORT void				fileMapping(FileMapping *);
-  EXPORT uint64_t			size();
-
-  EXPORT std::string			linkPath();
-  EXPORT std::string			linkName();
-  EXPORT std::string			linkAbsolute();
-
-  EXPORT bool				isFile();
-  EXPORT bool				isDir();
-  EXPORT bool				isLink();
-  EXPORT bool				isVDir();
-  EXPORT bool				isDeleted();
-
-  EXPORT class fso*			fsobj();
-  EXPORT class VFile*			open();
-
-  EXPORT VLink(Node *linkedNode, Node* parent, std::string newname = "");
-  EXPORT ~VLink();
-  EXPORT  Node*				linkParent();
-  EXPORT std::vector<class Node*>	linkChildren();
-  EXPORT bool				linkHasChildren();
-  EXPORT uint32_t			linkChildCount();
-  EXPORT Node*				linkNode();
-
-  EXPORT Variant*			dataType(void); 
-  EXPORT Attributes*			attributes(void);	
-  EXPORT std::string			icon(void);
-  EXPORT std::list<std::string>*	compatibleModules(void);
-  EXPORT bool				isCompatibleModule(std::string);
 };
 
 

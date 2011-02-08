@@ -14,10 +14,9 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-#ifndef __VPATH_HH__
-#define __VPATH_HH__
+#ifndef __VFILE_HH__
+#define __VFILE_HH__
 
-#include "mfso.hpp"
 #include <stdlib.h> 
 #include <string>
 #include <string.h>
@@ -26,8 +25,8 @@
 #else
 #include "wstdint.h"
 #endif
+#include "fso.hpp"
 #include "node.hpp"
-#include "type.hpp"
 #include "export.hpp"
 #include "search.hpp"
 

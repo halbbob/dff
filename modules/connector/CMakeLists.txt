@@ -18,3 +18,9 @@ add_subdirectory (libewf)
 if (WIN32)
  add_subdirectory(windevices)
 endif (WIN32)
+
+set(connector_files
+   __init__.py
+)
+
+install_file(connector ${connector_files})

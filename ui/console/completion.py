@@ -19,7 +19,7 @@
 #from api.loader import *
 #from api.type import *
 from api.manager.manager import ApiManager
-
+from api.types.libtypes import typeId
 #import os.path, os, sys
 import sys
 #import dircache
@@ -30,41 +30,40 @@ import re
 #node, path, driver, script
 
 class Completion():
+    funcMapper = {typeId.Node: "complete_node",
+                  typeId.Path: "complete_path"
+                  }
+
     def __init__(self, raw_input):
         #init framework core dependencies
-        
-        #self.env = env.env()
-        #self.loader = loader.loader()
-        #self.vfs = vfs.vfs()
-        #self.lmodules = self.loader.modules
 	self.api = ApiManager()
-	self.env = self.api.env()
         self.loader = self.api.loader()
+        self.modules = self.loader.modules
         self.vfs = self.api.vfs()
-        self.lmodules = self.loader.get_modules()
+        self.shell_key = [";", "<", ">", "&", "|", "&", ";"]
 	self.OS = self.api.OS()
 	self.console = raw_input
  
-    def get_completion_scope(self, arg, begidx):
-        cur_arg = None
-        prev_arg = None
-        opt = []
+#    def get_completion_scope(self, arg, begidx):
+#        cur_arg = None
+#        prev_arg = None
+#        opt = []
 
-        for a in arg:
-            opt.append(a.arg)
-            if begidx <= a.end:
-                if begidx >= a.start:
-                    cur_arg = a.arg
-                elif cur_arg == None:
-                    cur_arg = ""
-            if self.is_cmd_arg(a.arg):
-                if cur_arg == None:
-                    opt = []
-                    opt.append(a.arg)
-                else:
-                    break
-        return opt, cur_arg
-        #print "\ncurrent argument:", cur_arg, "of completion scope:", opt
+#        for a in arg:
+#            opt.append(a.arg)
+#            if begidx <= a.end:
+#                if begidx >= a.start:
+#                    cur_arg = a.arg
+#                elif cur_arg == None:
+#                    cur_arg = ""
+#            if self.is_cmd_arg(a.arg):
+#                if cur_arg == None:
+#                    opt = []
+#                    opt.append(a.arg)
+#                else:
+#                    break
+#        return opt, cur_arg
+#        #print "\ncurrent argument:", cur_arg, "of completion scope:", opt
 
 
     def complete_node(self):
@@ -210,41 +209,32 @@ class Completion():
         return out
 
 
-    def value_completion(self):
+    def complete_value(self):
         out = []
 
-        if self.prev_arg != None and hasattr(self, "complete_" + self.prev_arg.type):
-            func = getattr(self, "complete_" + self.prev_arg.type)
+        if self.prev_arg.type() in [typeId.Node, typeId.Path]:
+            func = getattr(self, Completion.funcMapper[self.prev_arg.type()])
             out = func()
-
-        #other type, check if presetted values exist 
         else:
+        
             out = {"type": "predefined",
                    "matches": [],
                    "matched": 0,
                    "length": 1}
-            for i in self.cvl:
-                to_add = False
-                if i.name == self.prev_arg.name:
-                    val = ""
-                    if i.type == "string":
-                        val = i.get_string()
-                    elif i.type == "int":
-                        val = str(i.get_int())
-                    elif i.type == "node" and i.get_node() :
-                        val = i.get_node().absolute()
-                    if self.cur_str == "":
-                        to_add = True
-                    elif val.startswith(self.cur_str):
-                        to_add = True
-                    if to_add:
-                        out["matches"].append(val)
-                        out["matched"] += 1
-                        if len(val) > out["length"]:
-                            out["length"] = len(val)
-            if out["matched"] == 1:
-                out = out["matches"][0]
-
+            defaults = self.prev_arg.defaults()
+            for default in defaults:
+                if default.type() == typeId.List:
+                    for item in default.value():
+                        out["matches"]
+                print default
+            #lmatch = len(match)
+            #if lmatch > 0:
+            #    out["matches"].extend(match)
+            #    out["matched"] += lmatch
+            #    if len(str(val)) > out["length"]:
+            #        out["length"] = len(str(val))
+            #if out["matched"] == 1:
+            #    out = out["matches"][0]
         return out
 
 
@@ -254,59 +244,36 @@ class Completion():
                "length": {"tag": 1, "module": 1},
                "matched": 0}
         longest_tag = 1
-        longest_module = 1
+        longest_modname = 1
 
-        for cmd in self.lmodules:
-            to_add = False
-
-            if self.cur_str != "":
-                if cmd.startswith(self.cur_str):
-                    to_add = True
-                else:
-                    to_add = False
-            else:
-                to_add = True
-
-            if to_add:
-                if longest_module < len(cmd):
-                    longest_module = len(cmd)
-#                mod = self.lmodules[cmd]
-		tag =self.loader.get_tags(cmd)
-#                tag = mod.tags
+        for modname in self.modules.iterkeys():
+            if (self.cur_str == "") or (self.cur_str != "" and modname.startswith(self.cur_str)):
+                if longest_modname < len(modname):
+                    longest_modname = len(modname)
+		tag = self.modules[modname].tags
                 if longest_tag < len(tag):
                     longest_tag = len(tag)
                 if tag not in out["matches"]:
                     out["matches"][tag] = []
-                out["matches"][tag].append(cmd)
+                out["matches"][tag].append(modname)
                 out["matched"] += 1
 
         out["length"]["tag"] = longest_tag
-        out["length"]["module"] = longest_module
+        out["length"]["module"] = longest_modname
 
         if out["matched"] == 1:
             out = [out["matches"][i][0] for i in out["matches"].iterkeys()]
-
         elif out["matched"] == 0:
             out = ""
-
         return out
         
-    def get_conf(self, cmd):
-        conf = None
-        if cmd in self.lmodules:
-            #mod = self.lmodules[cmd]
-	    conf = self.loader.get_conf(cmd)		
-#            conf = mod.conf
-        return conf
 
-    def is_cmd_arg(self, arg):
-	if arg in self.loader.modules:
-          return True
-        else:
-          return False
+#    def is_cmd_arg(self, arg):
+#	if arg in self.loader.modules:
+#          return True
+#        else:
+#          return False
 
-    def get_arg(self):
-        return None
 
     def complete_key(self):
         out = {"type": "key", 
@@ -316,16 +283,17 @@ class Completion():
                "matched": 0}
 
         arg_with_no_key = utils.get_arg_with_no_key(self.args)
-        needs_no_key = utils.needs_no_key(self.cdl)
-        for i in range(len(self.cdl)):
-            if (self.cdl[i].type == "path" or self.cdl[i].type == "node") and (arg_with_no_key != -1) and (needs_no_key != None):
+        needs_no_key = utils.needs_no_key(self.parameters)
+        for kparam in self.parameters.iterkeys():
+            param = self.parameters[kparam]
+            if (param.type() == typeId.Path or param.type() == typeId.Node) and (arg_with_no_key != -1) and (needs_no_key != None):
                 pass
             else:
-                arg = "--" + self.cdl[i].name
+                arg = "--" + kparam
                 if arg not in self.args and arg.startswith(self.cur_str):
                     if len(arg) > out["length"]:
                         out["length"] = len(arg)
-                    if self.cdl[i].optional:
+                    if param.isOptional():
                         out["optional"].append(arg)
                     else:
                         out["required"].append(arg)
@@ -333,7 +301,6 @@ class Completion():
 
         if out["matched"] == 0:
             out = ""
-            
         elif out["matched"] == 1:
             if len(out["required"]) == 0:
                 out = out["optional"][0]
@@ -343,89 +310,91 @@ class Completion():
         return out
 
 
+    # Priority on empty
+    #  -- required and neither Node nor Path
+    #  -- Node or Path
+    # Iter on parameters
+    #   isRequired()
+    #   Is Path ?
+    #     - No --> continue
+    #     - Yes --> nokey++
+    #       - Is optional ?
+    #         - Yes --> nokey++
+    #         - No --> nokey++
+    #   Is Node ?
+    #     - No --> continue
+    #     - Yes --> nokey++
+    #   Is Required ?
+    #     - No --> continue
+    #     - Yes --> key++
+    #are Path and Node in conf:
+    # - Are there other required params
+    #   - Yes --> complete_key
+    #   - No --> if path mandatory ?
+    #     - 
+    # - if both optional, no completion
     def complete_empty(self):
         out = None
 
-        if self.prev_str == "--":
-            out = ""
-
-        if self.prev_str == "--modules":
-            out = self.complete_modules()
-
-        elif self.prev_str.startswith("--"):
-            if self.prev_arg == None:
-                out = ""
-            elif self.prev_arg.type != "bool":
-                out = self.value_completion()
+        if self.prev_arg != None:
+            if self.prev_arg.type() != typeId.Bool:
+                print "completion.complete_empty() --> self.prev_arg != Bool"
+                out = self.complete_value()
             else:
-                arg_with_no_key = utils.get_arg_with_no_key(self.args)
-                needs_no_key = utils.needs_no_key(self.cdl)
-                if arg_with_no_key == -1 and needs_no_key != None:
-                    if (needs_no_key.type in ["path", "node"]) or (len(self.cvl) > 0):
-                        self.prev_arg = needs_no_key
-                        out = self.value_completion()
-                    else:
-                        out = self.complete_key()
-                else:
-                    out = self.complete_key()
+                print "completion.complete_empty() --> self.prev_arg == Bool"
         else:
+            print "completion.complete_empty() --> self.prev_arg == None"
             arg_with_no_key = utils.get_arg_with_no_key(self.args)
-            needs_no_key = utils.needs_no_key(self.cdl)
-            if arg_with_no_key == -1 and needs_no_key != None:
-                if (needs_no_key.type in ["path", "node"]) or (len(self.cvl) > 0):
+            needs_no_key = utils.needs_no_key(self.parameters)
+            if arg_with_no_key == -1:# and needs_no_key != None:
+                if needs_no_key.type() in [typeId.Path, typeId.Node]:
                     self.prev_arg = needs_no_key
-                    out = self.value_completion()
+                    out = self.complete_value()
                 else:
                     out = self.complete_key()
             else:
                 out = self.complete_key()
-
         return out
 
 
     def complete_current(self):
         out = None
 
-        if self.prev_str == "--modules":
-            out = self.complete_modules()
-        elif self.prev_str == "--":
+        if self.cur_str.startswith("-"):
             out = self.complete_key()
-        elif self.prev_str.startswith("--"):
-            if self.prev_arg == None:
-                out = ""
-            elif self.prev_arg.type != "bool":
-                for i in range(len(self.cdl)):
-                    arg = "--" + self.cdl[i].name
-                    if arg == self.prev_str:
-                        out = self.value_completion()
-            else:
-                out = self.complete_key()
         else:
-            arg_with_no_key = utils.get_arg_with_no_key(self.args)
-            needs_no_key = utils.needs_no_key(self.cdl)
-            if self.args.index(self.cur_str) == arg_with_no_key:
-                self.prev_arg = needs_no_key
-                out = self.value_completion()
+            if self.prev_arg != None:
+                if self.prev_arg.type() != typeId.Bool:
+                    out = self.complete_value()
+                else:
+                    print "completion.complete_current() --> self.prev_arg == Bool"
             else:
-                out = self.complete_key()
+                print "completion.complete_current() --> self.prev_arg == None"
+            #for var in self.vars:
+            #    arg = "--" + var.name()
+            #    if arg == self.prev_str:
+            #        out = self.complete_value()
+            #    else:
+            #        out = self.complete_key()
+            #else:
+            #arg_with_no_key = utils.get_arg_with_no_key(self.args)
+            #needs_no_key = utils.needs_no_key(self.vars)
+            #if self.args.index(self.cur_str) == arg_with_no_key:
+            #    self.prev_arg = needs_no_key
+            #    out = self.complete_value()
+            #else:
+            #    out = self.complete_key()
 
         return out
 
 
-    def complete(self, line, begidx):
-        self.shell_key = [";", "<", ">", "&", "|", "&", ";"]
-        self.cmd_key = ["--modules"]
-        self.cmd_key.extend([i for i in self.lmodules])
+    def setContext(self, line, begidx):
+        self.modules = self.loader.modules
         self.args, self.bopt = utils.split_line(line)
         self.cur_str = ""
         self.prev_str = ""
-        self.prev_arg = None
-        self.cdl = None
-        self.cvl = None
-        matches = []
         start_scope_idx = 0
         end_scope_idx = len(self.args)
-
         for item in self.bopt:
             if item["arg"][0] in self.shell_key or item["arg"] == "--modules":
                 if begidx >= item["end"]:
@@ -441,37 +410,45 @@ class Completion():
                     self.prev_str = item["arg"]
 
         self.args = self.args[start_scope_idx:end_scope_idx]
+        
 
-        if self.prev_str == "":
-            if len(self.args) == 0:
-                matches = self.complete_modules()
-            elif len(self.args) == 1 and self.cur_str != "":
-                matches = self.complete_modules()
-            else:
-                matches = ""
+    def complete(self, line, begidx):
+        matches = []
 
+        #set context for the completion
+        self.setContext(line, begidx)
+
+        #complete modules or part of module name
+        if (len(self.args) == 0) or (len(self.args) == 1 and self.cur_str != ""):
+            matches = self.complete_modules()
+
+        #module is known: get its conf and complete with parameters
         else:
-            conf = self.get_conf(self.args[0])
-            if conf != None:
-                self.cdl = conf.descr_l
-                self.cvl = conf.val_l
-                #print "prev:", self.prev_str, "cur:", self.cur_str
-            
-                for i in range(len(self.cdl)):
-                    arg = "--" + self.cdl[i].name
-                    if arg == self.prev_str:
-                        self.prev_arg = self.cdl[i]
-                    if self.cur_str == None or self.cur_str == "":
-                        matches = self.complete_empty()
-                    else:
-                        matches = self.complete_current()
-            else:
+            try:
+                module = self.modules[self.args[0]]
+                self.conf = module.conf
+                self.parameters = self.conf.parameters()
+                print self.prev_str
+                if self.prev_str.startswith("--") != -1:
+                    try:
+                        self.prev_arg = self.parameters[self.prev_str[2:]]
+                    except IndexError:
+                        self.prev_arg = None
+                else:
+                    self.prev_arg = None
+                if self.cur_str == "":
+                    matches = self.complete_empty()
+                else:
+                    matches = self.complete_current()
+            except KeyError:
+                print "\nmodule <" + self.args[0] + "> does not exist. Cannot complete"
                 matches = ""
 
         if isinstance(matches, list) and len(matches) == 1:
             return matches[0]
         else:
             return matches
+
 
     def strdiff(self, str1, str2):
      i = len(str1)

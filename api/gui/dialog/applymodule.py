@@ -20,10 +20,10 @@ from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QStrin
 
 # CORE
 from api.loader import *
-from api.env import *
+#from api.env import *
 from api.vfs import *
 from api.taskmanager.taskmanager import *
-from api.type import *
+from api.types import *
 
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.nodeview import NodeTreeView

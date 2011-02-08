@@ -16,13 +16,13 @@
 
 # compiled
 add_subdirectory (exceptions)
-add_subdirectory (env)
+#add_subdirectory (env)
+add_subdirectory (events)
 add_subdirectory (loader)
 add_subdirectory (module)
-add_subdirectory (type)
+add_subdirectory (types)
 add_subdirectory (vfs)
 add_subdirectory (search)
-add_subdirectory (variant)
 add_subdirectory (tree)
 # python only
 add_subdirectory (taskmanager)

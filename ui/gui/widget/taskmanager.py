@@ -19,7 +19,7 @@ from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout,
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
 
 #from api.loader import *
-from api.env import *
+#from api.env import *
 from api.taskmanager.taskmanager import *
 
 from ui.gui.utils.utils import Utils

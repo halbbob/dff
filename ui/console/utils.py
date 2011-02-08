@@ -15,13 +15,13 @@
 
 import re
 import os
-
+from api.types.libtypes import typeId
 
 def get_arg_with_no_key(args):
     found = False
     res = -1
     for arg in args:
-        if not arg.startswith("--") and not arg.startswith("-"):
+        if not arg.startswith("-"):
             idx = args.index(arg)
             if found == False and idx != 0:
                 res = idx
@@ -29,19 +29,22 @@ def get_arg_with_no_key(args):
     return res
 
 
-def keyPriority(cdl):
+def keyPriority(params):
     priority = {0: [], 1: []}
 
-    for i in range(len(cdl)):
-        if cdl[i].optional == False:
-            priority[0].append(cdl[i])
-        elif cdl[i].type in ["path", "node"]:
-            priority[1].append(cdl[i])
+    for param in params.itervalues():
+        if param.isOptional():
+            if param.type() in [typeId.Path, typeId.Node]:
+                priority[0].append(param)
+            else:
+                priority[1].append(param)
+        else:
+            priority[0].append(param)
     return priority
 
 
-def needs_no_key(cdl):
-    priority = keyPriority(cdl)
+def needs_no_key(params):
+    priority = keyPriority(params)
     if len(priority[0]) == 1:
         return priority[0][0]
     elif len(priority[1]) == 1:

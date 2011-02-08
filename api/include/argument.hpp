@@ -5,70 +5,125 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http: www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
 
 #ifndef __ARGUMENT_HPP__
 #define __ARGUMENT_HPP__
 
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
+
 #include <string>
 #include <list>
 #include <map>
-#include <iostream>
-#include "env.hpp"
-#include "vars.hpp"
+
+#include "variant.hpp"
 #include "export.hpp"
-#include "type.hpp"
-#include <string.h>
 
-class argument
+#define TYPEMASK			0x00FF
+#define INPUTMASK			0x0300
+#define NEEDMASK			0x0C00
+#define PARAMMASK			0x3000
+
+// #define OptionalSingleInputWithFixedParam		Optional|SingleInput|FixedParam
+// #define OptionalSingleInputWithCustomizableParam	Optional|SingleInput|CustomizableParam
+// #define RequiredSingleInputWithFixedParam		Required|SingleInput|FixedParam
+// #define RequiredSingleInputWithCustomizableParam	Required|SingleInput|CustomizableParam
+
+// #define OptionalListInputWithFixedParam			Optional|ListInput|FixedParam
+// #define OptionalListInputWithCustomizableParam		Optional|ListInput|CustomizableParam
+// #define RequiredListInputWithFixedParam			Required|ListInput|FixedParam
+// #define RequiredListInputWithCustomizableParam		Required|ListInput|CustomizableParam
+
+struct Parameter
+  {
+    enum types
+    {
+      Fixed = 0x1000,
+      Customizable = 0x2000
+    };
+  };
+
+class Argument
 {
-  class env* km;
-  string from;	
- public:
-   map<string, class v_val * > val_m; 
+private:
+  std::string			__name;
+  uint16_t			__flags;
+  std::string			__description;
+  bool				__enabled;
+  std::list<Variant*>		__parameters;
+  bool				__paramslocked;
+  void				setParametersType(uint16_t t);
 
-  EXPORT argument(string who);
-  EXPORT argument();
-
-//add_type
-
-  EXPORT void 	add_int(string, int);
-  EXPORT void 	add_uint64(string, uint64_t);
-  EXPORT void 	add_string(string, string);
-  EXPORT void 	add_bool(string, bool);
-  EXPORT void 	add_node(string, Node*);
-//  EXPORT void 	add_path(string, Path*);
-  EXPORT void   add_path(string, string);
-  EXPORT void	add_lnode(string, list<Node *> *);
+public:
+  enum inputTypes
+    {
+      Empty =			0x0000,
+      Single =			0x0100,
+      List =			0x0200,
+      Optional =		0x0400,
+      Required =		0x0800
+    };
+  Argument(std::string name, uint16_t flags, std::string description = "");
+  ~Argument();
 
 
-//get( type)
+  void				addParameters(std::list<Variant*> params, uint16_t type);
 
-  EXPORT void 	get(string name, int *v);
-  EXPORT void 	get(string name, uint64_t *v);
-  EXPORT void 	get(string name, bool *v);
-  EXPORT void 	get(string name, Node **v);
-  EXPORT void 	get(string name, string *v);
-  EXPORT void 	get(string name, Path **v);
-  EXPORT void   get(string name, list<Node *> **v);
-//
+  std::list<Variant*>		parameters();
+  //void				setName(std::string name);
+  std::string			name();
 
-//get_type
+  //void				setFlags(uint16_t flags);
+  uint16_t			flags();
 
-  EXPORT int 		get_int(string name);
-  EXPORT uint64_t 	get_uint64(string name);
-  EXPORT bool 		get_bool(string name);
-  EXPORT string 	get_string(string name);
-  EXPORT Node*  	get_node(string name);
-  EXPORT Path*  	get_path(string name);
-  EXPORT list<Node *>*	get_lnode(string name);
+  //void				setDescription(std::string description);
+  std::string			description();
+
+  //void				setEnabled(bool enabled);
+  //bool				isEnabled();
+
+  //void				setType(uint16_t type);
+  uint16_t			type();
+
+  //void				setInputType(uint16_t itype);
+  uint16_t			inputType();
+
+  uint16_t			parametersType();
+  
+  //void				setRequirementType(uint16_t ntype);
+  uint16_t			requirementType();
+
+  // void				setPreselectedParameters(std::list<Variant* >);
+  // std::list<Variant* >		preselectedParameters();
+
+  
+  //void				addPredefinedParameters(Variant *params);
+
+  //void				setPreselected();
+  //std::list<>			preselected();
+
+  // void				activateParameter(Variant* param);
+  // void				deactivateParameter(Variant* param);
+
+  // std::list<Variant*>		predefinedParameters();
+
+  // std::list<Variant*>		activatedParameters();
+  // std::list<Variant*>		deactivatedParameters();
+
+  //bool				isRequired();
+  //bool				isOptional();
 };
+
 #endif

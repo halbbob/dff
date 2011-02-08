@@ -74,7 +74,6 @@ void		Carver::start(argument *arg)
 {
   try
     {
-      attrib	*attr = new attrib;
       arg->get("ifile", &(this->inode));
       this->ifile = this->inode->open();
       this->root = new Node("carved", 0, NULL, this);

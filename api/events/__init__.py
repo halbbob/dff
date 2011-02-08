@@ -10,23 +10,7 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal J. <sja@digital-forensic.org>
-#
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-from api.vfs import *
-from api.types import libtypes
-from api.exceptions.libexceptions import *
 
-class Script(object):
-    def __init__(self, name):
-	self.name = name
-#        self.env = env.env()
-        self.vfs = vfs.vfs()
-	#self.res = libtypes.results(self.name)
-	self.stateinfo = ""
-
-    #def stateInfo(self):
-        #return self.stateinfo
-#
-    #def res(self):
-        #return self._res
+__all__ = ["libevents"]

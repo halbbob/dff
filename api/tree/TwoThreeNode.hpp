@@ -21,6 +21,7 @@
 #define TWO_NODE	(true)
 #define THREE_NODE	(false)
 
+#include "export.hpp"
 #include <stdlib.h>
 #if (defined(WIN64) || defined(WIN32))
 #include "wstdint.h"

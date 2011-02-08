@@ -16,28 +16,48 @@
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import typeId
 
 class LS(Script):
   def __init__(self) :
     Script.__init__(self, "ls")
     self.vfs = vfs.vfs()
 
-  def start(self, args):
-    try :
-      self.node = args.get_node('node')
-    except KeyError:
-      self.node = None
-    try :
-      self.long = args.get_bool('long')
-    except KeyError:
-      self.long = None
-    try :
-      self.rec = args.get_bool('recursive')
-    except KeyError:
-      self.rec = None
-    if self.node == None:
-      self.node = self.vfs.getcwd()
-    self._res = self.launch()
+  def start(self, **kwargs):
+    print dir(self)
+    self.__dict__.update(kwargs)
+    print dir(self)
+
+
+  def start2(self, long, node, recursive):
+    #self.__dict__.update(**kwargs)
+    #print kwargs.get("node")
+    #for i in kwargs:
+    #  print i
+    print dir(self)
+    print node.value().name()
+
+
+#  def start(self, **kwargs):
+#    try:
+#      self.node = args["node"].value()
+#      print self.node.name()
+#    except IndexError:
+#      self.node = None
+    
+#    if "long" in args.keys():
+#      self.long = True
+#    else:
+#      self.long = False
+#    try :
+#      self.rec = args['recursive']
+#    except IndexError:
+#      self.rec = None
+#    if self.node == None:
+#      self.node = self.vfs.getcwd()
+#    self._res = self.launch()
+
+
 
   def launch(self):
      if self.rec:
@@ -85,7 +105,8 @@ class ls(Module):
   """List file and directory"""
   def __init__(self):
    Module.__init__(self, "ls", LS)
-   self.conf.add("node", "node", True, "Directory to list")
-   self.conf.add("long", "bool", True, "Display size of files")
-   self.conf.add("recursive", "bool", True, "Recurse in sub-directory")
+   self.conf.add("node", typeId.Node, True, "Directory to list")
+   self.conf.add("long", typeId.Bool, True, "Display size of files")
+   self.conf.add("recursive", typeId.Bool, True, "Recurse in sub-directory")
+   self.conf.add_const("node", [1, 2, 4])
    self.tags = "builtins"

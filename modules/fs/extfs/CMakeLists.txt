@@ -44,7 +44,7 @@ set(extfs_srcs
 
 SET_SOURCE_FILES_PROPERTIES(extfs.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(EXTFS python extfs.i ${extfs_srcs})
-SWIG_LINK_LIBRARIES(EXTFS ${PYTHON_LIBRARIES} _libvariant _libexceptions _libtype _libvfs _libenv _libtree)
+SWIG_LINK_LIBRARIES(EXTFS ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv _libtree)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_EXTFS_REAL_NAME} PROPERTIES

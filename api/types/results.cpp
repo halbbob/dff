@@ -12,44 +12,40 @@
  * 
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
+ *  Frederic B. <fba@digital-forensic.org>
  */
 
-#ifndef __ATTRIB_HPP__
-#define __ATTRIB_HPP__
 
-#include <string>
-#include <map>
-#include "type.hpp"
+#include "results.hpp"
 
-using namespace std;
-
-
-class Handle
+Results::Results(std::string origin)
 {
- public:
-  EXPORT Handle();
+}
 
-  EXPORT	Handle(dff_ui64);
-  EXPORT	Handle(string);
-  EXPORT	Handle(dff_ui64, string);
-  dff_ui64	id;
-  string	name;	
-};
-
-class attrib
+Results::~Results()
 {
-public:
+}
 
-  EXPORT						attrib();
-  EXPORT virtual					~attrib();
+bool					Results::add(std::string name, Variant* val, std::string description)
+{
+}
 
-  map<string, string >   				smap; 
-  map<string, vtime* > 					time; 
-  map<string, unsigned int >  				imap; 
-  bool 						     deleted;
-  dff_ui64	 					size; 
-  Handle*						handle;	
-};
+Variant*				Results::valueFromKey(std::string name)
+{
+}
 
-#endif
+std::string				Results::descriptionFromKey(std::string)
+{
+}
 
+std::map<std::string, Variant*>		Results::items()
+{
+}
+
+std::list<std::string>			Results::keys()
+{
+}
+
+std::list<Variant*>			Results::values()
+{
+}

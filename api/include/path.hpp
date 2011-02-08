@@ -11,41 +11,40 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Frederic Baguelin <fba@digital-forensic.org>
- *  Solal Jacob <sja@digital-forensic.org>
+ *  Solal J. <sja@digital-forensic.org>
  */
 
 
-#include "attrib.hpp"
+#ifndef __TYPE_HPP__
+#define __TYPE_HPP__
 
-Handle::Handle()
+#include "export.hpp"
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <map>
+
+union s_ull
 {
+  struct 
+  {
+    unsigned long Low;
+    unsigned long High;
+  };
+  struct 
+  {
+    unsigned long Low;
+    unsigned long High;
+  }    u;
+  unsigned long long ull;
 };
 
-Handle::Handle(dff_ui64 did)
+class Path
 {
-  id = did;
+public:
+  std::string	path;
+  EXPORT 	Path(std::string p);
 };
 
-Handle::Handle(string nname)
-{
-  name = nname;
-};
+#endif
 
-Handle::Handle(dff_ui64 did, string nname)
-{
-  id = did;
-  name = nname;
-};
-
-
-attrib::attrib() 
-{
-  size = 0;
-  handle = 0;
-  deleted = 0;
-};
-
-attrib::~attrib() 
-{
-};

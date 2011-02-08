@@ -25,6 +25,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
   set( HAVE_64_BIT 0 )
 else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
+  SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE64)
   set( HAVE_64_BIT 1 )
 endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 
@@ -76,7 +77,7 @@ if(DISABLE_SWIG_THREADING)
   message(STATUS "Will we use swig -threads -- no")
 else()
   #message(STATUS "Will we use swig -threads -- yes")
-  set(CMAKE_SWIG_FLAGS -O -threads)
+  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
 endif(DISABLE_SWIG_THREADING)
 # $> cmake -DDISABLE_SWIG_THREADING:BOOLEAN=ON
 

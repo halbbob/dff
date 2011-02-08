@@ -17,22 +17,23 @@
 #ifndef __LOCAL_HH__
 #define __LOCAL_HH__
 
-#include "mfso.hpp"
+
+#include "fso.hpp"
+#include "node.hpp"
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <list>
 #include <vector>
-#include "type.hpp"
+#include "variant.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
+//#include "argument.hpp"
+#include "path.hpp"
 #ifdef WIN32
 #include "wlocalnode.hpp"
 #else
 #include "ulocalnode.hpp"
 #endif
-
-using namespace std;
 
 class local : public fso
 {
@@ -41,6 +42,8 @@ private:
   std::string	basePath;
   int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
+  void		createTree(std::list<Variant *>);
+
 #ifndef WIN32
   class ULocalNode*	__root; 
 #else
@@ -63,6 +66,6 @@ public:
   int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
   uint32_t	status(void);
   uint64_t	vtell(int32_t fd);
-  virtual void	start(argument* ar);
+  virtual void	start(std::map<std::string, Variant* > args);
 };
 #endif

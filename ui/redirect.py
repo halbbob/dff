@@ -19,7 +19,6 @@ from PyQt4.QtCore import Qt, QString, QThread, QSemaphore, SIGNAL, QObject
 import sys, inspect, os
 
 from api.taskmanager.taskmanager import TaskManager
-from api.env import env
 from api.loader import loader
 from api.taskmanager.scheduler import sched
 

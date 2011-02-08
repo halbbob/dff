@@ -12,46 +12,37 @@
  * 
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
+ *  Frederic B. <fba@digital-forensic.org>
  */
 
 
-#ifndef __TYPE_HPP__
-#define __TYPE_HPP__
+#include "arguments.hpp"
 
-#include "export.hpp"
-#include <stdlib.h>
-#include <string>
-#include <iostream>
-#include <map>
-
-typedef  unsigned long long dff_ui64;
-
-#include "vtime.hpp"
-#include "attrib.hpp"
-
-union s_ull
+Arguments::Arguments(std::string origin)
 {
-  struct 
-  {
-    unsigned long Low;
-    unsigned long High;
-  };
-  struct 
-  {
-    unsigned long Low;
-    unsigned long High;
-  }    u;
-  unsigned long long ull;
-};
+  this->__origin = origin;
+}
 
-using namespace std;
-
-class Path
+Arguments::~Arguments()
 {
-public:
-  string	path;
-  EXPORT 	Path(string p);
-};
+}
 
-#endif
+bool					Arguments::add(std::string name, Variant* value)
+{
+}
 
+Variant*				Arguments::valueFromKey(std::string name)
+{
+}
+
+std::map<std::string, Variant*>		Arguments::items()
+{
+}
+
+std::list<std::string>			Arguments::keys()
+{
+}
+
+std::list<Variant*>			Arguments::values()
+{
+}

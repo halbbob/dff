@@ -23,7 +23,6 @@ from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon,
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
-from api.type import *
 from api.vfs.libvfs import *
 from api.taskmanager import scheduler
 from api.vfs import vfs
