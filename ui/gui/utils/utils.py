@@ -18,6 +18,7 @@ from types import *
 from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.types import libtypes
+from api.types.libtypes import typeId
 
 class Utils():
     def __init__(self):
@@ -85,18 +86,18 @@ class Utils():
     def getArgs(modules_name):
         l = loader.loader()
         if type(modules_name) == StringType :
-            return l.modules[modules_name].conf.descr_l
+            return l.modules[modules_name].conf.arguments()
         else :
             return None
     
     @staticmethod
     def hasOneNodeArg(module, type):
         args = Utils.getArgs(module)
-        if not args :
+        if len(args) == 0:
             return None
-        if len(args) == 1 :
-            if args[0].type == "node" :
-                return args[0].name
+        if len(args) == 1:
+            if args[0].type() == typeId.Node :
+                return args[0].name()
         return None
         
     @staticmethod
