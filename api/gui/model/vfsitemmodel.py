@@ -358,7 +358,7 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant(node.size())
       try :
         if column - 2 > len(self.header_list):
-          print "out of range"
+          #print "out of range"
           return QVariant()
         #val = None
         
@@ -551,8 +551,14 @@ class VFSItemModel(QAbstractItemModel):
     #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("accessed"), reverse=Reverse)
     #elif column == HMODIFIED:
     #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("modified"), reverse=Reverse)
-    else:
-      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+#        m = node.attributes()[node.fsobj().name].value()
+#        m.thisown = False
+#        value = m[str(self.header_list[column - 2])]
+#        value.thisown = False
+#        val = value.value()
+#        val.thisown = False
+    elif column - 2 <= len(self.header_list):
+      self.node_list = sorted(children_list, key=lambda Node: Node.attributes()[Node.fsobj().name].value(), reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
 
   def translation(self):
