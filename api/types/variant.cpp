@@ -126,6 +126,12 @@ Variant::Variant(uint64_t ull)
   this->_type = typeId::UInt64;
 }
 
+Variant::Variant(bool b)
+{
+  this->__data.b = b;
+  this->_type = typeId::Bool;
+}
+
 Variant::Variant(vtime *vt)
 {
   this->__data.ptr = (void*)vt;
@@ -687,6 +693,14 @@ char	Variant::toChar() throw (std::string)
     return res;
 }
 
+bool		Variant::toBool() throw (std::string)
+{
+  if (this->_type == typeId::Bool)
+    return this->__data.b;
+  else
+    throw (std::string("value of type < " + this->typeName() + " > cannot be converted to < bool >"));
+}
+
 uint8_t		Variant::type()
 {
   return this->_type;
@@ -733,7 +747,7 @@ bool	Variant::operator==(Variant* v)
 	return this->toUInt64() == v->toUInt64();
       
       else if (this->_type == typeId::Bool)
-	;
+	return this->toBool() == v->toBool();
 
       else if (this->_type == typeId::String)
 	{

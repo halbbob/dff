@@ -50,8 +50,8 @@ struct Parameter
   {
     enum types
     {
-      Fixed = 0x1000,
-      Customizable = 0x2000
+      NotEditable = 0x1000,
+      Editable = 0x2000
     };
   };
 
