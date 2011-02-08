@@ -20,28 +20,41 @@ from api.module.module import *
 from api.variant.libvariant import Variant, VMap
 from api.vfs.libvfs import AttributesHandler
 
-class AttributeHash(AttributesHandler):
-    def __init__(self, modname, value):
+class AttributeHash(AttributesHandler): 
+    def __init__(self, modname):
        AttributesHandler.__init__(self, modname)
-       self.value = value
+       self.calculatedHash = {}
        self.__disown__()	
 
+    def haveHashCalculated(self, node):
+       try :
+          return self.calculatedHash[long(node.this)]
+       except KeyError:
+         return None
+
+    def setHash(self, node, value):	#mnettre la fonction de calcul de hash directement ici ou heriter de attributeHash ds class HASH ?
+       self.calculatedHash[long(node.this)] = value
+
     def attributes(self, node):
-       print "hashing node" + node.name()
+       #print "attributes get node hash" + node.name()
        m = VMap()	
-       m['md5'] = self.value 
+       v = Variant(self.calculatedHash[long(node.this)])
+       v.thisown = False #XXX pas forcement md5
+       m['md5'] = v
        m.thisown = False
        return m
 
     def __del__(self):
 	print "deleting attributes hash"
 
-class HASH(Script): ##Script existe encore ? (Script, Single) ? heriter d un singleton c++ ? 
-    def __init__(self):
-        Script.__init__(self, "hash")    
-        self.vfs = vfs.vfs() 
+class HASH(Script): 
+      def __init__(self):
+        Script.__init__(self, "hash")   
+        self.vfs = vfs.vfs()
+        self.attributeHash = AttributeHash("hash") 
+	self.calculatedHash = {}		#XXX modules singleton ?
 
-    def getHash(self,  algorithm):
+      def getHash(self,  algorithm):
         if algorithm == "md5":
             return hashlib.md5()
         elif algorithm == "sha1":
@@ -57,7 +70,7 @@ class HASH(Script): ##Script existe encore ? (Script, Single) ? heriter d un sin
         else:
             return -1
      
-    def start(self, args):
+      def start(self, args):
       	try :
           algorithm = args.get_string("algorithm")
 	except KeyError:
@@ -65,46 +78,36 @@ class HASH(Script): ##Script existe encore ? (Script, Single) ? heriter d un sin
         if algorithm == "":
 	  algorithm = "md5"
         node = args.get_node("file")
-	self.calculatedHash = {}		#XXX modules singleton ?
-        #attr = node.staticAttributes()
-        #res = ""
-        #algmap = "hash-" + algorithm
-        #try:
-            #map = attr.attributes()
-            #file_hash = map[algmap]
-            #res = file_hash + "  " + node.absolute()
-        #except:
+        if self.attributeHash.haveHashCalculated(node):
+	  return
         file_hash = self.hashCalc(node, algorithm)
         if file_hash != "":
-           value = Variant(file_hash)
-           value.thisown = False
-           res = file_hash + "  " + node.absolute()
- 	   ah = AttributeHash("hash", value) #passer la node ici et auto register here #XXX 
-	   ah.thisown = 0
-	   node.registerAttributes(ah)
+           self.attributeHash.setHash(node, file_hash)
+	   node.registerAttributes(self.attributeHash)
         else:
            res = algorithm + " hashing failed on " + node.absolute() 
-        self.res.add_const("result", res)
 
 
-    def hashCalc(self, node, algorithm):
+      def hashCalc(self, node, algorithm):
         try :
             f = node.open()
-        except vfsError, e:
-            print e.error, node.absolute()
+	    if not node.size():
+	      return 
+        except IOError, e:
+            print e #.error, node.absolute()
             return ""
         h = self.getHash(algorithm)
         buff = f.read(8192)
 	total = len(buff) 
         while len(buff) > 0:
-	    self.stateinfo = "%d" % ((total / float(node.size())) * 100) + "%" 
+	    self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
             h.update(buff)
             try :
                 buff = f.read(8192)
 		total += len(buff)
             except vfsError:
                 pass
-	self.stateinfo = "%d" % ((total / float(node.size())) * 100) + "%" 
+	self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
         f.close()
         return h.hexdigest()
 
@@ -122,5 +125,6 @@ ex: hash /myfile"""
     self.conf.add_const("algorithm",  "sha256")
     self.conf.add_const("algorithm",  "sha384")
     self.conf.add_const("algorithm",  "sha512")
-    #self.conf.add_const("mime-type", "data")
+    self.conf.add_const("mime-type", "")
+    self.flags = "single"
     self.tags = "Hash"

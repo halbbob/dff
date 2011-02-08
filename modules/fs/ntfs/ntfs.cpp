@@ -323,22 +323,31 @@ uint32_t			Ntfs::_searchIndexesInEntry(uint64_t mftEntryDirOffset,
       break;
     }
 
-    if ((*indexAllocation) == NULL && attribute->getType() == ATTRIBUTE_ATTRIBUTE_LIST) {
+    if (((*indexAllocation) == NULL || (*indexRoot) == NULL) && attribute->getType() == ATTRIBUTE_ATTRIBUTE_LIST) {
       uint32_t		externalIndexRoot;
       uint32_t		externalIndexAlloc;
       Attribute		*searchIndex;
-      
+      uint16_t		savedBufferOffset;
+      uint16_t		savedAttributeOffset;
+
+      DEBUG(CRITICAL, "Parsing for 0x%llx\n", mftEntryDirOffset);
       attributeList = new AttributeAttributeList(_vfile, *attribute);
       attributeList->setMftEntry(_mftMainFile->data()->idFromOffset(mftEntryDirOffset));
       externalIndexRoot = attributeList->getExternalAttributeIndexRoot();
       externalIndexAlloc = attributeList->getExternalAttributeIndexAlloc();
 
 #if __WORDSIZE == 64
-      DEBUG(INFO, "index allocation is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
+      DEBUG(CRITICAL, "index root is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexRoot, externalIndexRoot, _mftMainFile->data()->offsetFromID(externalIndexRoot));
+      DEBUG(CRITICAL, "index allocation is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
 #else
-      DEBUG(INFO, "index allocation is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
+      DEBUG(CRITICAL, "index root is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexRoot, externalIndexRoot, _mftMainFile->data()->offsetFromID(externalIndexRoot));
+      DEBUG(CRITICAL, "index allocation is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
 #endif
       if (externalIndexRoot) {
+
+	savedBufferOffset = _mftEntry->bufferOffset();
+	savedAttributeOffset = _mftEntry->attributeOffset();
+
 	if (_mftEntry->decode(_mftMainFile->data()->offsetFromID(externalIndexRoot))) {
 	  while ((searchIndex = _mftEntry->getNextAttribute())) {
 	    searchIndex->readHeader();
@@ -346,11 +355,18 @@ uint32_t			Ntfs::_searchIndexesInEntry(uint64_t mftEntryDirOffset,
 	      (*indexRoot) = new AttributeIndexRoot(*searchIndex);
 	    }
 	  }
-	  // Resync _mftEntry to the one used in _parseDirTree
-	  _mftEntry->decode(mftEntryDirOffset);
 	}
+
+	// Resync _mftEntry to the one used in _parseDirTree
+	_mftEntry->decode(mftEntryDirOffset);
+	_mftEntry->continueAt(savedBufferOffset, savedAttributeOffset);
+
       }
       if (externalIndexAlloc) {
+
+	savedBufferOffset = _mftEntry->bufferOffset();
+	savedAttributeOffset = _mftEntry->attributeOffset();
+
 	if (_mftEntry->decode(_mftMainFile->data()->offsetFromID(externalIndexAlloc))) {
 	  while ((searchIndex = _mftEntry->getNextAttribute())) {
 	    searchIndex->readHeader();
@@ -358,9 +374,12 @@ uint32_t			Ntfs::_searchIndexesInEntry(uint64_t mftEntryDirOffset,
 	      (*indexAllocation) = new AttributeIndexAllocation(*searchIndex);
 	    }
 	  }
-	  // Resync _mftEntry to the one used in _parseDirTree
-	  _mftEntry->decode(mftEntryDirOffset);
 	}
+
+	// Resync _mftEntry to the one used in _parseDirTree
+	_mftEntry->decode(mftEntryDirOffset);
+	_mftEntry->continueAt(savedBufferOffset, savedAttributeOffset);
+
       }
     }
     DEBUG(INFO, "trying to read next attribute\n");

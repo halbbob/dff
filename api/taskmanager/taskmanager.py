@@ -21,6 +21,13 @@ from api.loader import *
 from api.exceptions.libexceptions import *
 import threading
 
+#class postProcess ? XXX
+#XXX results-> 
+# 10 fat modules applid
+# XXX node hashed
+#XXX node exif extracted ...
+# ....
+
 class TaskManager():
   class __TaskManager(DEventHandler):
     def __init__(self):
@@ -45,20 +52,22 @@ class TaskManager():
 
     def createProcessNode(self, mod, args, exec_flags, node):
        #print args, exec_flags, node.absolute()
-       print "Create post process"
-       print node.absolute()
-       print "is compatible"
-       print node.isCompatibleModule(mod)
+       #print "Create post process"
+       #print node.absolute()
+       #print "is compatible"
+       #print node.isCompatibleModule(mod)
        if node.isCompatibleModule(mod):
+	 #print "post_process add task " + mod + " on node " + str(node.name())
          if args == None:
            args = libenv.argument("post_process")
          if exec_flags == None:
            exec_flags = ["console", "thread"]
-         args.add_node("file", node)
-         self.add(mod, args, exec_flags)	
+         args.add_node("file", node) #rajoute tjrs ds le meme args ....
+				     #XXX manque d autre arg genre fat ce plance pas 
+         self.add(mod, args, exec_flags)
 
     def postProcess(self, node, recursive = False):
-      print self.modPP
+      #print self.modPP
       for (mod, args, exec_flags) in self.modPP:
         self.createProcessNode(mod, args, exec_flags, node)
 #	print node.absolute()
@@ -79,20 +88,33 @@ class TaskManager():
 
 
     def add(self, cmd, args, exec_flags):
-      task = self.loader.modules[cmd] 
-      proc = Processus(task, self.npid, args, exec_flags)
-      self.lprocessus.append(proc)
-      self.npid += 1
+      mod = self.loader.modules[cmd] 
+      proc = None
+      #XXX Processus singleton c pas top  
+      if "single" in mod.flags:
+         for p in self.lprocessus:
+           if p.mod == mod:
+	    #print "Found singleton processus"
+	    proc = p
+	    #proc.args = args #ben ouaip si non c tjrs le meme fichier
+         if not proc:
+           proc = Processus(mod, self.npid, None, exec_flags)
+           self.lprocessus.append(proc)
+           self.npid += 1
+      else:
+        proc = Processus(mod, self.npid, None, exec_flags)
+        self.lprocessus.append(proc)
+        self.npid += 1
       if not "thread" in exec_flags:
         try :
           if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
-            print "This script is gui only"
+            #print "This script is gui only"
 	    self.lprocessus.remove(proc)
 	    proc.event.set()
 	    return proc
         except AttributeError:
 	    pass
-      sched.enqueue(proc)
+      sched.enqueue((proc, args))
       return proc
   __instance = None
 
@@ -103,6 +125,7 @@ class TaskManager():
 
   def __setattr__(self, attr, value):
 	setattr(self.__instance, attr, value)
+
   def __getattr__(self, attr):
 	return getattr(self.__instance, attr) 
 

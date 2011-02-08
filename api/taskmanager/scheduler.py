@@ -40,8 +40,8 @@ class WorkQueue():
 	
 		def worker(self):
 			while True:
-			  	proc  = self.workerQueue.get()
-				proc.launch()
+			  	proc, arg  = self.workerQueue.get()
+				proc.launch(arg)
 				self.workerQueue.task_done()
 
 		def __init__(self, max = 5):

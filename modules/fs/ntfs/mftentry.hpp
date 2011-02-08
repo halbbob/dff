@@ -97,6 +97,10 @@ public:
   void		_fixFixup();
   void		dumpChunks(OffsetRun *, uint16_t);
 
+  void		continueAt(uint16_t, uint16_t);
+  uint16_t	bufferOffset() { return _bufferOffset; };
+  uint16_t	attributeOffset() { return _attributeOffset; };
+
 private:
   VFile					*_vfile;
   MftEntryBlock		       		*_mftEntryBlock;

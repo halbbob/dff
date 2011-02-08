@@ -17,202 +17,6 @@
 
 #include "node.hpp"
 
-FileMapping::FileMapping()
-{
-  this->__mappedFileSize = 0;
-  this->__prevChunck = NULL;
-}
-
-FileMapping::~FileMapping()
-{
-  uint32_t	i;
-
-  for (i = 0; i != this->__chuncks.size(); i++)
-    delete this->__chuncks[i];
-}
-
-uint32_t		FileMapping::chunckCount()
-{
-  return this->__chuncks.size();
-}
-
-chunck*			FileMapping::chunckFromIdx(uint32_t idx)
-{
-  if (idx < this->__chuncks.size())
-    return this->__chuncks[idx];
-  else
-    return NULL;
-}
-
-std::vector<chunck *>	FileMapping::chuncksFromIdxRange(uint32_t begidx, uint32_t endidx)
-{
-  std::vector<chunck *>	v;
-  uint32_t		vsize;
-  std::vector<chunck *>::iterator	begit;
-  std::vector<chunck *>::iterator	endit;
-  
-  vsize = this->__chuncks.size();
-  if ((begidx < endidx) && (begidx < vsize) && (endidx < vsize))
-    {
-      begit = this->__chuncks.begin()+begidx;
-      endit = this->__chuncks.begin()+endidx;
-      v.assign(begit, endit);
-    }
-  return v;
-}
-
-std::vector<chunck *>	FileMapping::chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset)
-{
-  std::vector<chunck *>	v;
-  uint32_t		begidx;
-  uint32_t		endidx;
-
-  if ((begoffset > endoffset) || (begoffset > this->__mappedFileSize) || (endoffset > this->__mappedFileSize))
-    throw("provided offset too high");
-  try
-    {
-      begidx = this->chunckIdxFromOffset(begoffset);
-      endidx = this->chunckIdxFromOffset(endoffset);
-      v = this->chuncksFromIdxRange(begidx, endidx);
-    }
-  catch (...)
-    {
-    }
-  return v;
-}
-
-chunck*			FileMapping::firstChunck()
-{
-  if (this->__chuncks.size() > 0)
-    return this->__chuncks.front();
-  else
-    return NULL;
-}
-
-chunck*			FileMapping::lastChunck()
-{
-  if (this->__chuncks.size() > 0)
-    return this->__chuncks.back();
-  else
-    return NULL;
-}
-
-
-std::vector<chunck *>	FileMapping::chuncks()
-{
-  return this->__chuncks;
-}
-
-chunck*			FileMapping::chunckFromOffset(uint64_t offset)
-{
-  uint32_t		begidx;
-  uint32_t		mididx;
-  uint32_t		endidx;
-  
-  if (offset > this->__mappedFileSize)
-    throw("provided offset too high");
-  if (this->__chuncks.size() == 0)
-    throw("not found");
-  else if (this->__chuncks.size() == 1)
-    return this->__chuncks[0];
-  else
-    {
-      begidx = 0;
-      mididx = this->__chuncks.size() / 2;
-      endidx = this->__chuncks.size();
-      while (true)
-	{
-	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
-	    return this->__chuncks[mididx];
-	  else if (offset < this->__chuncks[mididx]->offset)
-	    endidx = mididx;
-	  else
-	    begidx = mididx;
-	  mididx = begidx + ((endidx - begidx) / 2);
-	}
-    }
-}
-
-uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset, uint32_t providedidx)
-{
-  uint32_t		begidx;
-  uint32_t		mididx;
-  uint32_t		endidx;
-  
-  if (offset > this->__mappedFileSize)
-    throw("provided offset too high");
-  if (this->__chuncks.size() == 0)
-    throw("not found");
-  else if (this->__chuncks.size() == 1)
-    return 0;
-  else
-    {
-      begidx = providedidx;
-      endidx = this->__chuncks.size();
-      mididx = begidx + ((endidx - begidx) / 2);
-      while (true)
-	{
-// 	  std::cout << "begidx: " << begidx << " mididx: " << mididx << " endidx: " << endidx
-// 		    << " offset: " << offset << " mididx->offset: " << this->__chuncks[mididx]->offset << std::endl;
-	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
-	    return mididx;
-	  else if (offset < this->__chuncks[mididx]->offset)
-	    endidx = mididx;
-	  else
-	    begidx = mididx;
-	  mididx = begidx + ((endidx - begidx) / 2);
-	}
-    }
-}
-
-
-void		FileMapping::allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
-{
-  chunck	*c;
-
-  c = new chunck;
-  c->offset = offset;
-  c->size = size;
-  this->__mappedFileSize += size;
-  c->origin = origin;
-  c->originoffset = originoffset;
-  this->__chuncks.push_back(c);
-  this->__prevChunck = c;
-}
-
-//XXX Do some sanity checks:
-// origin != NULL
-// originoffset < origin.size
-// originoffset + size < origin.size
-// 
-// Manage pushed chunck on the fly to check if current push is contiguous with prev chunck
-//  if (origin == prev_chunck->origin) and (originoffset == prev_chunck->offset + prev_chunck->size)
-//    prev_chunck->size += size
-// if origin and originoffset not provided, the chunck is seen as shadow:
-//  - reading on this kind of chunck will provide a buffer filled with 0
-void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
-{
-	//if (origin != NULL)
-	//if (this->__prevChunck != NULL)
-	//if ((origin == this->__prevChunck->origin) && (originoffset == (this->__prevChunck->offset + this->__prevChunck->size)))
-	//{
-	//this->__prevChunck->size += size;
-	//this->__mappedFileSize += size;
-	//}
-	//else
-	//this->allocChunck(offset, size, origin, originoffset);
-	//else
-	//this->allocChunck(offset, size, origin, originoffset);
-	//else
-    this->allocChunck(offset, size, origin, originoffset);
-}
-
-
-uint64_t	FileMapping::mappedFileSize()
-{
-  return this->__mappedFileSize;
-}
-
 Node::Node()
 {
 }
@@ -372,7 +176,7 @@ void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > 
 }
 
 
-std::list<std::string>*  Node::attributesNames(void)
+std::list<std::string>*  	Node::attributesNames(void)
 {
  std::list<std::string>*	result = new std::list<std::string>;
  Attributes*			attr = this->attributes();
@@ -413,7 +217,7 @@ Attributes*			Node::attributes() //rajouter un wait times ->bloquant ou pas
 //UNICODE
    (*attr)[std::string("type")] = this->dataType(); //TYPE A REGISTER DS LE NODE OU AVOIR UN REGISTER GLOBAL ?
 
-  std::list<AttributesHandler*>::iterator handler;
+  std::set<AttributesHandler*>::iterator handler;
   Attributes	nodeAttributes = this->_attributes();
   if (!(nodeAttributes.empty()))
     (*attr)[this->fsobj()->name] = new Variant(nodeAttributes);
@@ -442,8 +246,7 @@ AttributesHandler::~AttributesHandler()
 
 bool			Node::registerAttributes(AttributesHandler* ah)
 {
-   this->__attributesHandlers.push_back(ah);
-   return true;
+   return (this->__attributesHandlers.insert(ah).second);
 }
 
 uint64_t	Node::size()
@@ -644,18 +447,19 @@ std::list<std::string>*		Node::compatibleModules(void)
    list<class v_val*> vals = keys->val_l;  
    list<std::string > *res = new list<std::string>(); 
    std::list<class v_val*>::iterator val;
-   std::list<Variant *>::iterator var;
+   Attributes::iterator var;
 
    for (val = vals.begin(); val != vals.end(); val++)
    {
      if ((*val)->type == "string")
      {
-       std::list<Variant*>  vars = this->dataType()->value<std::list< Variant *>  >();
+       Attributes 	vars = this->dataType()->value<Attributes >();
        for (var = vars.begin(); var != vars.end(); var++)
        { 
-         if ((*var)->value<std::string>().find((*val)->get_string()) != -1)
+         if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
          {
            res->push_back((*val)->from);
+	   //delete (*var);
          }
        }
      }
@@ -670,7 +474,11 @@ bool	Node::isCompatibleModule(string modname)
 
    for (it = mods->begin(); it != mods->end(); it++)
      if (modname == (*it))
+     {
+        delete mods;
 	return true;
+     }
+   delete mods;
 //   if node.size() and modules["modname"].conf == data:
 // HASH prob because NONE 
 //XXX file me use reverse arg methode
@@ -690,137 +498,3 @@ VfsRoot::VfsRoot(std::string name): Node(name)
 VfsRoot::~VfsRoot()
 {
 }
-
-uint32_t VLink::id()
-{
-  return this->__linkedNode->id();
-}
-
-
-VLink::VLink(Node* linkedNode, Node* parent, std::string newname)
-{
-  this->__childcount = 0;
-  this->__at = 0;
-  this->__linkedNode = linkedNode;
-  this->__parent = parent;
-  
-  if (newname == "")
-    this->__name = __linkedNode->name(); 
-  else
-    this->__name = newname;
-  this->__parent->addChild(this);
-}
-
-void		VLink::fileMapping(FileMapping *fm)
-{
-  this->__linkedNode->fileMapping(fm);
-}
-
-uint64_t	VLink::size()
-{
-  return this->__linkedNode->size();
-}
-
-std::string 	VLink::linkPath()
-{
-  return this->__linkedNode->path();
-}
-std::string	VLink::linkName()
-{
-  return this->__linkedNode->name();
-}
-
-std::string 	VLink::linkAbsolute()
-{
-  return this->__linkedNode->absolute();
-}
-
-bool 		VLink::isFile()
-{
-  return this->__linkedNode->isFile();
-}
-
-bool 		VLink::isDir()
-{
-  return this->__linkedNode->isDir();
-}
-
-bool		VLink::isVDir()
-{
-  return this->__linkedNode->isVDir();
-}
-
-bool		VLink::isDeleted()
-{
-  return this->__linkedNode->isDeleted();
-}
-
-bool		VLink::isLink()
-{
-  return this->__linkedNode->isLink();
-}
-
-class fso*	VLink::fsobj()
-{
-  return this->__linkedNode->fsobj();
-}
-
-Node*		VLink::linkParent()
-{
-  return this->__linkedNode->parent();
-}
-
-std::vector<class Node*> VLink::linkChildren()
-{
-  return this->__linkedNode->children();
-}
-
-bool		VLink::linkHasChildren()
-{
-  return this->__linkedNode->hasChildren();
-}
-
-uint32_t	VLink::linkChildCount()
-{
-  return this->__linkedNode->childCount();
-}
-
-Node*		VLink::linkNode()
-{
-  return this->__linkedNode;
-}
-
-
-VFile*		VLink::open()
-{
-  return this->__linkedNode->open();
-}
-
-Variant*	VLink::dataType(void)
-{
-  return this->__linkedNode->dataType();
-}
-
-Attributes*	VLink::attributes(void)
-{
-  return this->__linkedNode->attributes();
-}
-
-std::string	VLink::icon(void)
-{
-  return this->__linkedNode->icon();
-}
-
-std::list<std::string>*	VLink::compatibleModules(void)
-{
-  return this->__linkedNode->compatibleModules();
-}
-
-bool			VLink::isCompatibleModule(std::string moduleName)
-{
-  return this->__linkedNode->isCompatibleModule(moduleName);
-}
-
-VLink::~VLink()
-{}
-

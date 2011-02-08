@@ -67,7 +67,7 @@ typedef std::map<std::string, class Variant* > Attributes;
 
 class AttributesHandler
 {
-  	std::string	__handlerName;
+  	std::string		__handlerName;
 public:
   EXPORT			AttributesHandler(std::string handlerName);
   EXPORT virtual		~AttributesHandler();
@@ -89,7 +89,7 @@ protected:
   //    Ex: Raid reconstruction based on two nodes which
   //    are aggregated to only one Node
   class Node*			__parent;
-  list<AttributesHandler*>	__attributesHandlers;
+  std::set<AttributesHandler*>	__attributesHandlers; //XXX set pour pas avoir de doublon 
 
   std::vector<class Node *>	__children;
   uint32_t			__childcount;

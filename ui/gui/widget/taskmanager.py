@@ -29,7 +29,8 @@ class Processus(QTreeWidget, Ui_TaskManager):
     def __init__(self, parent):
         super(QTreeWidget, self).__init__()
         self.setupUi(self)
-        
+        self.__mainWindow = parent        
+
         self.name = "Task manager"
         self.tm = TaskManager()
 
@@ -59,12 +60,12 @@ class Processus(QTreeWidget, Ui_TaskManager):
             item.setText(2, str(proc.state))
           if item.text(3) != str(proc.stateinfo):
 	    item.setText(3, str(proc.stateinfo))
-	  if not proc.timeend:
-	    ctime = time.time() - proc.timestart 
-	    item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
-	  else:
-	    ctime = proc.timeend - proc.timestart
-	    item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
+	  #if not proc.timeend:
+	    #ctime = time.time() - proc.timestart 
+	    #item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
+	  #else:
+	    #ctime = proc.timeend - proc.timestart
+	    #item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
 
     def deleteInfoProcess(self):
         self.clear()
