@@ -54,12 +54,12 @@ class Modules(QTreeWidget, Ui_Modules):
 	    itemConfig = QTreeWidgetItem(itemModule)
 	    itemConfig.setText(0, "Config")
             conf = modules[mod].conf
-            args = conf.arguments
+            args = conf.arguments()
 	    for arg in args:
 	        itemConfKey = QTreeWidgetItem(itemConfig) 
 	        itemConfKey.setText(0, "var")
 	        itemConfKey.setText(1, arg.name())
-	        itemConfKey.setText(4, typeId.typeToName(arg.type()))
+	        itemConfKey.setText(4, typeId.Get().typeToName(arg.type()))
 	        if len(arg.description()):
                     itemConfKey.setText(3, arg.description())
                 parameters = arg.parameters()
