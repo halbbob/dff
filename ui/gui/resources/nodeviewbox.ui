@@ -208,6 +208,23 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="attrSelect">
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/list.png</normaloff>:/list.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="checkboxAttribute">
      <property name="text">
       <string>Attributes</string>
