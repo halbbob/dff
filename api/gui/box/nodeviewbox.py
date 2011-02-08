@@ -279,7 +279,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.model.header_list.append(item.text())
       self.model.setHeaderData(i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
       
-
   def createCategory(self, category):
     if category != "":
       # Create bookmark node in root directory if first creation
@@ -309,6 +308,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       QWidget.changeEvent(self, event)
 
 class attrDialog(QDialog, Ui_SelectAttr):
+  """
+  This class is designed to let users chose which attributes they want to display.
+  """
   def __init__(self, nodeviewbox):
     QDialog.__init__(self, nodeviewbox)
     self.setupUi(self)
@@ -329,19 +331,23 @@ class attrDialog(QDialog, Ui_SelectAttr):
     module = node.fsobj()
     if module == None:
       return
-    print module.name
     attrs = node.attributes()[module.name].value()
     attrs.thisown = False
+    for j in model.header_list:
+      self.selectedAttrs.addItem(j)
     for i in attrs:
       if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
-        self.allAttrs.addItem(i)
-                 
+        try:
+          model.header_list.index(i)
+        except:
+          self.allAttrs.addItem(i)
+    model.header_list = []
+
   def addAttrToList(self):
     attr = self.allAttrs.currentItem()
     if attr == None:
       return
     if attr.text().length() != 0:
-      print "ferf " + attr.text()
       row = self.allAttrs.currentRow()
       self.allAttrs.takeItem(row)
       self.selectedAttrs.addItem(attr.text())
@@ -356,7 +362,8 @@ class attrDialog(QDialog, Ui_SelectAttr):
       self.allAttrs.addItem(attr.text())
 
   def changeEvent(self, event):
-    """ Search for a language change event
+    """
+    Search for a language change event
     
     This event have to call retranslateUi to change interface language on
     the fly.
