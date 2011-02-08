@@ -18,7 +18,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from api.vfs import *
-from api.vfs.libvfs import VFS, DEventHandler
+from api.vfs.libvfs import VFS
+from api.events.libevents import EventHandler
 from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.types import libtypes
@@ -95,10 +96,10 @@ class SimpleNodeBrowser(QWidget):
     else:
       QWidget.changeEvent(self, event)
 
-class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
+class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def __init__(self, parent):
     super(QWidget, self).__init__()
-    DEventHandler.__init__(self)
+    EventHandler.__init__(self)
     self.setupUi(self)
 
     self.mainwindow = parent
@@ -117,8 +118,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     #XXX merge variantBaseAPI
     #self.env = env.env()	
     #XXX merge variantBaseAPI
-
-    self.ft = FILETYPE()
 
     self.loader = loader.loader()
     self.lmodules = self.loader.modules

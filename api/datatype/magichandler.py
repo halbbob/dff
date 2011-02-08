@@ -15,10 +15,9 @@
 import platform
 
 import magic
-from api.vfs import *
-from api.env import *
+from api.vfs import vfs
 from api.exceptions.libexceptions import *
-from api.variant.libvariant import Variant
+from api.types.libtypes import Variant
 from api.vfs.libvfs import *
 import os
 from libdatatype import DataTypeManager, DataTypeHandler
@@ -28,7 +27,6 @@ class MagicHandler(DataTypeHandler):
      DataTypeHandler.__init__(self, name)
      self.__disown__()
      self.vfs = vfs.vfs()
-     self.env = env.env()
      self.mime = magic.open(mtype)
      if os.name == "nt":
        import sys

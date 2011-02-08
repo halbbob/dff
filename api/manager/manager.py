@@ -30,7 +30,7 @@ class ApiManager():
       def __init__(self):
          self.vfs = vfs.vfs
          self.TaskManager = TaskManager
-         self.argument = libtypes.Arguments
+         #self.argument = libtypes.Arguments
          self.loader = loader.loader
          self.Path = libtypes.Path
          self.OS  = OS.OS

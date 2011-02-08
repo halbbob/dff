@@ -17,22 +17,23 @@
 #ifndef __LOCAL_HH__
 #define __LOCAL_HH__
 
-#include "mfso.hpp"
+
+#include "fso.hpp"
+#include "node.hpp"
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <list>
 #include <vector>
+#include "variant.hpp"
 #include "vfs.hpp"
-#include "argument.hpp"
+//#include "argument.hpp"
 #include "path.hpp"
 #ifdef WIN32
 #include "wlocalnode.hpp"
 #else
 #include "ulocalnode.hpp"
 #endif
-
-using namespace std;
 
 class local : public fso
 {

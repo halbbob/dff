@@ -29,25 +29,6 @@ mfso::~mfso()
 {
 }
 
-<<<<<<< HEAD
-std::list<Node *>	fso::updateQueue()
-{
-  return this->__update_queue;
-}
-
-void	fso::registerTree(Node* parent, Node* head)
-{
-//  DEvent*  e = new DEvent;
-//eviter de get a chaque fois ...
-  VFS::Get().AddNode(parent, head);
-
-  
-  //parent->addChild(head);
-  //VFS::Get().notify(e);
-}
-
-=======
->>>>>>> !!! STILL VERY EXPERIMENTAL BRANCH !!!
 VFile*		mfso::vfileFromNode(Node* n)
 {
   std::map<Node*, class VFile*>::iterator	it;

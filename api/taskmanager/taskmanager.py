@@ -13,7 +13,7 @@
 #  Solal J. <sja@digital-forensic.org>
 #
 
-from api.vfs.libvfs import DEventHandler
+from api.events.libevents import EventHandler
 from api.taskmanager.scheduler import sched 
 from api.taskmanager.processus import *
 #from api.env import *
@@ -22,14 +22,14 @@ from api.exceptions.libexceptions import *
 import threading
 
 class TaskManager():
-  class __TaskManager(DEventHandler):
+  class __TaskManager(EventHandler):
     def __init__(self):
-      DEventHandler.__init__(self)
+      EventHandler.__init__(self)
       self.loader = loader.loader()
       self.sched = sched
       self.lprocessus = []
       self.npid = 0
-      self.env = env.env() 
+      #self.env = env.env() 
       self.VFS = VFS.Get()
       self.VFS.connection(self)
       self.modPP = []

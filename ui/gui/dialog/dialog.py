@@ -33,7 +33,7 @@ class Dialog(QObject):
   def __init__(self, parent):
      QObject.__init__(self)
      self.parent = parent 
-     self.env = env.env()
+     #self.env = env.env()
      self.vfs = vfs.vfs()
      self.taskmanager = TaskManager()
      self.loader = loader.loader()
@@ -49,16 +49,17 @@ class Dialog(QObject):
        dev = DevicesDialog(self.parent)
        if dev.exec_():
 	 if dev.selectedDevice:
-           arg = self.env.libenv.argument("gui_input")
-           arg.thisown = 0
-	   arg.add_path("path", str(dev.selectedDevice.blockDevice()))
-           arg.add_node("parent", self.vfs.getnode("/Local devices"))
-           arg.add_uint64("size", long(dev.selectedDevice.size())) 
+           arg = {"empty": None}
+           #arg = self.env.libenv.argument("gui_input")
+           #arg.thisown = 0
+	   #arg.add_path("path", str(dev.selectedDevice.blockDevice()))
+           #arg.add_node("parent", self.vfs.getnode("/Local devices"))
+           #arg.add_uint64("size", long(dev.selectedDevice.size())) 
 	   exec_type = ["thread", "gui"]
            if os.name == "nt":
              arg.add_string("name", str(dev.selectedDevice.model()))
              self.taskmanager.add("windevices", arg, exec_type)	
-           else:	   
+           else:
              self.taskmanager.add("local", arg, exec_type)
 
   def addFiles(self):
@@ -76,22 +77,24 @@ class Dialog(QObject):
           if len(sFiles) > 0:
             if dtype != 'dir':
               for name in sFiles:
-                arg = self.env.libenv.argument("gui_input")
-                arg.thisown = 0
+                arg = {"empty": None}
+                #arg = self.env.libenv.argument("gui_input")
+                #arg.thisown = 0
                 exec_type = ["thread", "gui"]
                 if dtype == 'ewf':
-                  arg.add_path("file", str(name.toUtf8()))
+                  #arg.add_path("file", str(name.toUtf8()))
                   self.taskmanager.add("ewf", arg, exec_type)
                 else:
-                  arg.add_path("path", str(name.toUtf8()))
-                  arg.add_node("parent", self.vfs.getnode("/Logical files"))
+                  #arg.add_path("path", str(name.toUtf8()))
+                  #arg.add_node("parent", self.vfs.getnode("/Logical files"))
                   self.taskmanager.add("local", arg, exec_type)
             else:
-              arg = self.env.libenv.argument("gui_input")
-              arg.thisown = 0
+              arg = {"empty": None}
+              #arg = self.env.libenv.argument("gui_input")
+              #arg.thisown = 0
               exec_type = ["thread", "gui"]
-              arg.add_path("path", str(sFiles.toUtf8()))
-              arg.add_node("parent", self.vfs.getnode("/Logical files"))
+              #arg.add_path("path", str(sFiles.toUtf8()))
+              #arg.add_node("parent", self.vfs.getnode("/Logical files"))
               self.taskmanager.add("local", arg, exec_type)
  
   def loadDriver(self):

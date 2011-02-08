@@ -17,7 +17,7 @@
 from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QMessageBox
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
 
-from api.env import *
+#from api.env import *
 
 from ui.gui.utils.utils import Utils
 from ui.gui.resources.ui_env import Ui_Env
@@ -27,7 +27,7 @@ class Env(QTreeWidget, Ui_Env):
         QTreeWidget.__init__(self, parent)
         self.name = "Environment"
         self.setupUi(self)
-        self.env = env.env()
+        #self.env = env.env()
         self.initTreeEnv()
 
     def initTreeEnv(self):
@@ -36,36 +36,37 @@ class Env(QTreeWidget, Ui_Env):
 	self.envValKeyDic = dict()
  
     def LoadInfoEnv(self):
-        db = self.env.vars_db
-        for key in db : 
-          try :
-	    (itemEnv, itemVar, itemValues) = self.envItemDic[key]
-	  except KeyError:
-	    itemEnv = QTreeWidgetItem(self)
-	    itemEnv.setText(0, key)
-	    itemVar = QTreeWidgetItem(itemEnv)
-            itemVar.setText(0, "var")
-	    itemValues = QTreeWidgetItem(itemEnv)
-	    self.envItemDic[key] = (itemEnv, itemVar, itemValues)
-	  cdesc = db[key].descr_l
-	  for vk in cdesc:
-	    try:
-	      itemConfKey = self.envConfKeyDic[(vk.type, vk._from)]	     
-	    except KeyError:
-	      itemConfKey = QTreeWidgetItem(itemVar) 
-	      self.envConfKeyDic[(vk.type, vk._from)] = itemConfKey
-	      itemConfKey.setText(1, vk.type)
-	      itemConfKey.setText(3, vk._from)
-          itemValues.setText(0, "values")
-	  for type, name, val, _from in self.env.get_val_list(db[key].val_l): 
-	   try:
-	      itemValKey = self.envValKeyDic[(type, _from, val)]
-	   except:
-	      itemValKey = QTreeWidgetItem(itemValues)
-              self.envValKeyDic[(type, _from, val)] = itemValKey
-	      itemValKey.setText(1, type)
-	      itemValKey.setText(2, val)
-	      itemValKey.setText(3, _from)
+        pass
+        ## db = self.env.vars_db
+        ## for key in db : 
+        ##   try :
+	##     (itemEnv, itemVar, itemValues) = self.envItemDic[key]
+	##   except KeyError:
+	##     itemEnv = QTreeWidgetItem(self)
+	##     itemEnv.setText(0, key)
+	##     itemVar = QTreeWidgetItem(itemEnv)
+        ##     itemVar.setText(0, "var")
+	##     itemValues = QTreeWidgetItem(itemEnv)
+	##     self.envItemDic[key] = (itemEnv, itemVar, itemValues)
+	##   cdesc = db[key].descr_l
+	##   for vk in cdesc:
+	##     try:
+	##       itemConfKey = self.envConfKeyDic[(vk.type, vk._from)]	     
+	##     except KeyError:
+	##       itemConfKey = QTreeWidgetItem(itemVar) 
+	##       self.envConfKeyDic[(vk.type, vk._from)] = itemConfKey
+	##       itemConfKey.setText(1, vk.type)
+	##       itemConfKey.setText(3, vk._from)
+        ##   itemValues.setText(0, "values")
+	##   for type, name, val, _from in self.env.get_val_list(db[key].val_l): 
+	##    try:
+	##       itemValKey = self.envValKeyDic[(type, _from, val)]
+	##    except:
+	##       itemValKey = QTreeWidgetItem(itemValues)
+        ##       self.envValKeyDic[(type, _from, val)] = itemValKey
+	##       itemValKey.setText(1, type)
+	##       itemValKey.setText(2, val)
+	##       itemValKey.setText(3, _from)
 
     def deleteInfoEnv(self):
         self.clear()

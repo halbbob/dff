@@ -136,43 +136,5 @@ public:
   ~VfsRoot();
 };
 
-class VLink : public Node
-{
-private :
-  Node* 			__linkedNode;
-public :
-
-  EXPORT uint32_t			id();
-  EXPORT void				fileMapping(FileMapping *);
-  EXPORT uint64_t			size();
-
-  EXPORT std::string			linkPath();
-  EXPORT std::string			linkName();
-  EXPORT std::string			linkAbsolute();
-
-  EXPORT bool				isFile();
-  EXPORT bool				isDir();
-  EXPORT bool				isLink();
-  EXPORT bool				isVDir();
-  EXPORT bool				isDeleted();
-
-  EXPORT class fso*			fsobj();
-  EXPORT class VFile*			open();
-
-  EXPORT VLink(Node *linkedNode, Node* parent, std::string newname = "");
-  EXPORT ~VLink();
-  EXPORT  Node*				linkParent();
-  EXPORT std::vector<class Node*>	linkChildren();
-  EXPORT bool				linkHasChildren();
-  EXPORT uint32_t			linkChildCount();
-  EXPORT Node*				linkNode();
-
-  EXPORT Variant*			dataType(void); 
-  EXPORT Attributes*			attributes(void);	
-  EXPORT std::string			icon(void);
-  EXPORT std::list<std::string>*	compatibleModules(void);
-  EXPORT bool				isCompatibleModule(std::string);
-};
-
 
 #endif

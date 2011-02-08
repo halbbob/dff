@@ -14,7 +14,7 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-#include "node.hpp"
+#include "vlink.hpp"
 
 uint32_t VLink::id()
 {

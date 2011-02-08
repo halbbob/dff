@@ -17,7 +17,7 @@ import hashlib
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import Variant, VMap, Parameter, Argument, typeId
 from api.vfs.libvfs import AttributesHandler
 
 class AttributeHash(AttributesHandler):
@@ -114,13 +114,23 @@ class hash(Module):
 ex: hash /myfile"""
   def __init__(self):
     Module.__init__(self, "hash", HASH)
-    self.conf.add("file", "node", False, "file to hash.")
-    self.conf.add("algorithm", "string", True, "Choose the hash algorithm")
-    self.conf.add_const("algorithm",  "md5")
-    self.conf.add_const("algorithm",  "sha1")
-    self.conf.add_const("algorithm",  "sha224")
-    self.conf.add_const("algorithm",  "sha256")
-    self.conf.add_const("algorithm",  "sha384")
-    self.conf.add_const("algorithm",  "sha512")
+    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Node,
+                           "name": "file",
+                           "description": "file to hash"
+                           })
+    self.conf.addArgument({"input": Argument.Optional|Argument.List|typeId.String,
+                           "name": "algorithm",
+                           "description": "algorithm(s) used to hash file",
+                           "parameters": {"type": Parameter.Fixed,
+                                          "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
+                           })
+    #self.conf.add("file", "node", False, "file to hash.")
+    #self.conf.add("algorithm", "string", True, "Choose the hash algorithm")
+    #self.conf.add_const("algorithm",  "md5")
+    #self.conf.add_const("algorithm",  "sha1")
+    #self.conf.add_const("algorithm",  "sha224")
+    #self.conf.add_const("algorithm",  "sha256")
+    #self.conf.add_const("algorithm",  "sha384")
+    #self.conf.add_const("algorithm",  "sha512")
     #self.conf.add_const("mime-type", "data")
     self.tags = "Hash"

@@ -27,6 +27,16 @@ Config::~Config()
 {
 }
 
+void		Config::addArgument(Argument* arg)
+{
+  this->__arguments.push_back(arg);
+}
+
+std::list<Argument*>	Config::arguments()
+{
+  return this->__arguments;
+}
+
 // void			Config::add(std::string name, uint8_t type, bool optional, std::string description)
 // {
 //   Argument*		param;
@@ -50,10 +60,10 @@ std::string		Config::description()
   return this->__description;
 }
 
-Argument*		Config::addArgument(std::string name, uint16_t type, std::string description)
-{
+// Argument*		Config::addArgument(std::string name, uint16_t type, std::string description)
+// {
   
-}
+// }
 
 
 

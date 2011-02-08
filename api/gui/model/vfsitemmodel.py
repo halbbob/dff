@@ -19,7 +19,7 @@ from PyQt4 import QtCore
 
 import re
 from api.vfs import libvfs, iodevice
-from api.variant.libvariant import Variant
+from api.types.libtypes import Variant
 
 from Queue import *
 

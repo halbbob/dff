@@ -39,6 +39,7 @@
 #include "exceptions.hpp"
 
 #include "variant.hpp"
+  //#include "parameter.hpp"
 #include "argument.hpp"
 #include "config.hpp"
 #include "path.hpp"
@@ -56,6 +57,7 @@
   Variant*  pyObjectToVariant(PyObject* val, uint8_t t);
   static bool std_list_Sl_Variant_Sm__Sg__operator_Se__Se_(std::list< Variant * > *self,PyObject *obj);
   static bool std_map_Sl_std_string_Sc_Variant_Sm__Sg__operator_Se__Se_(std::map< std::string,Variant * > *self,PyObject *obj);
+  static int SWIG_AsVal_std_string(PyObject*, std::string*);
   %}
 
 %ignore Variant::operator==(T val);
@@ -64,8 +66,10 @@
 %ignore Variant::operator>=(T val);
 %ignore Variant::operator<(T val);
 %ignore Variant::operator<=(T val);
+//%ignore Argument::addParameters(std::list<Variant*>);
 
 %include "../include/variant.hpp"
+ //%include "../include/parameter.hpp"
 %include "../include/argument.hpp"
 %include "../include/export.hpp"
 %include "../include/config.hpp"
@@ -519,6 +523,10 @@ Variant*  pyObjectToVariant(PyObject* val, uint8_t t)
      return pyUnsignedNumericToVariant(val, t);
    else if ((t == typeId::String) || (t == typeId::Char) || (t == typeId::CArray))
      return pyStringToVariant(val, t);
+   else if (t == typeId::Path)
+     ;
+   else if (t == typeId::Node)
+     ;
    else
      return NULL;
 }
@@ -533,11 +541,11 @@ bool isTypeCompatible(PyObject* val, uint8_t t)
         return checkStringOverflow(val, t);
     if (t == typeId::Node)
        {
-    	  return false;
+	 return false;
        }
     if (t == typeId::Path)
       {
-         return true;
+	return true;
       }
     return false;
 }
@@ -679,88 +687,156 @@ bool validateDefault (PyObject* val, uint8_t t)
 %template(__VMap) Variant::value< std::map<std::string, Variant *> >;
 
 
-
 %extend Argument
 {
+  void	addParameters(PyObject* obj) throw(std::string)
+  {
+    PyObject*	type_obj;
+    PyObject*	predef_obj;
+    uint16_t	ptype;
+    int		ecode = 0;
+    uint16_t	itype;
 
-  /* PyObject*	addPredefinedParameters(PyObject* val) */
-  /* { */
-  /*   PyObject*	resultobj = 0; */
-  /*   Variant*	params; */
-  /*   uint8_t	type; */
+    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+    if ((type_obj = PyDict_GetItemString(obj, "type")) == NULL)
+      throw(std::string("No field < type > defined for provided parameters"));
+    ecode = SWIG_AsVal_unsigned_SS_short(type_obj, &ptype);
+    if (!SWIG_IsOK(ecode))
+      throw(std::string("invalid type for field < type >"));
 
-  /*   SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /*   SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-  /*   type = self->type(); */
-  /*   SWIG_PYTHON_THREAD_END_ALLOW; */
-  /*   SWIG_PYTHON_THREAD_END_BLOCK; */
-  /*   params = pyObjectToVariant(val, type); */
-  /*   if (params != NULL) */
-  /*     { */
-  /* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /* 	SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-  /* 	self->addPredefinedParameters(params); */
-  /* 	SWIG_PYTHON_THREAD_END_ALLOW; */
-  /* 	SWIG_PYTHON_THREAD_END_BLOCK; */
-  /* 	resultobj = SWIG_Py_Void(); */
-  /* 	return resultobj; */
-  /*     } */
-  /*   else */
-  /*     { */
-  /* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /* 	PyErr_SetString(PyExc_ValueError, "Argument::setPredefinedParameters(), provided value is not compatbile with the type of argument\n"); */
-  /* 	SWIG_PYTHON_THREAD_END_BLOCK; */
-  /* 	return NULL; */
-  /*     } */
-  /*   /\* if (!PyString_Check(val)) *\/ */
-  /*   /\*   { *\/ */
-  /*   /\* 	SWIG_PYTHON_THREAD_BEGIN_BLOCK; *\/ */
-  /*   /\* 	PyErr_SetString(PyExc_TypeError, "Config::add_const first argument must be a string"); *\/ */
-  /*   /\* 	SWIG_PYTHON_THREAD_END_BLOCK; *\/ */
-  /*   /\* 	return NULL; *\/ */
-  /*   /\*   } *\/ */
-  /*   /\* else *\/ */
-  /*   /\*   { *\/ */
+    predef_obj = PyDict_GetItemString(obj, "predefined");
     
-  /* 	//SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-  /* 	//SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-  /* 	//params = self->parameters(); */
-  /* 	//SWIG_PYTHON_THREAD_END_ALLOW; */
-  /* 	//SWIG_PYTHON_THREAD_END_BLOCK; */
-  /* 	//if (it != params.end()) */
-  /* 	//  { */
-  /* 	//    param = (*it).second; */
-  /* 	//    Variant* vval; */
-  /* 	    //if (validateDefault(val, param->type())) */
-  /* 	//    if ((vval = pyObjectToVariant(val, param->type())) != NULL) */
-  /* 	//     { */
-  /* 	//		param->addDefault(vval); */
-  /* 	//		resultobj = SWIG_Py_Void(); */
-  /* 	//		return resultobj; */
-  /* 	//	      } */
-  /* 	//	    else */
-  /* 	//	      return NULL; */
-  /* 	//  } */
-  /* 	/\* else *\/ */
-  /* 	/\*   { *\/ */
-  /* 	/\*     SWIG_PYTHON_THREAD_BEGIN_BLOCK; *\/ */
-  /* 	/\*     PyErr_SetString(PyExc_KeyError, "Config::__parameters map<std::string, Parameters * > requested name not found"); *\/ */
-  /* 	/\*     SWIG_PYTHON_THREAD_END_BLOCK; *\/ */
-  /* 	/\*     return NULL; *\/ */
-  /* 	/\*   } *\/ */
-  /* 	/\* resultobj = SWIG_Py_Void(); *\/ */
-  /* 	/\* return resultobj; *\/ */
-  /*   // } */
-  /* } */
+    if (predef_obj == NULL)
+      {
+	if (ptype == Parameter::Fixed)
+	  throw(std::string("parameters of type Fixed need < predefined > field"));
+      }
+    else
+      {
+	if (!PyList_Check(predef_obj))
+	  throw(std::string("< predefined > field of parameters must be a list"));
+	else
+	  {
+	    PyObject*	item;
+	    Py_ssize_t	lsize = PyList_Size(predef_obj);
+	    Py_ssize_t	i;
+	    itype = self->type();
+	    Variant*	v;
+	    bool	err = false;
+	    std::list<Variant*>	vlist;
 
-  PyObject*			activateParameters(PyObject* param)
-  {
+	    for (i = 0; i != lsize; i++)
+	      {
+		item = PyList_GetItem(predef_obj, i);
+		if ((v = pyObjectToVariant(item, itype)) == NULL)
+		  {
+		    err = true;
+		    break;
+		  }
+		else
+		  vlist.push_back(v);
+	      }
+	    if (err)
+	      {
+		vlist.erase(vlist.begin(), vlist.end());
+		throw(std::string("provided predefined parameters are not compatible with argument type"));
+	      }
+	    else
+	      self->addParameters(vlist, ptype);
+	  }
+      }
+    SWIG_PYTHON_THREAD_END_BLOCK;
   }
+};
 
-  PyObject*			deactivateParameter(PyObject* param)
+%extend Config
+{
+
+  void	addArgument(PyObject* obj) throw(std::string)
   {
+    uint32_t	pydictsize;
+    Argument*	arg;
+    PyObject*	name_obj = 0;
+    PyObject*	input_obj = 0;
+    PyObject*   param_obj = 0;
+    PyObject*	descr_obj = 0;
+    PyObject*	rtime_obj = 0;
+
+    uint16_t	input;
+    std::string	name;
+    std::string	description;
+
+    int		ecode = 0;
+
+    if (PyDict_Check(obj))
+      {
+	pydictsize = PyDict_Size(obj);
+	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	if ((name_obj = PyDict_GetItemString(obj, "name")) == NULL)
+	  throw(std::string("No field < name > defined for current argument"));
+	ecode = SWIG_AsVal_std_string(name_obj, &name);
+	if (!SWIG_IsOK(ecode))
+	  throw(std::string("invalid type for field < name >"));
+	
+	if ((input_obj = PyDict_GetItemString(obj, "input")) == NULL)
+	  throw(std::string("No field < input > defined for current argument"));
+	ecode = SWIG_AsVal_unsigned_SS_short(input_obj, &input);
+	if (!SWIG_IsOK(ecode))
+	  throw(std::string("invalid type for field < input >"));
+	if ((descr_obj = PyDict_GetItemString(obj, "description")) == NULL)
+	  throw(std::string("No field < description > defined for current argument"));	    
+	ecode = SWIG_AsVal_std_string(descr_obj, &description);
+	if (!SWIG_IsOK(ecode))
+	  throw(std::string("invalid type for field < description >"));
+	
+	param_obj = PyDict_GetItemString(obj, "parameters");
+	SWIG_PYTHON_THREAD_END_BLOCK;
+	
+	if (input == Argument::Empty)
+	  {
+	    if (param_obj != NULL)
+	      throw(std::string("parameters defined for an argument which takes no parameter"));
+	    else
+	      {
+		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+		arg = new Argument(name, input, description);
+		self->addArgument(arg);
+		SWIG_PYTHON_THREAD_END_BLOCK;
+	      }
+	  }
+	else if ((
+		  ((input & 0x0300) == Argument::List) || ((input & 0x0300) == Argument::Single))
+		 && (((input & 0x0c00) == Argument::Optional) || ((input & 0x0c00) == Argument::Required)))
+	  {
+	    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	    arg = new Argument(name, input, description);
+	    if (param_obj != NULL)
+	      {
+		if (!PyDict_Check(param_obj))
+		  throw(std::string("parameters field is not of type dict"));
+		else
+		  {
+		    try
+		      {
+			Argument_addParameters__SWIG_1(arg, param_obj);
+			self->addArgument(arg);
+		      }
+		    catch (std::string e)
+		      {
+			delete arg;
+			throw("error while parsing argument < " + name + " >\n   " + e);
+		      }
+		  }
+	      }
+	    else
+	      self->addArgument(arg);
+	    SWIG_PYTHON_THREAD_END_BLOCK;
+	  }
+	else
+	  throw(std::string("flags setted to field < input > are not valid"));
+      }
   }
-}
+};
 
 %extend std::map<std::string, Variant * >
 {
@@ -876,6 +952,146 @@ bool validateDefault (PyObject* val, uint8_t t)
 
 %extend Variant
 {
+
+  Variant(PyObject* obj, uint8_t type) throw(std::string)
+    {
+      Variant*	v = NULL;
+      bool	err = true;
+      int	ecode;
+      
+      if (PyLong_Check(obj) || PyInt_Check(obj))
+	{
+	  printf("Variant::Variant(PyObject* obj, uint8_t type) ---> obj == PyLong_Check || PyInt_Check provided\n");
+	  if (type == uint8_t(typeId::Int16))
+	    {
+	      int16_t	s;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      ecode = SWIG_AsVal_short(obj, &s);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(v);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::UInt16))
+	    {
+	      uint16_t	us;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      int ecode = SWIG_AsVal_unsigned_SS_short(obj, &us);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(us);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::Int32))
+	    {
+	      int32_t	i;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      int ecode = SWIG_AsVal_int(obj, &i);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(i);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::UInt32))
+	    {
+	      uint32_t	ui;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      int ecode = SWIG_AsVal_unsigned_SS_int(obj, &ui);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(ui);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::Int64))
+	    {
+	      int64_t	ll;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+#ifdef SWIGWORDSIZE64
+	      int ecode = SWIG_AsVal_long(obj, &ll);
+#else
+	      int ecode = SWIG_AsVal_long_SS_long(obj, &ll);
+#endif
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(ll);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::UInt64))
+	    {
+	      uint64_t	ull;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+#ifdef SWIGWORDSIZE64
+	      int ecode = SWIG_AsVal_unsigned_SS_long(obj, &ull);
+#else
+	      int ecode = SWIG_AsVal_unsigned_SS_long_SS_long(obj, &ull);
+#endif
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(ull);
+		  err = false;
+		}
+	    }
+	}
+      else if (PyString_Check(obj))
+	{
+	  if (type == typeId::String)
+	    {
+	      std::string	str;
+
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      ecode = SWIG_AsVal_std_string(obj, &str);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(str);
+		  err = false;
+		}
+	    }
+	  else if (type == typeId::CArray)
+	    {
+	      std::string	str;
+
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      ecode = SWIG_AsVal_std_string(obj, &str);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(str.c_str());
+		  err = false;
+		}
+	    }
+	  else if (type == typeId::Char)
+	    {
+	      char	c;
+
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      ecode = SWIG_AsVal_char(obj, &c);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(c);
+		  err = false;
+		}
+	    }
+	}
+      if (err)
+	{
+	  throw(std::string("Cannot create Variant, Provided PyObject and requested type are not compatible"));
+	}
+      else
+	return v;
+    }
 
   bool	operator==(PyObject* obj)
   {
@@ -1335,6 +1551,7 @@ VMap.__repr__ = __vmap_repr_proxy__
 namespace std
 {
   %template(MapString)       map<string, string>;
+  %template(ArgumentList)	std::list<Argument*>;
   //%template(ParameterMap)    map<string, Parameter* >;
   %template(MapVtime)        map<string, vtime* >;
   %template(MapInt)          map<string, unsigned int>;

@@ -27,32 +27,33 @@
 #include <string>
 #include <list>
 #include <map>
-//#include <iostream>
+
 #include "variant.hpp"
 #include "export.hpp"
-#include "argument.hpp"
 
-#define TYPEMASK					0x00FF
-#define INPUTMASK					0x0300
-#define NEEDMASK					0x0C00
-#define PARAMMASK					0x3000
+#define TYPEMASK			0x00FF
+#define INPUTMASK			0x0300
+#define NEEDMASK			0x0C00
+#define PARAMMASK			0x3000
 
-#define SingleInput					0x0100
-#define ListInput					0x0200
-#define Optional					0x0400
-#define Required					0x0800
-#define FixedParam					0x1000
-#define CustomizableParam				0x2000
+// #define OptionalSingleInputWithFixedParam		Optional|SingleInput|FixedParam
+// #define OptionalSingleInputWithCustomizableParam	Optional|SingleInput|CustomizableParam
+// #define RequiredSingleInputWithFixedParam		Required|SingleInput|FixedParam
+// #define RequiredSingleInputWithCustomizableParam	Required|SingleInput|CustomizableParam
 
-#define OptionalSingleInputWithFixedParam		Optional|SingleInput|FixedParam
-#define OptionalSingleInputWithCustomizableParam	Optional|SingleInput|CustomizableParam
-#define RequiredSingleInputWithFixedParam		Required|SingleInput|FixedParam
-#define RequiredSingleInputWithCustomizableParam	Required|SingleInput|CustomizableParam
+// #define OptionalListInputWithFixedParam			Optional|ListInput|FixedParam
+// #define OptionalListInputWithCustomizableParam		Optional|ListInput|CustomizableParam
+// #define RequiredListInputWithFixedParam			Required|ListInput|FixedParam
+// #define RequiredListInputWithCustomizableParam		Required|ListInput|CustomizableParam
 
-#define OptionalListInputWithFixedParam			Optional|ListInput|FixedParam
-#define OptionalListInputWithCustomizableParam		Optional|ListInput|CustomizableParam
-#define RequiredListInputWithFixedParam			Required|ListInput|FixedParam
-#define RequiredListInputWithCustomizableParam		Required|ListInput|CustomizableParam
+struct Parameter
+  {
+    enum types
+    {
+      Fixed = 0x1000,
+      Customizable = 0x2000
+    };
+  };
 
 class Argument
 {
@@ -61,40 +62,51 @@ private:
   uint16_t			__flags;
   std::string			__description;
   bool				__enabled;
-  std::list<Variant*>		__predefparams;
-  std::list<Variant*>		__activatedparams;
-  std::list<Variant*>		__deactivatedparams;
+  std::list<Variant*>		__parameters;
+  bool				__paramslocked;
+  void				setParametersType(uint16_t t);
 
 public:
+  enum inputTypes
+    {
+      Empty =			0x0000,
+      Single =			0x0100,
+      List =			0x0200,
+      Optional =		0x0400,
+      Required =		0x0800
+    };
   Argument(std::string name, uint16_t flags, std::string description = "");
   ~Argument();
 
-  void				setName(std::string name);
+
+  void				addParameters(std::list<Variant*> params, uint16_t type);
+
+  std::list<Variant*>		parameters();
+  //void				setName(std::string name);
   std::string			name();
 
-  void				setFlags(uint16_t flags);
+  //void				setFlags(uint16_t flags);
   uint16_t			flags();
 
-  void				setDescription(std::string description);
+  //void				setDescription(std::string description);
   std::string			description();
 
-  void				setEnabled(bool enabled);
-  bool				isEnabled();
+  //void				setEnabled(bool enabled);
+  //bool				isEnabled();
 
-  void				setType(uint16_t type);
+  //void				setType(uint16_t type);
   uint16_t			type();
 
-  void				setInputType(uint16_t itype);
+  //void				setInputType(uint16_t itype);
   uint16_t			inputType();
 
-  void				setParametersType(uint16_t ptype);
   uint16_t			parametersType();
   
-  void				setRequirementType(uint16_t ntype);
+  //void				setRequirementType(uint16_t ntype);
   uint16_t			requirementType();
 
-  void				setPreselectedParameters(std::list<Variant* >);
-  std::list<Variant* >		preselectedParameters();
+  // void				setPreselectedParameters(std::list<Variant* >);
+  // std::list<Variant* >		preselectedParameters();
 
   
   //void				addPredefinedParameters(Variant *params);

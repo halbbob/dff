@@ -21,7 +21,8 @@ from PyQt4.QtGui import *
 
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.propertytable import PropertyTable
-from api.vfs.vfs import vfs, Node, DEvent, VLink
+from api.vfs.vfs import vfs, Node, VLink
+from api.events.libevents import event
 from api.vfs import libvfs
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
@@ -266,7 +267,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 	    c = VLink(child, n)
 	    c.__disown__()
       self.parent.model.checkedNodes.clear()	
-      e = DEvent()
+      e = event()
       self.VFS.notify(e)
 
   def createCategory(self, category):

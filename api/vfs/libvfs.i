@@ -694,7 +694,6 @@ Open the node and return a pointer to a VFile instance
 %feature("director") mfso;
 %feature("director") Node;
 %feature("director") VLink;
-%feature("director") DEventHandler;
 %feature("director") AttributesHandler;
 
 %newobject Node::open();
@@ -724,7 +723,7 @@ Open the node and return a pointer to a VFile instance
     }
 }
 
-%feature("director:except") Link 
+%feature("director:except") VLink 
 {
     if ($error != NULL)
     {
@@ -759,10 +758,13 @@ Open the node and return a pointer to a VFile instance
 #include "eventhandler.hpp"
 #include "vfs.hpp"
 #include "exceptions.hpp"
+#include "fdmanager.hpp"
+#include "filemapping.hpp"
 #include "export.hpp"
 #include "fso.hpp"
 #include "mfso.hpp"
 #include "node.hpp"
+#include "vlink.hpp"
 #include "vfile.hpp"
 #include "variant.hpp"
 %}
@@ -771,10 +773,13 @@ Open the node and return a pointer to a VFile instance
 
 %include "../include/vfs.hpp"
 %include "../include/export.hpp"
+%include "../include/fdmanager.hpp"
+%include "../include/filemapping.hpp"
 %include "../include/exceptions.hpp"
 %include "../include/fso.hpp"
 %include "../include/mfso.hpp"
 %include "../include/node.hpp"
+%include "../include/vlink.hpp"
 %include "../include/vfile.hpp"
 
 namespace std
@@ -788,10 +793,6 @@ namespace std
 //  %template(MapAttributes) map<std::string, Variant*>;
 };
 
-
-%extend fso
-{
-};
 
 /* %extend mfso */
 /* { */

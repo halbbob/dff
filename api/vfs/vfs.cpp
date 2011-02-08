@@ -100,6 +100,8 @@ ou alors chopper une lsite ce qui evite les for ....... koi ct comme ca avant ??
 {
    parent->addChild(head);
  
-   DEvent* e = new DEvent(head);
+   event* e = new event;
+   e->value = new Variant(head);
+   //e->type = event::OPEN;
    this->notify(e);
 }

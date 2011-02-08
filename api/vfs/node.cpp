@@ -443,28 +443,30 @@ Variant*	Node::dataType(/*uint32_t wait = 0*event callback*/) /*au lieux de void
 
 std::list<std::string>*		Node::compatibleModules(void)
 {
-   class env*	environ    = env::Get();
-   v_key*  keys  	   = environ->vars_db["mime-type"];
-   list<class v_val*> vals = keys->val_l;  
-   list<std::string > *res = new list<std::string>(); 
-   std::list<class v_val*>::iterator val;
-   Attributes::iterator var;
-
-   for (val = vals.begin(); val != vals.end(); val++)
-   {
-     if ((*val)->type == "string")
-     {
-       Attributes 	vars = this->dataType()->value<Attributes >();
-       for (var = vars.begin(); var != vars.end(); var++)
-       { 
-         if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
-         {
-           res->push_back((*val)->from);
-         }
-       }
-     }
-   }
-  return res;
+  // XXX variantBaseAPI !!!
+  // class env*	environ    = env::Get();
+  // v_key*  keys  	   = environ->vars_db["mime-type"];  
+  // list<class v_val*> vals = keys->val_l;  
+  // list<std::string > *res = new list<std::string>(); 
+  // std::list<class v_val*>::iterator val;
+  // Attributes::iterator var;
+  
+  // for (val = vals.begin(); val != vals.end(); val++)
+  //   {
+  //     if ((*val)->type == "string")
+  // 	{
+  // 	  Attributes 	vars = this->dataType()->value<Attributes >();
+  // 	  for (var = vars.begin(); var != vars.end(); var++)
+  // 	    { 
+  // 	      if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
+  // 		{
+  // 		  res->push_back((*val)->from);
+  // 		}
+  // 	    }
+  // 	}
+  //   }
+  // return res;
+// XXX variantBaseAPI !!!
 }
 
 bool	Node::isCompatibleModule(string modname)

@@ -14,4 +14,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ["libtype", "OS"]
+__all__ = ["libtypes", "OS"]
