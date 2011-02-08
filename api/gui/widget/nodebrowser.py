@@ -172,7 +172,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     self.VFS = VFS.Get()
 
     #register to event from vfs
-    self.VFS.connection(self)
     self.env = env.env()	
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
@@ -193,13 +192,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
-
-
-  def Event(self, e):
-    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.model.emit(SIGNAL("layoutChanged()"))
-    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.treeModel.emit(SIGNAL("layoutChanged()"))
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)

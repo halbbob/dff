@@ -252,6 +252,30 @@ Attributes*		Node::dynamicAttributes()
   return attr;
 }
 
+Variant*	Node::dynamicAttributes(std::string name)
+{
+  std::set<AttributesHandler* >::iterator handler;
+
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+  {
+    if ((*handler)->name() == name)
+     return new Variant((*handler)->attributes(this));	
+  } 	
+
+  return (new Variant());
+}
+
+std::list<std::string>*		Node::dynamicAttributesNames(void)
+{
+  std::set<AttributesHandler* >::iterator handler;
+  std::list<std::string>*	names = new std::list<std::string>;
+
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+     names->push_back((*handler)->name());
+
+  return (names);
+}
+
 AttributesHandler::AttributesHandler(std::string handlerName)
 {
   this->__handlerName = handlerName;

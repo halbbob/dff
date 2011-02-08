@@ -141,6 +141,7 @@ class TreeModel(QAbstractItemModel):
     QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
     self.VFS = libvfs.VFS.Get()
+    self.VFS.connection(self)
     self.map = {}
     self.imagesthumbnails = None
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
@@ -262,13 +263,18 @@ class TreeModel(QAbstractItemModel):
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
 
+  def Event(self, e):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
+
+
 class VFSItemModel(QAbstractItemModel):
   #numberPopulated = QtCore.pyqtSignal(int)
-  toto = (None, None)
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
     self.__parent = __parent
     self.VFS = libvfs.VFS.Get()
+    self.VFS.connection(self)
     self.map = {}
 
     self.imagesthumbnails = None
@@ -285,6 +291,10 @@ class VFSItemModel(QAbstractItemModel):
     self.cacheAttr = (None, None)
     #setattr(self, "canFetchMore", self.canFetchMore)
     #setattr(self, "fetchMore", self.fetchMore)
+
+  def Event(self, e):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
