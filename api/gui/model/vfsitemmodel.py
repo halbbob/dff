@@ -18,8 +18,8 @@ from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCac
 from PyQt4 import QtCore
 
 import re
-from api.vfs import libvfs, iodevice
 from api.variant.libvariant import Variant
+from api.vfs.libvfs import VFS, DEventHandler
 
 from Queue import *
 
@@ -136,11 +136,12 @@ class TypeWorker(QThread):
 typeWorker = TypeWorker()
 typeWorker.start()
 
-class TreeModel(QAbstractItemModel):
+class TreeModel(QAbstractItemModel, DEventHandler):
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
+    DEventHandler.__init__(self)
     self.__parent = __parent
-    self.VFS = libvfs.VFS.Get()
+    self.VFS = VFS.Get()
     self.VFS.connection(self)
     self.map = {}
     self.imagesthumbnails = None
@@ -268,12 +269,13 @@ class TreeModel(QAbstractItemModel):
     self.emit(SIGNAL("layoutChanged()"))
 
 
-class VFSItemModel(QAbstractItemModel):
+class VFSItemModel(QAbstractItemModel, DEventHandler):
   #numberPopulated = QtCore.pyqtSignal(int)
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
+    DEventHandler.__init__(self)
     self.__parent = __parent
-    self.VFS = libvfs.VFS.Get()
+    self.VFS = VFS.Get()
     self.VFS.connection(self)
     self.map = {}
 

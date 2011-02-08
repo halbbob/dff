@@ -154,10 +154,9 @@ class SimpleNodeBrowser(QWidget):
     else:
       QWidget.changeEvent(self, event)
 
-class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
+class NodeBrowser(QWidget,Ui_NodeBrowser):
   def __init__(self, parent):
     super(QWidget, self).__init__()
-    DEventHandler.__init__(self)
     self.setupUi(self)
 
     self.mainwindow = parent
