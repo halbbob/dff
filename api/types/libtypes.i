@@ -54,7 +54,6 @@
 %}
 
 %inline %{
-  Variant*  pyObjectToVariant(PyObject* val, uint8_t t);
   static bool std_list_Sl_Variant_Sm__Sg__operator_Se__Se_(std::list< Variant * > *self,PyObject *obj);
   static bool std_map_Sl_std_string_Sc_Variant_Sm__Sg__operator_Se__Se_(std::map< std::string,Variant * > *self,PyObject *obj);
   static int SWIG_AsVal_std_string(PyObject*, std::string*);
