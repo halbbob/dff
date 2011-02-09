@@ -31,16 +31,24 @@ class Config
 private:
   std::string				__origin;
   std::string				__description;
-  std::list<Argument* >			__arguments;
+  std::map<std::string, Argument*>	__arguments;
 
 public:
   EXPORT Config(std::string origin, std::string description = "");
   EXPORT ~Config();
-  EXPORT void				addArgument(Argument* arg);
-  EXPORT std::list<Argument*>		arguments();
-  //EXPORT void				addArguments();
-  EXPORT std::string				origin();
-  EXPORT std::string				description();
+  EXPORT std::string		origin();
+  EXPORT std::string		description();
+
+  EXPORT void			addArgument(Argument* arg) throw (std::string);
+  EXPORT std::list<Argument*>	arguments();
+  EXPORT std::list<std::string>	argumentsName();
+
+  EXPORT Argument*		argumentByName(std::string argname);
+  EXPORT std::list<Argument*>	argumentsByName(std::list<std::string> argsname);
+  EXPORT std::list<Argument*>	argumentsByFlags(uint16_t flags);
+  EXPORT std::list<Argument*>	argumentByInputType(uint16_t itype);
+  EXPORT std::list<Argument*>	argumentByRequirementType(uint16_t rtype);
+  EXPORT std::list<Argument*>	argumentByType(uint16_t type);
 };
 
 #endif
