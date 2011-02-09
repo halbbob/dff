@@ -30,11 +30,10 @@ class layoutManager(QWidget):
     '''Create a layout manager which will help widget creation and data managment
     The system work with a key / value system and return python type data (ex: str, int, long, list, tupple, etc..)
     '''
-    def __init__(self, layout=None):
+    def __init__(self):
         QWidget.__init__(self)
-        if not layout:
-            self.layout = QFormLayout()
-        else: self.layout = layout
+        self.layout = QFormLayout()
+        self.layout.setMargin(0)
         self.widgets = {}
         self.setLayout(self.layout)
 
@@ -93,12 +92,13 @@ class layoutManager(QWidget):
             if type(key) == types.StringType:
                 if len(predefs) > 0:
                     w = QComboBox()
+                    w.setEditable(editable)
                     for value in predefs:
                         w.addItem(value.toString())
                 else:
                     w = QLineEdit()
-                w.setEditable(editable)
-                self.layout.addRow(key, w)
+                    w.setReadOnly(not editable)
+                self.layout.addRow(w)
                 self.widgets[key] = w
                 return 1
             else: 
@@ -195,10 +195,10 @@ class layoutManager(QWidget):
             rm = rmLocalPathButton(listpathcontainer)
             buttonbox.addButton(rm, QDialogButtonBox.ActionRole)
             
+            layout.addWidget(buttonbox, 0, Qt.AlignLeft)
             layout.addWidget(listpathcontainer, 2)
-            layout.addWidget(buttonbox, 0)
 
-            self.layout.addRow(key, layout)
+            self.layout.addRow(layout)
             self.widgets[key] = listpathcontainer
             return 1
         else:
@@ -207,8 +207,7 @@ class layoutManager(QWidget):
     def addPath(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QHBoxLayout()
-            layout.setSpacing(0)
-            layout.setMargin(0)
+
             if len(predefs) > 0:
                 pathcontainer = QComboBox()
                 pathcontainer.setEditable(editable)
@@ -226,7 +225,7 @@ class layoutManager(QWidget):
                 browse = addLocalPathButton(key, pathcontainer, isdir=False, nodetype=True)
             layout.addWidget(pathcontainer, 2)
             layout.addWidget(browse, 0)
-            self.layout.addRow(key, layout)
+            self.layout.addRow(layout)
             self.widgets[key] = pathcontainer
             return 1
         else:
@@ -277,6 +276,8 @@ class multipleListWidget(QWidget):
 
     def init(self):
         self.vbox = QVBoxLayout()
+        self.vbox.setSpacing(5)
+        self.vbox.setMargin(0)
         self.createHeader()
         self.valuelist = QListWidget()
         self.vbox.addWidget(self.valuelist)

@@ -17,9 +17,12 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-from api.env.libenv import *
-from api.variant.libvariant import Variant, VMap
-from api.vfs.libvfs import *
+#from api.env.libenv import *
+#from api.variant.libvariant import Variant, VMap
+#from api.vfs.libvfs import *
+
+from api.types.libtypes import Variant, VMap, Parameter, Argument, typeId
+from api.vfs.libvfs import AttributesHandler
 
 class SpareNode(Node):
    def __init__(self, mfso, parent, name, pageSize = 512, spareSize = 16, lparent = None, invert = False):
@@ -92,10 +95,34 @@ This could be usefull for recovering more data when carving a dump with slack,
 or before applying a file system reconstruction modules."""
   def __init__(self):
      Module.__init__(self, 'spare', Spare)
-     self.conf.add("node", "node", False, "Delete spare of this node.")
-     self.conf.add("spare-size", "int", False, "size of a nand spare")
-     self.conf.add_const("spare-size", 16)
-     self.conf.add("page-size", "int", False, "size of a nand page")
-     self.conf.add_const("page-size", 512)
-     self.conf.add("invert", "bool", True, "Create a spare only node")
+     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node,
+                            "name": "node",
+                            "description": "Delete spare areas in this node"
+                            })
+     
+     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt16,
+                            "name": "spare_size",
+                            "description": "Spare size",
+                            "parameters": {"type": Parameter.Editable,
+                                           "predefined": [8, 16, 24, 32]}
+                            })
+     
+     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt32,
+                            "name": "page_size",
+                            "description": "Iterate on each page size",
+                            "parameters": {"type": Parameter.Editable,
+                                           "predefined": [256, 512, 1024]}
+                            })
+
+     self.conf.addArgument({"input": Argument.Empty,
+                            "name": "dump_spare",
+                            "description": "Create a node with only spares data"
+                            })
+
+#     self.conf.add("node", "node", False, "Delete spare of this node.")
+#     self.conf.add("spare-size", "int", False, "size of a nand spare")
+#     self.conf.add_const("spare-size", 16)
+#     self.conf.add("page-size", "int", False, "size of a nand page")
+#     self.conf.add_const("page-size", 512)
+#     self.conf.add("invert", "bool", True, "Create a spare only node")
      self.tags = "Node"

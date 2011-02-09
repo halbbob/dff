@@ -14,9 +14,9 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-add_subdirectory (extfs)
-add_subdirectory (fat)
-add_subdirectory (ntfs)
+#add_subdirectory (extfs)
+#add_subdirectory (fat)
+#add_subdirectory (ntfs)
 #if(HAVE_FUSE)
 #  add_subdirectory (fuse)
 #endif(HAVE_FUSE)
