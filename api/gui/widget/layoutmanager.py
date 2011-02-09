@@ -18,19 +18,23 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 import os
+import types
 
 from api.vfs import *
 from api.gui.model.vfsitemmodel import  VFSItemModel
-from api.vfs.libvfs import VFS, DEventHandler
+from api.vfs.libvfs import VFS
 from api.gui.widget.nodeview import NodeTreeView
+from api.types.libtypes import typeId
 
 class layoutManager(QWidget):
     '''Create a layout manager which will help widget creation and data managment
     The system work with a key / value system and return python type data (ex: str, int, long, list, tupple, etc..)
     '''
-    def __init__(self):
+    def __init__(self, layout=None):
         QWidget.__init__(self)
-        self.layout = QFormLayout()
+        if not layout:
+            self.layout = QFormLayout()
+        else: self.layout = layout
         self.widgets = {}
         self.setLayout(self.layout)
 
@@ -57,43 +61,14 @@ class layoutManager(QWidget):
         else:
             return -1
         return 1
-    # Create multiple exclusives checkbox
-    # By default, the first key in list is Checked and is set as master key
-    def addMultipleBool(self, keys):
-        '''
-        Create multiple exclusive checkbox widget and add it into the layout. It permit you to create Bool data representations.
-        '''
-        first = True
-        w = QGroupBox()
-        wlayout = QVBoxLayout()
-        for key in keys:
-            if not self.overwriteKeys(key):
-                if type(key).__name__=='str':
-                    wc = QCheckBox(key)
-                    if first:
-                        wc.setCheckState(Qt.Checked)
-                        first = False
-                    else:
-                        wc.setCheckState(Qt.Unchecked)
-                    wlayout.addWidget(wc)
-                else:
-                    return -1
-            else:
-                return -1
-        w.setLayout(wlayout)
-        self.layout.addRow(w)
-        self.widgets[key[0]] = w
-        return 1
 
     # Choice : une valeur parmis plusieurs choix (combobox)
-    def addList(self, key, predefs):
+    def addList(self, key, predefs, editable=False):
         if len(predefs) > 0 and not self.overwriteKeys(key):
             # Check if value list has the same type
-            if not self.checkUnifiedTypes(predefs):
-                return -1
-            if type(key).__name__=='str':
+            if type(key) == types.StringType:
                 w = QComboBox()
-                w.setEditable(False)
+                w.setEditable(editable)
                 w.setValidator(QIntValidator())
                 for value in predefs:
                     if type(value).__name__=='str':
@@ -104,6 +79,25 @@ class layoutManager(QWidget):
                             w.addItem(str(value))
                     else:
                         return -1
+                self.layout.addRow(key, w)
+                self.widgets[key] = w
+                return 1
+            else: 
+                return -1
+        else:
+            return -1
+
+    # Choice : une valeur parmis plusieurs choix (combobox)
+    def addSingleArgument(self, key, predefs, editable=False):
+        if not self.overwriteKeys(key):
+            if type(key) == types.StringType:
+                if len(predefs) > 0:
+                    w = QComboBox()
+                    for value in predefs:
+                        w.addItem(value.toString())
+                else:
+                    w = QLineEdit()
+                w.setEditable(editable)
                 self.layout.addRow(key, w)
                 self.widgets[key] = w
                 return 1
@@ -172,59 +166,37 @@ class layoutManager(QWidget):
     # be carreful to unify list types in predefs
     # If there is no predef values, specify which one you want to create : 
     #    "str", "int", "long"
-    def addMultipleList(self, key, predefs=None, wtype=None):
-        if not self.overwriteKeys(key) and type(key).__name__=='str':
-            if predefs != None:
-                if not self.checkUnifiedTypes(predefs):
-                    return -1
-                ctype = type(predefs[0]).__name__
-            else:
-                if wtype == None:
-                    return -1
-                elif wtype in ("str", "int", "long"): 
-                    ctype = wtype
-                else:
-                    return -1
-            w = multipleListWidget(self, predefs, ctype)
+    def addListArgument(self, key, typeid, predefs, editable=False):
+        if not self.overwriteKeys(key) and type(key) == types.StringType:
+            w = multipleListWidget(self, typeid, predefs, editable)
             self.layout.addRow(w)
             self.widgets[key] = w.valuelist
             return 1
         else:
             return -1
 
-    def addDateTime(self, key, format=None):
-        if not self.overwriteKeys(key) and type(key).__name__=='str':
-            date = QDateTime().currentDateTime()
-#            pdate = date.toString("dd.MM.yyyy hh:mm:ss")
-            w = QDateTimeEdit(date)
-            self.layout.addRow(key, w)
-            self.widgets[key] = w
-        else:
-            return -1
 
-
-    def addPathList(self, key, predefs=None, isdir = False, nodetype=False):
+    def addPathList(self, key, typeid, predefs):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QVBoxLayout()
             listpathcontainer = QListWidget()
 
-            if predefs != None:
+            if len(predefs) > 0:
                 if not self.checkUnifiedTypes(predefs):
                     return -1
                 for predef in predefs:
                     listpathcontainer.insertItem(listpathcontainer.count() + 1, str(predef))
-
             buttonbox = QDialogButtonBox()
-            if not nodetype:
-                add = addLocalPathButton(key, listpathcontainer, isdir)
+            if typeid == typeId.Path:
+                add = addLocalPathButton(key, listpathcontainer, isdir=False)
             else:
-                add = addLocalPathButton(key, listpathcontainer, isdir, nodetype=True)
+                add = addLocalPathButton(key, listpathcontainer, isdir=False, nodetype=True)
             buttonbox.addButton(add, QDialogButtonBox.ActionRole)
             rm = rmLocalPathButton(listpathcontainer)
             buttonbox.addButton(rm, QDialogButtonBox.ActionRole)
             
-            layout.addWidget(listpathcontainer)
-            layout.addWidget(buttonbox)
+            layout.addWidget(listpathcontainer, 2)
+            layout.addWidget(buttonbox, 0)
 
             self.layout.addRow(key, layout)
             self.widgets[key] = listpathcontainer
@@ -232,23 +204,28 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPath(self, key, predef=None, isdir = False, nodetype=False):
+    def addPath(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QHBoxLayout()
-            pathcontainer = QLineEdit()
-            pathcontainer.setReadOnly(True)
-
-            if predef != None:
-                if type(key).__name__=='str':
-                    pathcontainer.insert(str(predef))
-
-            if not nodetype:
-                browse = addLocalPathButton(key, pathcontainer, isdir)
+            layout.setSpacing(0)
+            layout.setMargin(0)
+            if len(predefs) > 0:
+                pathcontainer = QComboBox()
+                pathcontainer.setEditable(editable)
+                for value in predefs:
+                    if typeid == typeId.Node:
+                        pathcontainer.addItem(value.value().name())
+                    else:
+                        pathcontainer.addItem(value.toString())
             else:
-                browse = addLocalPathButton(key, pathcontainer, isdir, nodetype=True)
-            layout.addWidget(pathcontainer)
-            layout.addWidget(browse)
-
+                pathcontainer = QLineEdit()
+                pathcontainer.setReadOnly(editable)
+            if typeid == typeId.Path:
+                browse = addLocalPathButton(key, pathcontainer, isdir=False)
+            else:
+                browse = addLocalPathButton(key, pathcontainer, isdir=False, nodetype=True)
+            layout.addWidget(pathcontainer, 2)
+            layout.addWidget(browse, 0)
             self.layout.addRow(key, layout)
             self.widgets[key] = pathcontainer
             return 1
@@ -256,6 +233,8 @@ class layoutManager(QWidget):
             return -1
 
     def checkUnifiedTypes(self, values):
+        if len(values) == 0:
+            return
         vtype = type(values[0]).__name__
         for v in values:
             if type(v).__name__!=vtype:
@@ -286,6 +265,95 @@ class layoutManager(QWidget):
                     return self.widgets[k].currentIndex()
                 else:
                     return -1
+
+class multipleListWidget(QWidget):
+    def __init__(self, parent, typeid, predefs, editable):
+        QWidget.__init__(self)
+        self.parent = parent
+        self.typeid = typeid
+        self.editable = editable
+        self.predefs = predefs
+        self.init()
+
+    def init(self):
+        self.vbox = QVBoxLayout()
+        self.createHeader()
+        self.valuelist = QListWidget()
+        self.vbox.addWidget(self.valuelist)
+        self.setLayout(self.vbox)
+
+    def createHeader(self):
+        self.whead = QWidget()
+        self.headerlayout = QHBoxLayout()
+        self.headerlayout.setSpacing(0)
+        self.headerlayout.setMargin(0)
+        if self.typeid in (typeId.Node, typeId.Path) and self.editable:
+            self.addPath()
+        else:
+            self.addSingleArgument()
+
+        self.addButton = QPushButton(QIcon(":add.png"), "")
+        self.rmButton = QPushButton(QIcon(":del_dump.png"), "")
+        self.addButton.setIconSize(QSize(16, 16))
+        self.rmButton.setIconSize(QSize(16, 16))
+
+        self.connect(self.addButton, SIGNAL("clicked()"), self.addParameter)
+        self.connect(self.rmButton, SIGNAL("clicked()"), self.rmParameter)
+
+        self.headerlayout.addWidget(self.addButton, 0)
+        self.headerlayout.addWidget(self.rmButton, 0)
+        self.whead.setLayout(self.headerlayout)
+        self.vbox.addWidget(self.whead)
+
+    def addParameter(self):
+        if isinstance(self.container, QComboBox):
+            item = self.container.currentText()
+        else:
+            item = self.container.text()
+        if len(self.valuelist.findItems(item, Qt.MatchExactly)) == 0:
+            self.valuelist.insertItem(self.valuelist.count() + 1, item) 
+
+    def rmParameter(self):
+        selected = self.valuelist.selectedItems()
+        for item in selected:
+            row = self.valuelist.row(item)
+            self.valuelist.takeItem(row)        
+
+    def addSingleArgument(self):
+        if len(self.predefs) > 0:
+            self.container = QComboBox()
+            for value in self.predefs:
+                if self.typeid == typeId.Node:
+                    self.container.addItem(value.value().name())
+                else:
+                    self.container.addItem(value.toString())
+                self.container.setEditable(self.editable)
+        else:
+            self.container = QLineEdit()
+            self.container.setReadOnly(self.editable)
+        self.headerlayout.addWidget(self.container, 2)
+
+    def addPath(self):
+        if len(self.predefs) > 0:
+            self.container = QComboBox()
+            self.container.setReadOnly(False)
+            for value in self.predefs:
+                self.container.addItem(value.toString())
+        else:
+            self.container = QLineEdit()
+            self.container.setReadOnly(False)
+            if self.typeid == typeId.Path:
+                browse = addLocalPathButton(key, self.container, isdir=False)
+            else:
+                browse = addLocalPathButton(key, self.container, isdir=False, nodetype=True)
+        self.headerlayout.addWidget(self.container, 2)
+        self.headerlayout.addWidget(browse, 0)
+
+
+    def addPredefValue(self):
+        selected = self.predefs.selectedItems()
+        for item in selected:
+            self.valuelist.insertItem(self.valuelist.count() + 1, item.text())
 
 ########### Custom Widgets ###############
 class VFSDialog(QDialog):
@@ -363,85 +431,13 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
      return 1
 
 
-class multipleListWidget(QWidget):
-    def __init__(self, parent, predefs, wtype):
-        QWidget.__init__(self)
-        self.__wtype = wtype #str, int, long, (long long) ?
-        self.__predefs = predefs
-        self.init()
-
-    def init(self):
-        self.vbox = QVBoxLayout()
-#        self.displaywidget = QWidget()
-        self.displaylayout = QHBoxLayout()
-        self.createCustom()
-
-        if self.__predefs != None:
-            self.createPredefs()
-
-        self.createValueList()
-        self.vbox.addLayout(self.displaylayout)
-
-        self.setLayout(self.vbox)
-
-    def createCustom(self):
-        self.customlayout = QHBoxLayout()
-        self.customlayout.setAlignment(Qt.AlignRight)
-        if self.__wtype == "str":
-            self.custom = QLineEdit()
-        elif self.__wtype == "int":
-            self.custom = QSpinBox()
-        elif self.__wtype == "long":
-                self.custom = QUSpinBox()
-        else:
-            return -1
-        self.customlayout.addWidget(self.custom)
-        self.custombutton = QPushButton(QIcon(":add.png"), "Add")
-        self.connect(self.custombutton, SIGNAL("clicked()"), self.addCustomValue)
-        self.customlayout.addWidget(self.custombutton)
-        self.vbox.addLayout(self.customlayout)
-
-    def createPredefs(self):
-        self.predeflayout = QVBoxLayout()
-        self.predeflayout.setAlignment(Qt.AlignLeft)
-        self.predefs = QListWidget()
-        for predef in self.__predefs:
-            item = QListWidgetItem(str(predef), self.predefs)
-
-        self.predefbutton = QPushButton(QIcon(":add.png"), "Add predef")
-        self.connect(self.predefbutton, SIGNAL("clicked()"), self.addPredefValue)
-
-        self.predeflayout.addWidget(self.predefs)
-        self.predeflayout.addWidget(self.predefbutton)
-
-        self.displaylayout.addLayout(self.predeflayout)
-
-    def createValueList(self):
-        self.valuelayout = QVBoxLayout()
-        self.valuelayout.setAlignment(Qt.AlignRight)
-        self.valuelist = QListWidget()
-        self.rmbutton = rmLocalPathButton(self.valuelist)
-
-        self.displaylayout.addWidget(self.valuelist)
-
-    def addCustomValue(self):
-        if self.__wtype == "str":
-            value = self.custom.text()
-        else:
-            value = str(self.custom.value())
-        item = QListWidgetItem(value, self.valuelist)
-
-    def addPredefValue(self):
-        selected = self.predefs.selectedItems()
-        for item in selected:
-            self.valuelist.insertItem(self.valuelist.count() + 1, item.text())
-
 class addLocalPathButton(QPushButton):
     def __init__(self, key, container, isdir = False, nodetype=False):
         if isinstance(container, QListWidget):
-            QPushButton.__init__(self, QIcon(":add.png"), "Add")
+            QPushButton.__init__(self, QIcon(":add.png"), "")
         else:
-            QPushButton.__init__(self, QIcon(":folder.png"), "Browse")
+            QPushButton.__init__(self, QIcon(":folder.png"), "...")
+        self.setIconSize(QSize(16, 16))
         self.isdir = isdir
         self.ckey = key
         self.container = container
@@ -476,13 +472,15 @@ class addLocalPathButton(QPushButton):
             iReturn = BrowseVFSDialog.exec_()
             if iReturn :
                 node = BrowseVFSDialog.getSelectedNode()
+                print node.absolute()
                 if node :
                     self.container.clear()
                     self.container.insert(node.absolute())
 
 class rmLocalPathButton(QPushButton):
     def __init__(self, container):
-        QPushButton.__init__(self, QIcon(":rm.png"),"Remove")
+        QPushButton.__init__(self, QIcon(":del_dump.png"),"")
+        self.setIconSize(QSize(16, 16))
         self.container = container
         self.connect(self, SIGNAL("clicked()"), self.rm)
 
