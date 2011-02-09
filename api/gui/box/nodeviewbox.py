@@ -281,10 +281,12 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     iReturn = attrdiag.exec_()
     header_list = attrdiag.selectedAttrs
 
+    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
     for i in range(header_list.count()):
       item = header_list.item(i)
       self.model.header_list.append(item.text())
       self.model.setHeaderData(i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
+    self.model.emit(SIGNAL("layoutChanged()"))
       
   def createCategory(self, category):
     if category != "":

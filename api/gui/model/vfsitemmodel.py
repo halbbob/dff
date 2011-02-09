@@ -267,14 +267,13 @@ class TreeModel(QAbstractItemModel):
     #self.emit(SIGNAL("layoutChanged()"))
 
 
-class VFSItemModel(QAbstractItemModel):
-  #numberPopulated = QtCore.pyqtSignal(int)
+class VFSItemModel(QAbstractItemModel, DEventHandler):
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
-    #DEventHandler.__init__(self)
+    DEventHandler.__init__(self)
+
     self.__parent = __parent
     self.VFS = VFS.Get()
-    #self.VFS.connection(self)
     self.map = {}
 
     self.imagesthumbnails = None
@@ -289,13 +288,15 @@ class VFSItemModel(QAbstractItemModel):
     self.node_list = []
     self.header_list = []
     self.cacheAttr = (None, None)
-    #setattr(self, "canFetchMore", self.canFetchMore)
-    #setattr(self, "fetchMore", self.fetchMore)
 
-  #def Event(self, e):
-    #print "EMITING SIGNAL vfsItemModel"
-    #self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    #self.emit(SIGNAL("layoutChanged()"))
+    self.VFS.connection(self)
+
+  def Event(self, e):
+    parent = self.rootItem
+    if parent != None:
+      self.node_list = parent.children()
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
@@ -321,8 +322,8 @@ class VFSItemModel(QAbstractItemModel):
       return y
 
   def rowCount(self, parent):
-   # return len(self.node_list)
-    return self.fetchedItems
+    return len(self.node_list)
+   # return self.fetchedItems
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
@@ -336,27 +337,18 @@ class VFSItemModel(QAbstractItemModel):
         return QVariant()
       else:
         return QVariant(self.header_list[section - 2])
-      
-      #if section == HACCESSED:
-      #  return QVariant(self.ATimeTr)
-      #if section == HCHANGED:
-      #  return QVariant(self.CTimeTr)
-      #if section == HMODIFIED:
-      #  return QVariant(self.MTimeTr)
-      #if section == HMODULE:
-      #  return QVariant(self.moduleTr)
-  def canFetchMore(self, parent):
-    if self.fetchedItems < len(self.node_list):
-      return True
-    return False
 
-  def fetchMore(self, parent):
-    remainder = len(self.node_list) - self.fetchedItems
-    itemsToFetch = self.qMin(50, remainder)
-    self.beginInsertRows(parent, self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
-    self.fetchedItems += itemsToFetch
-    self.endInsertRows()
+# de canFetchMore(self, parent):
+      # if self.fetchedItems < len(self.node_list):
+      # return True
+      # return False
 
+      # def fetchMore(self, parent):
+#    remainder = len(self.node_list) - self.fetchedItems
+#    itemsToFetch = self.qMin(50, remainder)
+#    self.beginInsertRows(parent, self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
+#    self.fetchedItems += itemsToFetch
+#    self.endInsertRows()
 
   def data(self, index, role):
     if not index.isValid():
@@ -425,7 +417,6 @@ class VFSItemModel(QAbstractItemModel):
 
   def columnCount(self, parent = QModelIndex()):
     return len(self.header_list) + 2 #2 is for columns names and sizes
-    return 6
 
   def index(self, row, column, parent = QModelIndex()):
     if not self.hasIndex(row, column, parent):
@@ -491,11 +482,10 @@ class VFSItemModel(QAbstractItemModel):
     """
     Overload of the sort method.
     """
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
     parentItem = self.rootItem
     if parentItem == None:
-      self.emit(SIGNAL("layoutChanged()"))
       return
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
     children_list = parentItem.children()
     if order == Qt.DescendingOrder:
       Reverse = True
@@ -507,20 +497,12 @@ class VFSItemModel(QAbstractItemModel):
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
     elif column == HMODULE:
       self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
-    #elif column == HCHANGED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("changed"), reverse=Reverse)
-    #elif column == HACCESSED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("accessed"), reverse=Reverse)
-    #elif column == HMODIFIED:
-    #  self.node_list = sorted(children_list, key=lambda Node: Node.attributesByName("modified"), reverse=Reverse)
-#        m = node.attributes()[node.fsobj().name].value()
-#        m.thisown = False
-#        value = m[str(self.header_list[column - 2])]
-#        value.thisown = False
-#        val = value.value()
-#        val.thisown = False
     elif column - 2 <= len(self.header_list):
-      self.node_list = sorted(children_list, key=lambda Node: Node.attributes()[Node.fsobj().name].value(), reverse=Reverse)
+      self.node_list = sorted(children_list, \
+                              key=lambda Node: Node.dynamicAttributes(str(self.header_list[column - 2])), \
+                              reverse=Reverse)
+    else:
+      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
 
   def translation(self):
