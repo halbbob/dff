@@ -184,192 +184,151 @@
 %extend Config
 {
 
-  void  generate(PyObject* obj)
+  bool	matchNotEditable(std::list<Variant*> params, PyObject* obj)
   {
-    std::map<std::string, Variant*>	res;
-    std::list<Argument*>::iterator	argit;
-    std::list<Argument*>		selfarg;
-    Argument*				carg;
-    uint16_t				type;
-    uint16_t				rtype;
-    uint16_t				itype;
-    uint16_t				ptype;
-    std::string				err;
-    PyObject*				itemval;
-    std::string				arg_name;
-    bool				lbreak = false;
-    int					ecode;
-    Variant*				v;
+    std::list<Variant*>::iterator	it;
+    bool				found;
 
-    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    ecode = PyDict_Check(obj);
-    if (ecode)
+    found = false;
+    for (it = params.begin(); it != params.end(); it++)
       {
-	selfarg = self->arguments();
-	for (argit = selfarg.begin(); argit != selfarg.end(); argit++)
+	if (Variant_operator_Se__Se___SWIG_1(*it, obj))
 	  {
-	    carg = *argit;
-	    arg_name = carg->name();
-	    type = carg->type();
-	    rtype = carg->requirementType();
-	    itype = carg->inputType();
-	    ptype = carg->parametersType();
-	    itemval = PyDict_GetItemString(obj, arg_name.c_str());
+	    found = true;
+	    break;
+	  }
+      }
+    return found;
+  }
 
-	    if (itype == Argument::Empty)
+  Variant*	generateSingleInput(PyObject* obj, Argument* arg)
+  {
+    Variant*	v = NULL;
+    
+    if ((arg != NULL) && (obj != NULL))
+      {
+	if ((arg->parametersType() == Parameter::NotEditable) && (!Config_matchNotEditable(self, arg->parameters(), obj)))
+	  throw(std::string("parameters of argument " + arg->name() + " are not editable (provided value differs from available parameters)"));
+	if ((v = new_Variant__SWIG_17(obj, arg->type())) == NULL)
+	  throw(std::string("provided parameters for argument " + arg->name() + " are not compatible"));
+      }
+    else
+      throw(std::string("arguments of method generateListInput are not valid"));
+    return v;
+  }
+
+  Variant*	generateListInput(PyObject* obj, Argument* arg)
+  {
+    std::list<Variant*>	vlist;
+    Variant*		v = NULL;
+    Py_ssize_t		lsize;
+    Py_ssize_t		i;
+    PyObject*		item;
+    std::string		err = "";
+
+    if ((arg != NULL) && (obj != NULL))
+      {
+	try
+	  {
+	    if (PyList_Check(obj))
 	      {
-		if (itemval == NULL)
+		i = 0;
+		lsize = PyList_Size(obj);
+		while ((i != lsize) && err.empty())
 		  {
-		    bool	val = false;
-		    v = new Variant(val);
-		  }
-		else
-		  {
-		    if ((v = new_Variant__SWIG_17(itemval, typeId::Bool)) == NULL)
-		      err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-		    else
-		      res.insert(std::pair<std::string, Variant*>(arg_name, v));
+		    item = PyList_GetItem(obj, i);
+		    v = Config_generateSingleInput(self, item, arg);
+		    vlist.push_back(v);
+		    i++;
 		  }
 	      }
 	    else
 	      {
-		if (itemval == NULL)
-		  {
-		    if (rtype == Argument::Required)
-		      err = arg_name + " is a required argument but is not setted";
-		  }
-		else
-		  {
-		    if (itype == Argument::Single)
-		      {
-			if (PyList_Check(itemval))
-			  err = "parameters provided to argument " + arg_name + " are of type list but argument takes a single value";
-			else
-			  {
-			    if (ptype == Parameter::NotEditable)
-			      {
-				std::list<Variant*>	params;
-				std::list<Variant*>::iterator	it;
-				params = carg->parameters();
-				bool			found = false;
-				
-				for (it = params.begin(); it != params.end(); it++)
-				  if (Variant_operator_Se__Se___SWIG_1(*it, itemval))
-				    found = true;
-				if (found)
-				  {
-				    if ((v = new_Variant__SWIG_17(itemval, type)) == NULL)
-				      err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-				  }
-				else
-				  err = "parameters porvided to " + arg_name + " are not editable and the one provided is not managed";
-			      }
-			    else
-			      {
-				if ((v = new_Variant__SWIG_17(itemval, type)) == NULL)
-				  err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-			      }
-			  }
-		      }
-		    else if (itype == Argument::List)
-		      {
-			if (PyList_Check(itemval))
-			  {
-			    if (ptype == Parameter::NotEditable)
-			      {
-				std::list<Variant*>	params;
-				std::list<Variant*>::iterator	it;
-				params = carg->parameters();
-				bool			found;
-				bool			lbr;
-				Py_ssize_t		size;
-				Py_ssize_t		i;
-				PyObject*		cparam;
-				
-				size = PyList_Size(itemval);
-				lbr = false;
-				for (i = 0; i != size; i++)
-				  {
-				    found = false;
-				    cparam = PyList_GetItem(itemval, i);
-				    for (it = params.begin(); it != params.end(); it++)
-				      if (Variant_operator_Se__Se___SWIG_1(*it, cparam))
-					found = true;
-				    if (!found)
-				      {
-					lbr = true;
-					break;
-				      }
-				  }
-				if (lbr)
-				  err = "parameters porvided to " + arg_name + " are not editable and the one provided is not managed";
-				else
-				  if ((v = new_Variant__SWIG_17(itemval, type)) == NULL)
-				    err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-			      }
-			    else
-			      {
-				if ((v = new_Variant__SWIG_17(itemval, type)) == NULL)
-				  err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-			      }
-			  }
-			else
-			  {
-			    if (ptype == Parameter::NotEditable)
-			      {
-				std::list<Variant*>	params;
-				std::list<Variant*>::iterator	it;
-				params = carg->parameters();
-				bool			found = false;
-				
-				for (it = params.begin(); it != params.end(); it++)
-				  if (Variant_operator_Se__Se___SWIG_1(*it, itemval))
-				    found = true;
-				if (found)
-				  {
-				    Variant*	tmp;
-				    if ((tmp = new_Variant__SWIG_17(itemval, type)) == NULL)
-				      err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-				    else
-				      {
-					std::list<Variant*>	vlist;
-					vlist.push_back(tmp);
-					v = new Variant(vlist);
-					res.insert(std::pair<std::string, Variant*>(arg_name, v));
-				      }
-				  }
-				else
-				  err = "parameters porvided to " + arg_name + " are not editable and the one provided is not managed";
-			      }
-			    else
-			      {
-				Variant*	tmp;
-				if ((tmp = new_Variant__SWIG_17(itemval, type)) == NULL)
-				  err = "parameter provided to argument " + arg_name + " is not valid (wrong type)";
-				else
-				  {
-				    std::list<Variant*>	vlist;
-				    vlist.push_back(tmp);
-				    v = new Variant(vlist);
-				    res.insert(std::pair<std::string, Variant*>(arg_name, v));
-				  }
-			      }
-			  }
-		      }
-		  }
+		v = Config_generateSingleInput(self, obj, arg);
+		vlist.push_back(v);
 	      }
-	    if (!err.empty())
-	      break;
 	  }
-	if (!err.empty())
-	  res.erase(res.begin(), res.end());
+	catch(std::string e)
+	  {
+	    err = e;
+	  }
       }
     else
-      err = std::string("arguments must be a dictionnary");
-    SWIG_PYTHON_THREAD_END_BLOCK;
+      err = "arguments of method generateListInput are not valid";
     if (!err.empty())
-      throw(err);
+      {
+	vlist.clear();
+	throw(err);
+      }
+    v = new Variant(vlist);
+    return v;
   }
+    
+
+  std::map<std::string, Variant*>	generate(PyObject* obj)
+    {
+      std::map<std::string, Variant*>	res;
+      std::list<Argument*>		args;
+      std::list<Argument*>::iterator	argit;
+      Variant*				v;
+      PyObject*				itemval;
+      std::string			argname;
+      uint16_t				itype;
+      uint16_t				rtype;
+      int				ecode;
+      std::string			err;
+    
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      ecode = PyDict_Check(obj);
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      if (ecode)
+	{
+	  try
+	    {
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      args = self->arguments();
+	      argit = args.begin();
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      while ((argit != args.end()) && err.empty())
+		{
+		  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+		  argname = (*argit)->name();
+		  itype = (*argit)->inputType();
+		  rtype = (*argit)->requirementType();
+		  itemval = PyDict_GetItemString(obj, argname.c_str());
+		  SWIG_PYTHON_THREAD_END_BLOCK;
+		  if ((itemval == NULL) && (rtype == Argument::Required))
+		    err = argname + " is a required argument but is not setted";
+		  else
+		    {
+		      if (itype == Argument::Empty)
+			v = new_Variant__SWIG_17(itemval, typeId::Bool);
+		      else if (itype == Argument::Single)
+			v = Config_generateSingleInput(self, itemval, *argit);
+		      else if (itype == Argument::List)
+			v = Config_generateListInput(self, itemval, *argit);
+		      if (v != NULL)
+			res.insert(std::pair<std::string, Variant*>(argname, v));
+		      else
+			err = "parameter provided to argument " + argname + " is not valid (wrong type)";      
+		    }
+		  argit++;
+		}
+	    }
+	  catch (std::string e)
+	    {
+	      err = e;
+	    }
+	}
+      else
+	err = "generating configuration failed because provided configuration must be of type dict";
+      if (!err.empty())
+	{
+	  res.clear();
+	  throw(err);
+	}
+      return res;
+    }
 
   void	addArgument(PyObject* obj) throw(std::string)
   {
@@ -403,15 +362,17 @@
 	ecode = SWIG_AsVal_unsigned_SS_short(input_obj, &input);
 	if (!SWIG_IsOK(ecode))
 	  throw(std::string("invalid type for field < input >"));
+
 	if ((descr_obj = PyDict_GetItemString(obj, "description")) == NULL)
 	  throw(std::string("No field < description > defined for current argument"));	    
 	ecode = SWIG_AsVal_std_string(descr_obj, &description);
 	if (!SWIG_IsOK(ecode))
 	  throw(std::string("invalid type for field < description >"));
-	
-	param_obj = PyDict_GetItemString(obj, "parameters");
+
 	if (self->argumentByName(name) != NULL)
 	  throw(std::string("argument " + name + " has already been provided"));
+
+	param_obj = PyDict_GetItemString(obj, "parameters");
 	SWIG_PYTHON_THREAD_END_BLOCK;
 	
 	if (input == Argument::Empty)
