@@ -48,7 +48,6 @@ class EXIFHandler(AttributesHandler):
         vv = Variant(m)
         vv.thisown = False
         attr[ifd] = vv 
-    print "returning exif attributes " 
     return attr
 
 class MetaEXIF(Script):

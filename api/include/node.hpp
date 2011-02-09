@@ -156,7 +156,9 @@ public:
   EXPORT virtual string				icon();
   EXPORT virtual std::list<std::string>*	compatibleModules(void);
   EXPORT virtual bool				isCompatibleModule(string);
-  EXPORT virtual Attributes*			dynamicAttributes();
+  EXPORT virtual Attributes*			dynamicAttributes(void);
+  EXPORT virtual Variant*			dynamicAttributes(std::string name);
+  EXPORT virtual std::list<std::string>*	dynamicAttributesNames(void);
   EXPORT virtual Attributes			fsoAttributes();
 };
 

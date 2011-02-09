@@ -170,9 +170,9 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
+    self.VFS.connection(self)
 
     #register to event from vfs
-    self.VFS.connection(self)
     self.env = env.env()	
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
@@ -191,15 +191,14 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     self.addOptionsView()
 
 
+  def Event(self, e):
+    self.model.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX pas le bon signal en can fetch more (et la liste doit grossir car on rajoute des nodes ....(
+    self.model.emit(SIGNAL("layoutChanged()"))
+    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX ok a deplacer ds le model
+    self.treeModel.emit(SIGNAL("layoutChanged()"))
+
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
-
-
-  def Event(self, e):
-    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.model.emit(SIGNAL("layoutChanged()"))
-    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.treeModel.emit(SIGNAL("layoutChanged()"))
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)
@@ -218,10 +217,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
   def addModel(self, path):
     self.model = VFSItemModel(self, True, True)
     self.model.setRootPath(self.vfs.getnode(path))
-
-  def addProxyModel(self):
-    self.proxyModel = SortProxy(self)
-    self.proxyModel.setSourceModel(self.model)
 
   ###### View searhing #####
   def addSearchView(self):
