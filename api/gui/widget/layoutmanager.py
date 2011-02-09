@@ -92,12 +92,13 @@ class layoutManager(QWidget):
             if type(key) == types.StringType:
                 if len(predefs) > 0:
                     w = QComboBox()
+                    w.setEditable(editable)
                     for value in predefs:
                         w.addItem(value.toString())
                 else:
                     w = QLineEdit()
-                w.setEditable(editable)
-                self.layout.addRow(key, w)
+                    w.setReadOnly(not editable)
+                self.layout.addRow(w)
                 self.widgets[key] = w
                 return 1
             else: 
@@ -206,8 +207,7 @@ class layoutManager(QWidget):
     def addPath(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QHBoxLayout()
-#            layout.setSpacing(0)
-#            layout.setMargin(0)
+
             if len(predefs) > 0:
                 pathcontainer = QComboBox()
                 pathcontainer.setEditable(editable)
@@ -225,7 +225,7 @@ class layoutManager(QWidget):
                 browse = addLocalPathButton(key, pathcontainer, isdir=False, nodetype=True)
             layout.addWidget(pathcontainer, 2)
             layout.addWidget(browse, 0)
-            self.layout.addRow(key, layout)
+            self.layout.addRow(layout)
             self.widgets[key] = pathcontainer
             return 1
         else:

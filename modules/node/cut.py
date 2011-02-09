@@ -17,10 +17,11 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-from api.env.libenv import *
-from api.variant.libvariant import Variant, VMap
 from api.vfs.libvfs import *
 from modules.fs.spare import SpareNode
+
+from api.types.libtypes import Variant, VMap, Parameter, Argument, typeId
+from api.vfs.libvfs import AttributesHandler
 
 class CutNode(Node):
    def __init__(self, mfso, parent, name, startOff, size):
@@ -68,8 +69,22 @@ class cut(Module):
   """This modules allow you to cut a node from a starting offset"""
   def __init__(self):
     Module.__init__(self, "cut", Cut)
-    self.conf.add("in", "node", False, "node to cut")
-    self.conf.add("out", "string", False, "output node name")
-    self.conf.add("start", "int", False, "Start offset of the new node")
-    self.conf.add("size", "int", True, "Size of the output node")
+  
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node,
+                           "name": "input",
+                           "description": "Input node which will be cut"
+                           })
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+                           "name": "output",
+                           "description": "Output name of created node"
+                           })
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt64,
+                           "name": "start_offset",
+                           "description": "Address start of the new node"
+                           })
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt64,
+                           "name": "size",
+                           "description": "Size readed after start's address. If not specified, read until EOF"
+                           })
+
     self.tags = "Node"
