@@ -272,8 +272,15 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
   def attrSelectView(self):
     attrdiag = attrDialog(self)
+
+    attrdiag.allAttrsAdv.setVisible(False)
+    attrdiag.removeAttrAdv.setVisible(False)
+    attrdiag.addAttrAdv.setVisible(False)
+    attrdiag.selectedAttrsAdv.setVisible(False)
+
     iReturn = attrdiag.exec_()
     header_list = attrdiag.selectedAttrs
+
     for i in range(header_list.count()):
       item = header_list.item(i)
       self.model.header_list.append(item.text())
@@ -315,10 +322,17 @@ class attrDialog(QDialog, Ui_SelectAttr):
     QDialog.__init__(self, nodeviewbox)
     self.setupUi(self)
     model = nodeviewbox.model
+
     self.initAttrs(model)
     self.connect(self.addAttr, SIGNAL("clicked()"), self.addAttrToList)
     self.connect(self.removeAttr, SIGNAL("clicked()"), self.removeAttrFromList)
     self.connect(self.buttonBox, SIGNAL("accepted()"), self.buttonClicked)
+#    self.connect()
+    self.allAttrsAdv.setVisible(False)
+    self.removeAttrAdv.setVisible(False)
+    self.addAttrAdv.setVisible(False)
+    self.selectedAttrsAdv.setVisible(False)
+    
 
   def buttonClicked(self):
     self.hide()
