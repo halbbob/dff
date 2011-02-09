@@ -30,11 +30,9 @@ class layoutManager(QWidget):
     '''Create a layout manager which will help widget creation and data managment
     The system work with a key / value system and return python type data (ex: str, int, long, list, tupple, etc..)
     '''
-    def __init__(self, layout=None):
+    def __init__(self):
         QWidget.__init__(self)
-        if not layout:
-            self.layout = QFormLayout()
-        else: self.layout = layout
+        self.layout = QFormLayout()
         self.widgets = {}
         self.setLayout(self.layout)
 
@@ -179,6 +177,8 @@ class layoutManager(QWidget):
     def addPathList(self, key, typeid, predefs):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QVBoxLayout()
+            layout.setSpacing(0)
+            layout.setMargin(0)
             listpathcontainer = QListWidget()
 
             if len(predefs) > 0:
@@ -198,7 +198,7 @@ class layoutManager(QWidget):
             layout.addWidget(listpathcontainer, 2)
             layout.addWidget(buttonbox, 0)
 
-            self.layout.addRow(key, layout)
+            self.layout.addRow(layout)
             self.widgets[key] = listpathcontainer
             return 1
         else:

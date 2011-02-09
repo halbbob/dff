@@ -29,10 +29,7 @@ from api.types.libtypes import Argument, Parameter, Variant, VMap, VList, typeId
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.nodeview import NodeTreeView
 
-#from api.gui.box.nodecombobox import NodeComboBox
-#from api.gui.box.stringcombobox import StringComboBox
-#from api.gui.box.boolcombobox import BoolComboBox
-#from api.gui.box.checkbox import checkBoxWidget
+from api.gui.box.checkbox import checkBoxWidget
 from ui.gui.resources.ui_applymodule import Ui_applyModule 
 
 from ui.gui.utils.utils import Utils
@@ -102,8 +99,7 @@ class ApplyModule(QDialog, Ui_applyModule):
 
         conf = self.loader.get_conf(str(nameModule))
 
-        self.textEdit.setText(conf.description())
-        self.textEdit.setFixedHeight(50)
+        self.textEdit.setText(conf.description)
 
         args = conf.arguments()
         self.createArgShape(args)
@@ -115,22 +111,26 @@ class ApplyModule(QDialog, Ui_applyModule):
 
     def createArgument(self, arg):
         warg = QWidget()
-        arglayout = QFormLayout()
-        widget = self.getWidgetFromType(arg)
-        
-        if arg.requirementType() == Argument.Optional:
-            
-            checkBox =  checkBoxWidget(arglayout, widget)
-            arglayout.addRow(self.labActivate.text(), checkBox)
+        vlayout = QVBoxLayout()
+        vlayout.setSpacing(0)
+        vlayout.setMargin(0)
+        winfo = QWidget()
+        infolayout = QFormLayout()
 
-        arglayout.addRow(self.labType.text(), QLabel(str(typeId.Get().typeToName(arg.type()))))
+        warguments = self.getWidgetFromType(arg)
+
+        if arg.requirementType() == Argument.Optional:
+            checkBox =  checkBoxWidget(self, winfo, warguments, self.labActivate.text())
+            vlayout.addWidget(checkBox, 0)
+
+        infolayout.addRow(self.labType.text(), QLabel(str(typeId.Get().typeToName(arg.type()))))
         tedit = QTextEdit(str(arg.description()))
         tedit.setReadOnly(True)
-        tedit.setFixedHeight(50)
-        arglayout.addRow(self.labDescription.text(), tedit)
-        arglayout.addRow(str(arg.name()), widget)
-
-        warg.setLayout(arglayout)
+        infolayout.addRow(tedit)
+        winfo.setLayout(infolayout)
+        vlayout.addWidget(winfo, 0)
+        vlayout.addWidget(warguments, 1)
+        warg.setLayout(vlayout)
         self.stackedargs.addWidget(warg)
         argitem = QListWidgetItem(str(arg.name()), self.listargs)
 
@@ -138,66 +138,30 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
 
     def getWidgetFromType(self, arg):
-#        list = self.env.getValuesInDb(arg.name, arg.type)
-        lmanager = layoutManager()
-#        if arg.type() == typeId.Node:
-        if arg.type() == typeId.Node:
-            arg.inputType() == Argument.List
-            arg.inputType() == Argument.Single
-            
-            predefparam = arg.parameters()
-            len(predefparam) # si y a des predefs
-            
-            ptype = arg.parametersType() = Parameter.Fixed | Paramter.Customizable
+        warguments = layoutManager()
+#        arg.type() == typeId.Node ....
+        inputype = arg.inputType()
+        # Argument.List | Argument.Single
+        predefs = arg.parameters()
+#        len(predefparam) # si y a des predefs           
+        ptype = arg.parametersType()
+        #Parameter.Fixed | Paramter.Customizable
+        if ptype == Parameter.Editable:
+            editable = True
+        else:
+            editable = False
 
-            
-
-            widget = QLineEdit()
-            self.valueArgs[arg] = widget
-            button = browseButton(self, widget, arg.name, 0)
-            # Check if a node is selected
-#            currentNode = self.__mainWindow.nodeBrowser.currentNode()
-            if currentNode != None:
-                widget.clear()
-                widget.insert(currentNode.absolute())
-            wl = QHBoxLayout()
-            wl.addWidget(widget)
-            wl.addWidget(button)
-            return wl
-
-        elif arg.type == "int":
-            widget = QComboBox()
-            widget.setEditable(True)
-            widget.setValidator(QIntValidator())
-            for i in range(0, len(list)) :
-                if widget.findText(str(list[i])) == -1:
-                    widget.addItem(str(list[i]))
-            self.valueArgs[arg] = widget
-            return widget
-
-        elif arg.type == "string":
-            widget = StringComboBox(self.argumentsContainer)
-            widget.setEditable(True)
-            for i in range(0, len(list)) :
-                print type(list[i])
-                widget.addPath(list[i])
-            self.valueArgs[arg] = widget
-            return widget
-        elif arg.type == "path" :
-            widget = StringComboBox(self.argumentsContainer)
-            widget.setEditable(True)
-            for i in range(0, len(list)) :
-                widget.addPath(list[i])
-            self.valueArgs[arg] = widget
-            button = browseButton(self,  widget, arg.name, 1)
-            wl = QHBoxLayout()
-            wl.addWidget(widget)
-            wl.addWidget(button)
-            return wl
-        elif arg.type == "bool" :
-            widget = BoolComboBox(self.argumentsContainer)
-            self.valueArgs[arg] = widget
-            return widget
+        if inputype == Argument.Single:
+            if arg.type() in (typeId.Node, typeId.Path):
+                warguments.addPath(arg.name(), arg.type(), predefs, editable)
+            else:
+                warguments.addSingleArgument(arg.name(), predefs, editable)
+        else: # Argument list
+            if arg.type() in (typeId.Node, typeId.Path):
+                warguments.addPathList(arg.name(), arg.type(), predefs)
+            else:
+                warguments.addListArgument(arg.name(), arg.type(), predefs, editable)
+        return warguments
 
     def getArguments(self):
 #        self.arg = self.env.libenv.argument("gui_input")
