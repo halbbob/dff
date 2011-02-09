@@ -23,18 +23,22 @@ from api.loader import *
 #from api.env import *
 from api.vfs import *
 from api.taskmanager.taskmanager import *
-from api.types import *
+from api.types.libtypes import Argument, Parameter, Variant, VMap, VList, typeId
+#from api.types import *
 
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.nodeview import NodeTreeView
 
-from api.gui.box.nodecombobox import NodeComboBox
-from api.gui.box.stringcombobox import StringComboBox
-from api.gui.box.boolcombobox import BoolComboBox
-from api.gui.box.checkbox import checkBoxWidget
+#from api.gui.box.nodecombobox import NodeComboBox
+#from api.gui.box.stringcombobox import StringComboBox
+#from api.gui.box.boolcombobox import BoolComboBox
+#from api.gui.box.checkbox import checkBoxWidget
 from ui.gui.resources.ui_applymodule import Ui_applyModule 
 
 from ui.gui.utils.utils import Utils
+
+from api.gui.widget.layoutmanager import *
+
 
 
 class ApplyModule(QDialog, Ui_applyModule):
@@ -50,13 +54,12 @@ class ApplyModule(QDialog, Ui_applyModule):
 
         self.__mainWindow = mainWindow
         self.loader = loader.loader()
-        self.env = env.env()
+#        self.env = env.env()
         self.vfs = vfs.vfs()
 
         self.initArguments()
         self.initCallback()
         self.nameModule = ''
-
 
     def initArguments(self):
         self.valueArgs = {}
@@ -96,10 +99,13 @@ class ApplyModule(QDialog, Ui_applyModule):
 
         self.nameModuleField.setText(nameModule)
         self.typeModuleField.setText(typeModule)
-        self.textEdit.setText(self.loader.modules[str(nameModule)].conf.description)
+
+        conf = self.loader.get_conf(str(nameModule))
+
+        self.textEdit.setText(conf.description())
         self.textEdit.setFixedHeight(50)
 
-        args = Utils.getArgs(str(nameModule))
+        args = conf.arguments()
         self.createArgShape(args)
     
     def createArgShape(self, args):
@@ -110,35 +116,47 @@ class ApplyModule(QDialog, Ui_applyModule):
     def createArgument(self, arg):
         warg = QWidget()
         arglayout = QFormLayout()
-    
         widget = self.getWidgetFromType(arg)
-
-        if arg.optional:
+        
+        if arg.requirementType() == Argument.Optional:
+            
             checkBox =  checkBoxWidget(arglayout, widget)
             arglayout.addRow(self.labActivate.text(), checkBox)
 
-        arglayout.addRow(self.labType.text(), QLabel(str(arg.type)))
-        tedit = QTextEdit(str(arg.description))
+        arglayout.addRow(self.labType.text(), QLabel(str(typeId.Get().typeToName(arg.type()))))
+        tedit = QTextEdit(str(arg.description()))
         tedit.setReadOnly(True)
         tedit.setFixedHeight(50)
         arglayout.addRow(self.labDescription.text(), tedit)
-        arglayout.addRow(str(arg.name), widget)
+        arglayout.addRow(str(arg.name()), widget)
 
         warg.setLayout(arglayout)
         self.stackedargs.addWidget(warg)
-        argitem = QListWidgetItem(str(arg.name), self.listargs)
+        argitem = QListWidgetItem(str(arg.name()), self.listargs)
 
     def argChanged(self, curitem, previtem):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
 
     def getWidgetFromType(self, arg):
-        list = self.env.getValuesInDb(arg.name, arg.type)
-        if arg.type == "node" :
+#        list = self.env.getValuesInDb(arg.name, arg.type)
+        lmanager = layoutManager()
+#        if arg.type() == typeId.Node:
+        if arg.type() == typeId.Node:
+            arg.inputType() == Argument.List
+            arg.inputType() == Argument.Single
+            
+            predefparam = arg.parameters()
+            len(predefparam) # si y a des predefs
+            
+            ptype = arg.parametersType() = Parameter.Fixed | Paramter.Customizable
+
+            
+
             widget = QLineEdit()
             self.valueArgs[arg] = widget
             button = browseButton(self, widget, arg.name, 0)
             # Check if a node is selected
-            currentNode = self.__mainWindow.nodeBrowser.currentNode()
+#            currentNode = self.__mainWindow.nodeBrowser.currentNode()
             if currentNode != None:
                 widget.clear()
                 widget.insert(currentNode.absolute())
@@ -182,8 +200,8 @@ class ApplyModule(QDialog, Ui_applyModule):
             return widget
 
     def getArguments(self):
-        self.arg = self.env.libenv.argument("gui_input")
-        self.arg.thisown = 0
+#        self.arg = self.env.libenv.argument("gui_input")
+#        self.arg.thisown = 0
         for i in self.valueArgs :
             if not i.optional or self.valueArgs[i].isEnabled():
                 if i.type == "node" :
