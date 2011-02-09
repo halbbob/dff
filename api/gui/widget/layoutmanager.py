@@ -33,6 +33,7 @@ class layoutManager(QWidget):
     def __init__(self):
         QWidget.__init__(self)
         self.layout = QFormLayout()
+        self.layout.setMargin(0)
         self.widgets = {}
         self.setLayout(self.layout)
 
@@ -177,8 +178,6 @@ class layoutManager(QWidget):
     def addPathList(self, key, typeid, predefs):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QVBoxLayout()
-            layout.setSpacing(0)
-            layout.setMargin(0)
             listpathcontainer = QListWidget()
 
             if len(predefs) > 0:
@@ -195,8 +194,8 @@ class layoutManager(QWidget):
             rm = rmLocalPathButton(listpathcontainer)
             buttonbox.addButton(rm, QDialogButtonBox.ActionRole)
             
+            layout.addWidget(buttonbox, 0, Qt.AlignLeft)
             layout.addWidget(listpathcontainer, 2)
-            layout.addWidget(buttonbox, 0)
 
             self.layout.addRow(layout)
             self.widgets[key] = listpathcontainer
@@ -207,8 +206,8 @@ class layoutManager(QWidget):
     def addPath(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QHBoxLayout()
-            layout.setSpacing(0)
-            layout.setMargin(0)
+#            layout.setSpacing(0)
+#            layout.setMargin(0)
             if len(predefs) > 0:
                 pathcontainer = QComboBox()
                 pathcontainer.setEditable(editable)
@@ -277,6 +276,8 @@ class multipleListWidget(QWidget):
 
     def init(self):
         self.vbox = QVBoxLayout()
+        self.vbox.setSpacing(5)
+        self.vbox.setMargin(0)
         self.createHeader()
         self.valuelist = QListWidget()
         self.vbox.addWidget(self.valuelist)
