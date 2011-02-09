@@ -23,6 +23,7 @@ Argument::Argument(std::string name, uint16_t flags, std::string description)
   this->__flags = flags;
   this->__description = description;
   this->__paramslocked = false;
+  this->setParametersType(Parameter::Editable);
 }
 
 Argument::~Argument()

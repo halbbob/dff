@@ -47,19 +47,11 @@ class LOCAL(Module):
     self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.Node, 
 	                   "name": "parent", 
 	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
-                           "parameters": {"type": Parameter.Customizable,
+                           "parameters": {"type": Parameter.Editable,
                                           "predefined": [vfs.vfs().getnode("/")]}
                           })
     self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path, 
 	                   "name": "path", 
 	                   "description": "Path to the file or directory on your operating system."})
-
-    #self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path, 
-    #	                   "name": "path",
-    #	  "description": "Path to the file or directory on your operating system.",
-    #	  "parameters": {"type": Parameter.Fixed}})
-
-
-  # self.conf.add("size", "uint64", True, "Force size of the file.")
     self.tags = "Connectors"
 %}

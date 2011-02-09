@@ -124,7 +124,7 @@ ex: hash /myfile"""
     self.conf.addArgument({"input": Argument.Optional|Argument.List|typeId.String,
                            "name": "algorithm",
                            "description": "algorithm(s) used to hash file",
-                           "parameters": {"type": Parameter.Fixed,
+                           "parameters": {"type": Parameter.NotEditable,
                                           "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
                            })
     #self.conf.add("file", "node", False, "file to hash.")

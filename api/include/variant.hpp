@@ -120,7 +120,7 @@ public:
   EXPORT Variant(int32_t i);
   EXPORT Variant(int64_t ull);
   EXPORT Variant(uint64_t ll);
-  // EXPORT Variant(bool b);
+  EXPORT Variant(bool b);
   EXPORT Variant(vtime *vt);
   EXPORT Variant(class Node *node);
   EXPORT Variant(class Path *path);
@@ -199,6 +199,12 @@ public:
 	  {
 	    class Path **p = static_cast<Path**>(res);
 	    *p = (Path*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::Bool) && (this->_type == typeId::Bool))
+	  {
+	    bool	*b = static_cast<bool*>(res);
+	    *b = this->__data.b;
 	    ret = true;
 	  }
 	else if ((itype == typeId::VTime) && (this->_type == typeId::VTime))
@@ -380,6 +386,7 @@ public:
   int64_t	toInt64() throw (std::string);
   char*		toCArray() throw (std::string);
   char		toChar() throw (std::string);
+  bool		toBool() throw (std::string);
   uint8_t	type();
   std::string	typeName();
 
@@ -387,6 +394,7 @@ private:
   uint8_t	_type;
 union Data
 {
+  bool b;
   char c;
   int16_t s;
   uint16_t us;
