@@ -115,31 +115,7 @@ class TaskManager():
 	    return proc
         except AttributeError:
 	    pass
-      marg = VMap()
-      marg.thisown = False
-      arguments = mod.conf.arguments()
-      for arg in arguments:
-        arg_name = arg.name()
-        if arg.requirementType() == Argument.Required:
-          try:
-            value = args[arg_name]
-            print value
-            v = Variant(value, arg.type())
-            v.thisown = False
-            marg[arg_name] = v
-          except KeyError:
-            raise KeyError
-        else:
-          try:
-            value = args[arg_name]
-            print value
-            v = Variant(value, arg.type())
-            v.thisown = False
-            marg[arg_name] = v
-          except KeyError:
-            raise KeyError
-      print marg
-      sched.enqueue((proc, marg))
+      sched.enqueue((proc, args))
       return proc
   __instance = None
 

@@ -15,6 +15,7 @@
 
 from types import *
 import traceback
+import sys
 
 from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString, QEvent
@@ -130,71 +131,31 @@ class ApplyModule(QDialog, Ui_applyModule):
         # get values
         args = {}
         for argname, lmanager in self.valueArgs.iteritems():
-#            print "Argname ", argname
-#            print "value(s)", lmanager.get(argname)
-#            print lmanager.isEnabled()
             if lmanager.isEnabled():
                 print "Enter ", argname
                 args[argname] = lmanager.get(argname)
         try : 
             self.conf.generate(args)
+            self.taskmanager = TaskManager()
+            self.taskmanager.add(str(self.nameModule), args, ["thread", "gui"])
+            self.accept()
         except RuntimeError:
-            (filename, line_number, function_name, text) = traceback.extract_tb()
-            print "conf pas bonne"
-
-#########
-#            if not i.optional :
-#                if i.type == "node" :
-#                    node = self.vfs.getnode(str(self.valueArgs[i].text()))
-                    #node = self.valueArgs[i].currentNode()"
-#                    if node is None :
-#                        errorArg.append(i)
-#                else :
-#                    if i.type != "int":
-#                        value = str(self.valueArgs[i].currentText())
-#                        if value == "" :
-#                            errorArg.append(i)
-#                    else:
-#                        v = self.valueArgs[i].currentText().toInt()
-#                        value = v[0]
-#        if len(errorArg) > 0:
-#            # Create a dialog with QT designer
-#            print "Module error"
-#        else:
-#            self.accept()
-#############
-
-    def getArguments(self):
-        for i in self.valueArgs :
-            if not i.optional or self.valueArgs[i].isEnabled():
-                if i.type == "node" :
-                    self.arg.add_node(str(i.name), self.vfs.getnode(str(self.valueArgs[i].text())))
-                else :
-                    if i.type == "path" :
-                        value = str(self.valueArgs[i].currentText())
-                        self.arg.add_path(str(i.name), str(value))
-                    elif i.type == "int" :
-                        value = self.valueArgs[i].currentText().toInt()
-                        self.arg.add_int(str(i.name), value[0])
-                    elif i.type == "string" :
-                        value = str(self.valueArgs[i].currentText())
-                        self.arg.add_string(str(i.name), value)       
-                    elif i.type == "bool" :
-			value = str(self.valueArgs[i].currentText())
-                        if value == "True" :
-                            value = 1
-                        else :
-                            value = 0
-                        self.arg.add_bool(str(i.name), value)
-        self.taskmanager = TaskManager()
-        self.taskmanager.add(str(self.nameModule), self.arg, ["thread", "gui"])
+            err_type, err_value, err_traceback = sys.exc_info()
+            err_trace =  traceback.format_tb(err_traceback)
+            err_typeval = traceback.format_exception_only(err_type, err_value)
+            for err in err_trace:
+                print err
+            for errw in err_typeval:
+                print errw
+            print "output dialog"  
+ #        self.accept()
         return
 
     def openApplyModule(self, nameModule = None, typeModule = None, nodesSelected = None):
         self.initAllInformations(nameModule, typeModule, nodesSelected)
         iReturn = self.exec_()
-        if iReturn:
-            arg = self.getArguments()
+#        if iReturn:
+#            arg = self.getArguments()
 
     def argChanged(self, curitem, previtem):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
