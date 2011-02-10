@@ -299,7 +299,7 @@
 	      if (itemval == NULL)
 		{
 		  if (rtype == Argument::Required)
-		    err = argname + " is a required argument but is not setted";
+		    err = "Argument < " + argname + " >\n this argument is required";
 		}
 	      else
 		{
@@ -314,11 +314,11 @@
 		      if (v != NULL)
 			res.insert(std::pair<std::string, Variant*>(argname, v));
 		      else
-			err = "parameter provided to argument " + argname + " is not valid (wrong type)";      
+			err = "Argument < " + argname + " >\n" + "parameter provided is not valid (wrong type)";
 		    }
 		  catch (std::string e)
 		    {
-		      err = "parameter provided to argument " + argname + " is not valid (wrong type)\n   " + e;
+			err = "Argument < " + argname + " >\n" + "parameter provided is not valid (wrong type)\ndetails:\n" + e;
 		    }
 		}
 	      argit++;
