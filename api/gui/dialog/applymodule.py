@@ -24,15 +24,11 @@ from api.loader import *
 from api.vfs import *
 from api.taskmanager.taskmanager import *
 from api.types.libtypes import Argument, Parameter, Variant, VMap, VList, typeId
-
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.nodeview import NodeTreeView
-
 from api.gui.box.checkbox import checkBoxWidget
 from ui.gui.resources.ui_applymodule import Ui_applyModule 
-
 from ui.gui.utils.utils import Utils
-
 from api.gui.widget.layoutmanager import *
 
 
