@@ -24,15 +24,11 @@ from api.loader import *
 from api.vfs import *
 from api.taskmanager.taskmanager import *
 from api.types.libtypes import Argument, Parameter, Variant, VMap, VList, typeId
-
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.nodeview import NodeTreeView
-
 from api.gui.box.checkbox import checkBoxWidget
 from ui.gui.resources.ui_applymodule import Ui_applyModule 
-
 from ui.gui.utils.utils import Utils
-
 from api.gui.widget.layoutmanager import *
 
 
@@ -132,11 +128,17 @@ class ApplyModule(QDialog, Ui_applyModule):
     def validateModule(self):
         # get values
         args = {}
-        for argname, lmanager in self.valueArgs.iteritems():
-            if lmanager.isEnabled():
-                print "Enter ", argname
-                args[argname] = lmanager.get(argname)
         try :
+            for argname, lmanager in self.valueArgs.iteritems():
+                if lmanager.isEnabled():
+                    arg = self.conf.argumentByName(argname)
+                    if arg.type() == typeId.Node:
+                        params = self.vfs.getnode(str(lmanager.get(argname).toUtf8()))
+                    elif arg.inputType() == Argument.Empty:
+                        params = True
+                    else:
+                        params = lmanager.get(argname)
+                    args[argname] = params
             genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
             self.taskmanager.add(str(self.nameModule), genargs, ["thread", "gui"])
@@ -148,7 +150,6 @@ class ApplyModule(QDialog, Ui_applyModule):
             terr = QString()
             detailerr = QString()
             for err in err_trace:
-#                terr.append(err)
                 detailerr.append(err)
             for errw in err_typeval:
                 terr.append(errw)
