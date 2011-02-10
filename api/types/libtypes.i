@@ -213,7 +213,7 @@
 	  throw(std::string("provided parameters for argument " + arg->name() + " are not compatible"));
       }
     else
-      throw(std::string("arguments of method generateListInput are not valid"));
+      throw(std::string("arguments of method generateSingleInput are not valid"));
     return v;
   }
 
@@ -250,7 +250,7 @@
 	  }
 	catch(std::string e)
 	  {
-	    err = e;
+	    err = e + " while processing parameters of argument " + arg->name();
 	  }
       }
     else
@@ -297,8 +297,11 @@
 		  rtype = (*argit)->requirementType();
 		  itemval = PyDict_GetItemString(obj, argname.c_str());
 		  SWIG_PYTHON_THREAD_END_BLOCK;
-		  if ((itemval == NULL) && (rtype == Argument::Required))
-		    err = argname + " is a required argument but is not setted";
+		  if (itemval == NULL)
+		    {
+		      if (rtype == Argument::Required)
+			err = argname + " is a required argument but is not setted";
+		    }
 		  else
 		    {
 		      if (itype == Argument::Empty)
