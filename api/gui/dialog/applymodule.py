@@ -14,10 +14,10 @@
 # 
 
 from types import *
+import traceback
 
 from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString, QEvent
-
 # CORE
 from api.loader import *
 from api.vfs import *
@@ -58,10 +58,10 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.nameModuleField.setText(nameModule)
         self.typeModuleField.setText(typeModule)
 
-        conf = self.loader.get_conf(str(nameModule))
-        self.textEdit.setText(conf.description)
+        self.conf = self.loader.get_conf(str(nameModule))
+        self.textEdit.setText(self.conf.description)
 
-        args = conf.arguments()
+        args = self.conf.arguments()
         self.createArgShape(args)
     
     def createArgShape(self, args):
@@ -127,27 +127,42 @@ class ApplyModule(QDialog, Ui_applyModule):
         return warguments
 
     def validateModule(self):
-        errorArg = []
-        for i in self.valueArgs :
-            if not i.optional :
-                if i.type == "node" :
-                    node = self.vfs.getnode(str(self.valueArgs[i].text()))
-                    #node = self.valueArgs[i].currentNode()
-                    if node is None :
-                        errorArg.append(i)
-                else :
-                    if i.type != "int":
-                        value = str(self.valueArgs[i].currentText())
-                        if value == "" :
-                            errorArg.append(i)
-                    else:
-                        v = self.valueArgs[i].currentText().toInt()
-                        value = v[0]
-        if len(errorArg) > 0:
-            # Create a dialog with QT designer
-            print "Module error"
-        else:
-            self.accept()
+        # get values
+        args = {}
+        for argname, lmanager in self.valueArgs.iteritems():
+#            print "Argname ", argname
+#            print "value(s)", lmanager.get(argname)
+#            print lmanager.isEnabled()
+            if lmanager.isEnabled():
+                print "Enter ", argname
+                args[argname] = lmanager.get(argname)
+        try : 
+            self.conf.generate(args)
+        except RuntimeError:
+            (filename, line_number, function_name, text) = traceback.extract_tb()
+            print "conf pas bonne"
+
+#########
+#            if not i.optional :
+#                if i.type == "node" :
+#                    node = self.vfs.getnode(str(self.valueArgs[i].text()))
+                    #node = self.valueArgs[i].currentNode()"
+#                    if node is None :
+#                        errorArg.append(i)
+#                else :
+#                    if i.type != "int":
+#                        value = str(self.valueArgs[i].currentText())
+#                        if value == "" :
+#                            errorArg.append(i)
+#                    else:
+#                        v = self.valueArgs[i].currentText().toInt()
+#                        value = v[0]
+#        if len(errorArg) > 0:
+#            # Create a dialog with QT designer
+#            print "Module error"
+#        else:
+#            self.accept()
+#############
 
     def getArguments(self):
         for i in self.valueArgs :
