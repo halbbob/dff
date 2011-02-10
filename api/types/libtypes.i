@@ -201,7 +201,7 @@
     return found;
   }
 
-  Variant*	generateSingleInput(PyObject* obj, Argument* arg)
+  Variant*	generateSingleInput(PyObject* obj, Argument* arg) throw (std::string)
   {
     Variant*	v = NULL;
     
@@ -217,7 +217,7 @@
     return v;
   }
 
-  Variant*	generateListInput(PyObject* obj, Argument* arg)
+  Variant*	generateListInput(PyObject* obj, Argument* arg) throw (std::string)
   {
     std::list<Variant*>	vlist;
     Variant*		v = NULL;
@@ -265,7 +265,7 @@
   }
     
 
-  std::map<std::string, Variant*>	generate(PyObject* obj)
+  std::map<std::string, Variant*>	generate(PyObject* obj) throw (std::string)
     {
       std::map<std::string, Variant*>	res;
       std::list<Argument*>		args;
