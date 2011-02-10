@@ -86,18 +86,22 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    # Choice : une valeur parmis plusieurs choix (combobox)
-    def addSingleArgument(self, key, predefs, editable=False):
+    def addSingleArgument(self, key, predefs, typeid, editable=False):
         if not self.overwriteKeys(key):
             if type(key) == types.StringType:
                 if len(predefs) > 0:
                     w = QComboBox()
                     w.setEditable(editable)
+                    if typeid not in (typeId.String, typeId.Char, typeId.Node, typeId.Path):
+                        w.addItem("0")
                     for value in predefs:
                         w.addItem(value.toString())
                 else:
                     w = QLineEdit()
+                    if typeid not in (typeId.String, typeId.Char, typeId.Node, typeId.Path):
+                        w.insert("0")
                     w.setReadOnly(not editable)
+                w.setValidator(fieldValidator(self, typeid))
                 self.layout.addRow(w)
                 self.widgets[key] = w
                 return 1
@@ -161,11 +165,6 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    # create a custom widget with or not with predef values
-    # if predef values are set, it will automaticly detect list type
-    # be carreful to unify list types in predefs
-    # If there is no predef values, specify which one you want to create : 
-    #    "str", "int", "long"
     def addListArgument(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key) == types.StringType:
             w = multipleListWidget(self, typeid, predefs, editable)
@@ -174,7 +173,6 @@ class layoutManager(QWidget):
             return 1
         else:
             return -1
-
 
     def addPathList(self, key, typeid, predefs):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
@@ -265,6 +263,24 @@ class layoutManager(QWidget):
                 else:
                     return -1
 
+
+class fieldValidator(QRegExpValidator):
+    def __init__(self, parent, typeid):
+        QRegExpValidator.__init__(self, parent)
+        self.typeid = typeid
+        self.init()
+
+    def init(self):
+        if self.typeid in (typeId.Int16, typeId.Int32, typeId.Int64):
+            exp = "^(\+|-)?\d+$"
+        elif self.typeid in (typeId.UInt16, typeId.UInt32, typeId.UInt64):
+            exp = "^\d+$"
+        else:
+            exp = "^\D+$"
+        regexp = QRegExp(exp)
+        regexp.setCaseSensitivity(Qt.CaseInsensitive)
+        self.setRegExp(regexp)
+
 class multipleListWidget(QWidget):
     def __init__(self, parent, typeid, predefs, editable):
         QWidget.__init__(self)
@@ -349,7 +365,6 @@ class multipleListWidget(QWidget):
                 browse = addLocalPathButton(key, self.container, isdir=False, nodetype=True)
         self.headerlayout.addWidget(self.container, 2)
         self.headerlayout.addWidget(browse, 0)
-
 
     def addPredefValue(self):
         selected = self.predefs.selectedItems()

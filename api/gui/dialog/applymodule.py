@@ -50,6 +50,8 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.loader = loader.loader()
         self.vfs = vfs.vfs()
         self.valueArgs = {}
+
+        self.translation()
     
     def initAllInformations(self, nameModule, typeModule, nodesSelected):
         self.__nodesSelected = nodesSelected
@@ -116,7 +118,7 @@ class ApplyModule(QDialog, Ui_applyModule):
             if arg.type() in (typeId.Node, typeId.Path):
                 warguments.addPath(arg.name(), arg.type(), predefs, editable)
             else:
-                warguments.addSingleArgument(arg.name(), predefs, editable)
+                warguments.addSingleArgument(arg.name(), predefs, arg.type(), editable)
         elif inputype == Argument.List:
             if arg.type() in (typeId.Node, typeId.Path):
                 warguments.addPathList(arg.name(), arg.type(), predefs)
@@ -134,31 +136,46 @@ class ApplyModule(QDialog, Ui_applyModule):
             if lmanager.isEnabled():
                 print "Enter ", argname
                 args[argname] = lmanager.get(argname)
-        try : 
-            self.conf.generate(args)
+        try :
+            genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
-            self.taskmanager.add(str(self.nameModule), args, ["thread", "gui"])
+            self.taskmanager.add(str(self.nameModule), genargs, ["thread", "gui"])
             self.accept()
         except RuntimeError:
             err_type, err_value, err_traceback = sys.exc_info()
             err_trace =  traceback.format_tb(err_traceback)
             err_typeval = traceback.format_exception_only(err_type, err_value)
+            terr = QString()
+            detailerr = QString()
             for err in err_trace:
-                print err
+#                terr.append(err)
+                detailerr.append(err)
             for errw in err_typeval:
-                print errw
-            print "output dialog"  
- #        self.accept()
+                terr.append(errw)
+                detailerr.append(err)
+            self.messageBox(terr, detailerr)
         return
 
     def openApplyModule(self, nameModule = None, typeModule = None, nodesSelected = None):
         self.initAllInformations(nameModule, typeModule, nodesSelected)
-        iReturn = self.exec_()
-#        if iReturn:
-#            arg = self.getArguments()
+        self.exec_()
 
     def argChanged(self, curitem, previtem):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
+
+    def messageBox(self, coretxt, detail):
+        msg = QMessageBox()
+        msg.setWindowTitle(self.configureError)
+        msg.setText(self.configureErrorMsg)
+        msg.setInformativeText(coretxt)
+        msg.setIcon(QMessageBox.Critical)
+        msg.setDetailedText(detail)
+        msg.setStandardButtons(QMessageBox.Ok)
+        ret = msg.exec_()
+
+    def translation(self):
+        self.configureError = self.tr("Configuration error")
+        self.configureErrorMsg = self.tr("An error was detected in the configuration")
 
     def changeEvent(self, event):
         """ Search for a language change event
@@ -170,6 +187,7 @@ class ApplyModule(QDialog, Ui_applyModule):
             self.retranslateUi(self)
             title = self.windowTitle() + ' ' + self.nameModule
             self.setWindowTitle(title)
+            self.translation()
         else:
             QDialog.changeEvent(self, event)
 
