@@ -209,9 +209,9 @@
     if ((arg != NULL) && (obj != NULL))
       {
 	if ((arg->parametersType() == Parameter::NotEditable) && (!Config_matchNotEditable(self, arg->parameters(), obj)))
-	  throw(std::string("Argument < " + arg->name() + ">\nparameters are immutable and must correspond to available ones"));
+	  throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
 	if ((v = new_Variant__SWIG_17(obj, arg->type())) == NULL)
-	  throw(std::string("Argument < " + arg->name() + ">\nparameter is not compatible"));
+	  throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
       }
     else
       throw(std::string("arguments provided to method generateSingleInput are not valid"));
@@ -323,7 +323,7 @@
 		    }
 		  catch (std::string e)
 		    {
-			err = "Argument < " + argname + " >\n" + "parameter provided is not valid (wrong type)\ndetails:\n" + e;
+			err = "Argument < " + argname + " >\n" + "parameter provided is not valid\ndetails:\n" + e;
 		    }
 		}
 	      argit++;
