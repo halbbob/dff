@@ -209,12 +209,12 @@
     if ((arg != NULL) && (obj != NULL))
       {
 	if ((arg->parametersType() == Parameter::NotEditable) && (!Config_matchNotEditable(self, arg->parameters(), obj)))
-	  throw(std::string("parameters of argument " + arg->name() + " are not editable (provided value differs from available parameters)"));
+	  throw(std::string("Argument < " + arg->name() + ">\nparameters are immutable and must correspond to available ones"));
 	if ((v = new_Variant__SWIG_17(obj, arg->type())) == NULL)
-	  throw(std::string("provided parameters for argument " + arg->name() + " are not compatible"));
+	  throw(std::string("Argument < " + arg->name() + ">\nparameter is not compatible"));
       }
     else
-      throw(std::string("arguments of method generateSingleInput are not valid"));
+      throw(std::string("arguments provided to method generateSingleInput are not valid"));
     return v;
   }
 
@@ -235,12 +235,17 @@
 	      {
 		i = 0;
 		lsize = PyList_Size(obj);
-		while ((i != lsize) && err.empty())
+		if ((lsize == 0) && (arg->requirementType() == Argument::Required))
+		  err = "Argument < " + arg->name() + " > is required but list of parameters is empty";
+		else
 		  {
-		    item = PyList_GetItem(obj, i);
-		    v = Config_generateSingleInput(self, item, arg);
-		    vlist.push_back(v);
-		    i++;
+		    while ((i != lsize) && err.empty())
+		      {
+			item = PyList_GetItem(obj, i);
+			v = Config_generateSingleInput(self, item, arg);
+			vlist.push_back(v);
+			i++;
+		      }
 		  }
 	      }
 	    else
@@ -251,11 +256,11 @@
 	  }
 	catch(std::string e)
 	  {
-	    err = e + " while processing parameters of argument " + arg->name();
+	    err = "Argument < " + arg->name() + " >\n" + e + " while processing parameters";
 	  }
       }
     else
-      err = "arguments of method generateListInput are not valid";
+      err = "arguments provided to method generateListInput are not valid";
     if (!err.empty())
       {
 	vlist.clear();
@@ -684,7 +689,6 @@
 		}
 	      else if (type == typeId::Path)
 		{
-		  std::string	str;
 		  Path*		p;
 		  p = new Path(str);
 		  v = new Variant(p);
