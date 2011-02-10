@@ -25,10 +25,10 @@ from Queue import *
 
 HNAME = 0
 HSIZE = 1
-HACCESSED = 2
+HACCESSED = 5
 HCHANGED = 3
 HMODIFIED = 4
-HMODULE = 5
+HMODULE = 2
 
 pixmapCache = QPixmapCache()
 pixmapCache.setCacheLimit(61440)
@@ -287,11 +287,13 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.fm = fm
     self.fm = False
     self.checkedNodes = set()
+
     self.node_list = []
     self.header_list = []
     self.type_list = []
-    self.cacheAttr = (None, None)
+    self.disp_module = 0
 
+    self.cacheAttr = (None, None)
     self.VFS.connection(self)
 
   def Event(self, e):
@@ -336,17 +338,20 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
       return QVariant()
+    nb_s = section - 2 - self.disp_module
     if orientation == Qt.Horizontal:
       if section == HNAME:
         return QVariant(self.nameTr)
       elif section == HSIZE:
         return QVariant(self.sizeTr)
-      elif (section - 2) >= (len(self.header_list) + len(self.type_list)):
+      elif (self.disp_module) != 0 and (section == HMODULE):
+        return QVariant(self.moduleTr)
+      elif nb_s >= (len(self.header_list) + len(self.type_list)):
         return QVariant()
-      elif section - 2 >= len(self.header_list):
-        return QVariant(self.type_list[section - 2 - len(self.header_list)])
+      elif nb_s >= len(self.header_list):
+        return QVariant(self.type_list[nb_s - len(self.header_list)])
       else:
-        return QVariant(self.header_list[section - 2])
+        return QVariant(self.header_list[nb_s])
 
   def data(self, index, role):
     if not index.isValid():
@@ -356,22 +361,27 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     node = self.node_list[index.row()]
     column = index.column()
     if role == Qt.DisplayRole :
+      # return name, size and eventually module columns
       if column == HNAME:
         return QVariant(node.name())
       if column == HSIZE:
         return QVariant(node.size())
+      if (self.disp_module != 0) and (column == HMODULE):
+        return QVariant(node.fsobj().name)
+      # return attributes and type columns
       try :
-        if (column - 2) >= (len(self.header_list) + len(self.type_list)):
+        nb_c = column - 2 - self.disp_module
+        if nb_c >= (len(self.header_list) + len(self.type_list)):
           return QVariant() # index error
-        elif column - 2 >= len(self.header_list): # the data is a dataType
-          type = self.type_list[column - 2 - len(self.header_list)]
+        elif nb_c >= len(self.header_list): # the data is a dataType
+          type = self.type_list[nb_c - len(self.header_list)]
           possible_type = node.dataType().value()
           return QVariant(possible_type[str(type)].value())
         else:
           if self.cacheAttr[0] != long(node.this): 
             self.cacheAttr = (long(node.this), node.fsoAttributes())
           attr = self.cacheAttr[1]
-          value = attr[str(self.header_list[column - 2])]
+          value = attr[str(self.header_list[nb_c])]
           val = value.value()
           if val == None:
             return QVariant(" N / A ")
@@ -418,7 +428,8 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.imagesthumbnails = flag
 
   def columnCount(self, parent = QModelIndex()):
-    return len(self.header_list) + 2 + len(self.type_list) #2 is for columns names and sizes
+    # 2 is for columns names and sizes
+    return len(self.header_list) + 2 + len(self.type_list) + self.disp_module
 
   def index(self, row, column, parent = QModelIndex()):
     if not self.hasIndex(row, column, parent):
@@ -487,16 +498,18 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     parentItem = self.rootItem
     if parentItem == None:
       return
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
     children_list = parentItem.children()
     if order == Qt.DescendingOrder:
       Reverse = True
     else:
       Reverse = False
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
     if column == HNAME:
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
+    elif (self.disp_module == 1) and (column == HMODULE):
+      self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
     elif (column - 2) >= (len(self.header_list) + len(self.type_list)):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column - 2 >= len(self.header_list): # sorting on the mime type

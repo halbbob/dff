@@ -19,7 +19,7 @@ from PyQt4.QtGui import *
 
 #from api.gui.widget.nodefilterbox import NodeFilterBox
 
-from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.model.vfsitemmodel import  VFSItemModel, HMODULE
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, DEvent, VLink
 from api.vfs import libvfs
@@ -270,26 +270,42 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.VFS.notify(e)
 
   def attrSelectView(self):
+    # init + display of the dialog box
     attrdiag = attrDialog(self)
-
     iReturn = attrdiag.exec_()
 
+    # get attributes list
     header_list = attrdiag.selectedAttrs
     type_list = attrdiag.selectedTypes
 
+    # add the 'module' column if the box was checked
+    if attrdiag.dispModule.checkState() == Qt.Checked:
+      self.model.disp_module = 1
+      self.model.setHeaderData(HMODULE, Qt.Horizontal, \
+                                 QVariant(self.model.moduleTr), \
+                                 Qt.DisplayRole)
+    else:
+      self.model.disp_module = 0
+
+    # add the attributes list (tmp is used to keep trace of the columns number)
     tmp = 0
     for i in range(header_list.count()):
       item = header_list.item(i)
       self.model.header_list.append(item.text())
-      self.model.setHeaderData(i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
+      self.model.setHeaderData(i + 2 + self.model.disp_module, Qt.Horizontal, \
+                               QVariant(item.text()), Qt.DisplayRole)
       tmp = tmp + 1
 
+    # add the type list
     for i in range(type_list.count()):
       item = type_list.item(i)
       self.model.type_list.append(item.text())
-      self.model.setHeaderData(tmp + i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
-    self.parent.horizontalHeader().setStretchLastSection(True)
-    self.parent.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+      self.model.setHeaderData(tmp + i + 2 + self.model.disp_module, Qt.Horizontal, \
+                               QVariant(item.text()), Qt.DisplayRole)
+
+    # set headers display parameters
+    self.parent.tableView.horizontalHeader().setStretchLastSection(True)
+    self.parent.tableView.horizontalHeader().setResizeMode(QHeaderView.Interactive)
       
   def createCategory(self, category):
     if category != "":
