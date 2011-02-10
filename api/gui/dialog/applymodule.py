@@ -132,12 +132,19 @@ class ApplyModule(QDialog, Ui_applyModule):
             for argname, lmanager in self.valueArgs.iteritems():
                 if lmanager.isEnabled():
                     arg = self.conf.argumentByName(argname)
-                    if arg.type() == typeId.Node:
+                    if arg.type() == typeId.Node and arg.inputType() == Argument.List:
+                        plist = lmanager.get(argname)
+                        params = []
+                        for param in plist:
+                            print param.toUtf8()
+                            params.append(self.vfs.getnode(str(param.toUtf8())))
+                    elif arg.type() == typeId.Node and arg.inputType() == Argument.Single:
                         params = self.vfs.getnode(str(lmanager.get(argname).toUtf8()))
                     elif arg.inputType() == Argument.Empty:
                         params = True
-                    else:
+                    else:                        
                         params = lmanager.get(argname)
+                        print params
                     args[argname] = params
             genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
