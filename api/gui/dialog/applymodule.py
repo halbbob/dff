@@ -35,15 +35,15 @@ from ui.gui.utils.utils import Utils
 from api.gui.widget.layoutmanager import *
 
 
-
 class ApplyModule(QDialog, Ui_applyModule):
     def __init__(self,  mainWindow):
         super(QDialog, self).__init__()
         self.setupUi(self)
-        # Hide labels and button used for translators
         self.labActivate.setVisible(False)
         self.labType.setVisible(False)
         self.labDescription.setVisible(False)
+        p = self.modulepix.pixmap().scaled(64,64, Qt.KeepAspectRatio)
+        self.modulepix.setPixmap(p)
         self.connect(self.buttonBox,SIGNAL("accepted()"), self.validateModule)
         self.__mainWindow = mainWindow
         self.loader = loader.loader()
@@ -81,7 +81,6 @@ class ApplyModule(QDialog, Ui_applyModule):
         winfo = QWidget()
         infolayout = QFormLayout()
         infolayout.setMargin(0)
-
         requirement = arg.requirementType()
         # Generate argument's widget
         warguments = self.getWidgetFromType(arg)
