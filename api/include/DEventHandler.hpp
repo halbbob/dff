@@ -35,7 +35,7 @@ public:
   EXPORT 	DEvent(class Node* v) { value = v;};
  // EXPORT	DEvent(std::string t, class Node* v);
 //  EXPORT	std::string		stype;
-  EXPORT	Node*		value;
+  Node*		value;
   event		type;
   uint64_t	seek;
 };

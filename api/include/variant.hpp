@@ -33,11 +33,11 @@ class typeId
 {
 private:
   
-  static typeId			*_instance;
+  //static typeId			*_instance;
   std::map<char*, uint8_t>	mapping;
 
-  typeId();
-  ~typeId();
+  EXPORT typeId();
+  EXPORT ~typeId();
   typeId&          operator=(typeId&);
   typeId(const typeId&);
   //typeId(const typeId &);
@@ -69,12 +69,16 @@ public:
 
   static typeId   *Get()
   {
+  /*
     if (!_instance)
       _instance = new typeId();
     return _instance;
+	*/
+	static typeId single;
+	return &single;
   }
 
-  uint8_t	getType(char *type)
+  EXPORT uint8_t	getType(char *type)
   {
     std::map<char*, uint8_t>::iterator it;
     
@@ -329,7 +333,7 @@ public:
   uint64_t	toUInt64();
   int64_t	toInt64();
   bool		toBool();
-  uint8_t	type();
+  EXPORT uint8_t	type();
 
 private:  
   uint8_t	_type;

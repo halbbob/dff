@@ -17,7 +17,7 @@
 #include "variant.hpp"
 #include "typeinfo"
 
-typeId *typeId::_instance = 0;
+//typeId *typeId::_instance = 0;
 
 typeId::typeId()
 {

@@ -13,5 +13,5 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-__version__ = ""
-__all__ = ["magic", "filetype", "magichandler"]
+__version__ = "${API_DATATYPE_VERSION}"
+__all__ = ["libdatatype", "magichandler"]
