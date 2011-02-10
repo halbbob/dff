@@ -272,6 +272,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def attrSelectView(self):
     # init + display of the dialog box
     attrdiag = attrDialog(self)
+    if self.model.disp_module == 0:
+      attrdiag.dispModule.setCheckState(Qt.Unchecked)
     iReturn = attrdiag.exec_()
 
     # get attributes list
