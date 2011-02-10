@@ -25,6 +25,7 @@
 #include <iostream>
 #include "export.hpp"
 #include "argument.hpp"
+#include "constant.hpp"
 
 class Config
 {
@@ -32,6 +33,7 @@ private:
   std::string				__origin;
   std::string				__description;
   std::map<std::string, Argument*>	__arguments;
+  std::map<std::string, Constant*>	__constants;
 
 public:
   EXPORT Config(std::string origin, std::string description = "");
@@ -49,6 +51,11 @@ public:
   EXPORT std::list<Argument*>	argumentsByInputType(uint16_t itype);
   EXPORT std::list<Argument*>	argumentsByRequirementType(uint16_t rtype);
   EXPORT std::list<Argument*>	argumentsByType(uint16_t type);
+
+  EXPORT void			addConstant(Constant* constant) throw (std::string);
+  EXPORT std::list<Constant*>	constants();
+  EXPORT Constant*		constantByName(std::string cname);
+  EXPORT std::list<Constant*>	constantByType(uint8_t type);
 };
 
 #endif

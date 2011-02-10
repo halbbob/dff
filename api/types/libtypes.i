@@ -39,7 +39,7 @@
 #include "exceptions.hpp"
 
 #include "variant.hpp"
-  //#include "parameter.hpp"
+#include "constant.hpp"
 #include "argument.hpp"
 #include "config.hpp"
 #include "path.hpp"
@@ -68,6 +68,7 @@
 
 %include "../include/variant.hpp"
 %include "../include/argument.hpp"
+%include "../include/constant.hpp"
 %include "../include/export.hpp"
 %include "../include/config.hpp"
 %include "../include/path.hpp"
@@ -283,26 +284,26 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       if (ecode)
 	{
-	  try
+	  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	  args = self->arguments();
+	  argit = args.begin();
+	  SWIG_PYTHON_THREAD_END_BLOCK;
+	  while ((argit != args.end()) && err.empty())
 	    {
 	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      args = self->arguments();
-	      argit = args.begin();
+	      argname = (*argit)->name();
+	      itype = (*argit)->inputType();
+	      rtype = (*argit)->requirementType();
+	      itemval = PyDict_GetItemString(obj, argname.c_str());
 	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      while ((argit != args.end()) && err.empty())
+	      if (itemval == NULL)
 		{
-		  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-		  argname = (*argit)->name();
-		  itype = (*argit)->inputType();
-		  rtype = (*argit)->requirementType();
-		  itemval = PyDict_GetItemString(obj, argname.c_str());
-		  SWIG_PYTHON_THREAD_END_BLOCK;
-		  if (itemval == NULL)
-		    {
-		      if (rtype == Argument::Required)
-			err = argname + " is a required argument but is not setted";
-		    }
-		  else
+		  if (rtype == Argument::Required)
+		    err = argname + " is a required argument but is not setted";
+		}
+	      else
+		{
+		  try
 		    {
 		      if (itype == Argument::Empty)
 			v = new_Variant__SWIG_17(itemval, typeId::Bool);
@@ -315,12 +316,12 @@
 		      else
 			err = "parameter provided to argument " + argname + " is not valid (wrong type)";      
 		    }
-		  argit++;
+		  catch (std::string e)
+		    {
+		      err = "parameter provided to argument " + argname + " is not valid (wrong type)\n   " + e;
+		    }
 		}
-	    }
-	  catch (std::string e)
-	    {
-	      err = e;
+	      argit++;
 	    }
 	}
       else
@@ -332,6 +333,14 @@
 	}
       return res;
     }
+
+  void	addConstant(PyObject* obj) throw(std::string)
+  {
+    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+    if (!PyDict_Check(obj))
+      ;
+    SWIG_PYTHON_THREAD_END_BLOCK;
+  }
 
   void	addArgument(PyObject* obj) throw(std::string)
   {
@@ -646,58 +655,100 @@
 	}
       else if (PyString_Check(obj))
 	{
-	  if (type == typeId::String)
-	    {
-	      std::string	str;
+	  std::string	str;
 
-	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      ecode = SWIG_AsVal_std_string(obj, &str);
-	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      if (SWIG_IsOK(ecode))
+	  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	  ecode = SWIG_AsVal_std_string(obj, &str);
+	  SWIG_PYTHON_THREAD_END_BLOCK;
+	  if (SWIG_IsOK(ecode))
+	    {
+	      if (type == typeId::String)
 		{
 		  v = new Variant(str);
 		  err = false;
 		}
-	    }
-	  else if (type == typeId::CArray)
-	    {
-	      std::string	str;
-
-	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      ecode = SWIG_AsVal_std_string(obj, &str);
-	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      if (SWIG_IsOK(ecode))
+	      else if (type == typeId::CArray)
 		{
 		  v = new Variant(str.c_str());
 		  err = false;
 		}
-	    }
-	  else if (type == typeId::Char)
-	    {
-	      char	c;
-
-	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      ecode = SWIG_AsVal_char(obj, &c);
-	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      if (SWIG_IsOK(ecode))
+	      else if (type == typeId::Char)
 		{
-		  v = new Variant(c);
-		  err = false;
+		  char	c;
+		  if (str.size() == 1)
+		    {
+		      c = *(str.c_str());
+		      v = new Variant(c);
+		      err = false;
+		    }
 		}
-	    }
-	  else if (type == typeId::Path)
-	    {
-	      std::string	str;
-	      Path*		p;
-
-	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-	      ecode = SWIG_AsVal_std_string(obj, &str);
-	      SWIG_PYTHON_THREAD_END_BLOCK;
-	      if (SWIG_IsOK(ecode))
+	      else if (type == typeId::Path)
 		{
+		  std::string	str;
+		  Path*		p;
 		  p = new Path(str);
 		  v = new Variant(p);
 		  err = false;
+		}
+	      else if (type == typeId::Int16)
+		{
+		  int16_t		s;
+		  std::istringstream	conv(str);
+		  if (conv >> s)
+		    {
+		      v = new Variant(s);
+		      err = false;
+		    }
+		}
+	      else if (type == typeId::UInt16)
+		{
+		  uint16_t		us;
+		  std::istringstream	conv(str);
+		  if (conv >> us)
+		    {
+		      v = new Variant(us);
+		      err = false;
+		    }
+		}
+	      else if (type == typeId::Int32)
+		{
+		  int32_t		i;
+		  std::istringstream	conv(str);
+		  if (conv >> i)
+		    {
+		      v = new Variant(i);
+		      err = false;
+		    }
+		}
+	      else if (type == typeId::UInt32)
+		{
+		  int32_t		ui;
+		  std::istringstream	conv(str);
+		  if (conv >> ui)
+		    {
+		      v = new Variant(ui);
+		      err = false;
+		    }
+		}
+	      else if (type == typeId::Int64)
+		{
+		  int64_t		ll;
+		  std::istringstream	conv(str);
+		  if (conv >> ll)
+		    {
+		      v = new Variant(ll);
+		      err = false;
+		    }
+		}
+	      else if (type == typeId::UInt64)
+		{
+		  uint64_t		ull;
+		  std::istringstream	conv(str);
+		  if (conv >> ull)
+		    {
+		      v = new Variant(ull);
+		      err = false;
+		    }
 		}
 	    }
 	}

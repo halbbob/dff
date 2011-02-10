@@ -41,15 +41,20 @@ void		Config::addArgument(Argument* arg) throw (std::string)
 {
   std::string	argname;
 
-  argname = arg->name();
-  if (!(argname.empty()))
+  if (arg != NULL)
     {
-      if (this->__arguments.find(argname) != this->__arguments.end())
-	throw (std::string("argument" + argname + " has already been added"));
-      this->__arguments.insert(std::pair<std::string, Argument* >(argname, arg));
+      argname = arg->name();
+      if (!(argname.empty()))
+	{
+	  if (this->__arguments.find(argname) != this->__arguments.end())
+	    throw (std::string("argument" + argname + " has already been added"));
+	  this->__arguments.insert(std::pair<std::string, Argument* >(argname, arg));
+	}
+      else
+	throw (std::string("argument name is empty"));
     }
   else
-    throw (std::string("argument name is empty"));
+    throw (std::string("provided argument is NULL"));
 }
 
 std::list<Argument*>	Config::arguments()
@@ -140,4 +145,54 @@ std::list<Argument*>	Config::argumentsByType(uint16_t type)
 	targs.push_back(mit->second);
     }
   return targs;
+}
+
+void		Config::addConstant(Constant* constant) throw(std::string)
+{
+  std::string	cname;
+  
+  if (constant != NULL)
+    {
+      cname = constant->name();
+      if (!(cname.empty()))
+	{
+	  if (this->__constants.find(cname) != this->__constants.end())
+	    throw(std::string("constant " + cname + " has already been added"));
+	  this->__constants.insert(std::pair<std::string, Constant*>(cname, constant));
+	}
+    }
+  else
+    throw(std::string("provided constant is NULL"));
+}
+
+std::list<Constant*>		Config::constants()
+{
+  std::list<Constant*>				lconst;
+  std::map<std::string, Constant*>::iterator	it;
+  
+  for (it = this->__constants.begin(); it != this->__constants.end(); it++)
+    lconst.push_back(it->second);
+  return lconst;
+}
+
+Constant*			Config::constantByName(std::string cname)
+{
+  std::map<std::string, Constant*>::iterator	it;
+  
+  it = this->__constants.find(cname);
+  if (it != this->__constants.end())
+    return it->second;
+  else
+    return NULL;
+}
+
+std::list<Constant*>		Config::constantByType(uint8_t type)
+{
+  std::map<std::string, Constant*>::iterator	it;
+  std::list<Constant*>				lconsts;
+
+  for (it = this->__constants.begin(); it != this->__constants.end(); it++)
+    if (it->second->type() == type)
+      lconsts.push_back(it->second);
+  return lconsts;
 }
