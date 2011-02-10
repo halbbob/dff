@@ -107,7 +107,7 @@ std::list<Argument*>	Config::argumentsByFlags(uint16_t flags)
   return fargs;
 }
 
-std::list<Argument*>	Config::argumentByInputType(uint16_t itype)
+std::list<Argument*>	Config::argumentsByInputType(uint16_t itype)
 {
   std::map<std::string, Argument*>::iterator	mit;
   std::list<Argument*>				iargs;
@@ -118,7 +118,7 @@ std::list<Argument*>	Config::argumentByInputType(uint16_t itype)
   return iargs;
 }
 
-std::list<Argument*>	Config::argumentByRequirementType(uint16_t rtype)
+std::list<Argument*>	Config::argumentsByRequirementType(uint16_t rtype)
 {
   std::map<std::string, Argument*>::iterator	mit;
   std::list<Argument*>				rargs;
@@ -129,7 +129,7 @@ std::list<Argument*>	Config::argumentByRequirementType(uint16_t rtype)
   return rargs;
 }
 
-std::list<Argument*>	Config::argumentByType(uint16_t type)
+std::list<Argument*>	Config::argumentsByType(uint16_t type)
 {
   std::map<std::string, Argument*>::iterator	mit;
   std::list<Argument*>				targs;

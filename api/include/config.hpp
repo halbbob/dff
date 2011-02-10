@@ -46,9 +46,9 @@ public:
   EXPORT Argument*		argumentByName(std::string argname);
   EXPORT std::list<Argument*>	argumentsByName(std::list<std::string> argsname);
   EXPORT std::list<Argument*>	argumentsByFlags(uint16_t flags);
-  EXPORT std::list<Argument*>	argumentByInputType(uint16_t itype);
-  EXPORT std::list<Argument*>	argumentByRequirementType(uint16_t rtype);
-  EXPORT std::list<Argument*>	argumentByType(uint16_t type);
+  EXPORT std::list<Argument*>	argumentsByInputType(uint16_t itype);
+  EXPORT std::list<Argument*>	argumentsByRequirementType(uint16_t rtype);
+  EXPORT std::list<Argument*>	argumentsByType(uint16_t type);
 };
 
 #endif
