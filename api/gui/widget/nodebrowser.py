@@ -248,6 +248,7 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
   def addTableView(self): 
     self.tableView = NodeTableView(self)
 
+    self.tableView.horizontalHeader().setStretchLastSection(True)
     self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)

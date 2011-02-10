@@ -123,13 +123,13 @@ std::list<Node *>	fso::updateQueue()
 
 void	fso::registerTree(Node* parent, Node* head)
 {
-  DEvent*  e = new DEvent;
+  //DEvent*  e = new DEvent;
 
   VFS::Get().AddNode(parent, head);
   
   //parent->addChild(head);
-  VFS::Get().notify(e);
-  delete e;
+  //VFS::Get().notify(e);
+  //delete e;
 }
 
 VFile*		mfso::vfileFromNode(Node* n)

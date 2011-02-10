@@ -242,7 +242,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.next.setEnabled(False)
       self.nextdrop.setEnabled(False)
 
-
   def bookmark(self):
     bookdiag = bookmarkDialog(self)
     iReturn = bookdiag.exec_()
@@ -273,30 +272,27 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def attrSelectView(self):
     attrdiag = attrDialog(self)
 
-    attrdiag.allAttrsAdv.setVisible(False)
-    attrdiag.removeAttrAdv.setVisible(False)
-    attrdiag.addAttrAdv.setVisible(False)
-    attrdiag.selectedAttrsAdv.setVisible(False)
-
     iReturn = attrdiag.exec_()
-    header_list = attrdiag.selectedAttrs
 
-    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
+    header_list = attrdiag.selectedAttrs
+    type_list = attrdiag.selectedTypes
+
+    tmp = 0
     for i in range(header_list.count()):
       item = header_list.item(i)
       self.model.header_list.append(item.text())
       self.model.setHeaderData(i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
-    self.model.emit(SIGNAL("layoutChanged()"))
+      tmp = tmp + 1
+
+    for i in range(type_list.count()):
+      item = type_list.item(i)
+      self.model.type_list.append(item.text())
+      self.model.setHeaderData(tmp + i + 2, Qt.Horizontal, QVariant(item.text()), Qt.DisplayRole)
+    self.parent.horizontalHeader().setStretchLastSection(True)
+    self.parent.horizontalHeader().setResizeMode(QHeaderView.Stretch)
       
   def createCategory(self, category):
     if category != "":
-      # Create bookmark node in root directory if first creation
-#      if len(self.bookmarkCategories) == 0:
-#        self.bookmarkNode = Node(str('Bookmarks'))
-#        self.bookmarkNode.__disown__()
-#        root = self.vfs.getnode('/')
-#        root.addChild(self.bookmarkNode)
-
       newNodeBook = Node(str(category.toUtf8()))
       newNodeBook.__disown__()
       self.bookmarkNode.addChild(newNodeBook)
@@ -328,25 +324,35 @@ class attrDialog(QDialog, Ui_SelectAttr):
     self.initAttrs(model)
     self.connect(self.addAttr, SIGNAL("clicked()"), self.addAttrToList)
     self.connect(self.removeAttr, SIGNAL("clicked()"), self.removeAttrFromList)
+
+    self.connect(self.attType, SIGNAL("clicked()"), self.addTypeToList)
+    self.connect(self.removeType, SIGNAL("clicked()"), self.removeTypeFromList)
+
     self.connect(self.buttonBox, SIGNAL("accepted()"), self.buttonClicked)
-#    self.connect()
-    self.allAttrsAdv.setVisible(False)
-    self.removeAttrAdv.setVisible(False)
-    self.addAttrAdv.setVisible(False)
-    self.selectedAttrsAdv.setVisible(False)
-    
 
   def buttonClicked(self):
     self.hide()
 
   def initAttrs(self, model):
     nodes = model.node_list
+
+    if len(nodes) == 0:
+      return
     node = nodes[0]
     if node == None:
       return
     module = node.fsobj()
     if module == None:
       return
+
+    data_types = node.dataType().value()
+    for i in data_types:
+      try:
+        model.type_list.index(i)
+        self.selectedTypes.addItem(i)
+      except:  
+        self.types.addItem(i)
+
     attrs = node.attributes()[module.name].value()
     attrs.thisown = False
     for j in model.header_list:
@@ -358,7 +364,8 @@ class attrDialog(QDialog, Ui_SelectAttr):
         except:
           self.allAttrs.addItem(i)
     model.header_list = []
-
+    model.type_list = []
+      
   def addAttrToList(self):
     attr = self.allAttrs.currentItem()
     if attr == None:
@@ -376,6 +383,24 @@ class attrDialog(QDialog, Ui_SelectAttr):
       row = self.selectedAttrs.currentRow()
       self.selectedAttrs.takeItem(row)
       self.allAttrs.addItem(attr.text())
+
+  def addTypeToList(self):
+    attr = self.types.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.types.currentRow()
+      self.types.takeItem(row)
+      self.selectedTypes.addItem(attr.text())
+  
+  def removeTypeFromList(self):
+    attr = self.selectedTypes.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.selectedTypes.currentRow()
+      self.selectedTypes.takeItem(row)
+      self.types.addItem(attr.text())
 
   def changeEvent(self, event):
     """
@@ -467,5 +492,3 @@ class kompleter(QCompleter):
         self.model.setRootPath(node, 1)
         abspath += "/"
         return QString(abspath[1:])
-
-

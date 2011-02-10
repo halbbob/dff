@@ -136,9 +136,10 @@ class TypeWorker(QThread):
 typeWorker = TypeWorker()
 typeWorker.start()
 
-class TreeModel(QAbstractItemModel):
+class TreeModel(QAbstractItemModel, DEventHandler):
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
+    DEventHandler.__init__(self)
     self.__parent = __parent
     self.VFS = VFS.Get()
     self.map = {}
@@ -147,6 +148,7 @@ class TreeModel(QAbstractItemModel):
     self.fetchedItems = 0
     self.thumbQueued = {}
     self.checkedNodes = set()
+    self.VFS.connection(self)
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
@@ -262,9 +264,9 @@ class TreeModel(QAbstractItemModel):
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
 
-  #def Event(self, e):
-    #self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    #self.emit(SIGNAL("layoutChanged()"))
+  def Event(self, e):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
 
 
 class VFSItemModel(QAbstractItemModel, DEventHandler):
@@ -287,6 +289,7 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.checkedNodes = set()
     self.node_list = []
     self.header_list = []
+    self.type_list = []
     self.cacheAttr = (None, None)
 
     self.VFS.connection(self)
@@ -296,6 +299,11 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     if parent != None:
       self.node_list = parent.children()
     self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
+
+  def setHeaderData(self, section, orientation, value, role):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    QAbstractItemModel.setHeaderData(self, section, orientation, value, role)
     self.emit(SIGNAL("layoutChanged()"))
 
   def setDataImage(self, index, node, image):
@@ -333,22 +341,12 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
         return QVariant(self.nameTr)
       elif section == HSIZE:
         return QVariant(self.sizeTr)
-      elif (section - 2) > len(self.header_list):
+      elif (section - 2) >= (len(self.header_list) + len(self.type_list)):
         return QVariant()
+      elif section - 2 >= len(self.header_list):
+        return QVariant(self.type_list[section - 2 - len(self.header_list)])
       else:
         return QVariant(self.header_list[section - 2])
-
-# de canFetchMore(self, parent):
-      # if self.fetchedItems < len(self.node_list):
-      # return True
-      # return False
-
-      # def fetchMore(self, parent):
-#    remainder = len(self.node_list) - self.fetchedItems
-#    itemsToFetch = self.qMin(50, remainder)
-#    self.beginInsertRows(parent, self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
-#    self.fetchedItems += itemsToFetch
-#    self.endInsertRows()
 
   def data(self, index, role):
     if not index.isValid():
@@ -363,20 +361,24 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
       if column == HSIZE:
         return QVariant(node.size())
       try :
-        if column - 2 > len(self.header_list):
-          return QVariant()
-	if self.cacheAttr[0] != long(node.this): 
-   	  self.cacheAttr = (long(node.this), node.fsoAttributes())
-  	attr = self.cacheAttr[1]
-        value = attr[str(self.header_list[column - 2])]
-        val = value.value()
-        if val == None:
-          return QVariant(" N / A ")
-        if value.type() == 13:
+        if (column - 2) >= (len(self.header_list) + len(self.type_list)):
+          return QVariant() # index error
+        elif column - 2 >= len(self.header_list): # the data is a dataType
+          type = self.type_list[column - 2 - len(self.header_list)]
+          possible_type = node.dataType().value()
+          return QVariant(possible_type[str(type)].value())
+        else:
+          if self.cacheAttr[0] != long(node.this): 
+            self.cacheAttr = (long(node.this), node.fsoAttributes())
+          attr = self.cacheAttr[1]
+          value = attr[str(self.header_list[column - 2])]
+          val = value.value()
+          if val == None:
+            return QVariant(" N / A ")
+          if value.type() == 13:
             return QVariant(QDateTime(val.get_time()))
-	else:
-	    return QVariant(val)       
- 
+          else:
+	    return QVariant(val) 
       except IndexError:
         return QVariant()
       return QVariant()
@@ -416,7 +418,7 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.imagesthumbnails = flag
 
   def columnCount(self, parent = QModelIndex()):
-    return len(self.header_list) + 2 #2 is for columns names and sizes
+    return len(self.header_list) + 2 + len(self.type_list) #2 is for columns names and sizes
 
   def index(self, row, column, parent = QModelIndex()):
     if not self.hasIndex(row, column, parent):
@@ -495,14 +497,17 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
-    elif column == HMODULE:
-      self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
-    elif column - 2 <= len(self.header_list):
+    elif (column - 2) >= (len(self.header_list) + len(self.type_list)):
+      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+    elif column - 2 >= len(self.header_list): # sorting on the mime type
+      type = self.type_list[column - 2 - len(self.header_list)]
+      self.node_list = sorted(children_list, \
+                                key=lambda Node: Node.dataType().value()[str(type)].value(), \
+                                reverse=Reverse)
+    else:
       self.node_list = sorted(children_list, \
                               key=lambda Node: Node.dynamicAttributes(str(self.header_list[column - 2])), \
                               reverse=Reverse)
-    else:
-      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
 
   def translation(self):
