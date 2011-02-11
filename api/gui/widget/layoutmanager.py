@@ -411,11 +411,11 @@ class SimpleNodeBrowser(QWidget):
     def addNodeTreeView(self):
         self.treeModel = VFSItemModel(self)
         self.treeModel.setRootPath(self.vfs.getnode("/"))
-        self.treeProxyModel = NodeTreeProxyModel()
-        self.treeProxyModel.setSourceModel(self.treeModel)
+        #self.treeProxyModel = NodeTreeProxyModel()
+        #self.treeProxyModel.setSourceModel(self.treeModel)
         self.treeView = NodeTreeView(self)
         self.treeView.setMinimumWidth(640)
-        self.treeView.setModel(self.treeProxyModel)
+        self.treeView.setModel(self.treeModel)
         self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
 
     def select(self, button, node):
@@ -483,8 +483,9 @@ class addLocalPathButton(QPushButton):
                 node = BrowseVFSDialog.getSelectedNode()
                 print node.absolute()
                 if node :
-                    self.container.clear()
-                    self.container.insert(node.absolute())
+                    #self.container.clear()
+                    self.container.insertItem(0, node.absolute())
+                    self.container.setCurrentIndex(0)
 
 class rmLocalPathButton(QPushButton):
     def __init__(self, container):

@@ -136,7 +136,6 @@ class ApplyModule(QDialog, Ui_applyModule):
                         plist = lmanager.get(argname)
                         params = []
                         for param in plist:
-                            print param.toUtf8()
                             params.append(self.vfs.getnode(param))
                     elif arg.type() == typeId.Node and arg.inputType() == Argument.Single:
                         params = self.vfs.getnode(lmanager.get(argname))
