@@ -118,67 +118,135 @@
 %template(__VList) Variant::value< std::list<Variant *> >;
 %template(__VMap) Variant::value< std::map<std::string, Variant *> >;
 
-
 %extend Argument
 {
-  void	addParameters(PyObject* obj) throw(std::string)
+  PyObject*	validateParams(PyObject* obj, uint16_t* ptype, int32_t* min, int32_t* max) throw(std::string)
   {
-    PyObject*	type_obj;
-    PyObject*	predef_obj;
-    uint16_t	ptype;
+    PyObject*	ptype_obj = NULL;
+    PyObject*	min_obj = NULL;
+    PyObject*	max_obj = NULL;
+    PyObject*	predef_obj = NULL;
+    Py_ssize_t	lsize;
     int		ecode = 0;
-    uint16_t	itype;
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    if ((type_obj = PyDict_GetItemString(obj, "type")) == NULL)
+    if ((ptype_obj = PyDict_GetItemString(obj, "type")) == NULL)
       throw(std::string("No field < type > defined for provided parameters"));
-    ecode = SWIG_AsVal_unsigned_SS_short(type_obj, &ptype);
+    ecode = SWIG_AsVal_unsigned_SS_short(ptype_obj, ptype);
     if (!SWIG_IsOK(ecode))
       throw(std::string("invalid type for field < type >"));
 
-    predef_obj = PyDict_GetItemString(obj, "predefined");
-    
+    if ((min_obj = PyDict_GetItemString(obj, "minimum")) != NULL)
+      {
+	if (self->inputType() != Argument::List)
+	  throw(std::string("minimum must not be defined when argument does not need list of parameters"));
+	if (PyInt_Check(min_obj))
+	  {
+	    ecode = SWIG_AsVal_int(min_obj, min);
+	    if (!SWIG_IsOK(ecode))
+	      throw(std::string("invalid type for field < minimum >"));
+	    if (*min < 0)
+	      throw(std::string("minimum must be >= 0"));
+	  }
+	else
+	  throw(std::string("invalid type for field < minimum >"));
+      }
+    else
+      *min = -1;
+
+    if ((max_obj = PyDict_GetItemString(obj, "maximum")) != NULL)
+      {
+	if (self->inputType() != Argument::List)
+	  throw(std::string("maximum must not be defined when argument does not need list of parameters"));
+	if (PyInt_Check(max_obj))
+	  {
+	    ecode = SWIG_AsVal_int(max_obj, max);
+	    if (!SWIG_IsOK(ecode))
+	      throw(std::string("invalid type for field < maximum >"));
+	    if (*max <= 0)
+	      throw(std::string("maximum must be >= 1"));
+	    if (*min >= *max)
+	      throw(std::string("maximum must be greater than minimum"));
+	  }
+	else
+	  throw(std::string("invalid type for field < maximum >"));
+      }
+    else
+      *max = -1;
+
+    predef_obj = PyDict_GetItemString(obj, "predefined");    
     if (predef_obj == NULL)
       {
-	if (ptype == Parameter::NotEditable)
+	if (*ptype == Parameter::NotEditable)
 	  throw(std::string("not editable parameters must have < predefined > field"));
       }
     else
       {
 	if (!PyList_Check(predef_obj))
 	  throw(std::string("< predefined > field of parameters must be a list"));
-	else
+	if (*ptype == Parameter::NotEditable)
 	  {
-	    PyObject*	item;
-	    Py_ssize_t	lsize = PyList_Size(predef_obj);
-	    Py_ssize_t	i;
-	    itype = self->type();
-	    Variant*	v;
-	    bool	err = false;
-	    std::list<Variant*>	vlist;
+	    lsize = PyList_Size(predef_obj);
+	    if (*min > lsize)
+	      throw(std::string("minimum cannot be greater than length of predefined not editable parameters"));
+	    if (*max > lsize)
+	      throw(std::string("maximum cannot be greater than length of predefined not editable parameters"));
+	  }
+      }
+    SWIG_PYTHON_THREAD_END_BLOCK;
+    return predef_obj;
+  }
 
-	    for (i = 0; i != lsize; i++)
+  void	addParameters(PyObject* obj) throw(std::string)
+  {
+    PyObject*	predef_obj;
+    uint16_t	ptype;
+    int32_t	min;
+    int32_t	max;
+    uint16_t	itype;
+    PyObject*	item;
+    Py_ssize_t	lsize;
+    Py_ssize_t	i;
+    Variant*	v;
+    std::string	err;
+    std::list<Variant*>	vlist;
+
+    try
+      {
+	predef_obj = Argument_validateParams(self, obj, &ptype, &min, &max);
+	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	if (predef_obj != NULL)
+	  {
+	    itype = self->type();
+	    lsize = PyList_Size(predef_obj);
+	    while ((i != lsize) && err.empty())
 	      {
 		item = PyList_GetItem(predef_obj, i);
 		//Maybe change this call with _wrap_new_Variant to not depend on swig overload method generation (at the moment it's SWIG_17 but could change if new Variant ctor implemented...). Then use Swig_ConvertPtr to get Variant from the returned PyObject.
 		if ((v = new_Variant__SWIG_17(item, itype)) == NULL)
-		  {
-		    err = true;
-		    break;
-		  }
+		  err = "Argument < " + self->name() + "  >\n predefined parameters must be of type < " + typeId::Get()->typeToName(self->type()) + ">";
 		else
 		  vlist.push_back(v);
+		i++;
 	      }
-	    if (err)
-	      {
-		vlist.erase(vlist.begin(), vlist.end());
-		throw(std::string("provided predefined parameters are not compatible with argument type"));
-	      }
-	    else
-	      self->addParameters(vlist, ptype);
 	  }
+	SWIG_PYTHON_THREAD_END_BLOCK;
       }
-    SWIG_PYTHON_THREAD_END_BLOCK;
+    catch (std::string e)
+      {
+	err = "Argument < " + self->name() + " >\n" + e;
+      }
+    if (!err.empty())
+      {
+	vlist.erase(vlist.begin(), vlist.end());
+	throw(std::string(err));
+      }
+    else
+      {
+	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	self->addParameters(vlist, ptype, min, max);
+	SWIG_PYTHON_THREAD_END_BLOCK;
+      }
   }
 };
 
@@ -214,7 +282,7 @@
 	  throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
       }
     else
-      throw(std::string("arguments provided to method generateSingleInput are not valid"));
+      throw(std::string("values provided to generateSingleInput are not valid"));
     return v;
   }
 
@@ -260,7 +328,7 @@
 	  }
       }
     else
-      err = "arguments provided to method generateListInput are not valid";
+      err = "values provided to generateListInput are not valid";
     if (!err.empty())
       {
 	vlist.clear();
@@ -308,6 +376,7 @@
 		}
 	      else
 		{
+		  //std::cout << "current argument: " <<  argname << " argument type " << (*argit)->type() << " -- provided parameter type " << obj->ob_type->tp_name << std::endl;
 		  try
 		    {
 		      if (itype == Argument::Empty)
@@ -330,7 +399,7 @@
 	    }
 	}
       else
-	err = "generating configuration failed because provided configuration must be of type dict";
+	err = "generating configuration failed because provided value is not of type dict";
       if (!err.empty())
 	{
 	  res.clear();
@@ -375,19 +444,19 @@
 	  throw(std::string("invalid type for field < name >"));
 	
 	if ((input_obj = PyDict_GetItemString(obj, "input")) == NULL)
-	  throw(std::string("No field < input > defined for current argument"));
+	  throw(std::string("Argument < " + name + ">\nfield < input > must be defined"));
 	ecode = SWIG_AsVal_unsigned_SS_short(input_obj, &input);
 	if (!SWIG_IsOK(ecode))
-	  throw(std::string("invalid type for field < input >"));
+	  throw(std::string("Argument < " + name + ">\ninvalid type for field < input >"));
 
 	if ((descr_obj = PyDict_GetItemString(obj, "description")) == NULL)
-	  throw(std::string("No field < description > defined for current argument"));	    
+	  throw(std::string("Argument < " + name + " >\nfield < description > must be defined"));	    
 	ecode = SWIG_AsVal_std_string(descr_obj, &description);
 	if (!SWIG_IsOK(ecode))
-	  throw(std::string("invalid type for field < description >"));
+	  throw(std::string("Argument < " + name + " >\ninvalid type for field < description >"));
 
 	if (self->argumentByName(name) != NULL)
-	  throw(std::string("argument " + name + " has already been provided"));
+	  throw(std::string("Argument < " + name + " > already added"));
 
 	param_obj = PyDict_GetItemString(obj, "parameters");
 	SWIG_PYTHON_THREAD_END_BLOCK;
@@ -395,7 +464,7 @@
 	if (input == Argument::Empty)
 	  {
 	    if (param_obj != NULL)
-	      throw(std::string("parameters defined for an argument which takes no parameter"));
+	      throw(std::string("Argument < " + name + ">\nfield < predefined > forbidden"));
 	    else
 	      {
 		SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -415,19 +484,19 @@
 		if (!PyDict_Check(param_obj))
 		  {
 		    delete arg;
-		    throw(std::string("parameters field is not of type dict"));
+		    throw(std::string("Argument < " + name + ">\nparameters field is not of type dict"));
 		  }
 		else
 		  {
 		    try
 		      {
-			Argument_addParameters__SWIG_1(arg, param_obj);
+			Argument_addParameters__SWIG_3(arg, param_obj);
 			self->addArgument(arg);
 		      }
 		    catch (std::string e)
 		      {
 			delete arg;
-			throw("error while parsing argument < " + name + " >\n   " + e);
+			throw("Argument < " + name + " >\n error while processing argument\ndetails:\n" + e);
 		      }
 		  }
 	      }
@@ -436,7 +505,7 @@
 	    SWIG_PYTHON_THREAD_END_BLOCK;
 	  }
 	else
-	  throw(std::string("flags setted to field < input > are not valid"));
+	  throw(std::string("Argument < " + name + ">\nflags provided to field < input > are not valid"));
       }
   }
 };
@@ -447,7 +516,7 @@
   {
     if (PyDict_Check(obj))
       {
-	printf("std::map<std::string, Variant*>::operator==(PyObject* obj) ---> obj == PyDict\n");
+	//printf("std::map<std::string, Variant*>::operator==(PyObject* obj) ---> obj == PyDict\n");
 	if (self->size() == PyDict_Size(obj))
 	  {
 	    std::map<std::string, Variant *>::const_iterator it;
@@ -469,7 +538,7 @@
       }
     else if (strncmp("VMap", obj->ob_type->tp_name, 5) == 0)
       {
-	printf("std::map<std::string, Variant*>::operator==(PyObject* obj) ---> obj == VMap\n");
+	//printf("std::map<std::string, Variant*>::operator==(PyObject* obj) ---> obj == VMap\n");
 	void* argp1 = 0;
 	std::map< std::string, Variant *> *arg1 = (std::map< std::string, Variant * > *) 0 ;
 	int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_std__mapT_std__string_Variant_p_std__lessT_std__string_t_std__allocatorT_std__pairT_std__string_const_Variant_p_t_t_t, 0 | 0);
@@ -484,7 +553,7 @@
 		std::map<std::string, Variant* >::iterator mit;
 		for (smit = self->begin(), mit = arg1->begin(); smit != self->end(), mit != arg1->end(); smit++, mit++)
 		  {
-		    std::cout << "self actual key " << smit->first << "  --  provided vmap actual key " << mit->first << std::endl;
+		    //std::cout << "self actual key " << smit->first << "  --  provided vmap actual key " << mit->first << std::endl;
 		    if ((smit->first != mit->first) || (!(smit->second == mit->second)))
 		      return false;
 		  }
@@ -506,7 +575,7 @@
   {
     if (PyList_Check(obj))
       {
-	printf("std::list<Variant*>::operator==(PyObject* obj) ---> obj == PyList\n");
+	//printf("std::list<Variant*>::operator==(PyObject* obj) ---> obj == PyList\n");
 	if (self->size() == PyList_Size(obj))
 	  {
 	    std::list<Variant *>::const_iterator it;
@@ -525,7 +594,7 @@
       }
     else if (strncmp("VList", obj->ob_type->tp_name, 5) == 0)
       {
-	printf("std::list<Variant*>::operator==(PyObject* obj) ---> obj == VList\n");
+	//printf("std::list<Variant*>::operator==(PyObject* obj) ---> obj == VList\n");
 	void* argp1 = 0;
 	std::list< Variant *> *arg1 = (std::list< Variant * > *) 0 ;
 	int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_std__listT_Variant_p_std__allocatorT_Variant_p_t_t, 0 | 0);
@@ -564,7 +633,7 @@
       
       if (PyLong_Check(obj) || PyInt_Check(obj))
 	{
-	  printf("Variant::Variant(PyObject* obj, uint8_t type) ---> obj == PyLong_Check || PyInt_Check provided\n");
+	  //printf("Variant::Variant(PyObject* obj, uint8_t type) ---> obj == PyLong_Check || PyInt_Check provided\n");
 	  if (type == uint8_t(typeId::Int16))
 	    {
 	      int16_t	s;
@@ -831,22 +900,22 @@
 
     if (obj == NULL)
       {
-	printf("    !!! obj is NULL !!!\n");
+	//printf("    !!! obj is NULL !!!\n");
 	return false;
       }    
     if (obj->ob_type == NULL)
       {
-	printf("    !!! obj->ob_type is NULL !!!\n");
+	//printf("    !!! obj->ob_type is NULL !!!\n");
 	return false;
       }
     if (obj->ob_type->tp_name == NULL)
       {
-	printf("    !!! obj->ob_type->tp_name is NULL !!!\n");
+	//printf("    !!! obj->ob_type->tp_name is NULL !!!\n");
 	return false;
       } 
     if (strncmp("Variant", obj->ob_type->tp_name, 7) == 0)
       {
-	printf("Variant::operator==(PyObject* obj) ---> obj == Variant\n");
+	//printf("Variant::operator==(PyObject* obj) ---> obj == Variant\n");
 	void* argp1 = 0;
 	Variant *arg1 = (Variant *) 0 ;
 	int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_Variant, 0 | 0);
@@ -860,21 +929,21 @@
       }
     else if (((strncmp("VList", obj->ob_type->tp_name, 5) == 0) || PyList_Check(obj)) && (type == typeId::List))
       {
-	printf("Variant::operator==(PyObject* obj) ---> obj == VList\n");
+	//printf("Variant::operator==(PyObject* obj) ---> obj == VList\n");
 	std::list<Variant *> selflist;
 	selflist = self->value<std::list< Variant * > >();
 	return std_list_Sl_Variant_Sm__Sg__operator_Se__Se_(&selflist, obj);
       }
     else if (((strncmp("VMap", obj->ob_type->tp_name, 4) == 0) || PyDict_Check(obj)) && (type == typeId::Map))
       {
-	printf("Variant::operator==(PyObject* obj) ---> obj == VMap\n");
+	//printf("Variant::operator==(PyObject* obj) ---> obj == VMap\n");
 	std::map<std::string, Variant*> selfmap;
 	selfmap = self->value<std::map<std::string, Variant* > >();
 	return std_map_Sl_std_string_Sc_Variant_Sm__Sg__operator_Se__Se_(&selfmap, obj);
       }
     else if (PyLong_Check(obj) || PyInt_Check(obj))
       {
-	printf("Variant::operator==(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");
+	//printf("Variant::operator==(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");
 	if (type == uint8_t(typeId::Int16))
 	  {
 	    int16_t	v;
@@ -979,22 +1048,22 @@
 
     if (obj == NULL)
       {
-	printf("    !!! obj is NULL !!!\n");
+	//printf("    !!! obj is NULL !!!\n");
 	return false;
       }    
     if (obj->ob_type == NULL)
       {
-	printf("    !!! obj->ob_type is NULL !!!\n");
+	//printf("    !!! obj->ob_type is NULL !!!\n");
 	return false;
       }
     if (obj->ob_type->tp_name == NULL)
       {
-	printf("    !!! obj->ob_type->tp_name is NULL !!!\n");
+	//printf("    !!! obj->ob_type->tp_name is NULL !!!\n");
 	return false;
       }
     if (strncmp("Variant", obj->ob_type->tp_name, 7) == 0)
       {
-	printf("Variant::operator>(PyObject* obj) ---> obj == Variant\n");
+	//printf("Variant::operator>(PyObject* obj) ---> obj == Variant\n");
 	void* argp1 = 0;
 	Variant *arg1 = (Variant *) 0 ;
 	int res1 = SWIG_ConvertPtr(obj, &argp1, SWIGTYPE_p_Variant, 0 | 0);
@@ -1008,7 +1077,7 @@
       }
     else if (PyLong_Check(obj) || PyInt_Check(obj))
       {
-	printf("Variant::operator>(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");
+	//printf("Variant::operator>(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");
 	if (type == uint8_t(typeId::Int16))
 	  {
 	    int16_t	v;
@@ -1078,7 +1147,7 @@
       {
 	char*		cstr;
 
-	printf("Variant::operator>(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");	
+	//printf("Variant::operator>(PyObject* obj) ---> obj == PyLong_Check || PyInt_Check provided\n");	
 	if ((cstr = PyString_AsString(obj)) != NULL)
 	  return self->operator><std::string>(cstr);
 	else

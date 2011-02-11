@@ -22,7 +22,7 @@ class Script(object):
 	self.name = name
 #        self.env = env.env()
         self.vfs = vfs.vfs()
-	#self.res = libtypes.results(self.name)
+	self.res = {}#libtypes.results(self.name)
 	self.stateinfo = ""
 
     #def stateInfo(self):

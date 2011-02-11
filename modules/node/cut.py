@@ -53,13 +53,10 @@ class Cut(mfso):
        self.__disown__()
 
     def start(self, args):
-       self._if = args.get_node('in')
-       self._of = args.get_string('out')
-       self.start = args.get_int("start")
-       try:
-         self.size = args.get_int("size")
-       except KeyError:
-         self.size = None
+       self._if = args["input"].value()
+       self._of = args["output"].value()
+       self.start = args["start_offset"].value()
+       self.size = args["size"].value()
        self.nof = CutNode(self, self._if, self._of, self.start, self.size)
        self.nof.__disown__()
        self.registerTree(self._if, self.nof) 

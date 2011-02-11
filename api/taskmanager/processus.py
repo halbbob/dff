@@ -84,7 +84,8 @@ class Processus(Script):
 	 err_trace =  traceback.format_tb(err_traceback)
          for err in err_trace:
            res += err
-         self.res.add_const("error", res)
+         print res
+         self.res["error"] = res
          self.state = "fail"
          return
     try :

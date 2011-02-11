@@ -64,6 +64,8 @@ private:
   bool				__enabled;
   std::list<Variant*>		__parameters;
   bool				__paramslocked;
+  int32_t			__minparams;
+  int32_t			__maxparams;
   void				setParametersType(uint16_t t);
 
 public:
@@ -79,7 +81,7 @@ public:
   ~Argument();
 
 
-  void				addParameters(std::list<Variant*> params, uint16_t type);
+  void				addParameters(std::list<Variant*> params, uint16_t type, int32_t min = -1, int32_t max=-1);
 
   std::list<Variant*>		parameters();
   //void				setName(std::string name);
@@ -105,6 +107,8 @@ public:
   //void				setRequirementType(uint16_t ntype);
   uint16_t			requirementType();
 
+  int32_t			minimumParameters();
+  int32_t			maximumParameters();
   // void				setPreselectedParameters(std::list<Variant* >);
   // std::list<Variant* >		preselectedParameters();
 

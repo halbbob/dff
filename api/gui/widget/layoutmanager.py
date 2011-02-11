@@ -238,11 +238,11 @@ class layoutManager(QWidget):
         for k, v in self.widgets.iteritems():
             if k == key:
                 if isinstance(self.widgets[k], QLineEdit):
-                    return v.text()
+                    return str(v.text().toUtf8())
                 elif isinstance(self.widgets[k], QListWidget):
                     items = []
                     for index in xrange(self.widgets[k].count()): 
-                        items.append(str(self.widgets[k].item(index).text())) 
+                        items.append(str(self.widgets[k].item(index).text().toUtf8())) 
                     return items
                 elif isinstance(self.widgets[k], QCheckBox):
                     state = self.widgets[k].checkState()
@@ -251,9 +251,9 @@ class layoutManager(QWidget):
                     else:
                         return True
                 elif isinstance(self.widgets[k], QTextEdit):
-                    return self.widgets[k].toPlainText()
+                    return str(self.widgets[k].toPlainText().toUtf8())
                 elif isinstance(self.widgets[k], QComboBox):
-                    return self.widgets[k].currentText()
+                    return str(self.widgets[k].currentText().toUtf8())
                 else:
                     return -1
 

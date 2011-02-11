@@ -137,15 +137,16 @@ class ApplyModule(QDialog, Ui_applyModule):
                         params = []
                         for param in plist:
                             print param.toUtf8()
-                            params.append(self.vfs.getnode(str(param.toUtf8())))
+                            params.append(self.vfs.getnode(param))
                     elif arg.type() == typeId.Node and arg.inputType() == Argument.Single:
-                        params = self.vfs.getnode(str(lmanager.get(argname).toUtf8()))
+                        params = self.vfs.getnode(lmanager.get(argname))
                     elif arg.inputType() == Argument.Empty:
                         params = True
                     else:                        
                         params = lmanager.get(argname)
                         print params
                     args[argname] = params
+            print args
             genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
             self.taskmanager.add(str(self.nameModule), genargs, ["thread", "gui"])
