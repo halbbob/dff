@@ -21,7 +21,7 @@ import os
 import types
 
 from api.vfs import *
-from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.model.vfsitemmodel import TreeModel, NodeTreeProxyModel
 from api.vfs.libvfs import VFS
 from api.gui.widget.nodeview import NodeTreeView
 from api.types.libtypes import typeId
@@ -409,10 +409,10 @@ class SimpleNodeBrowser(QWidget):
         self.setLayout(self.box)
 
     def addNodeTreeView(self):
-        self.treeModel = VFSItemModel(self)
+        self.treeModel = TreeModel(self, False)
         self.treeModel.setRootPath(self.vfs.getnode("/"))
-        #self.treeProxyModel = NodeTreeProxyModel()
-        #self.treeProxyModel.setSourceModel(self.treeModel)
+        self.treeProxyModel = NodeTreeProxyModel()
+        self.treeProxyModel.setSourceModel(self.treeModel)
         self.treeView = NodeTreeView(self)
         self.treeView.setMinimumWidth(640)
         self.treeView.setModel(self.treeModel)
@@ -423,21 +423,6 @@ class SimpleNodeBrowser(QWidget):
 
     def nodeSelected(self):
         return self.selection
-
-
-class NodeTreeProxyModel(QSortFilterProxyModel):
-  def __init__(self, parent = None):
-    QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()  
-
-  def filterAcceptsRow(self, row, parent):
-     index = self.sourceModel().index(row, 0, parent) 
-     if index.isValid():
-	 return True
-     return False
-
-  def columnCount(self, parent = QModelIndex()):
-     return 1
 
 
 class addLocalPathButton(QPushButton):

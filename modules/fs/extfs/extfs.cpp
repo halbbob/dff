@@ -36,6 +36,7 @@ Extfs::Extfs()
     __first_inodes_nodes(NULL), __orphans_i(NULL)
 {
   __SB = NULL;
+  attributeHandler = new BlockPointerAttributes("extfs-extended"); //XXX if "extfs" shadow a parameters
 }
 
 Extfs::~Extfs()
@@ -78,7 +79,7 @@ void		Extfs::launch(argument * arg)
 {
   bool		sb_check = false;
   std::string	sb_force_addr("1024");
-  bool		run_driver = true;
+  bool		run_driver;
   std::string	check_alloc("");
   uint64_t	root_i_nb = ROOT_INODE;
   Option *	opt;
@@ -97,7 +98,7 @@ void		Extfs::launch(argument * arg)
   opt->parse(this);
 
   // parsing file system
-  arg_get(arg, "run", &run_driver);
+  arg_get(arg, "parse_fs", &run_driver);
   if (run_driver)
     {
       std::string	orphans("");
@@ -299,6 +300,7 @@ void        Extfs::arg_get(argument * all_args, const std::string & name, T arg)
     }
   catch (vfsError & e)
     {
+      std::cerr << "Could not load " << name << " parameter" << std::endl;
     } 
   catch (...)
     {

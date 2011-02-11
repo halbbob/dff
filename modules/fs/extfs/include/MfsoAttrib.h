@@ -38,9 +38,7 @@ public :
 private :
   void		__add_acl(Inode * inode, Attributes * attr);
   void		__add_xtd_attr(Inode * inode, Attributes * attr);
-  void		__block_pointers(Inode * inode, Attributes * attr);
   void		__symlink_path(Inode * inode, Attributes * attr);
-  void		__extents_block(Inode * inode, Attributes * attr);
 };
 
 #endif

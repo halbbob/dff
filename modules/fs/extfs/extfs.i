@@ -52,7 +52,7 @@ class EXTFS(Module):
     Module.__init__(self, 'extfs', Extfs)
     self.conf.add("parent", "node", False, "The file will be added as son.")
 
-    self.conf.add("run", "bool", True, "Running the driver")
+    self.conf.add("parse_fs", "bool", True, "Running the driver")
     self.conf.add("ils", "string", True, "List inodes")
     self.conf.add("blk", "string", True, "Block allocation status")
     self.conf.add("SB_check", "bool", True, "check superblock validity")
@@ -66,7 +66,7 @@ class EXTFS(Module):
     self.conf.add_const("mime-type", "ext2")
     self.conf.add_const("mime-type", "ext3")
     self.conf.add_const("mime-type", "ext4")
-    self.conf.add_const("run", True)
+    #self.conf.add_const("parse_fs", True)
     self.conf.add_const("SB_check", False)
     self.conf.add_const("SB_addr", 1024)
     self.conf.add_const("root_inode", 2)

@@ -17,8 +17,6 @@
 #include "variant.hpp"
 #include "typeinfo"
 
-typeId *typeId::_instance = 0;
-
 typeId::typeId()
 {
   this->mapping.insert(std::pair<char*, uint8_t>( (char*)typeid(int16_t*).name(), typeId::Int16));

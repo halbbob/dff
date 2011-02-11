@@ -14,8 +14,11 @@
 #
 import platform
 
-import magic
-from api.vfs import vfs
+try:
+  from api.magic import magic
+except:
+  import magic
+from api.vfs import *
 from api.exceptions.libexceptions import *
 from api.types.libtypes import Variant
 from api.vfs.libvfs import *
@@ -30,7 +33,7 @@ class MagicHandler(DataTypeHandler):
      self.mime = magic.open(mtype)
      if os.name == "nt":
        import sys
-       self.mime.load(sys.path[0] + "./api/datatype/magic")
+       self.mime.load(sys.path[0] + "./api/magic/magic.mgc")
      else:
        self.mime.load()
 

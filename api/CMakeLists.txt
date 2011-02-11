@@ -24,6 +24,7 @@ add_subdirectory (types)
 add_subdirectory (vfs)
 add_subdirectory (search)
 add_subdirectory (tree)
+add_subdirectory (magic)
 # python only
 add_subdirectory (taskmanager)
 add_subdirectory (manager)

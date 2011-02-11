@@ -1,4 +1,4 @@
-4# DFF -- An Open Source Digital Forensics Framework
+# DFF -- An Open Source Digital Forensics Framework
 # Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
@@ -19,13 +19,14 @@ from PyQt4.QtGui import *
 
 #from api.gui.widget.nodefilterbox import NodeFilterBox
 
-from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.model.vfsitemmodel import  VFSItemModel, HMODULE
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, VLink
 from api.events.libevents import event
 from api.vfs import libvfs
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
+from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
 
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
@@ -60,10 +61,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.connect(self.search, SIGNAL("clicked()"), self.searchActivated)
     self.connect(self.imagethumb, SIGNAL("clicked()"), self.imagethumbActivated)
 
+    self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
+
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
     self.tableActivated()
-
 
   def viewboxChanged(self, index):
     if index == 0:
@@ -72,7 +74,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.thumbActivated()
     elif index == 2:
       self.leftTreeActivated()
-
 
   def addPropertyTable(self):
     self.propertyTable = PropertyTable(self)
@@ -131,9 +132,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
 
   def checkboxAttributeChanged(self, state):
-     if state:
+    if state:
        self.propertyTable.setVisible(True)
-     else:
+    else:
         self.propertyTable.setVisible(False)	
 
   def moveToTop(self):
@@ -225,7 +226,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.pathedit.insert(path[1:])
     self.pathedit.setCompleter(self.completer)
 
-
   def changeNavigationState(self):
     self.setPrevMenu()
     self.setNextMenu()
@@ -241,7 +241,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     else:
       self.next.setEnabled(False)
       self.nextdrop.setEnabled(False)
-
 
   def bookmark(self):
     bookdiag = bookmarkDialog(self)
@@ -270,15 +269,59 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       e = event()
       self.VFS.notify(e)
 
+  def attrSelectView(self):
+    # init + display of the dialog box
+    attrdiag = attrDialog(self)
+    if self.model.disp_module == 0:
+      attrdiag.dispModule.setCheckState(Qt.Unchecked)
+    if self.model.del_sort == 1:
+      attrdiag.delSort.setCheckState(Qt.Checked)
+    iReturn = attrdiag.exec_()
+
+    # get attributes list
+    header_list = attrdiag.selectedAttrs
+    type_list = attrdiag.selectedTypes
+
+    # add the 'module' column if the box was checked
+    if attrdiag.dispModule.checkState() == Qt.Checked:
+      self.model.disp_module = 1
+      self.model.setHeaderData(HMODULE, Qt.Horizontal, \
+                               QVariant(self.model.moduleTr), \
+                               Qt.DisplayRole)
+    else:
+      self.model.disp_module = 0
+
+    # add the 'deleted' column if the box was checked
+    if attrdiag.delSort.checkState() == Qt.Checked:
+      self.model.del_sort = 1
+      self.model.setHeaderData(HMODULE + self.model.disp_module, Qt.Horizontal, \
+                               QVariant("Deleted"), \
+                               Qt.DisplayRole)
+    else:
+      self.model.del_sort = 0
+
+    # add the attributes list (tmp is used to keep trace of the columns number)
+    tmp = 0
+    for i in range(header_list.count()):
+      item = header_list.item(i)
+      self.model.header_list.append(item.text())
+      self.model.setHeaderData(i + 2 + self.model.disp_module, Qt.Horizontal, \
+                               QVariant(item.text()), Qt.DisplayRole)
+      tmp = tmp + 1
+
+    # add the type list
+    for i in range(type_list.count()):
+      item = type_list.item(i)
+      self.model.type_list.append(item.text())
+      self.model.setHeaderData(tmp + i + 2 + self.model.disp_module, Qt.Horizontal, \
+                               QVariant(item.text()), Qt.DisplayRole)
+
+    # set headers display parameters
+    self.parent.tableView.horizontalHeader().setStretchLastSection(True)
+    self.parent.tableView.horizontalHeader().setResizeMode(QHeaderView.Interactive)
+      
   def createCategory(self, category):
     if category != "":
-      # Create bookmark node in root directory if first creation
-#      if len(self.bookmarkCategories) == 0:
-#        self.bookmarkNode = Node(str('Bookmarks'))
-#        self.bookmarkNode.__disown__()
-#        root = self.vfs.getnode('/')
-#        root.addChild(self.bookmarkNode)
-
       newNodeBook = Node(str(category.toUtf8()))
       newNodeBook.__disown__()
       self.bookmarkNode.addChild(newNodeBook)
@@ -298,7 +341,107 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     else:
       QWidget.changeEvent(self, event)
 
+class attrDialog(QDialog, Ui_SelectAttr):
+  """
+  This class is designed to let users chose which attributes they want to display.
+  """
+  def __init__(self, nodeviewbox):
+    QDialog.__init__(self, nodeviewbox)
+    self.setupUi(self)
+    model = nodeviewbox.model
 
+    self.initAttrs(model)
+    self.connect(self.addAttr, SIGNAL("clicked()"), self.addAttrToList)
+    self.connect(self.removeAttr, SIGNAL("clicked()"), self.removeAttrFromList)
+
+    self.connect(self.attType, SIGNAL("clicked()"), self.addTypeToList)
+    self.connect(self.removeType, SIGNAL("clicked()"), self.removeTypeFromList)
+
+    self.connect(self.buttonBox, SIGNAL("accepted()"), self.buttonClicked)
+
+  def buttonClicked(self):
+    self.hide()
+
+  def initAttrs(self, model):
+    nodes = model.node_list
+
+    if len(nodes) == 0:
+      return
+    node = nodes[0]
+    if node == None:
+      return
+    module = node.fsobj()
+    if module == None:
+      return
+
+    data_types = node.dataType().value()
+    for i in data_types:
+      try:
+        model.type_list.index(i)
+        self.selectedTypes.addItem(i)
+      except:  
+        self.types.addItem(i)
+
+    attrs = node.attributes()[module.name].value()
+    attrs.thisown = False
+    for j in model.header_list:
+      self.selectedAttrs.addItem(j)
+    for i in attrs:
+      if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
+        try:
+          model.header_list.index(i)
+        except:
+          self.allAttrs.addItem(i)
+    model.header_list = []
+    model.type_list = []
+      
+  def addAttrToList(self):
+    attr = self.allAttrs.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.allAttrs.currentRow()
+      self.allAttrs.takeItem(row)
+      self.selectedAttrs.addItem(attr.text())
+
+  def removeAttrFromList(self):
+    attr = self.selectedAttrs.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.selectedAttrs.currentRow()
+      self.selectedAttrs.takeItem(row)
+      self.allAttrs.addItem(attr.text())
+
+  def addTypeToList(self):
+    attr = self.types.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.types.currentRow()
+      self.types.takeItem(row)
+      self.selectedTypes.addItem(attr.text())
+  
+  def removeTypeFromList(self):
+    attr = self.selectedTypes.currentItem()
+    if attr == None:
+      return
+    if attr.text().length() != 0:
+      row = self.selectedTypes.currentRow()
+      self.selectedTypes.takeItem(row)
+      self.types.addItem(attr.text())
+
+  def changeEvent(self, event):
+    """
+    Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+    else:
+      QDialog.changeEvent(self, event)
 
 class bookmarkDialog(QDialog, Ui_AddBookmark):
   def __init__(self, nodeviewbox):
@@ -352,7 +495,6 @@ class bookmarkDialog(QDialog, Ui_AddBookmark):
     else:
       QDialog.changeEvent(self, event)
         
-
 class kompleter(QCompleter):
     def __init__(self, parent, treemodel, model):
       QCompleter.__init__(self, treemodel) 
@@ -379,5 +521,3 @@ class kompleter(QCompleter):
         self.model.setRootPath(node, 1)
         abspath += "/"
         return QString(abspath[1:])
-
-

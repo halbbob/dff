@@ -24,45 +24,19 @@ INCLUDE_DIRECTORIES(../include)
 SET_SOURCE_FILES_PROPERTIES(libdatatype.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(libdatatype python libdatatype.i datatype.cpp) 
 SWIG_LINK_LIBRARIES(libdatatype ${PYTHON_LIBRARIES} _libtypes )
+
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_libdatatype_REAL_NAME} PROPERTIES
   PREFIX "../"
   SUFFIX ".pyd"
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
-if (UNIX AND NOT WIN32)
-  set(datatype_srcs
-    __init__.py
-    magichandler.py
-    libdatatype.py    
-    )
-endif(UNIX AND NOT WIN32)
 
-if(WIN32 AND NOT UNIX)
-  include_directories(${PYTHON_INCLUDE_PATH})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-  add_library (magic SHARED py_magic.c)
-  target_link_libraries (magic magic1 ${PYTHON_LIBRARIES})
-
-  if (CMAKE_GENERATOR MATCHES "Visual Studio")
-	set_target_properties (magic PROPERTIES
-	PREFIX "../"
-	SUFFIX ".pyd"
-	)
-  endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
-
-
-  set(magic_srcs
-    __init__.py
-    magic.mgc
-    magichandler.py
-    magic1.dll
-    magic.pyd
-    zlib1.dll
-    regex2.dll
-    libdatatype.py
-    )
-endif(WIN32 AND NOT UNIX)
+set(datatype_srcs
+  __init__.py
+  magichandler.py
+  libdatatype.py    
+  )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 install_lib(${SWIG_MODULE_libdatatype_REAL_NAME})

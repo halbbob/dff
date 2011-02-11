@@ -14,21 +14,25 @@
 # 
 
 from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize, QThread, QMutex, QSemaphore
-from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache
+from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache, QStandardItemModel, QSortFilterProxyModel
 from PyQt4 import QtCore
 
 import re
-from api.vfs import libvfs, iodevice
+
 from api.types.libtypes import Variant
+from api.vfs.libvfs import VFS
+from api.events.libevents import EventHandler
+
 
 from Queue import *
 
 HNAME = 0
 HSIZE = 1
-HACCESSED = 2
+HMODULE = 2
+
 HCHANGED = 3
 HMODIFIED = 4
-HMODULE = 5
+HACCESSED = 5
 
 pixmapCache = QPixmapCache()
 pixmapCache.setCacheLimit(61440)
@@ -136,13 +140,200 @@ class TypeWorker(QThread):
 typeWorker = TypeWorker()
 typeWorker.start()
 
-class VFSItemModel(QAbstractItemModel):
-  #numberPopulated = QtCore.pyqtSignal(int)
+
+class NodeTreeProxyModel(QSortFilterProxyModel):
+  def __init__(self, parent = None):
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()
+
+  def data(self, index, role):
+    if index.isValid():
+      if role == Qt.CheckStateRole:
+        return QVariant()
+      else:
+        origindex = self.mapToSource(index)
+        if origindex.isValid():
+          return self.sourceModel().data(origindex, role)
+        else:
+          return QVariant()
+    else:
+      return QVariant()
+
+  def filterAcceptsRow(self, row, parent):
+     index = self.sourceModel().index(row, 0, parent) 
+     if index.isValid():
+       node = self.VFS.getNodeFromPointer(index.internalId())
+       if node.hasChildren() or node.isDir(): # or node.parent().absolute() == "/" or node.isDir():
+	 return True
+     return False
+
+  def sort(self, col, order):
+    return
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
+
+
+class TreeModel(QAbstractItemModel, EventHandler):
   def __init__(self, __parent = None, event=False, fm = False):
     QAbstractItemModel.__init__(self, __parent)
+    EventHandler.__init__(self)
     self.__parent = __parent
-    self.VFS = libvfs.VFS.Get()
+    self.VFS = VFS.Get()
     self.map = {}
+    self.imagesthumbnails = None
+    self.connect(self, SIGNAL("dataImage"), self.setDataImage)
+    self.fetchedItems = 0
+    self.thumbQueued = {}
+    self.checkedNodes = set()
+    if event:
+      self.VFS.connection(self)
+
+  def setDataImage(self, index, node, image):
+     pixmap = QPixmap().fromImage(image)
+     pixmapCache.insert(str(node.this), pixmap)
+     self.__parent.currentView().update(index)
+
+  def setRootPath(self, node, kompleter = None):
+    self.rootChildCount = node.childCount()
+    self.fetchedItems = 0
+    typeWorker.clear()
+    self.rootItem = node
+    if kompleter == None:
+      self.emit(SIGNAL("rootPathChanged"), node)
+    self.reset()
+
+  def rowCount(self, parent):
+    if not parent.isValid():
+      parentItem = self.rootItem
+    else:
+      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    return parentItem.childCount()
+
+  def headerData(self, section, orientation, role=Qt.DisplayRole):
+    if role != Qt.DisplayRole:
+      return QVariant()
+    else:
+      return QVariant(self.tr('Name'))
+
+  def data(self, index, role):
+    if not index.isValid():
+      return QVariant()
+    node = self.VFS.getNodeFromPointer(index.internalId())
+#    if not node.hasChildren() and not node.isDir():
+#      return QVariant()
+    column = index.column()
+    if role == Qt.ForegroundRole:
+      if column == 0:
+        if node.isDeleted():
+          return  QVariant(QColor(Qt.red))
+    if role == Qt.DisplayRole :
+      return QVariant(node.name())
+    if role == Qt.DecorationRole:
+      if column == HNAME:
+        if not self.imagesthumbnails:
+          return QVariant(QIcon(node.icon()))
+        if not node.hasChildren():
+          if node.isDir():
+            return QVariant(QIcon(":folder_128.png"))
+          if not node.size():
+            return QVariant(QIcon(":folder_empty_128.png"))
+          return QVariant(QIcon(":folder_empty_128.png"))
+        else:
+          if node.size() != 0:
+	    return QVariant(QIcon(":folder_documents_128.png"))
+          else:
+	    return QVariant(QIcon(":folder_128.png"))
+    if role == Qt.CheckStateRole:
+      if column == HNAME:
+	if (long(node.this), 0) in self.checkedNodes:
+	  if node.hasChildren():
+	    return Qt.PartiallyChecked
+          else:
+   	    return Qt.Checked
+	elif (long(node.this), 1) in self.checkedNodes:
+          return Qt.Checked
+        else:
+          return Qt.Unchecked
+    return QVariant()
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
+
+  def index(self, row, column, parent = QModelIndex()):
+    if not self.hasIndex(row, column, parent):
+      return QModelIndex()
+    if parent.isValid():
+      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    else:
+      parentItem = self.rootItem
+    childItem = parentItem.children()[row]
+    index = self.createIndex(row, column, long(childItem.this))
+    return index
+
+  def parent(self, index):
+    if not index.isValid():
+      return QModelIndex()
+    childItem = self.VFS.getNodeFromPointer(index.internalId())
+    parentItem = childItem.parent()
+    if parentItem.this == self.rootItem.this:
+      return QModelIndex()
+    children = parentItem.parent().children()
+    index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
+    return index
+
+  def hasChildren(self, parent):
+    self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    if self.parentItem == None :
+      return self.rootItem.hasChildren()
+    return self.parentItem.hasChildren()
+
+  def setData(self, index, value, role):
+     if not index.isValid():
+       return False
+     if role == Qt.CheckStateRole:
+       column = index.column()
+       if column == HNAME:
+    	 node = self.VFS.getNodeFromPointer(index.internalId())
+         if node == None:
+           return False
+         if value == Qt.Unchecked:
+	    if (long(node.this), 0) in self.checkedNodes:
+  	      self.checkedNodes.remove((long(node.this), 0))
+            else:
+	      self.checkedNodes.remove((long(node.this), 1))	
+         elif value == Qt.PartiallyChecked:
+	    self.checkedNodes.add((long(node.this), 0)) 
+         elif value == Qt.Checked:
+	    if node.hasChildren():
+              if (long(node.this), 0) not in self.checkedNodes:
+                self.checkedNodes.add((long(node.this), 0))
+              else:
+                self.checkedNodes.remove((long(node.this), 0))
+                self.checkedNodes.add((long(node.this), 1))
+            else:
+              self.checkedNodes.add((long(node.this) , 1)) 
+     return True #return true if ok 	
+
+  def flags(self, flag):
+     return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
+
+  def Event(self, e):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
+
+
+class VFSItemModel(QAbstractItemModel, EventHandler):
+  def __init__(self, __parent = None, event=False, fm = False):
+    QAbstractItemModel.__init__(self, __parent)
+    EventHandler.__init__(self)
+
+    self.rootItem = None
+
+    self.__parent = __parent
+    self.VFS = VFS.Get()
+    self.map = {}
+
     self.imagesthumbnails = None
     self.connect(self, SIGNAL("dataImage"), self.setDataImage)
     self.translation()
@@ -152,9 +343,28 @@ class VFSItemModel(QAbstractItemModel):
     self.fm = fm
     self.fm = False
     self.checkedNodes = set()
-    if self.fm == True:
-	setattr(self, "canFetchMore", self.scanFetchMore)
-        setattr(self, "fetchMore", self.sfetchMore)
+
+    self.node_list = []
+    self.header_list = []
+    self.type_list = []
+    self.disp_module = 0
+    self.del_sort = 0
+
+    self.cacheAttr = (None, None)
+    if event:
+      self.VFS.connection(self)
+
+  def Event(self, e):
+    parent = self.rootItem
+    if parent != None:
+      self.node_list = parent.children()
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
+
+  def setHeaderData(self, section, orientation, value, role):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    QAbstractItemModel.setHeaderData(self, section, orientation, value, role)
+    self.emit(SIGNAL("layoutChanged()"))
 
   def setDataImage(self, index, node, image):
      pixmap = QPixmap().fromImage(image)
@@ -164,33 +374,15 @@ class VFSItemModel(QAbstractItemModel):
   def imagesThumbnails(self):
      return self.imagesthumbnails
 
-  #def setRootPath(self, node, item):
-    #self.emit(SIGNAL("rootPathChanged()"), item)
-    #self.rootItem = node
-    #self.rootChildCount = node.childCount()
-    ##typeWorker.clearQueue()
-    #self.fetchedItems = 0
-    #self.reset()
-
   def setRootPath(self, node, kompleter = None):
-    self.rootItem = node
-    self.rootChildCount = node.childCount()
     self.fetchedItems = 0
-    typeWorker.clear() 
+    typeWorker.clear()
+    self.rootItem = node
+    if node != None:
+      self.sort(HNAME, Qt.AscendingOrder)
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
-
     self.reset()
- 
-  def scanFetchMore(self, parent):
-    if not parent.isValid():
-	parentItem = self.rootItem
-    else:
-         parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    if self.fetchedItems < parentItem.childCount():
-        return True
-    #print "can't fetchmore"
-    return False
 
   def qMin(self, x, y):
     if x < y:
@@ -198,97 +390,83 @@ class VFSItemModel(QAbstractItemModel):
     else:
       return y
 
-  def sfetchMore(self, parent):
-     if not parent.isValid():
-	parentItem = self.rootItem
-     else:
-        parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-     remainder = parentItem.childCount() - self.fetchedItems
-     itemsToFetch = self.qMin(50, remainder)
-     self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + itemsToFetch - 1)
-     self.fetchedItems += itemsToFetch
-     self.endInsertRows()
-     self.numberPopulated.emit(itemsToFetch)
-
   def rowCount(self, parent):
-    if self.fm == True:
-	return self.fetchedItems
-    if not parent.isValid():
-	parentItem = self.rootItem
-    else:
-        parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    return parentItem.childCount()
+    return len(self.node_list)
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
       return QVariant()
+    nb_s = section - 2 - self.disp_module - self.del_sort
     if orientation == Qt.Horizontal:
       if section == HNAME:
         return QVariant(self.nameTr)
-      if section == HSIZE:
+      elif section == HSIZE:
         return QVariant(self.sizeTr)
-      if section == HACCESSED:
-        return QVariant(self.ATimeTr)
-      if section == HCHANGED:
-        return QVariant(self.CTimeTr)
-      if section == HMODIFIED:
-        return QVariant(self.MTimeTr)
-      if section == HMODULE:
+      elif (self.disp_module != 0) and (section == HMODULE):
         return QVariant(self.moduleTr)
+      elif (self.del_sort != 0):
+        if (self.disp_module != 0):
+          if (section == (HMODULE + 1)):
+            return QVariant(self.deletedTr)
+        elif section == HMODULE:
+          return QVariant(self.deletedTr)
+      if nb_s >= (len(self.header_list) + len(self.type_list)):
+        return QVariant()
+      elif nb_s >= len(self.header_list):
+        return QVariant(self.type_list[nb_s - len(self.header_list)])
+      else:
+        return QVariant(self.header_list[nb_s])
 
   def data(self, index, role):
     if not index.isValid():
       return QVariant()
-#XXX
-    if self.fm == True:
-      if index.row() > self.rootItem.childCount() or index.row() < 0:
-	 return QVariant()
-    node = self.VFS.getNodeFromPointer(index.internalId())
+    if index.row() > len(self.node_list) or index.row() < 0:
+      return QVariant()
+    node = self.node_list[index.row()]
     column = index.column()
     if role == Qt.DisplayRole :
+      # return name, size and eventually module columns
       if column == HNAME:
         return QVariant(node.name())
       if column == HSIZE:
         return QVariant(node.size())
+      if (self.disp_module != 0) and (column == HMODULE):
+        return QVariant(node.fsobj().name)
+      elif (self.del_sort != 0):
+        if (self.disp_module != 0):
+          if (column == (HMODULE + 1)):
+            return QVariant(node.isDeleted())
+        elif column == HMODULE:
+          return QVariant(node.isDeleted())
+
+      # return attributes and type columns
       try :
-	return QVariant()
-        #if column == HACCESSED:
-          #time = node.times()
-          #accessed = time['accessed']
-          #if accessed != None:
-            #return QVariant(QDateTime(accessed.get_time()))
-          #else:
-            #return QVariant()
-        #if column == HCHANGED:
-          #time = node.times()
-          #changed = time['changed']
-          #if changed != None:
-            #return QVariant(QDateTime(changed.get_time()))
-          #else:
-            #return QVariant()
-        #if column == HMODIFIED:
-          #time = node.times()
-          #modified = time['modified']
-          #if modified != None:
-            #return QVariant(QDateTime(modified.get_time()))
-          #else:
-            #return QVariant()
+        nb_c = column - 2 - self.disp_module - self.del_sort
+        if nb_c >= (len(self.header_list) + len(self.type_list)):
+          return QVariant() # index error
+        elif nb_c >= len(self.header_list): # the data is a dataType
+          type = self.type_list[nb_c - len(self.header_list)]
+          possible_type = node.dataType().value()
+          return QVariant(possible_type[str(type)].value())
+        else:
+          if self.cacheAttr[0] != long(node.this): 
+            self.cacheAttr = (long(node.this), node.fsoAttributes())
+          attr = self.cacheAttr[1]
+          value = attr[str(self.header_list[nb_c])]
+          val = value.value()
+          if val == None:
+            return QVariant(" N / A ")
+          if value.type() == 13:
+            return QVariant(QDateTime(val.get_time()))
+          else:
+	    return QVariant(val) 
       except IndexError:
         return QVariant()
-      if column == HMODULE:
-        fsobj = node.fsobj()
-        if (fsobj != None):
-          return QVariant(fsobj.name)
-        else:
-          return QVariant()
+      return QVariant()
     if role == Qt.ForegroundRole:
       if column == 0:
         if node.isDeleted():
           return  QVariant(QColor(Qt.red))
-    #if role == Qt.BackgroundRole: #XXX color pour bookmark
-      ##if column == 0:
-        ##if node.isDeleted():
-          #return  QVariant(QColor(Qt.blue))
     if role == Qt.DecorationRole:
       if column == HNAME:
 	if not self.imagesthumbnails:
@@ -296,12 +474,11 @@ class VFSItemModel(QAbstractItemModel):
         else:
             mtype = str(node.dataType())
             if mtype.find("broken") != -1:
-
               return QVariant(QIcon(":file_broken.png"))
             pixmap = pixmapCache.find(str(node.this))
             if pixmap:
                 return QVariant(QIcon(pixmap))
-            elif typeWorker.isImage(mtype): #c koi le pluys spped isImage ou pixmap cache find ?
+            elif typeWorker.isImage(mtype):
               typeWorker.enqueue(self, index, node)
               return QVariant(QIcon(":file_temporary.png"))
             return QVariant(QIcon(node.icon()))
@@ -320,32 +497,35 @@ class VFSItemModel(QAbstractItemModel):
 
   def setImagesThumbnails(self, flag):
     self.imagesthumbnails = flag
- 
+
   def columnCount(self, parent = QModelIndex()):
-     return 6
+    # 2 is for columns names and sizes
+    return len(self.header_list) + 2 + len(self.type_list) \
+        + self.disp_module + self.del_sort
 
   def index(self, row, column, parent = QModelIndex()):
-     if not self.hasIndex(row, column, parent):
-       return QModelIndex()
-     if parent.isValid():
-       parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-     else:
-       parentItem = self.rootItem
-     childItem = parentItem.children()[row]
-     index = self.createIndex(row, column, long(childItem.this))
-     return index
+    if not self.hasIndex(row, column, parent):
+      return QModelIndex()
+    if parent.isValid():
+      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    else:
+      parentItem = self.rootItem
+    if row < len(self.node_list):
+      childItem = self.node_list[row]
+    else:
+      return QModelIndex()
+    index = self.createIndex(row, column, long(childItem.this))
+    return index
 
   def parent(self, index):
-     if not index.isValid():
-       return QModelIndex()
-     childItem = self.VFS.getNodeFromPointer(index.internalId())
-     parentItem = childItem.parent()
-     if parentItem.this == self.rootItem.this:
-       return QModelIndex()
-     n = 0
-     children = parentItem.parent().children()
-     index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
-     return index
+    if not index.isValid():
+      return QModelIndex()
+    childItem = self.VFS.getNodeFromPointer(index.internalId())
+    parentItem = childItem.parent()
+    if parentItem.this == self.rootItem.this:
+      return QModelIndex()
+    index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
+    return index
 
   def hasChildren(self, parent):
     if not parent.isValid():
@@ -360,7 +540,7 @@ class VFSItemModel(QAbstractItemModel):
        return QVariant()
      if role == Qt.CheckStateRole:
        column = index.column()
-       if column == HNAME: 	#gere le trisate ici	
+       if column == HNAME:
     	 node = self.VFS.getNodeFromPointer(index.internalId())
          if value == Qt.Unchecked:
 	    if (long(node.this), 0) in self.checkedNodes:
@@ -378,11 +558,59 @@ class VFSItemModel(QAbstractItemModel):
                 self.checkedNodes.add((long(node.this), 1))
             else:
               self.checkedNodes.add((long(node.this) , 1))
- 
      return True #return true if ok 	
 
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
+
+  def sort(self, column, order):
+    """
+    Overload of the sort method.
+    """
+    parentItem = self.rootItem
+    if parentItem == None:
+      return
+    children_list = parentItem.children()
+    if order == Qt.DescendingOrder:
+      Reverse = True
+    else:
+      Reverse = False
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    if column == HNAME:
+      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+      self.emit(SIGNAL("layoutChanged()"))
+      return
+    elif column == HSIZE:
+      self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
+      self.emit(SIGNAL("layoutChanged()"))
+      return
+    elif (self.disp_module == 1) and (column == HMODULE):
+      self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
+      self.emit(SIGNAL("layoutChanged()"))
+      return
+    elif (self.del_sort != 0):
+      if (self.disp_module != 0):
+        if (column == (HMODULE + 1)):
+          self.node_list = sorted(children_list, key=lambda Node: Node.isDeleted(), reverse=Reverse)
+          self.emit(SIGNAL("layoutChanged()"))
+          return
+      elif column == HMODULE:
+        self.node_list = sorted(children_list, key=lambda Node: Node.isDeleted(), reverse=Reverse)
+        self.emit(SIGNAL("layoutChanged()"))
+        return
+      
+    if (column - 2) >= (len(self.header_list) + len(self.type_list)):
+      self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+    elif column - 2 >= len(self.header_list): # sorting on the mime type
+      type = self.type_list[column - 2 - len(self.header_list)]
+      self.node_list = sorted(children_list, \
+                                key=lambda Node: Node.dataType().value()[str(type)].value(), \
+                                reverse=Reverse)
+    else:
+      self.node_list = sorted(children_list, \
+                              key=lambda Node: Node.dynamicAttributes(str(self.header_list[column - 2])), \
+                              reverse=Reverse)
+    self.emit(SIGNAL("layoutChanged()"))
 
   def translation(self):
     self.nameTr = self.tr('Name')
@@ -391,29 +619,5 @@ class VFSItemModel(QAbstractItemModel):
     self.CTimeTr = self.tr('Changed time')
     self.MTimeTr = self.tr('Modified time')
     self.moduleTr = self.tr('Module')
-
-
-class VfsSearchItemModel(QAbstractItemModel):
-  #numberPopulated = QtCore.pyqtSignal(int)
-  def __init__(self, node_list, __parent = None, event=False, fm = False):
-    self.__node_list = node_list
-
-  def data(self, index, role):
-    if not index.isValid():
-      return QVariant()
-    if index.row() >= self.__node_list.size():
-      return QVariant()
-    return QVariant()
-
-  def columnCount(self, parent = QModelIndex()):
-     return 6
-
-  def rowCount(self, parent = QModelIndex()):
-     return self.__node_list.count()
-
-  def index(self, row, column, parent = QModelIndex()):
-     return index
-
-  def parent(self, index):
-     return index
+    self.deletedTr = self.tr('Deleted')
 

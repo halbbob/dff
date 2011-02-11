@@ -62,6 +62,33 @@
     }
 }
 
+%exception notify
+{
+  try
+    {
+      SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+      $action
+      SWIG_PYTHON_THREAD_END_ALLOW;
+    }
+  catch (vfsError &e)
+    {
+      SWIG_exception(SWIG_IOError, e.error.c_str());
+    }
+  catch (envError &e)
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      PyErr_SetString(PyExc_KeyError, e.error.c_str());
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      return NULL;
+    }
+  catch (Swig::DirectorException e)
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      SWIG_fail;
+      SWIG_PYTHON_THREAD_END_BLOCK;
+    }
+}
+
 %exception
 {
   try

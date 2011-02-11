@@ -30,40 +30,10 @@ from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
 from api.gui.widget.propertytable import PropertyTable
-from api.gui.model.vfsitemmodel import  VFSItemModel
+from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel, NodeTreeProxyModel
 
 from ui.gui.utils.menu import MenuTags
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
-
-class NodeTreeProxyModel(QSortFilterProxyModel):
-  def __init__(self, parent = None):
-    QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()
-
-  def data(self, index, role):
-    if index.isValid():
-      if role == Qt.CheckStateRole:
-        return QVariant()
-      else:
-        origindex = self.mapToSource(index)
-        if origindex.isValid():
-          return self.sourceModel().data(origindex, role)
-        else:
-          return QVariant()
-    else:
-      return QVariant()
-
-  def filterAcceptsRow(self, row, parent):
-     index = self.sourceModel().index(row, 0, parent) 
-     if index.isValid():
-       node = self.VFS.getNodeFromPointer(index.internalId())
-       if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
-	 return True
-     return False
-
-  def columnCount(self, parent = QModelIndex()):
-     return 1
-   
 
 class SimpleNodeBrowser(QWidget):
   def __init__(self, parent, view = NodeThumbsView):
@@ -110,15 +80,9 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.type = "filebrowser"
     self.setObjectName(self.name)
 
-
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
-    #register to event from vfs
     self.VFS.connection(self)
-    #XXX merge variantBaseAPI
-    #self.env = env.env()	
-    #XXX merge variantBaseAPI
-
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
@@ -129,23 +93,20 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.createSubMenu()
     self.createLayout()
     self.addModel("/")
-    #self.addProxyModel()
+
     self.addNodeLinkTreeView()
     self.addNodeView()
 
     self.addOptionsView()
 
+  def Event(self, e):
+    self.model.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX pas le bon signal en can fetch more (et la liste doit grossir car on rajoute des nodes ....(
+    self.model.emit(SIGNAL("layoutChanged()"))
+    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX ok a deplacer ds le model
+    self.treeModel.emit(SIGNAL("layoutChanged()"))
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
-
-
-  def Event(self, e):
-    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.model.emit(SIGNAL("layoutChanged()"))
-    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.treeModel.emit(SIGNAL("layoutChanged()"))
-
 
   def createLayout(self):
     self.baseLayout = QVBoxLayout(self)
@@ -163,11 +124,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def addModel(self, path):
     self.model = VFSItemModel(self, True, True)
+    #self.VFS.connection(self.model)
     self.model.setRootPath(self.vfs.getnode(path))
-
-  def addProxyModel(self):
-    self.proxyModel = QSortFilterProxyModel(self)
-    self.proxyModel.setSourceModel(self.model)
 
   ###### View searhing #####
   def addSearchView(self):
@@ -175,34 +133,33 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
   def addNodeLinkTreeView(self):
-    self.treeModel = VFSItemModel(self, True)
+    self.treeModel = TreeModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
+
     self.treeProxyModel = NodeTreeProxyModel()
     self.treeProxyModel.setSourceModel(self.treeModel)
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
 
-#    self.treeView.setMaximumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.treeView)
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
 
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-#    self.connect(self.treeView, SIGNAL("resizeEvent"), self.treeResized)
+#    self.connect(self.treeView, SIGNAL(""), self.nodeTreeDoubleClicked)
 
   def addNodeView(self):
-#    self.nodeView = QStackedLayout(self.browserLayout)
     self.addTableView()
     self.addThumbsView()
 
   def addTableView(self): 
     self.tableView = NodeTableView(self)
-#   self.tableView.setModel(self.proxyModel)
+
+    self.tableView.horizontalHeader().setStretchLastSection(True)
     self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
-#    self.tableView.setMinimumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.tableView)
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.tableView), 1)
@@ -210,19 +167,17 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.connect(self.tableView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
-    #self.model.setImagesThumbnails(True)
+    self.connect(self.tableView, SIGNAL(""), self.selectAttr)
 
+  def selectAttr(self):
+    print "select view"
+    
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
-    #self.thumbsView.setModel(self.proxyModel)
     self.thumbsView.setModel(self.model) 
     self.thumbsView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
-#    self.thumbsView.setMinimumWidth(self.mainwindow.width() / 3)
     self.browserLayout.addWidget(self.thumbsView)
-
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.thumbsView), 1)
-
-#    self.nodeView.addWidget(self.thumbsView)
     self.connect(self.thumbsView, SIGNAL("nodePressed"), self.nodePressed)
     self.connect(self.thumbsView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.thumbsView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
@@ -235,11 +190,9 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def currentModel(self):
      if self.thumbsView.isVisible():
-       #return self.thumbsView.model().sourceModel()
-       return self.thumbsView.model()
+       return self.thumbsView.model() #.sourceModel()
      elif self.tableView.isVisible():
-       return self.tableView.model()
-       #return self.tableView.model().sourceModel()
+       return self.tableView.model() #.sourceModel()
  
   def currentView(self):
      if self.thumbsView.isVisible():
@@ -252,7 +205,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      nodeList = []
      for index in indexList:
        if index.isValid():
-	 #index = self.currentProxyModel().mapToSource(index)
          nodeList.append(self.VFS.getNodeFromPointer(index.internalId()))
      return nodeList
 

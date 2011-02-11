@@ -19,6 +19,9 @@
 #ifndef EXTFS_NODE_H_
 #define EXTFS_NODE_H_
 
+#include <string.h>
+#include <sstream>
+#include <memory>
 #include "data_structure/includes/extfs_struct/ext4/extents.h"
 #include "node.hpp"
 
@@ -42,12 +45,23 @@ class	ExtfsNode : public Node
   uint64_t	i_nb() const;
 
   virtual Attributes	 _attributes();
- private :
   Inode *	read_inode();
+ private :
   uint64_t	__inode_addr;
   uint64_t	__i_nb;
   Extfs *	__extfs;
   bool		__is_root;
 };
+
+class BlockPointerAttributes : public AttributesHandler
+{
+private:
+  void		__block_pointers(Inode * inode, Attributes * attr);
+  void		__extents_block(Inode * inode, Attributes * attr);
+public:
+  BlockPointerAttributes(std::string name);
+  Attributes	attributes(class Node*);
+};
+
 
 #endif /* EXTFS_NODE_H_ */

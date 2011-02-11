@@ -211,22 +211,69 @@ Attributes*			Node::attributesByType(uint8_t type)
 }
 
 
-Attributes*			Node::attributes() //rajouter un wait times ->bloquant ou pas 
+Attributes*			Node::attributes()
 {
   Attributes* attr = new std::map<std::string, Variant*>;
-//UNICODE
-   (*attr)[std::string("type")] = this->dataType(); //TYPE A REGISTER DS LE NODE OU AVOIR UN REGISTER GLOBAL ?
 
-  std::set<AttributesHandler*>::iterator handler;
+
+  (*attr)[std::string("type")] = this->dataType();
+
+
   Attributes	nodeAttributes = this->_attributes();
   if (!(nodeAttributes.empty()))
     (*attr)[this->fsobj()->name] = new Variant(nodeAttributes);
+
+
+  std::set<AttributesHandler*>::iterator handler;
   for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
   {
     (*attr)[(*handler)->name()] = new Variant((*handler)->attributes(this));	
   } 	
 
   return attr;
+}
+
+Attributes		Node::fsoAttributes()
+{
+  return this->_attributes();
+}
+
+Attributes*		Node::dynamicAttributes()
+{
+  Attributes* attr = new std::map<std::string, Variant*>;
+
+
+  std::set<AttributesHandler*>::iterator handler;
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+  {
+    (*attr)[(*handler)->name()] = new Variant((*handler)->attributes(this));	
+  } 	
+
+  return attr;
+}
+
+Variant*	Node::dynamicAttributes(std::string name)
+{
+  std::set<AttributesHandler* >::iterator handler;
+
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+  {
+    if ((*handler)->name() == name)
+     return new Variant((*handler)->attributes(this));	
+  } 	
+
+  return (new Variant());
+}
+
+std::list<std::string>*		Node::dynamicAttributesNames(void)
+{
+  std::set<AttributesHandler* >::iterator handler;
+  std::list<std::string>*	names = new std::list<std::string>;
+
+  for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
+     names->push_back((*handler)->name());
+
+  return (names);
 }
 
 AttributesHandler::AttributesHandler(std::string handlerName)
@@ -263,6 +310,11 @@ std::string	Node::path()
     return "";
   path = "";
   tmp = this->__parent;
+  if (!tmp)
+    {
+      path = "";
+      return path;
+    }
   while ((tmp->__parent != tmp) && (tmp->__parent != NULL))
     {
       path = tmp->name() + "/" + path;
