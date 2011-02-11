@@ -127,7 +127,7 @@ class NodeLinkTreeView(QTreeView):
      self.VFS = VFS.Get()
      self.setSelectionMode(QAbstractItemView.SingleSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectItems)
-     self.setUniformRowHeights(True)
+     self.setUniformRowHeights(False)
 
   def mousePressEvent(self, e):
      index = self.indexAt(e.pos())

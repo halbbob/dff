@@ -34,62 +34,6 @@ from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
 from ui.gui.utils.menu import MenuTags
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
 
-class SortProxy(QSortFilterProxyModel):
-  """
-  Class used to sort the nodes by attributes (size, MAC times, names, etc).
-
-  [TESTING]
-  """
-
-  def __init__(self, parent = None):
-    """
-    Initialization : call the parent constructor and get the VFS.
-    """
-    QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()
-
-  def sort(self, column, order):
-    """
-    Overload of the method QSortFilterProxyModel.sort()
-    """
-    
-    #Q_Q(QSortFilterProxyModel);
-    self.layoutAboutToBeChanged.emit()
-
-    self.layoutChanged.emit()
-
-class NodeTreeProxyModelBackup(QSortFilterProxyModel):
-  """
-  For testting, this will probably be modified [TESTING]
-  """
-  def __init__(self, parent = None):
-    QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()
-
-  def data(self, index, role):
-    if index.isValid():
-      if role == Qt.CheckStateRole:
-        return QVariant()
-      else:
-        origindex = self.mapToSource(index)
-        if origindex.isValid():
-          return self.sourceModel().data(origindex, role)
-        else:
-          return QVariant()
-    else:
-      return QVariant()
-
-  def filterAcceptsRow(self, row, parent):
-     index = self.sourceModel().index(row, 0, parent) 
-     if index.isValid():
-       node = self.VFS.getNodeFromPointer(index.internalId())
-       if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
-	 return True
-     return False
-
-  def columnCount(self, parent = QModelIndex()):
-     return 1
-
 class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
     QSortFilterProxyModel.__init__(self, parent)
@@ -112,17 +56,16 @@ class NodeTreeProxyModel(QSortFilterProxyModel):
      index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
-       if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
+       if node.hasChildren() or node.isDir(): # or node.parent().absolute() == "/" or node.isDir():
 	 return True
      return False
 
-#  def sort(self, column, order):
-#    pass
+  def sort(self, col, order):
+    return
 
   def columnCount(self, parent = QModelIndex()):
      return 1
    
-
 class SimpleNodeBrowser(QWidget):
   def __init__(self, parent, view = NodeThumbsView):
     QWidget.__init__(self, parent)
@@ -190,7 +133,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
     self.addOptionsView()
 
-
   def Event(self, e):
     self.model.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX pas le bon signal en can fetch more (et la liste doit grossir car on rajoute des nodes ....(
     self.model.emit(SIGNAL("layoutChanged()"))
@@ -216,6 +158,7 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
 
   def addModel(self, path):
     self.model = VFSItemModel(self, True, True)
+    #self.VFS.connection(self.model)
     self.model.setRootPath(self.vfs.getnode(path))
 
   ###### View searhing #####
@@ -224,10 +167,8 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
   def addNodeLinkTreeView(self):
-    #self.treeModel = VFSItemModel(self, True)
     self.treeModel = TreeModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
-
 
     self.treeProxyModel = NodeTreeProxyModel()
     self.treeProxyModel.setSourceModel(self.treeModel)
@@ -265,7 +206,6 @@ class NodeBrowser(QWidget, DEventHandler, Ui_NodeBrowser):
   def selectAttr(self):
     print "select view"
     
-
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
     self.thumbsView.setModel(self.model) 

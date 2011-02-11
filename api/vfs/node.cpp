@@ -310,6 +310,11 @@ std::string	Node::path()
     return "";
   path = "";
   tmp = this->__parent;
+  if (!tmp)
+    {
+      path = "";
+      return path;
+    }
   while ((tmp->__parent != tmp) && (tmp->__parent != NULL))
     {
       path = tmp->name() + "/" + path;

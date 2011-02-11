@@ -25,10 +25,11 @@ from Queue import *
 
 HNAME = 0
 HSIZE = 1
-HACCESSED = 5
+HMODULE = 2
+
 HCHANGED = 3
 HMODIFIED = 4
-HMODULE = 2
+HACCESSED = 5
 
 pixmapCache = QPixmapCache()
 pixmapCache.setCacheLimit(61440)
@@ -181,6 +182,8 @@ class TreeModel(QAbstractItemModel, DEventHandler):
     if not index.isValid():
       return QVariant()
     node = self.VFS.getNodeFromPointer(index.internalId())
+#    if not node.hasChildren() and not node.isDir():
+#      return QVariant()
     column = index.column()
     if role == Qt.ForegroundRole:
       if column == 0:
@@ -190,6 +193,8 @@ class TreeModel(QAbstractItemModel, DEventHandler):
       return QVariant(node.name())
     if role == Qt.DecorationRole:
       if column == HNAME:
+        if not self.imagesthumbnails:
+          return QVariant(QIcon(node.icon()))
         if not node.hasChildren():
           if node.isDir():
             return QVariant(QIcon(":folder_128.png"))
@@ -201,6 +206,17 @@ class TreeModel(QAbstractItemModel, DEventHandler):
 	    return QVariant(QIcon(":folder_documents_128.png"))
           else:
 	    return QVariant(QIcon(":folder_128.png"))
+    if role == Qt.CheckStateRole:
+      if column == HNAME:
+	if (long(node.this), 0) in self.checkedNodes:
+	  if node.hasChildren():
+	    return Qt.PartiallyChecked
+          else:
+   	    return Qt.Checked
+	elif (long(node.this), 1) in self.checkedNodes:
+          return Qt.Checked
+        else:
+          return Qt.Unchecked
     return QVariant()
 
   def columnCount(self, parent = QModelIndex()):
@@ -274,6 +290,8 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     QAbstractItemModel.__init__(self, __parent)
     DEventHandler.__init__(self)
 
+    self.rootItem = None
+
     self.__parent = __parent
     self.VFS = VFS.Get()
     self.map = {}
@@ -292,6 +310,7 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.header_list = []
     self.type_list = []
     self.disp_module = 0
+    self.del_sort = 0
 
     self.cacheAttr = (None, None)
     self.VFS.connection(self)
@@ -320,7 +339,8 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.fetchedItems = 0
     typeWorker.clear()
     self.rootItem = node
-    self.sort(HNAME, Qt.AscendingOrder)
+    if node != None:
+      self.sort(HNAME, Qt.AscendingOrder)
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
     self.reset()
@@ -333,20 +353,25 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
 
   def rowCount(self, parent):
     return len(self.node_list)
-   # return self.fetchedItems
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
       return QVariant()
-    nb_s = section - 2 - self.disp_module
+    nb_s = section - 2 - self.disp_module - self.del_sort
     if orientation == Qt.Horizontal:
       if section == HNAME:
         return QVariant(self.nameTr)
       elif section == HSIZE:
         return QVariant(self.sizeTr)
-      elif (self.disp_module) != 0 and (section == HMODULE):
+      elif (self.disp_module != 0) and (section == HMODULE):
         return QVariant(self.moduleTr)
-      elif nb_s >= (len(self.header_list) + len(self.type_list)):
+      elif (self.del_sort != 0):
+        if (self.disp_module != 0):
+          if (section == (HMODULE + 1)):
+            return QVariant(self.deletedTr)
+        elif section == HMODULE:
+          return QVariant(self.deletedTr)
+      if nb_s >= (len(self.header_list) + len(self.type_list)):
         return QVariant()
       elif nb_s >= len(self.header_list):
         return QVariant(self.type_list[nb_s - len(self.header_list)])
@@ -368,9 +393,16 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
         return QVariant(node.size())
       if (self.disp_module != 0) and (column == HMODULE):
         return QVariant(node.fsobj().name)
+      elif (self.del_sort != 0):
+        if (self.disp_module != 0):
+          if (column == (HMODULE + 1)):
+            return QVariant(node.isDeleted())
+        elif column == HMODULE:
+          return QVariant(node.isDeleted())
+
       # return attributes and type columns
       try :
-        nb_c = column - 2 - self.disp_module
+        nb_c = column - 2 - self.disp_module - self.del_sort
         if nb_c >= (len(self.header_list) + len(self.type_list)):
           return QVariant() # index error
         elif nb_c >= len(self.header_list): # the data is a dataType
@@ -429,7 +461,8 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
 
   def columnCount(self, parent = QModelIndex()):
     # 2 is for columns names and sizes
-    return len(self.header_list) + 2 + len(self.type_list) + self.disp_module
+    return len(self.header_list) + 2 + len(self.type_list) \
+        + self.disp_module + self.del_sort
 
   def index(self, row, column, parent = QModelIndex()):
     if not self.hasIndex(row, column, parent):
@@ -506,11 +539,28 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.emit(SIGNAL("layoutAboutToBeChanged()"))
     if column == HNAME:
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
+      self.emit(SIGNAL("layoutChanged()"))
+      return
     elif column == HSIZE:
       self.node_list = sorted(children_list, key=lambda Node: Node.size(), reverse=Reverse)
+      self.emit(SIGNAL("layoutChanged()"))
+      return
     elif (self.disp_module == 1) and (column == HMODULE):
       self.node_list = sorted(children_list, key=lambda Node: Node.fsobj(), reverse=Reverse)
-    elif (column - 2) >= (len(self.header_list) + len(self.type_list)):
+      self.emit(SIGNAL("layoutChanged()"))
+      return
+    elif (self.del_sort != 0):
+      if (self.disp_module != 0):
+        if (column == (HMODULE + 1)):
+          self.node_list = sorted(children_list, key=lambda Node: Node.isDeleted(), reverse=Reverse)
+          self.emit(SIGNAL("layoutChanged()"))
+          return
+      elif column == HMODULE:
+        self.node_list = sorted(children_list, key=lambda Node: Node.isDeleted(), reverse=Reverse)
+        self.emit(SIGNAL("layoutChanged()"))
+        return
+      
+    if (column - 2) >= (len(self.header_list) + len(self.type_list)):
       self.node_list = sorted(children_list, key=lambda Node: Node.name(), reverse=Reverse)
     elif column - 2 >= len(self.header_list): # sorting on the mime type
       type = self.type_list[column - 2 - len(self.header_list)]
@@ -530,4 +580,5 @@ class VFSItemModel(QAbstractItemModel, DEventHandler):
     self.CTimeTr = self.tr('Changed time')
     self.MTimeTr = self.tr('Modified time')
     self.moduleTr = self.tr('Module')
+    self.deletedTr = self.tr('Deleted')
 

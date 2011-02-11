@@ -15,8 +15,8 @@
 
 from types import *
 
-from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
-from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString, QEvent
+from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator, QSortFilterProxyModel
+from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString, QEvent, QVariant
 
 # CORE
 from api.loader import *
@@ -25,6 +25,7 @@ from api.vfs import *
 from api.taskmanager.taskmanager import *
 from api.type import *
 
+#from api.gui.widget.nodebrowser import *
 from api.gui.model.vfsitemmodel import  VFSItemModel
 from api.gui.widget.nodeview import NodeTreeView
 
@@ -327,16 +328,43 @@ class SimpleNodeBrowser(QWidget):
 class NodeTreeProxyModel(QSortFilterProxyModel):
   def __init__(self, parent = None):
     QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()  
+    self.VFS = VFS.Get()
+
+  def data(self, index, role):
+    if index.isValid():
+      if role == Qt.CheckStateRole:
+        return QVariant()
+      else:
+        origindex = self.mapToSource(index)
+        if origindex.isValid():
+          return self.sourceModel().data(origindex, role)
+        else:
+          return QVariant()
+    else:
+      return QVariant()
 
   def filterAcceptsRow(self, row, parent):
      index = self.sourceModel().index(row, 0, parent) 
      if index.isValid():
+       node = self.VFS.getNodeFromPointer(index.internalId())
+       if node.hasChildren() or node.parent().absolute() == "/" or node.isDir():
 	 return True
      return False
 
-  def columnCount(self, parent = QModelIndex()):
-     return 1
+
+#class NodeTreeProxyModel(QSortFilterProxyModel):
+#  def __init__(self, parent = None):
+#    QSortFilterProxyModel.__init__(self, parent)
+#    self.VFS = VFS.Get()  #
+
+#  def filterAcceptsRow(self, row, parent):
+#     index = self.sourceModel().index(row, 0, parent) 
+#     if index.isValid():
+#	 return True
+#     return False
+
+#  def columnCount(self, parent = QModelIndex()):
+#     return 1
 
 
 class pathEdit(QLineEdit):

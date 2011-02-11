@@ -274,6 +274,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     attrdiag = attrDialog(self)
     if self.model.disp_module == 0:
       attrdiag.dispModule.setCheckState(Qt.Unchecked)
+    if self.model.del_sort == 1:
+      attrdiag.delSort.setCheckState(Qt.Checked)
     iReturn = attrdiag.exec_()
 
     # get attributes list
@@ -284,10 +286,19 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     if attrdiag.dispModule.checkState() == Qt.Checked:
       self.model.disp_module = 1
       self.model.setHeaderData(HMODULE, Qt.Horizontal, \
-                                 QVariant(self.model.moduleTr), \
-                                 Qt.DisplayRole)
+                               QVariant(self.model.moduleTr), \
+                               Qt.DisplayRole)
     else:
       self.model.disp_module = 0
+
+    # add the 'deleted' column if the box was checked
+    if attrdiag.delSort.checkState() == Qt.Checked:
+      self.model.del_sort = 1
+      self.model.setHeaderData(HMODULE + self.model.disp_module, Qt.Horizontal, \
+                               QVariant("Deleted"), \
+                               Qt.DisplayRole)
+    else:
+      self.model.del_sort = 0
 
     # add the attributes list (tmp is used to keep trace of the columns number)
     tmp = 0
