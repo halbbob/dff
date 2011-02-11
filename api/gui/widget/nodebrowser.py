@@ -20,7 +20,7 @@ from PyQt4.QtGui import *
 from api.vfs import *
 from api.vfs.libvfs import VFS
 from api.events.libevents import EventHandler
-from api.loader import *
+from api.loader import loader
 from api.taskmanager.taskmanager import *
 from api.types import libtypes
 
@@ -361,10 +361,12 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def launchHexedit(self):
      nodes = self.currentNodes()
      for node in nodes:
-        arg = libtypes.Arguments("gui_input")
-        arg.thisown = 0
-        arg.add_node("file", node)
-        self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
+       conf = self.loader.get_conf("hexadecimal")
+       try:
+         arg = conf.generate({"file": node})
+         self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
+       except RuntimeError:
+         pass
 
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())

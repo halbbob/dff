@@ -27,12 +27,12 @@ class MergeNode(Node):
       self.__disown__()
 
    def fileMapping(self, fm):
-      prev = self.files[0].value()
       offset = 0
       for f in self.files:
-         fm.push(offset, prev.size(), prev, 0)
-         offset = prev.size()
-         prev = f.value()
+         node = f.value()
+         print offset, node.size(), node.absolute()
+         fm.push(offset, node.size(), node, 0)
+         offset += node.size()
       
    def _attributes(self):
       attr = VMap()
@@ -78,6 +78,7 @@ class MERGE(mfso):
        size = 0
        for f in self.files:
           size += f.value().size()
+       print size
        self.merge_node = MergeNode(name, size, None, self, self.files)
        self.merge_node.__disown__()
        self.registerTree(parent, self.merge_node)
@@ -94,7 +95,7 @@ class merge(Module):
                                           "minimum": 2,
                                           "maximum": 10}
                            })
-    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.String,
                            "name": "output",
                            "description": "the name of file corresponding to the concatenation"
                            })

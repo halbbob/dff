@@ -15,9 +15,9 @@
 #
 
 import sys
-from api.module.script import *
-from api.vfs import *
-from api.module.module import *
+from api.module.script import Script
+from api.module.module import Module
+from api.types.libtypes import Argument, typeId
 
 from PyQt4.QtCore import QSize, SIGNAL
 from PyQt4.QtGui import QWidget, QVBoxLayout, QIcon, QMessageBox
@@ -37,22 +37,20 @@ class ViewerHexa(QWidget, Script):
 #        self.icon = ":hexedit.png"
         
     def start(self, args) :
-        self.args = args
+        self.node = args["file"].value()
 
     def c_display(self):
-        node = self.args.get_node("file")
 	try:
-          nceditor.start(node)
+          nceditor.start(self.node)
 	except NameError:
 	  print "This functionality is not available on your operating system"	
 
     def g_display(self):
         QWidget.__init__(self)
         self.widget = Heditor(self)
-        node = self.args.get_node("file")
-        self.name = "hexedit " + str(node.name())        
-        if node.size() > 0:
-          self.widget.init(node)
+        self.name = "hexedit " + str(self.node.name())
+        if self.node.size() > 0:
+          self.widget.init(self.node)
           self.setLayout(self.widget.vlayout)
         else:
           msg = QMessageBox(QMessageBox.Critical, "Hexadecimal viewer", "Error: File is empty", QMessageBox.Ok)
@@ -72,7 +70,9 @@ class hexeditor(Module):
   """Hexadecimal view of a file content"""
   def __init__(self):
     Module.__init__(self, "hexadecimal", ViewerHexa)
-    self.conf.add("file", "node", False, "File to display as hexadecimal")
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node,
+                           "name": "file",
+                           "description": "File to display as hexadecimal"})
     self.tags = "Viewers"
 
 

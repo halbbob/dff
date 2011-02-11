@@ -23,6 +23,11 @@ Argument::Argument(std::string name, uint16_t flags, std::string description)
   this->__flags = flags;
   this->__description = description;
   this->__paramslocked = false;
+  if ((flags & 0x0300) == Argument::List)
+    this->__minparams = 1;
+  else
+    this->__minparams = -1;
+  this->__maxparams = -1;
   this->setParametersType(Parameter::Editable);
 }
 

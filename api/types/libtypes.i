@@ -189,9 +189,15 @@
 	    lsize = PyList_Size(predef_obj);
 	    if (*min > lsize)
 	      throw(std::string("minimum cannot be greater than length of predefined not editable parameters"));
+	    else if (*min == -1)
+	      *min = 1;
 	    if (*max > lsize)
 	      throw(std::string("maximum cannot be greater than length of predefined not editable parameters"));
+	    else if (*max == -1)
+	      *max = lsize;
 	  }
+	else if (*min == -1)
+	  *min = 1;
       }
     SWIG_PYTHON_THREAD_END_BLOCK;
     return predef_obj;
@@ -214,6 +220,7 @@
     try
       {
 	predef_obj = Argument_validateParams(self, obj, &ptype, &min, &max);
+	//std::cout << "setted min: " << min << " setted max: " << max << std::endl;
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	if (predef_obj != NULL)
 	  {
@@ -278,8 +285,16 @@
       {
 	if ((arg->parametersType() == Parameter::NotEditable) && (!Config_matchNotEditable(self, arg->parameters(), obj)))
 	  throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
-	if ((v = new_Variant__SWIG_17(obj, arg->type())) == NULL)
-	  throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
+	if (v = new_Variant__SWIG_17(obj, arg->type()))
+	  {
+	    if (v == NULL)
+	      throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
+	    else if ((v->type() == typeId::String) && (v->toString().empty()))
+	      {
+		delete v;
+		throw(std::string("Argument < " + arg->name() + " >\nprovided string cannot be empty"));    
+	      }
+	  }
       }
     else
       throw(std::string("values provided to generateSingleInput are not valid"));
@@ -294,37 +309,50 @@
     Py_ssize_t		i;
     PyObject*		item;
     std::string		err = "";
+    int32_t		min;
+    int32_t		max;
 
     if ((arg != NULL) && (obj != NULL))
       {
-	try
+	if (PyList_Check(obj))
 	  {
-	    if (PyList_Check(obj))
+	    i = 0;
+	    min = arg->minimumParameters();
+	    max = arg->maximumParameters();
+	    //std::cout << "min: " << min << " max: " << max << std::endl;
+	    lsize = PyList_Size(obj);
+	    if (lsize == 0)
+	      throw(std::string("Argument < " + arg->name() + " >\nlist of parameters is empty"));
+	    if ((min != -1) && (lsize < min))
+	      throw(std::string("Argument < " + arg->name() + " >\nnot enough parameters provided"));
+	    if ((max != -1) && (lsize > max))
+	      throw (std::string("Argument < " + arg->name() + " >\ntoo many parameters provided"));
+	    try
 	      {
-		i = 0;
-		lsize = PyList_Size(obj);
-		if ((lsize == 0) && (arg->requirementType() == Argument::Required))
-		  err = "Argument < " + arg->name() + " > is required but list of parameters is empty";
-		else
+		while ((i != lsize) && err.empty())
 		  {
-		    while ((i != lsize) && err.empty())
-		      {
-			item = PyList_GetItem(obj, i);
-			v = Config_generateSingleInput(self, item, arg);
-			vlist.push_back(v);
-			i++;
-		      }
+		    item = PyList_GetItem(obj, i);
+		    v = Config_generateSingleInput(self, item, arg);
+		    vlist.push_back(v);
+		    i++;
 		  }
 	      }
-	    else
+	    catch(std::string e)
+	      {
+		err = e;
+	      }
+	  }
+	else
+	  {
+	    try
 	      {
 		v = Config_generateSingleInput(self, obj, arg);
 		vlist.push_back(v);
 	      }
-	  }
-	catch(std::string e)
-	  {
-	    err = "Argument < " + arg->name() + " >\n" + e + " while processing parameters";
+	    catch(std::string e)
+	      {
+		err = e;
+	      }
 	  }
       }
     else
