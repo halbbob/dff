@@ -17,7 +17,7 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-from api.types.libtypes import Variant, VMap, Argument, Parameter, typeId
+from api.types.libtypes import Variant, VList, VMap, Argument, Parameter, typeId
 from api.vfs.libvfs import *
 
 class MergeNode(Node):
@@ -35,19 +35,20 @@ class MergeNode(Node):
          offset += node.size()
       
    def _attributes(self):
+      i = 1
       attr = VMap()
       attr.thisown = False
-      i = 1
+      vlist = VList()
+      vlist.thisown = False
       for f in self.files:
-         fsize = Variant(f.value().size())
-         fname = Variant(f.value().name())
-         fsize.thisown = False
-         fname.thisown = False
-         keyname = "file name " + str(i)
-         keysize = "file size " + str(i) 
-         attr[keyname] = fname
-         attr[keysize] = fsize
-      return attr 
+         node = f.value()
+         cattr = Variant(node.absolute())
+         cattr.thisown = False
+         vlist.append(cattr)
+      vvlist = Variant(vlist)
+      vvlist.thisown = False
+      attr["concatanated files (ordered)"] = vvlist
+      return attr
 
 #      fatstart = Variant(self.partTable.start)
 #      fatstart.thisown = False
