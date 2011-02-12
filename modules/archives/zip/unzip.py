@@ -18,8 +18,8 @@ from api.module.script import Script
 from api.vfs.libvfs import FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
-from api.type.libtype import vtime
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import vtime, Variant, VMap, Argument, typeId
+
 
 import traceback
 import mzipfile
@@ -88,12 +88,8 @@ class UNZIP(fso):
 
 
   def start(self, args):
-    try:
-      origin = args.get_node('file')
-      self.makeZipTree(origin)
-    except (envError, vfsError):
-      formatted_lines = traceback.format_exc().splitlines()
-      self.res.add_const("error", formatted_lines[-1])
+    origin = args['file'].value()
+    self.makeZipTree(origin)
 
   
   def makeZipTree(self, origin):
@@ -225,6 +221,10 @@ class unzip(Module):
 This version of unzip store all data in RAM so don't decompress huge file."""
   def __init__(self):
     Module.__init__(self, "unzip", UNZIP)
-    self.conf.add('file', 'node', False, "File to decompress.")
-    self.conf.add_const('mime-type', 'Zip')
+    self.conf.addArgument({"name": "file",
+                           "input": Argument.Required|Argument.Single|typeId.Node,
+                           "description": "zip file to decompress"
+                           })
+
+    #self.conf.add_const('mime-type', 'Zip')
     self.tags = "Archives"

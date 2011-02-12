@@ -15,21 +15,21 @@
 
 
 #add_subdirectory (volumes)
-add_subdirectory (fs)
-#add_subdirectory (builtins)
-#add_subdirectory (process)
+#add_subdirectory (fs)
+add_subdirectory (builtins)
+add_subdirectory (process)
 #add_subdirectory (search)
 add_subdirectory (viewer)
-#add_subdirectory (phone)
-#add_subdirectory (statistics)
-#add_subdirectory (crypto)
-#add_subdirectory (archives)
-#add_subdirectory (mem)
-#add_subdirectory (utils)
+add_subdirectory (phone)
+add_subdirectory (statistics)
+add_subdirectory (crypto)
+add_subdirectory (archives)
+add_subdirectory (mem)
+add_subdirectory (utils)
 add_subdirectory (node)
 add_subdirectory (connector)
 add_subdirectory (hash)
-#add_subdirectory (metadata)
+add_subdirectory (metadata)
 
 set(module_srcs
   __init__.py

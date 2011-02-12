@@ -18,7 +18,7 @@ from api.module.script import Script
 from api.vfs.libvfs import FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
-from api.types.libtypes import vtime, Variant, VMap
+from api.types.libtypes import vtime, Variant, VMap, Argument, typeId
 
 import os
 from ctypes import CDLL, c_char_p, c_int, pointer, c_ulonglong, c_ulong, create_string_buffer, byref, pointer
@@ -65,12 +65,7 @@ class EWF(fso):
     self.fdm = FdManager()
 
   def start(self, args):
-    try:
-      efile = args.get_path('file').path
-    except (envError, vfsError):
-      formatted_lines = traceback.format_exc().splitlines()
-      self.res.add_const("error", formatted_lines[-1])
-      return
+    efile = args['file'].value().path
     if efile[-4] == ".":
       efile = efile[:-2]
     self.files = glob(efile + '*')
@@ -174,5 +169,7 @@ class ewf(Module):
       libewf = CDLL(ewfpath)
     if not libewf._name:
        raise Exception('loading modules', 'ewf') 
-    self.conf.add('file', 'path', False, "First EWF file to open")
+    self.conf.addArgument({"name": "files",
+                           "description": "First EWF file to open",
+                           "input": Argument.Required|Argument.Single|typeId.Path})
     self.tags = "Connectors"

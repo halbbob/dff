@@ -15,7 +15,7 @@
 
 from api.vfs import *
 from api.module import *
-from api.env import *
+from api.types.libtypes import Argument, typeId
 from api.taskmanager.taskmanager import *
 from SHM import *
 
@@ -27,11 +27,11 @@ class TOUCH(Script):
       self.shm = SHM().create()
 
     def start(self, arg):
-      fname = arg.get_string("filename")
+      fname = arg["filename"].value()
       if self.touch(fname):
-        self.res.add_const("result", "SHM create file " + fname)
+        self.res["result"] = "SHM create file " + fname
       else:
-        self.res.add_const("error", "Can't find path")
+        self.res["error"] = "Can't find path"
 
     def touch(self, fname):
       plist = fname.split('/')
@@ -68,5 +68,7 @@ class touch(Module):
   def __init__(self):
     Module.__init__(self, "touch", TOUCH)
     self.tags = "Node"
-    self.conf.add("filename", "string", False, "Path/Name of file to create")
+    self.conf.addArgument({"name": "filename",
+                           "input": Argument.Single|Argument.Required|typeId.String,
+                           "description": "Path/Name of file to create"})
 

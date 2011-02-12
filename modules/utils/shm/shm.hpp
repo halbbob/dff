@@ -27,11 +27,11 @@
 #include <list>
 #include <vector>
 #include <map>
+#include "variant.hpp"
 #include "exceptions.hpp"
-#include "type.hpp"
 #include "vfs.hpp"
 #include "vfile.hpp"
-#include "conf.hpp"
+#include "vlink.hpp"
 #include "node.hpp"
 
 class ShmNode: public Node
@@ -55,7 +55,7 @@ public:
   Shm();
   ~Shm();
   Node*			addnode(Node* parent, string filename);
-  virtual void		start(argument* arg);
+  virtual void		start(std::map<std::string, Variant*> args);
   virtual int32_t	vopen(Node* node);
   virtual int32_t	vread(int32_t fd, void *buff, uint32_t size);
   virtual int32_t	vwrite(int32_t fd, void *buff, uint32_t size);

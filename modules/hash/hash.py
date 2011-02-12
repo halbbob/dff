@@ -32,15 +32,20 @@ class AttributeHash(AttributesHandler):
        except KeyError:
          return None
 
-    def setHash(self, node, value):	#mnettre la fonction de calcul de hash directement ici ou heriter de attributeHash ds class HASH ?
-       self.calculatedHash[long(node.this)] = value
+#mnettre la fonction de calcul de hash directement ici ou heriter de attributeHash ds class HASH ?
+    def setHash(self, node, algo, hash):
+        if not self.calculatedHash.has_key(node.this):
+            self.calculatedHash[long(node.this)] = {}
+        self.calculatedHash[long(node.this)][algo] = hash
+
 
     def attributes(self, node):
-       #print "attributes get node hash" + node.name()
-       m = VMap()	
-       v = Variant(self.calculatedHash[long(node.this)])
-       v.thisown = False #XXX pas forcement md5
-       m['md5'] = v
+       m = VMap()
+       hashes = self.calculatedHash[long(node.this)]
+       for hash in hashes.iterkeys():
+           v = Variant(hashes[hash])
+           v.thisown = False
+           m[hash] = v
        m.thisown = False
        return m
 
@@ -48,13 +53,13 @@ class AttributeHash(AttributesHandler):
 	print "deleting attributes hash"
 
 class HASH(Script): 
-      def __init__(self):
+    def __init__(self):
         Script.__init__(self, "hash")   
         self.vfs = vfs.vfs()
         self.attributeHash = AttributeHash("hash") 
 	self.calculatedHash = {}		#XXX modules singleton ?
 
-      def getHash(self,  algorithm):
+    def getHash(self,  algorithm):
         if algorithm == "md5":
             return hashlib.md5()
         elif algorithm == "sha1":
@@ -69,72 +74,59 @@ class HASH(Script):
             return hashlib.sha512()
         else:
             return -1
-     
-      def start(self, args):
-      	try :
-          algorithm = args.get_string("algorithm")
-	except KeyError:
-	  algorithm = "md5"
-        if algorithm == "":
-	  algorithm = "md5"
-        node = args.get_node("file")
+        
+    def start(self, args):
+        algorithms = args["algorithm"]
+        node = args["file"].value()
         if self.attributeHash.haveHashCalculated(node):
-	  return
-        file_hash = self.hashCalc(node, algorithm)
-        if file_hash != "":
-           self.attributeHash.setHash(node, file_hash)
-	   node.registerAttributes(self.attributeHash)
-        else:
-           res = algorithm + " hashing failed on " + node.absolute() 
+            return
+        for algo in algorithms:
+            hash = self.hashCalc(node, algo)
+            if hash != "":
+                self.attributeHash.setHash(node, algo, hash)
+                node.registerAttributes(self.attributeHash)
+            else:
+                res = algo + " hashing failed on " + node.absolute() 
 
 
-      def hashCalc(self, node, algorithm):
+    def hashCalc(self, node, algorithm):
         try :
             f = node.open()
-	    if not node.size():
-	      return 
+            if not node.size():
+                return 
         except IOError, e:
             print e #.error, node.absolute()
             return ""
         h = self.getHash(algorithm)
         buff = f.read(8192)
-	total = len(buff) 
+        total = len(buff) 
         while len(buff) > 0:
-	    self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
+            self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
             h.update(buff)
             try :
                 buff = f.read(8192)
-		total += len(buff)
+                total += len(buff)
             except vfsError:
                 pass
-	self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
+            self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
         f.close()
         return h.hexdigest()
 
-
+    
 class hash(Module):
-  """Hash a file and add the results in the file attribute.
-ex: hash /myfile"""
-  def __init__(self):
-    Module.__init__(self, "hash", HASH)
-    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Node,
-                           "name": "file",
-                           "description": "file to hash"
-                           })
-    self.conf.addArgument({"input": Argument.Optional|Argument.List|typeId.String,
-                           "name": "algorithm",
-                           "description": "algorithm(s) used to hash file",
-                           "parameters": {"type": Parameter.NotEditable,
-                                          "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
-                           })
-    #self.conf.add("file", "node", False, "file to hash.")
-    #self.conf.add("algorithm", "string", True, "Choose the hash algorithm")
-    #self.conf.add_const("algorithm",  "md5")
-    #self.conf.add_const("algorithm",  "sha1")
-    #self.conf.add_const("algorithm",  "sha224")
-    #self.conf.add_const("algorithm",  "sha256")
-    #self.conf.add_const("algorithm",  "sha384")
-    #self.conf.add_const("algorithm",  "sha512")
-    #self.conf.add_const("mime-type", "")
-    self.flags = "single"
-    self.tags = "Hash"
+    """Hash a file and add the results in the file attribute.
+    ex: hash /myfile"""
+    def __init__(self):
+        Module.__init__(self, "hash", HASH)
+        self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Node,
+                               "name": "file",
+                               "description": "file to hash"
+                               })
+        self.conf.addArgument({"input": Argument.Optional|Argument.List|typeId.String,
+                               "name": "algorithm",
+                               "description": "algorithm(s) used to hash file",
+                               "parameters": {"type": Parameter.NotEditable,
+                                              "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
+                               })
+        self.flags = "single"
+        self.tags = "Hash"

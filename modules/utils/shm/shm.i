@@ -32,6 +32,8 @@
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import Argument, typeId
+
 class SHM(Module):
   """SHM create a copy of the parent file to a new node named filename.\
 It permit to have access to file with write permission without doing any modification in any other files.\n\
@@ -39,8 +41,12 @@ SHM create files stored in RAM so don't use it for huge files.\n\
 SHM is also used by other modules (zip, touch, ...) to create file with content in the VFS in fast way.\n"""
   def __init__(self):
     Module.__init__(self, 'shm', Shm)
-    self.conf.add("filename", "string", False, "File name of the created file.")
-    self.conf.add("parent", "node", False, "File to copy.")
+    self.conf.addArgument({"input": Argument.Single|Argument.Required|typeId.String,
+	                   "name": "filename",
+	                   "description": "file name of the created file"}) 
+    self.conf.addArgument({"input": Argument.Single|Argument.Required|typeId.Node,
+	                   "name": "parent",
+	                   "description": "file to copy"})
     self.tags = "Utils"
 %}
 
