@@ -25,26 +25,23 @@
 %exception;
 
 %{
-#include "../include/export.hpp"
 #include "fuse.hpp"
 %}
 
-%include "../include/export.hpp"
 %include "fuse.hpp"
 
 
-namespace std
-{
-  %template(ListString)         list<string>;
-};
-
 %pythoncode
 %{
-from api.module.module import *
+from api.module.module import Module
+from api.types.libtypes import Argument, typeId
+
 class FUSE(Module):
+  """Mount DFF VFS directly under your OS VFS"""
   def __init__(self):
     Module.__init__(self, 'fuse', fuse)
-    self.conf.add("parent", "node", True)
-    self.conf.add("path", "path")
-    self.tags = "file system"
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Path,
+                           "name": "path",
+                           "description":"Path where to mount DFF VFS in your OS VFS."})
+    self.tags = "Connectors"
 %}

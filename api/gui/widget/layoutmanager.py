@@ -365,65 +365,6 @@ class multipleListWidget(QWidget):
             self.valuelist.insertItem(self.valuelist.count() + 1, item.text())
 
 ########### Custom Widgets ###############
-class VFSDialog(QDialog):
-    def __init__(self):
-        QDialog.__init__(self)
-        self.initShape()
-
-    def initShape(self):
-#        self.vbox = QVBoxLayout(self)
-        self.grid = QGridLayout(self)
-        self.title = QLabel("Select a node in the Virtual File System :")
-        self.vfs = SimpleNodeBrowser(self)
-
-        self.createButtons()
-        
-        self.grid.addWidget(self.title, 0, 0)
-        self.grid.addWidget(self.vfs, 1, 0)
-        self.grid.addWidget(self.buttonbox, 2, 0)
-
-    def createButtons(self):
-        self.buttonbox = QDialogButtonBox()
-        self.buttonbox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
-        self.connect(self.buttonbox, SIGNAL("accepted()"),self.accept)
-        self.connect(self.buttonbox, SIGNAL("rejected()"),self.reject)
-
-    def getSelectedNode(self):
-        return self.vfs.nodeSelected()
-
-class SimpleNodeBrowser(QWidget):
-    def __init__(self, parent):
-        QWidget.__init__(self, parent)
-        self.type = "filebrowser"
-        self.icon = None
-        self.name = "nodebrowser"
-        self.setObjectName(self.name)
-
-        self.vfs = vfs.vfs()
-        
-        self.addNodeTreeView()
-        self.selection = None
-        
-        self.box = QGridLayout()
-        self.box.addWidget(self.treeView, 0,0)
-        self.setLayout(self.box)
-
-    def addNodeTreeView(self):
-        self.treeModel = TreeModel(self, False)
-        self.treeModel.setRootPath(self.vfs.getnode("/"))
-        self.treeProxyModel = NodeTreeProxyModel()
-        self.treeProxyModel.setSourceModel(self.treeModel)
-        self.treeView = NodeTreeView(self)
-        self.treeView.setMinimumWidth(640)
-        self.treeView.setModel(self.treeModel)
-        self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
-
-    def select(self, button, node):
-        self.selection = node
-
-    def nodeSelected(self):
-        return self.selection
-
 
 class addLocalPathButton(QPushButton):
     def __init__(self, key, container, isdir = False, nodetype=False):

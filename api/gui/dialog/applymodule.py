@@ -145,7 +145,6 @@ class ApplyModule(QDialog, Ui_applyModule):
                         params = lmanager.get(argname)
                         print params
                     args[argname] = params
-            print args
             genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
             self.taskmanager.add(str(self.nameModule), genargs, ["thread", "gui"])

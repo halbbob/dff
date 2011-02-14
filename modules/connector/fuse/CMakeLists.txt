@@ -21,21 +21,20 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 include_directories(/usr/include/fuse)
 
-set(fusemod_srcs
+set(fuse_srcs
   fuse.cpp
-  ../local/utype.cpp
 )
 
 SET_SOURCE_FILES_PROPERTIES(fuse.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(FUSE python fuse.i ${fuse_srcs})
-SWIG_LINK_LIBRARIES(FUSE ${PYTHON_LIBRARIES}  _libexceptions _libtype _libvfs _libenv)
+SWIG_LINK_LIBRARIES(FUSE ${PYTHON_LIBRARIES}  _libexceptions _libtypes _libvfs fuse)
 
-if (CMAKE_GENERATOR MATCHES "Visual Studio")
-set_target_properties (${SWIG_MODULE_FUSE_REAL_NAME} PROPERTIES
-  PREFIX "../"
-  SUFFIX ".pyd"
-)
-endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
+#if (CMAKE_GENERATOR MATCHES "Visual Studio")
+#set_target_properties (${SWIG_MODULE_FUSE_REAL_NAME} PROPERTIES
+  #PREFIX "../"
+  #SUFFIX ".pyd"
+#)
+#endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
 set(fuse_files
   FUSE.py
