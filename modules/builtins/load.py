@@ -16,6 +16,7 @@
 from api.vfs import *
 from api.module.module import *
 from api.loader import *
+from api.types.libtypes import Argument, typeId
 
 class LOAD(Script):
   def __init__(self):
@@ -23,12 +24,14 @@ class LOAD(Script):
     self.loader = loader.loader()
 
   def start(self, args):
-    path = args.get_path('file')	
-    self.loader.do_load(path.path)	
+    path = args['file'].value()
+    self.loader.do_load(path.path)
 
 class load(Module):
   """Load an external module"""
   def __init__(self):
    Module.__init__(self, "load", LOAD)
-   self.conf.add("file", "path", False, "Local path to the module")
+   self.conf.addArgument({"name": "files",
+                          "description": "local files or folders containing modules",
+                          "input": Argument.List|Argument.Required|typeId.Path})
    self.tags = "builtins"

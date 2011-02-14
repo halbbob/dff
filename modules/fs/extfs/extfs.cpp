@@ -75,7 +75,7 @@ void    Extfs::start(argument * arg)
     }
 }
 
-void		Extfs::launch(argument * arg)
+void		Extfs::launch(std::map<std::string, Variant*> args)
 {
   bool		sb_check = false;
   std::string	sb_force_addr("1024");
@@ -83,10 +83,19 @@ void		Extfs::launch(argument * arg)
   std::string	check_alloc("");
   uint64_t	root_i_nb = ROOT_INODE;
   Option *	opt;
+  std::map<std::string, Variant*>::iterator it;
 
   // get arguments, initialize and run.
-  arg_get(arg, "parent", &__node);
-  arg_get(arg, "SB_addr", &sb_force_addr);
+  if ((it = args.find("parent")) != args.end())
+    this->__node = it->second->value<Node*>();
+  else
+    throw (std::string("Extfs::launch(): no parent provided"));
+
+  if ((it = args.find("SB_addr")) != args.end())
+    sb_force_addr = it->second->value<uint64_t>();
+  else
+    sb_force_addr = 1024;
+
   arg_get(arg, "SB_check", &sb_check);
   //  arg_get(arg, "check_alloc", &check_alloc);
   //  sb_check = !sb_check;
@@ -289,20 +298,4 @@ void	Extfs::__orphan_inodes()
   OrphansInodes *	orphans_i = new OrphansInodes(__root_dir->i_list());
   this->__orphans_i = new ExtfsNode("Orphans inodes", 0, __first_node, this, 0);
   orphans_i->load(this);
-}
-
-template <typename T>
-void        Extfs::arg_get(argument * all_args, const std::string & name, T arg)
-{
-  try
-    {
-      all_args->get(name, arg);
-    }
-  catch (vfsError & e)
-    {
-      std::cerr << "Could not load " << name << " parameter" << std::endl;
-    } 
-  catch (...)
-    {
-    }
 }

@@ -19,7 +19,6 @@
 
 #include "node.hpp"
 #include "vfile.hpp"
-#include "decoder.hpp"
 
 #define	ATTR_NORMAL	0x00
 #define ATTR_READ_ONLY  0x01

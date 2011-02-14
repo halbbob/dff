@@ -17,10 +17,6 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-#from api.env.libenv import *
-#from api.variant.libvariant import Variant, VMap
-#from api.vfs.libvfs import *
-
 from api.types.libtypes import Variant, VMap, Parameter, Argument, typeId
 from api.vfs.libvfs import AttributesHandler
 

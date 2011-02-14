@@ -54,6 +54,10 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
     }
+  catch (const std::exception &e)
+    {
+      SWIG_exception(SWIG_RuntimeError, e.what());
+    }
   catch (Swig::DirectorException e)
     {
       SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -80,6 +84,10 @@
       PyErr_SetString(PyExc_KeyError, e.error.c_str());
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
+    }
+  catch (const std::exception &e)
+    {
+      SWIG_exception(SWIG_RuntimeError, e.what());
     }
   catch (Swig::DirectorException e)
     {

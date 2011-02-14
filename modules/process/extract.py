@@ -17,6 +17,7 @@ import os
 from api.vfs import *
 from api.module.script import *
 from api.exceptions.libexceptions import *
+from api.types.libtypes import Argument, typeId, Variant
 from api.module.module import *
 import time
 import traceback
@@ -28,14 +29,20 @@ class EXTRACT(Script):
 
 
   def start(self, args):
-    nodes = args.get_lnode('files')
-    path = args.get_path('syspath').path
-    if path[-1] != "/":
-      path += "/"
-    try :
-      recursive = args.get_bool('recursive')
+    try:
+      nodes = args['files'].value()
+      path = args['syspath'].value().path
+      if path[-1] != "/":
+        path += "/"
+      if args.has_key('recursive'):
+        recursive = True
+      else:
+        recursive = False
+      self.extractNodes(nodes, path, recursive)
+      self.createReport()
     except KeyError:
-      recursive = None
+      pass
+    
     #for node in self.nodes:
     #  if node.isFile():
     #    self.total += 1
@@ -43,8 +50,6 @@ class EXTRACT(Script):
     #    self.total += self.totalFiles(node.children())
     #for node in self.nodes:
     #  self.launch(node)
-    self.extractNodes(nodes, path, recursive)
-    self.createReport()
 
 
   def initContext(self, nodes, path, recursive):
@@ -94,7 +99,9 @@ class EXTRACT(Script):
       self.res.add_const("folder(s) errors", "\n" + self.log["folders"]["nok"])
 
     if len(stats):
-      self.res.add_const("statistics", "\n" + stats)
+      v = Variant(stats)
+      v.thisown = False
+      self.res["statistics"] = v
 
 
   def extractNodes(self, nodes, path, recursive):
@@ -232,7 +239,13 @@ class extract(Module):
   """Extract file in your operating system file system."""
   def __init__(self):
     Module.__init__(self, "extract", EXTRACT)
-    self.conf.add("files", "lnode", False, "Files or directories list to extract.")
-    self.conf.add("syspath", "path", False, "Local file system path where to extract files.") 
-    self.conf.add("recursive", "bool", True, "Extract recursivly each files in all in sub-directories.")
+    self.conf.addArgument({"name": "file",
+                           "description": "Files or directories list to extract",
+                           "input": Argument.Required|Argument.List|typeId.Node})
+    self.conf.addArgument({"name": "syspath",
+                           "description": "Local file system path where files will be extracted",
+                           "input": Argument.Required|Argument.Single|typeId.Path})
+    self.conf.addArgument({"name": "recursive",
+                           "description": "Extract recursivly each files in all sub-directories",
+                           "input": Argument.Empty})
     self.tags = "Node"

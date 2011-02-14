@@ -15,8 +15,8 @@
 
 
 #add_subdirectory (extfs)
-#add_subdirectory (fat)
-#add_subdirectory (ntfs)
+add_subdirectory (fat)
+add_subdirectory (ntfs)
 
 set(fs_srcs
   __init__.py

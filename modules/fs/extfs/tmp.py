@@ -1,52 +1,3 @@
-/*
- * DFF -- An Open Source Digital Forensics Framework
- * Copyright (C) 2009-2011 ArxSys
- *
- * This program is free software, distributed under the terms of
- * the GNU General Public License Version 2. See the LICENSE file
- * at the top of the source tree.
- *
- * See http://www.digital-forensic.org for more information about this
- * project. Please do not directly contact any of the maintainers of
- * DFF for assistance; the project provides a web site, mailing lists
- * and IRC channels for your use.
- *
- * Author(s):
- *  Romain Bertholon <rbe@digital-forensic.org>
- *
- */
-
-%module  EXTFS
-#ifndef WIN32
-%include "stdint.i"
-#else
-%include "wstdint.i"
-#endif
-%include "std_string.i"
-%include "std_list.i"
-%include "std_set.i"
-%include "std_map.i"
-%include "std_vector.i"
-%include "windows.i"
-
-%import "../../../api/vfs/libvfs.i"
-
-%{
-#include "mfso.hpp"
-#include "node.hpp"
-#include "vfile.hpp"
-#include "vlink.hpp"
-#include "extfs.hpp"
-%}
-%include "extfs.hpp"
-
-/*
-namespace std
-{
-}; */
-
-%pythoncode
-%{
 from api.module.module import *
 from api.types.libtypes import Argument, typeId
 
@@ -55,7 +6,6 @@ class EXTFS(Module):
   def __init__(self):
 
     Module.__init__(self, 'extfs', Extfs)
-
     self.conf.addArgument({"name": "file",
                            "description": "file containing an EXT file system",
                            "input": Argument.Required|Argument.Single|typeId.Node})
@@ -81,7 +31,7 @@ class EXTFS(Module):
                            "description": "Parse orphan inodes",
                            "input": Argument.Empty})
     self.conf.addArgument({"name": "root_inode",
-	                   "description": "Root inode number",
+                           "description": "Root inode number"
                            "input": Argument.Optional|Argument.Single|typeId.UInt64,
                            "parameters": {"type": Parameter.Editable,
                                           "predefined": [2]}
@@ -95,5 +45,3 @@ class EXTFS(Module):
     #self.conf.add_const("mime-type", "ext2")
     #self.conf.add_const("mime-type", "ext3")
     #self.conf.add_const("mime-type", "ext4")
-    self.tags = "File systems"
-%}

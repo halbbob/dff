@@ -39,38 +39,39 @@ void		Fatfs::process()
   return;
 }
 
-void		Fatfs::setContext(argument* arg)
+void		Fatfs::setContext(std::map<std::string, Variant*> args) throw (std::string)
 {
-  try
-    {
-      arg->get("file", &(this->parent));
-    }
-  catch(envError e)
-    {
-      throw(envError("Fatfs module: error while setting context"));
-    }
-  try
-    {
-      arg->get("meta_carve", &this->carveunalloc);
-    }
-  catch(envError e)
-    {
-      this->carveunalloc = false;
-    }
+  std::map<std::string, Variant*>::iterator	it;
+
+  if ((it = args.find("file")) != args.end())
+    this->parent = it->second->value<Node*>();
+  else
+    throw(std::string("Fatfs module: no file provided"));
+  if ((it = args.find("meta_carve")) != args.end())
+    this->carveunalloc = true;
+  else
+    this->carveunalloc = false;
   return;
 }
 
-void		Fatfs::start(argument* arg)
+void		Fatfs::start(std::map<std::string, Variant*> args)
 {
   try
     {
-      this->setContext(arg);
+      this->setContext(args);
       this->process();
     }
-  catch(...)
+  catch(std::string e)
     {
-      return;
-      //throw(vfsError("Fatfs module: creation of new instance failed"));
+      throw (e);
+    }
+  catch(vfsError e)
+    {
+      throw (e);
+    }
+  catch(envError e)
+    {
+      throw (e);
     }
   return ;
 }

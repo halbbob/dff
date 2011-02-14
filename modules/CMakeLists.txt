@@ -14,8 +14,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-#add_subdirectory (volumes)
-#add_subdirectory (fs)
+add_subdirectory (volumes)
+add_subdirectory (fs)
 add_subdirectory (builtins)
 add_subdirectory (process)
 #add_subdirectory (search)
@@ -24,7 +24,7 @@ add_subdirectory (phone)
 add_subdirectory (statistics)
 add_subdirectory (crypto)
 add_subdirectory (archives)
-add_subdirectory (mem)
+#add_subdirectory (mem)
 add_subdirectory (utils)
 add_subdirectory (node)
 add_subdirectory (connector)

@@ -21,6 +21,7 @@ from PyQt4.phonon import Phonon
 from api.module.script import Script 
 from api.module.module import Module
 from api.vfs.iodevice import IODevice
+from api.types.libtypes import Argument, typeId
 from api.vfs import *
 
 class PLAYER(QWidget, Script):
@@ -29,10 +30,13 @@ class PLAYER(QWidget, Script):
      self.vfs = vfs.vfs() 
 
   def start(self, args):
-     self.node = args.get_node("file")
+    try:
+      self.node = args["file"].value()
+    except:
+      pass
 
   def updateWidget(self):
-	pass
+    pass
 
   def g_display(self):
      QWidget.__init__(self)
@@ -172,8 +176,10 @@ class player(Module):
   def __init__(self):
    """Video and Audio player"""
    Module.__init__(self, "player", PLAYER)
-   self.conf.add("file", "node")
+   self.conf.addArgument({"name": "file",
+                          "description": "multimedia file to play",
+                          "input": Argument.Required|Argument.Single|typeId.Node})
    self.tags = "Viewers"
    #for mimeType in Phonon.BackendCapabilities.availableMimeTypes():
      #self.conf.add_const("mime-type", str(mimeType))
-   self.conf.add_const("mime-type", "video")
+   #self.conf.add_const("mime-type", "video")

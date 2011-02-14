@@ -149,30 +149,32 @@
 // }
 
 
-void Partition::start(argument* arg)
+void Partition::start(std::map<std::string, Variant*> args)
 {
-  try
+  std::map<std::string, Variant*>::iterator	it;
+  
+  if ((it = args.find("file")) != args.end())
     {
-      arg->get("file", &this->parent);
-      if (this->parent->size() != 0)
+      try
 	{
-	  this->__root = new Node("partition");
-	  this->__root->setDir();
-	  this->__root->setFsobj(this);
-	  this->dos->open(this->parent->open(), 0, this->__root, this, this->parent);
-	  this->registerTree(this->parent, this->__root);
+	  this->parent = it->second->value<Node*>();
+	  if (this->parent->size() != 0)
+	    {
+	      this->__root = new Node("partition");
+	      this->__root->setDir();
+	      this->__root->setFsobj(this);
+	      this->dos->open(this->parent->open(), 0, this->__root, this, this->parent);
+	      this->registerTree(this->parent, this->__root);
+	    }
+	}
+      catch(vfsError e)
+	{
+	  delete this->__root;
+	  throw vfsError("[PARTITION] error while processing file\n" + e.error);
 	}
     }
-  catch(envError e)
-    {
-      delete this->__root;
-      throw envError("[PARTITION] file argument not provided\n" + e.error);
-    }
-  catch(vfsError e)
-    {
-      delete this->__root;
-      throw vfsError("[PARTITION] error while processing file\n" + e.error);
-    }
+  else
+    throw envError("[PARTITION] file argument not provided\n");
 }
 
 // int	Partition::SetResult()
