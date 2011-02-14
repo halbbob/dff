@@ -18,30 +18,28 @@
 
 extern "C" 
 {
+  VFS&	vfs = VFS::Get();
   static int f_getattr(const char *path, struct stat *stbuf)
   {
     Node* node;
-    u_attrib	*attr;
     memset(stbuf, 0, sizeof(struct stat));
 
     node = vfs.GetNode(path);
     if (!node)
       return -ENOENT;
   
-    if (node->next.size())
+    if (node->hasChildren())
     {
-      attr = static_cast<u_attrib *>(node->attr);
-      attr->get_stat(stbuf); 
+      //attr = static_cast<u_attrib *>(node->attr);
+      //attr->get_stat(stbuf); 
       stbuf->st_mode = S_IFDIR | 0755;
-      stbuf->st_nlink = 2 + node->next.size();
+      stbuf->st_nlink = 2 + node->childCount();
     }
     else
     {
-      attr = static_cast<u_attrib *>(node->attr);
-      attr->get_stat(stbuf); 
       stbuf->st_mode = S_IFREG | 0444;
       stbuf->st_nlink = 1;
-      stbuf->st_size = node->attr->size;
+      stbuf->st_size = node->size();
     }
 
       return 0;
@@ -54,14 +52,15 @@ extern "C"
    node = vfs.GetNode(path);
    if (!node)
      return -ENOENT;
-   if (node->next.size())
+   if (node->hasChildren())
    {
      filler(buf, ".", NULL, 0);
      filler(buf, "..", NULL, 0);
-     list<Node*>::iterator i = node->next.begin();
-     for (; i != node->next.end(); ++i)
+     std::vector<Node*>childs = node->children();
+     std::vector<Node*>::iterator i = childs.begin();
+     for (; i != childs.end(); i++)
      {
-	filler(buf, (*i)->name.c_str(), NULL, 0);
+	filler(buf, (*i)->name().c_str(), NULL, 0);
      }
    }
    else
@@ -77,7 +76,7 @@ extern "C"
     node = vfs.GetNode(path);
     if (!node)
       return -ENOENT;
-    if (!node->is_file)
+    if (!node->size())
       return -ENOENT;
     if ((fi->flags & 3) != O_RDONLY)
       return -EACCES;
@@ -122,20 +121,18 @@ extern "C"
 }
 
 
-void fuse::start(argument* arg)
+void fuse::start(std::map<std::string, Variant*> args)
 {
+  std::map<std::string, Variant* >::iterator	argit;
+
   Path		*tpath;
   char		**argv;
 
-  try 
-  { 
-    arg->get("path", &tpath);
-  }
-  catch (envError e)
-  {
-    res->add_const("error", "conf " + e.error);
-    return ;
-  }
+  tpath = args["path"]->value<Path*>();
+ 
+  if (!tpath)
+	return ; 
+    //res->add_const("error", "conf " + e.error);
   
   argv = (char **)malloc(sizeof(char*) * 3); 
   *argv = (char *)"dff-fuse";
@@ -143,15 +140,14 @@ void fuse::start(argument* arg)
   *(argv + 2) = (char *)"-d";
 //loop :(
   fuse_main(3, argv, &f_opers, 0); 
-  res->add_const("result", std::string("no problem")); 
-
+ // res->add_const("result", std::string("no problem")); 
   return ;
 }
 
-fuse::fuse()
+fuse::fuse() : mfso("fuse")
 {
-  name = "fuse";
-  res = new results("fuse");
 }
 
-
+fuse::~fuse()
+{
+}

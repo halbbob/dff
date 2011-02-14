@@ -14,17 +14,16 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#ifndef __LOCAL_HH__
-#define __LOCAL_HH__
+#ifndef __FUSE_HH__
+#define __FUSE_HH__
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <list>
-#include "type.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
-//#include "fdmanager.hpp"
-#include "../local/utype.hpp"
+#include "mfso.hpp"
+#include "path.hpp"
+#include "variant.hpp"
 
 #define FUSE_USE_VERSION 26
 
@@ -46,20 +45,13 @@
 
 using namespace std;
 
-//VFS&	vfs = VFS::Get();
  
-class fuse : public fso
+class fuse : public mfso
 {
 public:
   fuse();
-//  virtual ~fuse(){ /*close all system fd */};
-  virtual void		start(argument* arg);
-  virtual int 		vopen(Handle*) { return -1; };
-  virtual int 		vread(int, void*, unsigned int) { return -1; };
-  virtual int 		vwrite(int, void*, unsigned int) { return -1; };
-  virtual int 		vclose(int) { return 0;  };
-  virtual dff_ui64 	vseek(int, dff_ui64, int) { return -1 ;};
-  virtual unsigned int  status() { return 1; };
+  ~fuse();
+  virtual	void		start(std::map<std::string, Variant*> args);
 };
 
 #endif 
