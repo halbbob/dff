@@ -21,6 +21,7 @@ from api.vfs import *
 from api.module.module import *
 from api.module.script import *
 from modules.metadata.metaexif import EXIF
+from api.types.libtypes import Argument, typeId
 
 import sys
 import time
@@ -215,13 +216,16 @@ class ImageView(QWidget, Script):
 
   def start(self, args):
     self.images = []
-    node = args.get_node("file")
-    children = node.parent().children()
-    for child in children:
-      if self.isImage(child):
-        self.images.append(child)
-        if child.name() == node.name():
-          self.curIdx = len(self.images) - 1
+    try:
+      node = args["file"]
+      children = node.parent().children()
+      for child in children:
+        if self.isImage(child):
+          self.images.append(child)
+          if child.name() == node.name():
+            self.curIdx = len(self.images) - 1
+    except KeyError:
+      pass
 
   def isImage(self, node):
     if node.size() != 0:
@@ -347,9 +351,11 @@ class viewerimage(Module):
   """Display content of graphic file"""
   def __init__(self):
     Module.__init__(self, "pictures", ImageView)
-    self.conf.add("file", "node", False, "File to display")
-    self.conf.add_const("mime-type", "JPEG")
-    self.conf.add_const("mime-type", "GIF")
-    self.conf.add_const("mime-type", "PNG")
-    self.conf.add_const("mime-type", "PC bitmap")
+    self.conf.addArgument({"name": "file",
+                           "description": "Picture file to display",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    #self.conf.add_const("mime-type", "JPEG")
+    #self.conf.add_const("mime-type", "GIF")
+    #self.conf.add_const("mime-type", "PNG")
+    #self.conf.add_const("mime-type", "PC bitmap")
     self.tags = "Viewers"

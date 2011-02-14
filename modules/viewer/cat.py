@@ -20,6 +20,7 @@ from PyQt4.QtGui import *
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import Argument, typeId
 
 class CAT(QTextEdit, Script):
   def __init__(self):
@@ -31,8 +32,11 @@ class CAT(QTextEdit, Script):
   
   def start(self, args):
     self.args = args
-    self.node = args.get_node("file")
-    self.cat(self.node)
+    try:
+      self.node = args["file"].value()
+      self.cat(self.node)
+    except:
+      pass
 
   def g_display(self):
     QTextEdit.__init__(self, None)
@@ -68,10 +72,12 @@ class cat(Module):
 ex:cat /myfile.txt"""
   def __init__(self):
     Module.__init__(self, "text", CAT)
-    self.conf.add("file", "node", False, "File to display content")
-    self.conf.add_const("mime-type", "HTML")
-    self.conf.add_const("mime-type", "ASCII")
-    self.conf.add_const("mime-type", "XML")
-    self.conf.add_const("mime-type", "text")
+    self.conf.addArgument({"name": "file",
+                           "description": "Text file to display",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    #self.conf.add_const("mime-type", "HTML")
+    #self.conf.add_const("mime-type", "ASCII")
+    #self.conf.add_const("mime-type", "XML")
+    #self.conf.add_const("mime-type", "text")
     self.tags = "Viewers"
     self.flags = ["console", "gui"]	

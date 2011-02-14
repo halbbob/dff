@@ -15,8 +15,8 @@
 
 from modules.utils.shm.touch import *
 from api.module import *
-from api.env import *
 from api.exceptions.libexceptions import *
+from api.types.libtypes import Argument, typeId, Variant
 
 class UNXOR(Script):
   def __init__(self):
@@ -25,10 +25,15 @@ class UNXOR(Script):
     self.touch = TOUCH().touch
 
   def start(self, args):
-    file = args.get_node('file')
-    key = args.get_string('key')
-    res = self.unxor(file, key)
-    self.res.add_const("result", res)
+    try:
+      node = args['file'].value()
+      key = args['key'].value()
+      res = self.unxor(node, key)
+      r = Variant(res)
+      r.thisown = False
+      self.res["result"] = r
+    except:
+      pass
 
   def unxor(self, node, key):
     dfilename = node.absolute() +  "/decrypted"
@@ -59,6 +64,10 @@ class unxor(Module):
 ex: unxor /myfile key"""
   def __init__(self):
     Module.__init__(self, "unxor", UNXOR)
-    self.conf.add("file", "node", False, "Encrypted file.")  
-    self.conf.add("key", "string", False, "Password.")
+    self.conf.addArgument({"name": "file",
+                           "description": "xored file",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "key",
+                           "description": "key to unxor",
+                           "input": Argument.Required|Argument.Single|typeId.String})
     self.tags = "Crypto"

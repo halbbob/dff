@@ -20,26 +20,29 @@ import binascii
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
-
+from api.types.libtypes import Argument, typeId, Variant
 
 class SMS(Script):
    def __init__(self):
       Script.__init__(self, "smsdecode")
 
    def start(self, args): 
-      self.unpack(args)
       try :
-        if args.get_bool("header"):
-          res = self.info()
-        else:
-          res = self.header()
+         node = args["file"].value()
+         self.unpack(args)
+         if args.has_key("header"):
+            res = self.header()
+         else:
+            res = self.info()
+         v = Variant(res)
+         v.thisown = False
+         self.res["result"] = v
       except KeyError:
-	 res = self.info()
-      self.res.add_const("result", res) 
+         pass
+      
 
    def unpack(self, args):
       self.vfs = vfs.vfs()
-      node = args.get_node("file")
       f = node.open()
       buff = f.read()
       f.close()
@@ -192,6 +195,10 @@ class smsdecode(Module):
 ex: smsdecode /myfile.sms"""
   def __init__(self):
     Module.__init__(self, "smsdecode", SMS)
-    self.conf.add("file", "node", False, "SMS file.")
-    self.conf.add("header", "bool", True, "Do not display SMS header detailed informations.")
+    self.conf.addArgument({"name": "file",
+                           "description": "SMS file",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "header",
+                           "description": "Display detailed SMS header information",
+                           "input": Argument.Empty})
     self.tags = "Mobile"

@@ -24,12 +24,14 @@
 //#include "vfs.hpp"
 //#include "conf.hpp"
 
+#include <map>
 #include "common.hpp"
 #include "boot.hpp"
 #include "mftentry.hpp"
 #include "attribute.hpp"
 #include "ntfsnode.hpp"
 #include "mftfile.hpp"
+#include "vlink.hpp"
 
 #include "mfso.hpp"
 
@@ -58,7 +60,7 @@ class Ntfs : public mfso
 public:
   Ntfs();
   ~Ntfs();
-  virtual void		start(argument *);
+  virtual void		start(std::map<std::string, Variant*>);
 private:
   Node		*_node;
   uint64_t	_mftDecode;

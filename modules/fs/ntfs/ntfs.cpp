@@ -1124,54 +1124,43 @@ void			Ntfs::_setStateInfo(uint32_t percent)
   stateinfo = stateBuff.str();
 }
 
-void		Ntfs::start(argument *arg)
+void		Ntfs::start(std::map<std::string, Variant*> args)
 {
   uint64_t	offset = 0;
   uint16_t	mftEntryNumber;
   int		tmpDecode;
+  std::map<std::string, Variant*>::iterator	it;
 
-  try
-    {
-      arg->get("mftdecode", &tmpDecode);
-      _mftDecode = (uint64_t)tmpDecode;
-
+  if ((it = args.find("mftdecode")) != args.end())
+    this->_mftDecode = it->second->value<uint64_t>();
+  else
+    this->_mftDecode = (uint64_t)-1;
 #if __WORDSIZE == 64
       DEBUG(INFO, "Only have to decode mft entry at offset 0x%lx\n", _mftDecode);
 #else
       DEBUG(INFO, "Only have to decode mft entry at offset 0x%llx\n", _mftDecode);
 #endif
-    }
-  catch (envError)
-    {
-      _mftDecode = -1;
-      DEBUG(INFO, "no mft decode offset provided\n");
-    }
-
-  try
-    {
-      arg->get("indexdecode", &tmpDecode);
-      _indexDecode = (uint64_t)tmpDecode;
+  if ((it = args.find("indexdecode")) != args.end())
+    this->_indexDecode = it->second->value<uint64_t>();
+  else
+    this->_indexDecode = (uint64_t)-1;
 #if __WORDSIZE == 64
       DEBUG(INFO, "Only have to decode index entries at offset 0x%lx\n", _indexDecode);
 #else
       DEBUG(INFO, "Only have to decode index entries at offset 0x%llx\n", _indexDecode);
 #endif
-    }
-  catch (envError)
-    {
-      _indexDecode = -1;
-      DEBUG(INFO, "no index decode offset provided\n");
-    }
 
   /* Assume NTFS Boot sector is present */
-  try
+  if ((it = args.find("file")) != args.end())
     {
-      arg->get("parent", &_node);
-      _vfile = _node->open();
-      
-      _boot = new Boot(_vfile);
-      _mftEntry = new MftEntry(_vfile);
-
+      try
+	{
+	  this->_node = it->second->value<Node*>();
+	  _vfile = _node->open();
+	  
+	  _boot = new Boot(_vfile);
+	  _mftEntry = new MftEntry(_vfile);
+	  
 #if __WORDSIZE == 64
       if (_boot->isBootBlock(offset) && _mftDecode == 0x0UL - 1 && _indexDecode == 0x0UL - 1)
 #else
@@ -1336,6 +1325,11 @@ void		Ntfs::start(argument *arg)
       std::cerr << "Exception std::exception caught in module Ntfs method start(): " << e.what() << std::endl;
       _setStateInfo(e.what());
       //throw e;
+    }
+    }
+  else
+    {
+      std::cerr << "Ntfs method start(): no file provided" << std::endl;
     }
 }
 

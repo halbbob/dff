@@ -16,7 +16,7 @@
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
-
+from api.types.libtypes import Argument, typeId
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import QWidget
 from PyQt4.QtCore import Qt
@@ -111,13 +111,17 @@ class FILESCHART(Script, QWidget):
 
   def start(self, args):
     self.typestat = {}
-    node = args.get_node("parent")
-    if node.size() > 0:
-      self.addEntry(node)
-    if node.hasChildren():
-      self.getstat(node.children())
-    for mtype, count in self.typestat.iteritems():
-      self.res.add_const(mtype, count)
+    try:
+      nodes = args["files"].value()
+      for node in nodes:
+        if node.size() > 0:
+          self.addEntry(node)
+        if node.hasChildren():
+          self.getstat(node.children())
+        for mtype, count in self.typestat.iteritems():
+          self.res.add_const(mtype, count)
+    except KeyError:
+      pass
 
 
   def addEntry(self, node):
@@ -147,7 +151,9 @@ class fileschart(Module):
 ex: statistics /mydump/"""
   def __init__(self):
     Module.__init__(self, "fileschart", FILESCHART)
-    self.conf.add('parent', 'node', False, "Directory or file to get filetype from")
+    self.conf.addArgument({"name": "files",
+                           "description": "Directory or files used to render chart",
+                           "input": Argument.Required|Argument.List|typeId.Node})
     self.tags = "Statistics"
 
 

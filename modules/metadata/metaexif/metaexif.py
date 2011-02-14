@@ -1,6 +1,6 @@
 from api.module.script import Script 
 from api.module.module import Module
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import Variant, VMap, Argument, typeId
 from api.vfs.libvfs import AttributesHandler
 
 import EXIF 
@@ -56,16 +56,21 @@ class MetaEXIF(Script):
    self.handler = EXIFHandler() 
 
   def start(self, args):
-    node = args.get_node('file')
-    self.stateinfo = "registering" + node.name()
-    node.registerAttributes(self.handler)
+    try:
+      node = args['file'].value()
+      self.stateinfo = "registering" + node.name()
+      node.registerAttributes(self.handler)
+    except KeyError:
+      pass
 
 class metaexif(Module): 
   """This modules generate exif metadata in node attributes"""
   def __init__(self):
     Module.__init__(self, "metaexif", MetaEXIF)
-    self.conf.add("file", "node", False, "File to decode.")
-    self.conf.add_const("mime-type", "jpeg")
-    self.conf.add_const("mime-type", "TIFF")
+    self.conf.addArgument({"name": "file",
+                           "description": "file for extracting metadata",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    #self.conf.add_const("mime-type", "jpeg")
+    #self.conf.add_const("mime-type", "TIFF")
     self.flags = "single"
     self.tags = "Metadata"

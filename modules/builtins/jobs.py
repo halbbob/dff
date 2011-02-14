@@ -17,6 +17,7 @@ from api.vfs import *
 from api.module.module import *
 from api.taskmanager.taskmanager import *
 from api.module.script import *
+from api.types.libtypes import Variant
 
 class JOBS(Script):
   def __init__(self):
@@ -31,7 +32,9 @@ class JOBS(Script):
         buff += "[" + str(proc.pid) + "]\t" + proc.name + "\t" + proc.state + "\t" + str(proc.stateinfo) + "\n"
     if not buff:
 	buff += "No processus launched yet !"
-    self.res.add_const("result", buff)
+    r = Variant(buff)
+    r.thisown = False
+    self.res["result"] = r
 
 
 class jobs(Module):

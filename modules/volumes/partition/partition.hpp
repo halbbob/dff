@@ -17,6 +17,8 @@
 #ifndef __PARTITION_HPP__
 #define __PARTITION_HPP__
 
+#include <map>
+#include "variant.hpp"
 #include "mfso.hpp"
 #include "vfile.hpp"
 
@@ -45,7 +47,7 @@ public:
   Partition();
   ~Partition();
 
-  virtual void		start(argument* arg);
+  virtual void		start(std::map<std::string, Variant*> args);
 };
 
 #endif
