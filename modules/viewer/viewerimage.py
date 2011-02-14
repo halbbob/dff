@@ -33,7 +33,7 @@ class LoadedImage(QLabel):
     self.baseImage = QImage()
     self.matrix = QMatrix()
     self.zoomer = 1
-    self.maxsize = 1024*10*10*10*5
+    self.maxsize = 1024*10*10*10*25
     self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored);
     self.setAlignment(Qt.AlignCenter)
     #self.setScaledContents(True);
