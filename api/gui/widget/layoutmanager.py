@@ -37,6 +37,8 @@ class layoutManager(QWidget):
         self.widgets = {}
         self.displaykey = displaykey
         self.setLayout(self.layout)
+        self.translation()
+
 
     def overwriteKeys(self, key):
         '''
@@ -174,16 +176,23 @@ class layoutManager(QWidget):
                     return -1
                 for predef in predefs:
                     listpathcontainer.insertItem(listpathcontainer.count() + 1, str(predef))
+            hbox = QHBoxLayout()
             buttonbox = QDialogButtonBox()
             if typeid == typeId.Path:
-                add = addLocalPathButton(key, listpathcontainer, isdir=False)
+                combo = QComboBox()
+                combo.addItem(self.inputFile)
+                combo.addItem(self.inputDirectory)
+            if typeid == typeId.Path:
+                add = addLocalPathButton(key, listpathcontainer, combo)
             else:
-                add = addLocalPathButton(key, listpathcontainer, isdir=False, nodetype=True)
+                add = addLocalPathButton(key, listpathcontainer, nodetype=True)
             buttonbox.addButton(add, QDialogButtonBox.ActionRole)
             rm = rmLocalPathButton(listpathcontainer)
             buttonbox.addButton(rm, QDialogButtonBox.ActionRole)
-            
-            layout.addWidget(buttonbox, 0, Qt.AlignLeft)
+            hbox.addWidget(buttonbox, 3, Qt.AlignLeft)
+            if typeid == typeId.Path:
+                hbox.addWidget(combo, 1, Qt.AlignRight)
+            layout.addLayout(hbox, 0)
             layout.addWidget(listpathcontainer, 2)
 
             if not self.displaykey:
@@ -197,8 +206,13 @@ class layoutManager(QWidget):
 
     def addPath(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
+            vbox = QVBoxLayout()
+            if typeid == typeId.Path:
+                combo = QComboBox()
+                combo.addItem(self.inputFile)
+                combo.addItem(self.inputDirectory)
+                vbox.addWidget(combo)
             layout = QHBoxLayout()
-
             if len(predefs) > 0:
                 pathcontainer = QComboBox()
                 pathcontainer.setEditable(editable)
@@ -211,15 +225,16 @@ class layoutManager(QWidget):
                 pathcontainer = QLineEdit()
                 pathcontainer.setReadOnly(not editable)
             if typeid == typeId.Path:
-                browse = addLocalPathButton(key, pathcontainer, isdir=False)
+                browse = addLocalPathButton(key, pathcontainer, inputchoice=combo)
             else:
-                browse = addLocalPathButton(key, pathcontainer, isdir=False, nodetype=True)
+                browse = addLocalPathButton(key, pathcontainer, nodetype=True)
             layout.addWidget(pathcontainer, 2)
             layout.addWidget(browse, 0)
+            vbox.addLayout(layout)
             if not self.displaykey:
-                self.layout.addRow(layout)
+                self.layout.addRow(vbox)
             else:
-                self.layout.addRow(key, layout)
+                self.layout.addRow(key, vbox)
             self.widgets[key] = pathcontainer
             return 1
         else:
@@ -256,6 +271,23 @@ class layoutManager(QWidget):
                     return str(self.widgets[k].currentText().toUtf8())
                 else:
                     return -1
+
+    def translation(self):
+        self.inputFile = self.tr("File")
+        self.inputDirectory = self.tr("Directory")
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
+            self.translation()
+        else:
+            QWidget.changeEvent(self, event)
+
 
 class fieldValidator(QRegExpValidator):
     def __init__(self, parent, typeid):
@@ -364,16 +396,76 @@ class multipleListWidget(QWidget):
         for item in selected:
             self.valuelist.insertItem(self.valuelist.count() + 1, item.text())
 
-########### Custom Widgets ###############
+
+
+class VFSDialog(QDialog):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.initShape()
+
+    def initShape(self):
+#        self.vbox = QVBoxLayout(self)
+        self.grid = QGridLayout(self)
+        self.title = QLabel("Select a node in the Virtual File System :")
+        self.vfs = SimpleNodeBrowser(self)
+
+        self.createButtons()
+        
+        self.grid.addWidget(self.title, 0, 0)
+        self.grid.addWidget(self.vfs, 1, 0)
+        self.grid.addWidget(self.buttonbox, 2, 0)
+
+    def createButtons(self):
+        self.buttonbox = QDialogButtonBox()
+        self.buttonbox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.connect(self.buttonbox, SIGNAL("accepted()"),self.accept)
+        self.connect(self.buttonbox, SIGNAL("rejected()"),self.reject)
+
+    def getSelectedNode(self):
+        return self.vfs.nodeSelected()
+
+class SimpleNodeBrowser(QWidget):
+    def __init__(self, parent):
+        QWidget.__init__(self, parent)
+        self.type = "filebrowser"
+        self.icon = None
+        self.name = "nodebrowser"
+        self.setObjectName(self.name)
+
+        self.vfs = vfs.vfs()
+        
+        self.addNodeTreeView()
+        self.selection = None
+        
+        self.box = QGridLayout()
+        self.box.addWidget(self.treeView, 0,0)
+        self.setLayout(self.box)
+
+    def addNodeTreeView(self):
+        self.treeModel = TreeModel(self, False)
+        self.treeModel.setRootPath(self.vfs.getnode("/"))
+        self.treeProxyModel = NodeTreeProxyModel()
+        self.treeProxyModel.setSourceModel(self.treeModel)
+        self.treeView = NodeTreeView(self)
+        self.treeView.setMinimumWidth(640)
+        self.treeView.setModel(self.treeModel)
+        self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
+
+    def select(self, button, node):
+        self.selection = node
+
+    def nodeSelected(self):
+        return self.selection
+
 
 class addLocalPathButton(QPushButton):
-    def __init__(self, key, container, isdir = False, nodetype=False):
+    def __init__(self, key, container, inputchoice=None, nodetype=False):
         if isinstance(container, QListWidget):
             QPushButton.__init__(self, QIcon(":add.png"), "")
         else:
             QPushButton.__init__(self, QIcon(":folder.png"), "...")
         self.setIconSize(QSize(16, 16))
-        self.isdir = isdir
+        self.inputcombo = inputchoice
         self.ckey = key
         self.container = container
         self.parent = container
@@ -385,7 +477,7 @@ class addLocalPathButton(QPushButton):
     def browse(self):
         title = "Load " + str(self.ckey)
         if not self.nodetype:
-            if not self.isdir:
+            if self.inputcombo and self.inputcombo.currentIndex() == 0:
                 if isinstance(self.container, QListWidget):
                     sFileName = QFileDialog.getOpenFileNames(self.parent, title, os.path.expanduser('~'))
                     for name in sFileName:
@@ -425,102 +517,4 @@ class rmLocalPathButton(QPushButton):
         for item in selected:
             row = self.container.row(item)
             self.container.takeItem(row)
-
-class QUSpinBox(QAbstractSpinBox):
-    def __init__(self, parent=None):
-        QAbstractSpinBox.__init__(self)
-        self.init(parent)
-        self.initEdit()
-
-    def init(self, parent):
-        #Variables
-        self.parent = parent
-        self.__minimum = 0
-        self.__maximum = 0
-        self.__range = 0
-        self.__value = 0
-        self.__singleStep = 0
-        #Functions
-        self.setWrapping(True)
-#        self.setEnabled(True)
-
-    def initEdit(self):
-        self.__edit = self.lineEdit()
-        self.__edit.connect(self.__edit, SIGNAL("editingFinished()"), self.editChanged)
-#        self.setLineEdit(self.__edit)
-
-    def stepEnabled(self):
-        if self.wrapping():
-            if self.__value == self.__minimum:
-                return self.StepEnabled(QAbstractSpinBox.StepUpEnabled)
-            elif self.__value == self.__maximum:
-                return self.StepEnabled(QAbstractSpinBox.StepDownEnabled)
-            else:
-                return self.StepEnabled(QAbstractSpinBox.StepUpEnabled | QAbstractSpinBox.StepDownEnabled)        
-
-    def maximum(self):
-        return self.__maximum
-
-    def minimum(self):
-        return self.__minimum
-
-    def setMaximum(self, max):
-        self.__maximum = max
-
-    def setMinimum(self, min):
-        self.__minimum = min
-
-    def setSingleStep(self, step):
-        self.__singlStep = step
-
-    def setRange(self, range):
-        self.__range = range
-
-    def setValue(self, value):
-        self.__value = value
-        self.refreshEdit(value)
-
-    def value(self):
-        return self.__value
-
-    def singleStep(self):
-        return self.__singleStep
-
-    def maximum(self):
-        return self.__maximum
-
-    def minimum(self):
-        return self.__minimum
-
-    def stepBy(self, step):
-        if step < 0:
-            if self.__value > self.__minimum:
-                self.__value -= 1
-                self.refreshEdit(self.__value)
-        else:
-            if self.__value < self.__maximum:
-                self.__value += 1
-                self.refreshEdit(self.__value)
-
-    def refreshEdit(self, value):
-        self.__edit.clear()
-        cvalue = "%.1d" % value
-        self.__edit.insert(cvalue)
-
-    def editChanged(self):
-        value = self.__edit.text()
-        lvalue = value.toULongLong()
-        if lvalue[1]:
-            if (lvalue[0] <= self.__maximum) and (lvalue[0] >= self.__minimum):
-                self.__value = lvalue[0]
-                self.refreshEdit(lvalue[0])
-            else:
-                self.refreshEdit(self.__value)
-        else:
-            self.refreshEdit(self.__value)
-
-
-
-
-
 
