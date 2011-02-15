@@ -65,19 +65,15 @@ public:
 
         \param fs_size the total size of the file system.
         \param vfile a pointer to the virtual file system.
-        \param res used to store the result message of the execution of \c
-        \b init(). (Empty if everything goes fine).
         \param sb_check an option to indicate if a superblock backup search
         must be done.
 	\param sb_force_addr force the adress of the superblock
 
         \throw vfsError if the initilization failed.
     */
-    void    init(uint64_t fs_size, VFile * vfile, results * res,
-                 const std::string & sb_check,
-                 const std::string & sb_force_addr);
+    void    init(uint64_t fs_size, VFile * vfile, bool sb_check, uint64_t sb_force_addr);
 
-    void    force_addr(VFile * vfile, const std::string & addr);
+    void    force_addr(VFile * vfile, uint64_t addr);
 
     /*! \brief Check the validity of the superblock.
         \return true if it is considered as valid, false otherwise.

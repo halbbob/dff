@@ -9,7 +9,6 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/tree)
 
 set(extfs_srcs
   extfs.cpp
-  CustomAttrib.cpp
   Directory.cpp
   SymLink.cpp
   Journal.cpp
@@ -28,7 +27,6 @@ set(extfs_srcs
   ExtfsShiftNode.cpp
   BlkList.cpp
   DirLs.cpp
-  Option.cpp
   MfsoAttrib.cpp
   OrphansInodes.cpp
   data_structure/InodeStructure.cpp

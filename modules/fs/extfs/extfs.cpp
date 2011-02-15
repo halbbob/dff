@@ -21,7 +21,7 @@
 #include <memory>
 
 #include "extfs.hpp"
-#include "include/Option.h"
+//#include "include/Option.h"
 #include "include/ExtfsNode.h"
 #include "include/ExtfsRawDataNode.h"
 #include "include/ExtfsSymLinkNode.h"
@@ -46,11 +46,11 @@ Extfs::~Extfs()
   delete __root_dir;
 }
 
-void    Extfs::start(argument * arg)
+void    Extfs::start(std::map<std::string, Variant*> args)
 {
   try
     {
-      launch(arg);
+      launch(args);
     }
   catch (envError & e)
     {
@@ -61,7 +61,7 @@ void    Extfs::start(argument * arg)
     {
       std::cerr << "Extfs::start() :  vfsError exeption caught :"
 		<< std::endl << "\t -> " << e.error << std::endl;
-      throw e;
+
     }
   catch (std::exception & e)
     {
@@ -78,15 +78,14 @@ void    Extfs::start(argument * arg)
 void		Extfs::launch(std::map<std::string, Variant*> args)
 {
   bool		sb_check = false;
-  std::string	sb_force_addr("1024");
-  bool		run_driver;
-  std::string	check_alloc("");
+  uint64_t	sb_force_addr;
+  bool		run_driver = true;
+  bool		check_alloc;
   uint64_t	root_i_nb = ROOT_INODE;
-  Option *	opt;
   std::map<std::string, Variant*>::iterator it;
 
   // get arguments, initialize and run.
-  if ((it = args.find("parent")) != args.end())
+  if ((it = args.find("file")) != args.end())
     this->__node = it->second->value<Node*>();
   else
     throw (std::string("Extfs::launch(): no parent provided"));
@@ -96,51 +95,52 @@ void		Extfs::launch(std::map<std::string, Variant*> args)
   else
     sb_force_addr = 1024;
 
-  arg_get(arg, "SB_check", &sb_check);
-  //  arg_get(arg, "check_alloc", &check_alloc);
-  //  sb_check = !sb_check;
-
   // initialization
-  this->init((sb_check ? "yes" : "no"),
-	     (sb_force_addr.empty() ? "1024" : sb_force_addr), check_alloc);
-  opt = new Option(arg, __SB, __vfile, __GD);
-  opt->parse(this);
+  this->init(sb_check, sb_force_addr, check_alloc);
+  /*  opt = new Option(arg, __SB, __vfile, __GD);
+      opt->parse(this); */
 
-  // parsing file system
-  arg_get(arg, "parse_fs", &run_driver);
+  // parsing file system ?
+  if ((it = args.find("parse_fs")) != args.end())
+    run_driver = it->second->value<bool>();
+  else
+    run_driver = true;
+
   if (run_driver)
     {
-      std::string	orphans("");
+      bool		orphans;
       std::string	root_inode("");
 
-      arg_get(arg, "i_orphans", &orphans);
-      arg_get(arg, "root_inode", &root_inode);
-      if (!root_inode.empty())
-	{
-	  std::istringstream	iss(root_inode);
-	  iss >> root_i_nb;
-	}
+      if ((it = args.find("i_orphans")) != args.end())
+	orphans = true;
+      else
+	orphans = false;
+
+      if ((it = args.find("root_inode")) != args.end())
+	root_i_nb = it->second->value<uint64_t>();
+      else
+	root_i_nb = ROOT_INODE;
+
       run(root_i_nb);
 
       /* parse orphans inode (i.e. inodes which are not part of the file system
 	 content) */
-      if (!(orphans.empty()) && (orphans == "yes"))
+      if (orphans)
 	__orphan_inodes();
       __root_dir->clean();
       this->registerTree(__node, __first_node);
     }
 }
 
-void		Extfs::init(const std::string & sb_check,
-			    const std::string & sb_force_addr,
-			    const std::string & check_alloc)
+void		Extfs::init(bool sb_check, uint64_t sb_force_addr, bool check_alloc)
 {
   __SB = new SuperBlock;
+  std::cout << "node name : " << __node->absolute() << std::endl;
   __vfile = __node->open();
-  __SB->init(__node->size(), __vfile, NULL, sb_check, sb_force_addr);
+  std::cerr << "turewbtrhewj" << std::endl;
+  __SB->init(__node->size(), __vfile, sb_check, sb_force_addr);
   __GD = new GroupDescriptor(__SB, __SB->block_size());
-  __GD->init(__SB->block_size(), __vfile, __SB->group_number(),
-	     (!check_alloc.empty() && check_alloc == "yes"));
+  __GD->init(__SB->block_size(), __vfile, __SB->group_number(), check_alloc);
   __alloc_inode = __SB->inodesNumber() - __SB->u_inodes_number();
   __nb_parsed_inode = 0;
 }

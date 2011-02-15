@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "include/InodeStat.h"
-#include "include/CustomAttrib.h"
 #include "include/utils/InodeUtils.h"
 
 InodeStat::InodeStat(SuperBlock * SB, Extfs * extfs)
@@ -56,7 +55,7 @@ void		InodeStat::stat(std::string opt)
 void    InodeStat::stat(uint32_t inode_nb)
 {
   std::auto_ptr<GroupDescriptor> GD (new GroupDescriptor(_SB, _SB->block_size()));
-  CustomAttrib *  attr = new CustomAttrib;
+  /*  CustomAttrib *  attr = new CustomAttrib;
   std::auto_ptr<Inode> inode(new Inode(_extfs, _SB, GD.get()));
   std::map<std::string, const char *> times;
   uint64_t inode_addr = 0;
@@ -104,7 +103,7 @@ void    InodeStat::stat(uint32_t inode_nb)
       disp_xattr(ext_attr.get());
       disp_acl(ext_attr.get());
     }
-  block_list(inode.get());
+    block_list(inode.get()); */
 }
 
 template <typename T>

@@ -48,7 +48,7 @@ namespace std
 %pythoncode
 %{
 from api.module.module import *
-from api.types.libtypes import Argument, typeId
+from api.types.libtypes import Argument, typeId, Parameter
 
 class EXTFS(Module):
   """ This module parses extented file system and try to recover deleted data."""
