@@ -73,7 +73,7 @@ void    GroupDescriptor::init(uint32_t block_size, VFile * vfile,
       }
   else
     std::cout << "No group descriptor checksum." << std::endl;
-  if (check_alloc_nb)
+  if (false == true)
     {
       __check_inode_nb(gr_number, block_size, vfile);
       __check_blk_nb(gr_number, block_size, vfile);

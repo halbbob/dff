@@ -14,7 +14,7 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-#add_subdirectory (extfs)
+add_subdirectory (extfs)
 add_subdirectory (fat)
 add_subdirectory (ntfs)
 

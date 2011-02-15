@@ -26,6 +26,7 @@
 
 #include "variant.hpp"
 #include "vfs.hpp"
+#include "mfso.hpp"
 #include "include/ExtfsNode.h"
 #include "data_structure/includes/GroupDescriptor.h"
 #include "data_structure/includes/extfs_struct/inodes.h"
@@ -79,9 +80,8 @@ public:
     vfile.
     \param check_alloc check allocation status
   */
-  void			init(const std::string & sb_check,
-			     const std::string & sb_force_addr,
-			     const std::string & check_alloc);
+  void			init(bool sb_check, uint64_t sb_force_addr,
+			     bool check_alloc);
 
   /*! \brief Run driver.
     \param root_i_nb the number of the root inode.

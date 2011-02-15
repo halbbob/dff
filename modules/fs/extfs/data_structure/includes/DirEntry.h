@@ -20,7 +20,6 @@
 #define __DIR_ENTRY__
 
 #include "vfs.hpp"
-#include "type.hpp"
 
 #include "extfs_struct/directory_entry.h"
 
