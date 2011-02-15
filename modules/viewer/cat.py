@@ -26,7 +26,6 @@ class CAT(QTextEdit, Script):
   def __init__(self):
     Script.__init__(self, "cat")
     self.vfs = vfs.vfs()
-    self.env = env.env()
     self.type = "cat"
     self.icon = None
   

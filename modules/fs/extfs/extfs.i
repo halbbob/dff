@@ -29,15 +29,18 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "mfso.hpp"
 #include "node.hpp"
 #include "vfile.hpp"
 #include "vlink.hpp"
 #include "extfs.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
+
 %include "extfs.hpp"
 
 /*
@@ -92,8 +95,9 @@ class EXTFS(Module):
                            "parameters": {"type": Parameter.Editable,
                                           "predefined": [1024]}
                            })
-    #self.conf.add_const("mime-type", "ext2")
-    #self.conf.add_const("mime-type", "ext3")
-    #self.conf.add_const("mime-type", "ext4")
+    self.conf.addConstant({"name": "mime-type", 
+                           "type": typeId.String,
+                           "description": "managed mime type",
+	                   "values": ["ext2", "ext3", "ext4"]})
     self.tags = "File systems"
 %}
