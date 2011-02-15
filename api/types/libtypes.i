@@ -42,6 +42,7 @@
 #include "constant.hpp"
 #include "argument.hpp"
 #include "config.hpp"
+#include "confmanager.hpp"
 #include "path.hpp"
 #include "vtime.hpp"
 #include "Time.h"
@@ -74,6 +75,7 @@
 %include "../include/path.hpp"
 %include "../include/Time.h"
 %include "../include/vtime.hpp"
+%include "../include/confmanager.hpp"
 
 %pythoncode
 %{
