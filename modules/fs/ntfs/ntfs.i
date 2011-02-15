@@ -24,15 +24,18 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "node.hpp"
 #include "vlink.hpp"
 #include "vfile.hpp"
 #include "mfso.hpp"
 #include "ntfs.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
+
 %include "ntfs.hpp"
 
 %pythoncode
@@ -52,7 +55,10 @@ class NTFS(Module):
     self.conf.addArgument({"name": "indexdecode",
 	                   "description": "Only try to decode index records at this offset",
                            "input": Argument.Optional|Argument.Single|typeId.UInt64})
-    #self.conf.add_const("mime-type", "NTFS")
+    self.conf.addConstant({"name": "mime-type", 
+                           "type": typeId.String,
+                           "description": "managed mime type",
+                           "values": ["NTFS"]})
     self.conf.description = "Creates a tree from a NTFS file system, for regular and deleted/orphan files.\nIt also provides human-readable dump of MFT or Indexex entries."
     self.tags = "File systems"
 %}

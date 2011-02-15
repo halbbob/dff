@@ -120,6 +120,52 @@
 %template(__VList) Variant::value< std::list<Variant *> >;
 %template(__VMap) Variant::value< std::map<std::string, Variant *> >;
 
+%extend Constant
+{
+  void	addValues(PyObject* obj) throw (std::string)
+  {
+    std::string err;
+    Py_ssize_t	lsize;
+    Py_ssize_t	i;
+    PyObject*	item;
+    std::list<Variant*>	vlist;
+    Variant*		v;
+    uint8_t		itype;
+
+    SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+    itype = self->type();
+    if (PyList_Check(obj))
+      {
+	if ((lsize = PyList_Size(obj)) == 0)
+	  throw(std::string("Constant < " + self->name() + " > provided list of values is empty"));
+	else
+	  {
+	    i = 0;
+	    
+	    while ((i != lsize) && err.empty())
+	      {
+		item = PyList_GetItem(obj, i);
+		if ((v = new_Variant__SWIG_17(item, itype)) == NULL)
+		  err = "Constant < " + self->name() + "  >\n provided list of values must be of type < " + typeId::Get()->typeToName(itype) + " >";
+		else
+		  vlist.push_back(v);
+		i++;
+	      }
+	  }
+      }
+    else
+      err = "Constant < " + self->name() + " > values must be a list";
+    if (err.empty())
+      self->addValues(vlist);
+    else
+      {
+	vlist.clear();
+	throw(err);
+      }
+    SWIG_PYTHON_THREAD_END_BLOCK;
+  }
+};
+
 %extend Argument
 {
   PyObject*	validateParams(PyObject* obj, uint16_t* ptype, int32_t* min, int32_t* max) throw(std::string)
@@ -233,7 +279,7 @@
 		item = PyList_GetItem(predef_obj, i);
 		//Maybe change this call with _wrap_new_Variant to not depend on swig overload method generation (at the moment it's SWIG_17 but could change if new Variant ctor implemented...). Then use Swig_ConvertPtr to get Variant from the returned PyObject.
 		if ((v = new_Variant__SWIG_17(item, itype)) == NULL)
-		  err = "Argument < " + self->name() + "  >\n predefined parameters must be of type < " + typeId::Get()->typeToName(self->type()) + ">";
+		  err = "Argument < " + self->name() + "  >\n predefined parameters must be of type < " + typeId::Get()->typeToName(self->type()) + " >";
 		else
 		  vlist.push_back(v);
 		i++;
@@ -440,11 +486,60 @@
 
   void	addConstant(PyObject* obj) throw(std::string)
   {
+    uint32_t	pydictsize;
+    Constant*	constant;
+    PyObject*	name_obj = 0;
+    PyObject*	type_obj = 0;
+    PyObject*   values_obj = 0;
+    PyObject*	descr_obj = 0;
+    int		ecode = 0;
+    std::string	name;
+    uint8_t	type;
+    std::string	description;
+
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
-    if (!PyDict_Check(obj))
-      ;
+    if (PyDict_Check(obj))
+      {
+	pydictsize = PyDict_Size(obj);
+	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	if ((name_obj = PyDict_GetItemString(obj, "name")) == NULL)
+	  throw(std::string("No field < name > defined for current constant"));
+	ecode = SWIG_AsVal_std_string(name_obj, &name);
+	if (!SWIG_IsOK(ecode))
+	  throw(std::string("invalid type for field < name >"));
+
+	if (self->constantByName(name) != NULL)
+	  throw(std::string("Constant < " + name + " > already added"));
+	
+	if ((type_obj = PyDict_GetItemString(obj, "type")) == NULL)
+	  throw(std::string("Constant < " + name + ">\nfield < type > must be defined"));
+	ecode = SWIG_AsVal_unsigned_SS_char(type_obj, &type);
+	if (!SWIG_IsOK(ecode))
+	  throw(std::string("Constant < " + name + ">\ninvalid type for field < type >"));
+
+	if ((descr_obj = PyDict_GetItemString(obj, "description")) == NULL)
+	  throw(std::string("Constant < " + name + " >\nfield < description > must be defined"));	    
+	ecode = SWIG_AsVal_std_string(descr_obj, &description);
+	if (!SWIG_IsOK(ecode))
+	  throw(std::string("Constant < " + name + " >\ninvalid type for field < description >"));
+
+	if ((values_obj = PyDict_GetItemString(obj, "values")) == NULL)
+	  throw(std::string("Constant < " + name + ">\nfield < values > must be defined"));
+	try
+	  {
+	    constant = new Constant(name, type, description);
+	    Constant_addValues__SWIG_1(constant, values_obj);
+	    self->addConstant(constant);
+	  }
+	catch (std::string e)
+	  {
+	    delete constant;
+	    throw("Constant < " + name + " >\n error while processing argument\ndetails:\n" + e);
+	  }
+      }
     SWIG_PYTHON_THREAD_END_BLOCK;
   }
+
 
   void	addArgument(PyObject* obj) throw(std::string)
   {
@@ -472,6 +567,9 @@
 	ecode = SWIG_AsVal_std_string(name_obj, &name);
 	if (!SWIG_IsOK(ecode))
 	  throw(std::string("invalid type for field < name >"));
+
+	if (self->argumentByName(name) != NULL)
+	  throw(std::string("Argument < " + name + " > already added"));
 	
 	if ((input_obj = PyDict_GetItemString(obj, "input")) == NULL)
 	  throw(std::string("Argument < " + name + ">\nfield < input > must be defined"));
@@ -484,9 +582,6 @@
 	ecode = SWIG_AsVal_std_string(descr_obj, &description);
 	if (!SWIG_IsOK(ecode))
 	  throw(std::string("Argument < " + name + " >\ninvalid type for field < description >"));
-
-	if (self->argumentByName(name) != NULL)
-	  throw(std::string("Argument < " + name + " > already added"));
 
 	param_obj = PyDict_GetItemString(obj, "parameters");
 	SWIG_PYTHON_THREAD_END_BLOCK;
@@ -1391,11 +1486,9 @@ namespace std
 {
   %template(MapString)       map<string, string>;
   %template(ArgumentList)	std::list<Argument*>;
-  //%template(ParameterMap)    map<string, Parameter* >;
   %template(MapVtime)        map<string, vtime* >;
   %template(MapInt)          map<string, unsigned int>;
 };
-//%traits_swigtype(Parameter);
-//%fragment(SWIG_Traits_frag(Parameter));
+
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));

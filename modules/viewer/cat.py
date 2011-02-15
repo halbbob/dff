@@ -75,9 +75,9 @@ ex:cat /myfile.txt"""
     self.conf.addArgument({"name": "file",
                            "description": "Text file to display",
                            "input": Argument.Required|Argument.Single|typeId.Node})
-    #self.conf.add_const("mime-type", "HTML")
-    #self.conf.add_const("mime-type", "ASCII")
-    #self.conf.add_const("mime-type", "XML")
-    #self.conf.add_const("mime-type", "text")
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["HTML", "ASCII", "XML", "text"]})
     self.tags = "Viewers"
     self.flags = ["console", "gui"]	

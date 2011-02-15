@@ -65,17 +65,15 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     itemSize.setText(1, str(node.size()))
 
 
-  #XXX FIXME
   def fillCompatModule(self, node):
-    pass
-    #l = node.compatibleModules()
-    #if len(l) > 0:
-    #  itemCompat = QTreeWidgetItem(self)
-    #  itemCompat.setText(0, self.relevantText)
-    #  buff = ""
-    #  for i in l:
-    #    buff += str(i) + " " 
-    #  itemCompat.setText(1, buff)
+    l = node.compatibleModules()
+    if len(l) > 0:
+      itemCompat = QTreeWidgetItem(self)
+      itemCompat.setText(0, self.relevantText)
+      buff = ""
+      for i in l:
+        buff += str(i) + " " 
+      itemCompat.setText(1, buff)
 
   def fillChildren(self, node): 
     itemChildren = QTreeWidgetItem(self)

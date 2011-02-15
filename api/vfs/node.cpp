@@ -492,33 +492,47 @@ Variant*	Node::dataType(/*uint32_t wait = 0*event callback*/) /*au lieux de void
   return types; 
 }
 
+bool		Node::constantValuesMatch(Constant* constant, Attributes vars)
+{
+  list<Variant*>		values;
+  list<Variant*>::iterator	value;
+  Attributes::iterator		var;
+  bool				match;
+
+  match = false;
+  if ((constant != NULL) && (constant->type() == typeId::String))
+    {
+      values = constant->values();
+      for (value = values.begin(); value != values.end(); value++)
+	for (var = vars.begin(); var != vars.end(); var++)
+	  if ((var->second->type() == typeId::String) && (var->second->value<std::string>().find((*value)->toString()) != -1))
+	    match = true;
+    }
+  return match;
+}
+
 std::list<std::string>*		Node::compatibleModules(void)
 {
-  // XXX variantBaseAPI !!!
-  //  class env*	environ    = env::Get();
-  //  v_key*  keys  	   = environ->vars_db["mime-type"];
-  //  list<class v_val*> vals = keys->val_l;  
-  //  list<std::string > *res = new list<std::string>(); 
-  //  std::list<class v_val*>::iterator val;
-  //  Attributes::iterator var;
+  ConfigManager*				cm;
+  std::map<std::string, Constant*>		constants;
+  std::map<std::string, Constant*>::iterator	constant;
+  list<std::string>*				res;
+  Attributes					vars;
 
-  //  for (val = vals.begin(); val != vals.end(); val++)
-  //  {
-  //    if ((*val)->type == "string")
-  //    {
-  //      Attributes 	vars = this->dataType()->value<Attributes >();
-  //      for (var = vars.begin(); var != vars.end(); var++)
-  //      { 
-  //        if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
-  //        {
-  //          res->push_back((*val)->from);
-  // 	   //delete (*var);
-  //        }
-  //      }
-  //    }
-  //  }
-  // return res;
-// XXX variantBaseAPI !!!
+  res = new list<std::string>();
+  cm = ConfigManager::Get();
+  if (cm != NULL)
+    {
+      constants = cm->constantsByName("mime-type");
+      if (constants.size() > 0)
+	{
+	  vars = this->dataType()->value<Attributes >();
+	  for (constant = constants.begin(); constant != constants.end(); constant++)
+	    if (this->constantValuesMatch(constant->second, vars))
+	      res->push_back(constant->first);
+	}
+    }
+  return res;
 }
 
 bool	Node::isCompatibleModule(string modname)

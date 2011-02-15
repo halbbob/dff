@@ -28,6 +28,7 @@
 #include "filemapping.hpp"
 #include "vfile.hpp"
 #include "variant.hpp"
+#include "confmanager.hpp"
 #include "vtime.hpp"
 #include "exceptions.hpp"
 #include "datatype.hpp"
@@ -71,6 +72,7 @@ protected:
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
   EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
   EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
+  EXPORT bool				constantValuesMatch(Constant* constant, Attributes vars);
 public:
   EXPORT 				Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
   EXPORT 				Node();

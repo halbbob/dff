@@ -277,14 +277,17 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        mod = node.compatibleModules()[0]
        if self.lmodules[mod]:
          conf = self.lmodules[mod].conf
-         cdl = conf.descr_l
-         for a in cdl:
-           if a.type == "node":
-             arg.add_node(a.name, node)
-       self.taskmanager.add(mod, arg, ["thread", "gui"])       
-     except IndexError: 
-       arg.add_node("file", node)
-       self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])       
+         arguments = conf.arguments()
+         marg = {}
+         for argument in arguments:
+           if argument.type() == typeId.Node:
+             marg[argument.name()] = node
+         args = conf.generate(marg)
+         self.taskmanager.add(mod, args, ["thread", "gui"])       
+     except (IndexError, RuntimeError):
+       conf = self.lmodules["hexadecimal"].conf
+       args = conf.generate({"file": node})
+       self.taskmanager.add("hexadecimal", args, ["thread", "gui"])
  
   def createSubMenu(self):
      self.extractor = Extractor(self.parent)

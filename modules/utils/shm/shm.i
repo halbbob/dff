@@ -21,11 +21,13 @@
 %include "std_map.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "shm.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
 
 %include "shm.hpp"
 

@@ -217,7 +217,7 @@ class ImageView(QWidget, Script):
   def start(self, args):
     self.images = []
     try:
-      node = args["file"]
+      node = args["file"].value()
       children = node.parent().children()
       for child in children:
         if self.isImage(child):
@@ -354,8 +354,8 @@ class viewerimage(Module):
     self.conf.addArgument({"name": "file",
                            "description": "Picture file to display",
                            "input": Argument.Required|Argument.Single|typeId.Node})
-    #self.conf.add_const("mime-type", "JPEG")
-    #self.conf.add_const("mime-type", "GIF")
-    #self.conf.add_const("mime-type", "PNG")
-    #self.conf.add_const("mime-type", "PC bitmap")
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap"]})
     self.tags = "Viewers"

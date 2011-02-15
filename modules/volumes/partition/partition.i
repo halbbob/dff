@@ -19,14 +19,16 @@
 %include "std_map.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
 
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "export.hpp"
 #include "partition.hpp"
 %}
 
-%include "export.hpp"
+%import "../../../api/vfs/libvfs.i"
+
 %include "partition.hpp"
 
 
@@ -42,6 +44,9 @@ class PARTITION(Module):
     self.conf.addArgument({"name": "file",
                            "description": "file containing one or more partition(s)",
 	                   "input": Argument.Required|Argument.Single|typeId.Node})    
-    #self.conf.add_const("mime-type", "partition")
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["partition"]})
     self.tags = "Volumes"
 %}

@@ -767,6 +767,8 @@ Open the node and return a pointer to a VFile instance
 #include "vlink.hpp"
 #include "vfile.hpp"
 #include "variant.hpp"
+#include "vtime.hpp"
+#include "path.hpp"
 %}
 
 %import "../events/libevents.i"
@@ -789,10 +791,15 @@ namespace std
   %template(SetNode)    set<Node *>;
   %template(VectChunck)  vector<chunck *>;
   %template(Listui64)	list<uint64_t>;
-  //%template(MapTime)	map<string, vtime*>;
-//  %template(MapAttributes) map<std::string, Variant*>;
+  %template(ListString) list<std::string>;
+  %template(MapTime)	map<string, vtime*>;
+  /* %template(MapAttributes) map<std::string, Variant*>; */
 };
 
+%traits_swigtype(Variant);
+%fragment(SWIG_Traits_frag(Variant));
+%traits_swigtype(vtime);
+%fragment(SWIG_Traits_frag(vtime));
 
 /* %extend mfso */
 /* { */

@@ -23,15 +23,17 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "node.hpp"
 #include "vlink.hpp"
 #include "vfile.hpp"
 #include "mfso.hpp"
 #include "fatfs.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
 
 %include "fatfs.hpp"
 
@@ -50,7 +52,10 @@ class FATFS(Module):
     self.conf.addArgument({"name": "meta_carve",
                            "description": "carve directory entries in unallocated clusters (more accurate but slower)",
                            "input": Argument.Empty})
-    #self.conf.add_const("mime-type", "FAT")
+    self.conf.addConstant({"name": "mime-type", 
+                           "type": typeId.String,
+                           "description": "managed mime type",
+                           "values": ["FAT"]})
     self.tags = "File systems"
 %}
 

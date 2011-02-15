@@ -182,4 +182,7 @@ class player(Module):
    self.tags = "Viewers"
    #for mimeType in Phonon.BackendCapabilities.availableMimeTypes():
      #self.conf.add_const("mime-type", str(mimeType))
-   #self.conf.add_const("mime-type", "video")
+   self.conf.addConstant({"name": "mime-type", 
+                          "type": typeId.String,
+                          "description": "managed mime type",
+                          "values": ["video"]})

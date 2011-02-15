@@ -20,13 +20,16 @@
 %include "std_set.i"
 %include "std_map.i"
 %include "windows.i"
-%import "../../../api/vfs/libvfs.i"
 
 %exception;
 
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "fuse.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
 
 %include "fuse.hpp"
 

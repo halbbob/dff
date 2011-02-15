@@ -70,7 +70,9 @@ class metaexif(Module):
     self.conf.addArgument({"name": "file",
                            "description": "file for extracting metadata",
                            "input": Argument.Required|Argument.Single|typeId.Node})
-    #self.conf.add_const("mime-type", "jpeg")
-    #self.conf.add_const("mime-type", "TIFF")
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["jpeg", "TIFF"]})
     self.flags = "single"
     self.tags = "Metadata"

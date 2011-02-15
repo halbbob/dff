@@ -54,9 +54,9 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
     }
-  catch (const std::exception &e)
+  catch (std::string e)
     {
-      SWIG_exception(SWIG_RuntimeError, e.what());
+      SWIG_exception(SWIG_RuntimeError, e.c_str());
     }
   catch (Swig::DirectorException e)
     {
@@ -85,9 +85,9 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
     }
-  catch (const std::exception &e)
+  catch (std::string e)
     {
-      SWIG_exception(SWIG_RuntimeError, e.what());
+      SWIG_exception(SWIG_RuntimeError, e.c_str());
     }
   catch (Swig::DirectorException e)
     {
@@ -118,9 +118,9 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
     }
-  catch (const std::exception &e)
+  catch (std::string e)
     {
-      SWIG_exception(SWIG_RuntimeError, e.what());
+      SWIG_exception(SWIG_RuntimeError, e.c_str());
     }
 }
 

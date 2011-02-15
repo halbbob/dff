@@ -21,9 +21,9 @@
 %include "std_map.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
 #include "fso.hpp"
 #include "mfso.hpp"
 #include "node.hpp"
@@ -31,6 +31,8 @@
 #include "vfile.hpp"
 #include "local.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
 
 %include "local.hpp"
 
