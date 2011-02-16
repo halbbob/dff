@@ -136,6 +136,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.treeModel = TreeModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
+
     self.treeProxyModel = NodeTreeProxyModel()
     self.treeProxyModel.setSourceModel(self.treeModel)
     self.treeView = NodeLinkTreeView(self)
@@ -146,7 +147,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
 
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-#    self.connect(self.treeView, SIGNAL(""), self.nodeTreeDoubleClicked)
+    #####
+    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.treeModel.nodeClicked)
 
   def addNodeView(self):
     self.addTableView()

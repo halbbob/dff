@@ -18,45 +18,6 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from api.vfs.libvfs import VFS
 
-
-class NodeViewEventBackup():
-  """
-  FOr testting, this will probably be modified
-  """
-
-  def __init__(self, parent = None):
-   self.enterInDirectory = None 
-   self.parent = parent
-   self.VFS = VFS.Get()
-
-  def keyReleaseEvent(self, e):
-    index = self.currentIndex()
-    index = self.model().mapToSource(index)
-    if index.isValid():
-      node = self.VFS.getNodeFromPointer(index.internalId())
-      self.emit(SIGNAL("nodePressed"), e.key(), node)
-    self.origView.keyReleaseEvent(self, e)
-
-  def mouseReleaseEvent(self, e):
-     index = self.indexAt(e.pos())
-     #index = self.model().mapToSource(index)
-     if index.isValid():
-       node = self.VFS.getNodeFromPointer(index.internalId())
-       self.emit(SIGNAL("nodeClicked"), e.button(), node)
-     self.origView.mouseReleaseEvent(self, e)
-
-  def mouseDoubleClickEvent(self, e):
-     index = self.indexAt(e.pos())
-     #index = self.model().mapToSource(index)
-     if index.isValid():
-       node = self.VFS.getNodeFromPointer(index.internalId())
-       self.emit(SIGNAL("nodeDoubleClicked"), e.button(), node) 
-     self.origView.mouseReleaseEvent(self, e)
-
-  def setEnterInDirectory(self, flag):
-     self.enterInDirectory = flag  
-
-
 class NodeViewEvent():
   def __init__(self, parent = None):
    self.enterInDirectory = None 
@@ -130,14 +91,22 @@ class NodeLinkTreeView(QTreeView):
      self.setUniformRowHeights(False)
 
   def mousePressEvent(self, e):
-     index = self.indexAt(e.pos())
-     if index.isValid():
-       indexWasExpanded = self.isExpanded(index)
-       QTreeView.mousePressEvent(self, e)
-       if (self.isExpanded(index) == indexWasExpanded):
-         index = self.model().mapToSource(index)
-         node = self.VFS.getNodeFromPointer(index.internalId())
-         self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
+    index = self.indexAt(e.pos())
+    if index.isValid():
+      indexWasExpanded = self.isExpanded(index)
+      QTreeView.mousePressEvent(self, e)
+      index = self.model().mapToSource(index)
+      node = self.VFS.getNodeFromPointer(index.internalId())
+#      if (self.isExpanded(index) == indexWasExpanded):
+        #index = self.model().mapToSource(index)
+        #node = self.VFS.getNodeFromPointer(index.internalId())
+      
+        
+ #     else:
+  #      print "is not expended"
+      self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
+    else:
+      print "invalid name clicked node"
 
 class NodeTreeView(QTreeView, NodeViewEvent):
   def __init__(self, parent):

@@ -23,7 +23,6 @@ from api.types.libtypes import Variant
 from api.vfs.libvfs import VFS
 from api.events.libevents import EventHandler
 
-
 from Queue import *
 
 HNAME = 0
@@ -139,189 +138,6 @@ class TypeWorker(QThread):
 
 typeWorker = TypeWorker()
 typeWorker.start()
-
-
-class NodeTreeProxyModel(QSortFilterProxyModel):
-  def __init__(self, parent = None):
-    QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()
-
-  def data(self, index, role):
-    if index.isValid():
-      if role == Qt.CheckStateRole:
-        return QVariant()
-      else:
-        origindex = self.mapToSource(index)
-        if origindex.isValid():
-          return self.sourceModel().data(origindex, role)
-        else:
-          return QVariant()
-    else:
-      return QVariant()
-
-  def filterAcceptsRow(self, row, parent):
-     index = self.sourceModel().index(row, 0, parent) 
-     if index.isValid():
-       node = self.VFS.getNodeFromPointer(index.internalId())
-       if node.hasChildren() or node.isDir(): # or node.parent().absolute() == "/" or node.isDir():
-	 return True
-     return False
-
-  def sort(self, col, order):
-    return
-
-  def columnCount(self, parent = QModelIndex()):
-     return 1
-
-
-class TreeModel(QAbstractItemModel, EventHandler):
-  def __init__(self, __parent = None, event=False, fm = False):
-    QAbstractItemModel.__init__(self, __parent)
-    EventHandler.__init__(self)
-    self.__parent = __parent
-    self.VFS = VFS.Get()
-    self.map = {}
-    self.imagesthumbnails = None
-    self.connect(self, SIGNAL("dataImage"), self.setDataImage)
-    self.fetchedItems = 0
-    self.thumbQueued = {}
-    self.checkedNodes = set()
-    if event:
-      self.VFS.connection(self)
-
-  def setDataImage(self, index, node, image):
-     pixmap = QPixmap().fromImage(image)
-     pixmapCache.insert(str(node.this), pixmap)
-     self.__parent.currentView().update(index)
-
-  def setRootPath(self, node, kompleter = None):
-    self.rootChildCount = node.childCount()
-    self.fetchedItems = 0
-    typeWorker.clear()
-    self.rootItem = node
-    if kompleter == None:
-      self.emit(SIGNAL("rootPathChanged"), node)
-    self.reset()
-
-  def rowCount(self, parent):
-    if not parent.isValid():
-      parentItem = self.rootItem
-    else:
-      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    return parentItem.childCount()
-
-  def headerData(self, section, orientation, role=Qt.DisplayRole):
-    if role != Qt.DisplayRole:
-      return QVariant()
-    else:
-      return QVariant(self.tr('Name'))
-
-  def data(self, index, role):
-    if not index.isValid():
-      return QVariant()
-    node = self.VFS.getNodeFromPointer(index.internalId())
-#    if not node.hasChildren() and not node.isDir():
-#      return QVariant()
-    column = index.column()
-    if role == Qt.ForegroundRole:
-      if column == 0:
-        if node.isDeleted():
-          return  QVariant(QColor(Qt.red))
-    if role == Qt.DisplayRole :
-      return QVariant(node.name())
-    if role == Qt.DecorationRole:
-      if column == HNAME:
-        if not self.imagesthumbnails:
-          return QVariant(QIcon(node.icon()))
-        if not node.hasChildren():
-          if node.isDir():
-            return QVariant(QIcon(":folder_128.png"))
-          if not node.size():
-            return QVariant(QIcon(":folder_empty_128.png"))
-          return QVariant(QIcon(":folder_empty_128.png"))
-        else:
-          if node.size() != 0:
-	    return QVariant(QIcon(":folder_documents_128.png"))
-          else:
-	    return QVariant(QIcon(":folder_128.png"))
-    if role == Qt.CheckStateRole:
-      if column == HNAME:
-	if (long(node.this), 0) in self.checkedNodes:
-	  if node.hasChildren():
-	    return Qt.PartiallyChecked
-          else:
-   	    return Qt.Checked
-	elif (long(node.this), 1) in self.checkedNodes:
-          return Qt.Checked
-        else:
-          return Qt.Unchecked
-    return QVariant()
-
-  def columnCount(self, parent = QModelIndex()):
-     return 1
-
-  def index(self, row, column, parent = QModelIndex()):
-    if not self.hasIndex(row, column, parent):
-      return QModelIndex()
-    if parent.isValid():
-      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    else:
-      parentItem = self.rootItem
-    childItem = parentItem.children()[row]
-    index = self.createIndex(row, column, long(childItem.this))
-    return index
-
-  def parent(self, index):
-    if not index.isValid():
-      return QModelIndex()
-    childItem = self.VFS.getNodeFromPointer(index.internalId())
-    parentItem = childItem.parent()
-    if parentItem.this == self.rootItem.this:
-      return QModelIndex()
-    children = parentItem.parent().children()
-    index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
-    return index
-
-  def hasChildren(self, parent):
-    self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    if self.parentItem == None :
-      return self.rootItem.hasChildren()
-    return self.parentItem.hasChildren()
-
-  def setData(self, index, value, role):
-     if not index.isValid():
-       return False
-     if role == Qt.CheckStateRole:
-       column = index.column()
-       if column == HNAME:
-    	 node = self.VFS.getNodeFromPointer(index.internalId())
-         if node == None:
-           return False
-         if value == Qt.Unchecked:
-	    if (long(node.this), 0) in self.checkedNodes:
-  	      self.checkedNodes.remove((long(node.this), 0))
-            else:
-	      self.checkedNodes.remove((long(node.this), 1))	
-         elif value == Qt.PartiallyChecked:
-	    self.checkedNodes.add((long(node.this), 0)) 
-         elif value == Qt.Checked:
-	    if node.hasChildren():
-              if (long(node.this), 0) not in self.checkedNodes:
-                self.checkedNodes.add((long(node.this), 0))
-              else:
-                self.checkedNodes.remove((long(node.this), 0))
-                self.checkedNodes.add((long(node.this), 1))
-            else:
-              self.checkedNodes.add((long(node.this) , 1)) 
-     return True #return true if ok 	
-
-  def flags(self, flag):
-     return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
-
-  def Event(self, e):
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.emit(SIGNAL("layoutChanged()"))
-
 
 class VFSItemModel(QAbstractItemModel, EventHandler):
   def __init__(self, __parent = None, event=False, fm = False):
@@ -621,3 +437,236 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     self.moduleTr = self.tr('Module')
     self.deletedTr = self.tr('Deleted')
 
+
+class NodeTreeProxyModel(QSortFilterProxyModel):
+  def __init__(self, parent = None):
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()
+
+  def data(self, index, role):
+    if index.isValid():
+      if role == Qt.CheckStateRole:
+        return QVariant()
+      else:
+        origindex = self.mapToSource(index)
+        if origindex.isValid():
+          return self.sourceModel().data(origindex, role)
+        else:
+          return QVariant()
+    else:
+      return QVariant()
+
+  def filterAcceptsRow(self, row, parent):
+#    return True
+    index = self.sourceModel().index(row, 0, parent)
+    if index.isValid():
+      return True
+      node = self.VFS.getNodeFromPointer(index.internalId())
+
+      if node.hasChildren() or node.isDir() or node.parent().absolute() == "/": # or node.isDir():
+        return True
+    return False
+
+  def sort(self, col, order):
+    return
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
+
+class TreeModel(QAbstractItemModel, EventHandler):
+  def __init__(self, __parent = None, event=False, fm = False):
+    QAbstractItemModel.__init__(self, __parent)
+    EventHandler.__init__(self)
+    self.__parent = __parent
+    self.VFS = VFS.Get()
+    self.map = {}
+    self.imagesthumbnails = None
+    self.connect(self, SIGNAL("dataImage"), self.setDataImage)
+    self.fetchedItems = 0
+    self.thumbQueued = {}
+    self.node_list = []
+    self.checkedNodes = set()
+    if event:
+      self.VFS.connection(self)
+    self.nb_item = 4
+
+  def setDataImage(self, index, node, image):
+     pixmap = QPixmap().fromImage(image)
+     pixmapCache.insert(str(node.this), pixmap)
+     self.__parent.currentView().update(index)
+
+  def nodeClicked(self, mouseButton, node, index = None):
+    if node == None:
+      return
+    if node.hasChildren():
+      self.node_list = []
+      sons = node.children()
+      for i in sons:
+        if i.isDir() or i.hasChildren():
+          self.nb_item = self.nb_item + 1
+          self.node_list.append(i)
+
+  def setRootPath(self, node, kompleter = None):
+    if node == None:
+      return
+    if node.hasChildren():
+      sons = node.children()
+      for i in sons:
+        if i.isDir() or i.hasChildren():
+          self.node_list.append(i)
+    self.rootChildCount = node.childCount()
+    self.fetchedItems = 0
+    # self.node_list = node.children()
+    # self.nb_item = len(node.children())
+    typeWorker.clear()
+    self.rootItem = node
+    if kompleter == None:
+      self.emit(SIGNAL("rootPathChanged"), node)
+    self.reset()
+    
+  def rowCount(self, parent):
+    if not parent.isValid():
+      parentItem = self.rootItem
+    else:
+      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    sons = parentItem.children()
+    tmp = 0
+    for i in sons:
+      if i.isDir() or i.hasChildren():
+        tmp = tmp + 1
+#    print "node " + parentItem.name() + " nb child : " + str(tmp)
+#    print "child count : " + str(parentItem.childCount())
+    return tmp
+    return parentItem.childCount()
+
+  def headerData(self, section, orientation, role=Qt.DisplayRole):
+    if role != Qt.DisplayRole:
+      return QVariant()
+    else:
+      return QVariant(self.tr('Name'))
+
+  def data(self, index, role):
+    if not index.isValid():
+      return QVariant()
+    #node = self.VFS.getNodeFromPointer(index.internalId())
+    # if index.column() >= len(self.node_list):
+    # return QVariant()
+    # node = self.node_list[index.row()]
+
+
+    #print "required row : " + str(row)
+    #print "list len : " + str(len(self.node_list))
+
+#    try:
+#      node = self.node_list[row - len(self.node_list)]
+#    except:
+    node = self.VFS.getNodeFromPointer(index.internalId())
+#    print "node : " + node.name()
+#    if node == None:
+#      return QVariant()
+    if (node.hasChildren() == False) and (node.isDir() == False):
+      return QVariant()
+
+    column = index.column()
+    if role == Qt.ForegroundRole:
+      if column == 0:
+        if node.isDeleted():
+          return  QVariant(QColor(Qt.red))
+    if role == Qt.DisplayRole :
+      return QVariant(node.name())
+    if role == Qt.DecorationRole:
+      if column == HNAME:
+        if not self.imagesthumbnails:
+          return QVariant(QIcon(node.icon()))
+        if not node.hasChildren():
+          if node.isDir():
+            return QVariant(QIcon(":folder_128.png"))
+          if not node.size():
+            return QVariant(QIcon(":folder_empty_128.png"))
+          return QVariant(QIcon(":folder_empty_128.png"))
+        else:
+          if node.size() != 0:
+	    return QVariant(QIcon(":folder_documents_128.png"))
+          else:
+	    return QVariant(QIcon(":folder_128.png"))
+    if role == Qt.CheckStateRole:
+      if column == HNAME:
+	if (long(node.this), 0) in self.checkedNodes:
+	  if node.hasChildren():
+	    return Qt.PartiallyChecked
+          else:
+   	    return Qt.Checked
+	elif (long(node.this), 1) in self.checkedNodes:
+          return Qt.Checked
+        else:
+          return Qt.Unchecked
+    return QVariant()
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
+
+  def index(self, row, column, parent = QModelIndex()):
+    if not self.hasIndex(row, column, parent):
+      return QModelIndex()
+    if parent.isValid():
+      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    else:
+      parentItem = self.rootItem
+    childItem = parentItem.children()[row]
+    if not childItem.hasChildren() and not childItem.isDir():
+      return QModelIndex()
+    index = self.createIndex(row, column, long(childItem.this))
+    return index
+
+  def parent(self, index):
+    if not index.isValid():
+      return QModelIndex()
+    childItem = self.VFS.getNodeFromPointer(index.internalId())
+
+    parentItem = childItem.parent()
+    if parentItem.this == self.rootItem.this:
+      return QModelIndex()
+    if childItem.isDir() or childItem.hasChildren():
+      index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
+      return index
+    return QModelIndex()
+
+  def hasChildren(self, parent):
+    self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+    if self.parentItem == None :
+      return self.rootItem.hasChildren()
+    return self.parentItem.hasChildren()
+
+  def setData(self, index, value, role):
+     if not index.isValid():
+       return False
+     if role == Qt.CheckStateRole:
+       column = index.column()
+       if column == HNAME:
+    	 node = self.VFS.getNodeFromPointer(index.internalId())
+         if node == None:
+           return False
+         if value == Qt.Unchecked:
+	    if (long(node.this), 0) in self.checkedNodes:
+  	      self.checkedNodes.remove((long(node.this), 0))
+            else:
+	      self.checkedNodes.remove((long(node.this), 1))	
+         elif value == Qt.PartiallyChecked:
+	    self.checkedNodes.add((long(node.this), 0)) 
+         elif value == Qt.Checked:
+	    if node.hasChildren():
+              if (long(node.this), 0) not in self.checkedNodes:
+                self.checkedNodes.add((long(node.this), 0))
+              else:
+                self.checkedNodes.remove((long(node.this), 0))
+                self.checkedNodes.add((long(node.this), 1))
+            else:
+              self.checkedNodes.add((long(node.this) , 1)) 
+     return True #return true if ok 	
+
+  def flags(self, flag):
+     return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )  
+
+  def Event(self, e):
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
