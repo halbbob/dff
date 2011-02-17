@@ -24,10 +24,13 @@ from api.loader import *
 from api.vfs import vfs
 from api.devices.devices import Devices
 from api.gui.widget.devicesdialog import DevicesDialog
+from api.gui.widget.layoutmanager import *
+from api.types.libtypes import typeId
 
 from ui.gui.dialog.preferences import Preferences
 from ui.gui.resources.ui_about import Ui_About
 from ui.gui.resources.ui_evidencedialog import Ui_evidenceDialog
+
 
 class Dialog(QObject):
   def __init__(self, parent):
@@ -67,34 +70,42 @@ class Dialog(QObject):
         edialog = evidenceDialog(self.parent)
         ir = edialog.exec_()
         if ir > 0:
-          dtype = edialog.comboformat.itemData(edialog.comboformat.currentIndex()).toString()
-          # RAW files # EWF files # Local directory
-          if dtype == 'dir':
-            sFiles = QFileDialog.getExistingDirectory(self.parent, edialog.actionAdd_evidence_directory.text(), os.path.expanduser('~'))
-          elif dtype == 'ewf' or dtype == 'raw':
-            sFiles = QFileDialog.getOpenFileNames(self.parent, edialog.actionAdd_evidence_files.text(),  os.path.expanduser('~'))
+          args = {}
+          paths = edialog.manager.get("local")
+          print paths
+          if edialog.rawcheck.isChecked():
+            module = "local"
+            args["path"] = paths
+          else:
+            module = "ewf"
+            args["files"] = paths
+          self.conf = self.loader.get_conf(str(module))
+          try:
+            genargs = self.conf.generate(args)
+            self.taskmanager = TaskManager()
+            self.taskmanager.add(str(module), genargs, ["thread", "gui"])
+          except RuntimeError:
+            err_type, err_value, err_traceback = sys.exc_info()
+            err_trace =  traceback.format_tb(err_traceback)
+            err_typeval = traceback.format_exception_only(err_type, err_value)
+            terr = QString()
+            detailerr = QString()
+            for err in err_trace:
+              detailerr.append(err)
+              for errw in err_typeval:
+                terr.append(errw)
+                detailerr.append(err)
+            self.messageBox(terr, detailerr)
 
-          mod = ""
-          if len(sFiles) > 0:
-            args = {}
-            exec_type = ["thread", "gui"]
-            pathes = []
-            if dtype != 'dir':
-              for name in sFiles:
-                pathes.append(str(name.toUtf8()))
-                #arg = {"empty": None}
-              if dtype == 'ewf':
-                mod = "ewf"
-                args["file"] = pathes
-              else:
-                mod = "local"
-                args["parent"] = self.vfs.getnode("/Logical files")
-                args["path"] = pathes
-            else:
-              mod = "local"
-              args["parent"] = self.vfs.getnode("/Logical files")
-              args["path"] = [str(sFiles.toUtf8())]
-          self.taskmanager.add(mod, args, exec_type)
+  def messageBox(self, coretxt, detail):
+    msg = QMessageBox()
+    msg.setWindowTitle("Error in configuration")
+    msg.setText("An error was detected in the configuration")
+    msg.setInformativeText(coretxt)
+    msg.setIcon(QMessageBox.Critical)
+    msg.setDetailedText(detail)
+    msg.setStandardButtons(QMessageBox.Ok)
+    ret = msg.exec_()
  
   def loadDriver(self):
         sFileName = QFileDialog.getOpenFileName(self.parent, self.parent.actionLoadModule.toolTip(), os.path.expanduser('~'),  "Modules(*.py)")
@@ -133,22 +144,23 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     self.loader = loader.loader()
     self.createShape()
 
-
   def createShape(self):
     """ Removes EWF if not in modules
 
     Set itemData for easy access without taking care of text (can be
     translated).
     TODO Futur : Get all DFF connectors
-    """
-    
-    # 
-    self.comboformat.setItemData(0, QString('raw'))
-    self.comboformat.setItemData(1, QString('ewf'))
-    self.comboformat.setItemData(2, QString('dir'))
-    
+    """    
+
     if "ewf" not in self.loader.modules:
-      self.comboformat.removeItem(1)
+      self.ewfcheck.setEnabled(False)
+    self.rawcheck.setChecked(True)
+    layout = QHBoxLayout()
+    layout.setMargin(0)
+    self.manager = layoutManager()
+    self.manager.addPathList("local", typeId.Path, [])
+    layout.addWidget(self.manager)
+    self.pathselector.setLayout(layout)
 
   def changeEvent(self, event):
     """ Search for a language change event
