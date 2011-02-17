@@ -109,7 +109,7 @@
   <action name="actionOpen_evidence">
    <property name="icon">
     <iconset resource="gui.qrc">
-     <normaloff>:/add_image.png</normaloff>:/add_image.png</iconset>
+     <normaloff>:/fileopen.png</normaloff>:/fileopen.png</iconset>
    </property>
    <property name="text">
     <string>Open evidence file(s)</string>
@@ -118,7 +118,7 @@
   <action name="actionOpen_device">
    <property name="icon">
     <iconset resource="gui.qrc">
-     <normaloff>:/add_device.png</normaloff>:/add_device.png</iconset>
+     <normaloff>:/dev_hd.png</normaloff>:/dev_hd.png</iconset>
    </property>
    <property name="text">
     <string>Open local device</string>
