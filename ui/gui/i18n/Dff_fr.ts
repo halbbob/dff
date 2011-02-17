@@ -1041,52 +1041,72 @@
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="14"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="23"/>
         <source>Select evidence type</source>
         <translation>Sélectionnez le type de données</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="42"/>
+        <location filename="../resources/evidencedialog.ui" line="42"/>
         <source>Select data type to open in the VFS</source>
-        <translation>Sélectionnez le type de données à ouvrir dans le VFS</translation>
+        <translation type="obsolete">Sélectionnez le type de données à ouvrir dans le VFS</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="53"/>
+        <location filename="../resources/evidencedialog.ui" line="53"/>
         <source>Data type:</source>
-        <translation>Type de données :</translation>
+        <translation type="obsolete">Type de données :</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="67"/>
+        <location filename="../resources/evidencedialog.ui" line="67"/>
         <source>RAW files</source>
-        <translation>Fichiers brut (RAW)</translation>
+        <translation type="obsolete">Fichiers brut (RAW)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="72"/>
+        <location filename="../resources/evidencedialog.ui" line="72"/>
         <source>EWF files</source>
-        <translation>Fichiers EWF</translation>
+        <translation type="obsolete">Fichiers EWF</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="77"/>
+        <location filename="../resources/evidencedialog.ui" line="77"/>
         <source>Local directory</source>
-        <translation>Répertoire local</translation>
+        <translation type="obsolete">Répertoire local</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="151"/>
         <source>Add evidence directory</source>
         <translation>Ajouter un répertoire</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="156"/>
         <source>Add evidence files</source>
         <translation>Ajouter un ou plusieurs fichiers</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="78"/>
+        <source>Open local files or directory</source>
+        <translation>Ouvrir des fichiers ou répertoires locaux</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="98"/>
+        <source>RAW format</source>
+        <translation>Fichiers brut (RAW)</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="114"/>
+        <source>EWF format</source>
+        <translation>Fichiers EWF</translation>
     </message>
 </context>
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="106"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
         <source>Results</source>
         <translation>Résultats</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="113"/>
+        <source>No results</source>
+        <translation>Aucun résultat</translation>
     </message>
 </context>
 </TS>

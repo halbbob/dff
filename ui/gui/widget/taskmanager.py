@@ -83,14 +83,12 @@ class procMB(QDialog):
         QDialog.__init__(self, parent)
         self.translation()
         self.setWindowTitle(self.nameTitle)
-        self.vwidget = VariantTreeWidget(self)
         self.tm = TaskManager()
         self.pid = pid
         res = {}
         for proc in self.tm.lprocessus:
             if str(proc.pid) == self.pid:
                 res = proc.res
-        self.vwidget.fillMap(self.vwidget, res)
         self.box = QVBoxLayout()
         self.setLayout(self.box)
         self.dialogButtonsLayout = QHBoxLayout()
@@ -98,9 +96,18 @@ class procMB(QDialog):
         self.dialogButtonsBox.setStandardButtons(QDialogButtonBox.Ok)
         self.connect(self.dialogButtonsBox, SIGNAL("accepted()"), self.accept)
         self.dialogButtonsLayout.addWidget(self.dialogButtonsBox)
-        self.box.addWidget(self.vwidget)
+        if len(res) > 0:
+            self.vwidget = VariantTreeWidget(self)
+            self.vwidget.fillMap(self.vwidget, res)
+            self.box.addWidget(self.vwidget)
+            self.box.addLayout(self.dialogButtonsLayout)
+            self.setMinimumSize(800, 600)
+        else:
+            label = QLabel(self.noResult)
+            self.box.addWidget(label)
         self.box.addLayout(self.dialogButtonsLayout)
-        self.setMinimumSize(800, 600)
+            
 
     def translation(self):
         self.nameTitle = self.tr('Results')
+        self.noResult = self.tr("No results")
