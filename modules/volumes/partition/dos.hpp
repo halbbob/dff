@@ -99,15 +99,16 @@ private:
   bool				mbrBadMagic;
   uint32_t			ebr_base;
   uint32_t			partnum;
-
+  std::map<std::string, Variant*>	res;
   dos_pte*			toPte(uint8_t* buff);
-  void				createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base=0);
+  DosPartitionNode*				createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base=0);
 
 public:
   DosPartition();
   ~DosPartition();
+  Attributes		result();
   void			open(VFile* vfile, uint64_t offset, Node* root, Partition* fsobj, Node* origin);
-  void			readEbr(uint32_t cur, uint32_t shift=0);
+  void			readEbr(std::list<Variant* >* vlist, uint32_t cur, uint32_t shift=0);
   void			readMbr(uint64_t offset);
 };
 

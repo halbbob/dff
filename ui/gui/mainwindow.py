@@ -38,7 +38,6 @@ from ui.gui.ide.ide import Ide
 
 from ui.gui.widget.taskmanager import Processus
 from ui.gui.widget.modules import Modules
-from ui.gui.widget.env import Env
 from ui.gui.widget.stdio import STDErr, STDOut
 
 from ui.gui.widget.shell import ShellActions
@@ -250,8 +249,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
         self.addDockWidgets(self.wmodules, 'modules', master=False)
-        self.wenv = Env(self)
-        self.addDockWidgets(self.wenv, 'env', master=False)
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
 
@@ -297,7 +294,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def refreshSecondWidgets(self):
 	self.wprocessus.LoadInfoProcess()
         self.wmodules.LoadInfoModules()
-	self.wenv.LoadInfoEnv()        
+
 
     def refreshTabifiedDockWidgets(self):
         allTabs = self.findChildren(QTabBar)

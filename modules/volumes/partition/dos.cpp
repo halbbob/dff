@@ -400,6 +400,12 @@ DosPartition::~DosPartition()
     }
 }
 
+
+Attributes	DosPartition::result()
+{
+  return this->res;
+}
+
 void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, Partition* fsobj, Node* origin)
 {
   if (vfile != NULL)
@@ -443,17 +449,20 @@ dos_pte*	DosPartition::toPte(uint8_t* buff)
     }
 }
 
-void	DosPartition::createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base)
+DosPartitionNode*	DosPartition::createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base)
 {
   DosPartitionNode*	node;
   uint64_t		size;
   std::string		partname;
+  Attributes		attrs;
+  Attributes		vmap;
 
   partname =  "part" + uint32ToStr(this->partnum);
   this->partnum += 1;
   size = (uint64_t)(pte->total_blocks) * 512;
   node = new DosPartitionNode(partname, size, this->root, this->fsobj, this->origin);
   node->setCtx(offset, pte, type, base);
+  return node;
 }
 
 void	DosPartition::readMbr(uint64_t offset)
@@ -461,6 +470,10 @@ void	DosPartition::readMbr(uint64_t offset)
   dos_partition_record	record;
   uint8_t		i;
   dos_pte*		pte;
+  std::list<Variant*>	res;
+  DosPartitionNode*	node;
+  uint32_t		disk_sig;
+  Attributes		mbrattr;;
 
   try
     {
@@ -468,23 +481,32 @@ void	DosPartition::readMbr(uint64_t offset)
       if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
 	{
 	  if (record.signature != 0xAA55)
-	    ;
-	  // {
-	  //     throw vfsError("[PARTITION] Not a valid MBR, Signature (0x55AA) does not match\n");
-	  //   }
+	    mbrattr["signature"] = new Variant(std::string("Not setted"));
+	  else
+	    mbrattr["signature"] = new Variant(record.signature);
+
+	  memcpy(&disk_sig, record.a.mbr.disk_signature, 4);
+	  mbrattr["disk signature"] = new Variant(disk_sig);
+	  this->res["mbr"] = new Variant(mbrattr);
 	  for (i = 0; i != 4; i++)
 	    {
-	      pte = this->toPte(record.partitions+(i*16));
-	      if (pte != NULL)
+	      if ((pte = this->toPte(record.partitions+(i*16))) != NULL)
 		{
 		  if (is_ext(pte->type))
 		    {
-		      this->createNode(pte, offset + 446 + i * 16, EXTENDED);
+		      std::list<Variant*>	vlist;
+
+		      node = this->createNode(pte, offset + 446 + i * 16, EXTENDED);
+		      vlist.push_back(new Variant(node->_attributes()));
 		      this->ebr_base = (uint64_t)(pte->lba);
-		      this->readEbr(pte->lba);
+		      this->readEbr(&vlist, pte->lba);
+		      this->res[node->name()] = new Variant(vlist);
 		    }
 		  else
-		    this->createNode(pte, offset + 446 + i * 16, PRIMARY);
+		    {
+		      node = this->createNode(pte, offset + 446 + i * 16, PRIMARY);
+		      this->res[node->name()] = new Variant(node->_attributes());
+		    }
 		}
 	    }
 	}
@@ -495,12 +517,13 @@ void	DosPartition::readMbr(uint64_t offset)
     }
 }
 
-void	DosPartition::readEbr(uint32_t cur, uint32_t shift)
+void	DosPartition::readEbr(std::list<Variant*> *vlist, uint32_t cur, uint32_t shift)
 {
   dos_partition_record	record;
   uint8_t		i;
   dos_pte*		pte;
   uint64_t		offset;
+  DosPartitionNode*	node;
 
   try
     {
@@ -509,20 +532,24 @@ void	DosPartition::readEbr(uint32_t cur, uint32_t shift)
 	{
 	  for (i = 0; i != 4; i++)
 	    {
-	      pte = this->toPte(record.partitions+(i*16));
-	      if (pte != NULL)
+	      if ((pte = this->toPte(record.partitions+(i*16))) != NULL)
 		{
 		  if (is_ext(pte->type))
 		    {
 		      if ((this->ebr_base + pte->lba) != cur)
-			this->readEbr(this->ebr_base + (uint64_t)(pte->lba), pte->lba);
+			this->readEbr(vlist, this->ebr_base + (uint64_t)(pte->lba), pte->lba);
+		      else
+			;
 		    }
 		  else
 		    {
  		      if (i > 2)
-			this->createNode(pte, offset + 446 + i * 16, LOGICAL|HIDDEN, this->ebr_base + shift);
+			node = this->createNode(pte, offset + 446 + i * 16, LOGICAL|HIDDEN, this->ebr_base + shift);
 		      else
-			this->createNode(pte, offset + 446 + i * 16, LOGICAL, this->ebr_base + shift);
+			node = this->createNode(pte, offset + 446 + i * 16, LOGICAL, this->ebr_base + shift);
+		      Attributes	lpart;
+		      lpart[node->name()] = new Variant(node->_attributes());
+		      vlist->push_back(new Variant(lpart));
 		    }
 		}
 	    }
