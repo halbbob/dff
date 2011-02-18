@@ -1485,6 +1485,7 @@ VMap.__repr__ = __vmap_repr_proxy__
 namespace std
 {
   %template(MapString)       map<string, string>;
+  %template(ListString)      list<string>;
   %template(ArgumentList)    std::list<Argument*>;
   %template(ConfigList)      std::list<Config*>;
   %template(ConstantList)    std::list<Constant*>;
