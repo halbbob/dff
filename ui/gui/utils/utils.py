@@ -15,10 +15,11 @@
 
 from types import *
 
+from PyQt4.QtGui import QMessageBox
 from api.loader import *
 from api.taskmanager.taskmanager import *
 from api.types import libtypes
-from api.types.libtypes import typeId
+from api.types.libtypes import typeId, ConfigManager, Argument, Parameter
 
 class Utils():
     def __init__(self):
@@ -92,24 +93,31 @@ class Utils():
     
     @staticmethod
     def hasOneNodeArg(module, type):
-        args = Utils.getArgs(module)
-        if len(args) == 0:
+        configs = ConfigManager.Get()
+        mconf = configs.configByName(str(module))
+        argsnode = mconf.argumentsByType(typeId.Node)
+        required = mconf.argumentsByRequirementType(Argument.Required)
+        if len(argsnode) == 0:
             return None
-        if len(args) == 1:
-            if args[0].type() == typeId.Node :
-                return args[0].name()
+        if len(argsnode) == 1:
+            return argsnode[0].name()
         return None
         
     @staticmethod
     def execModule(name, type, nameArg, listNode):
         tm = TaskManager()
-	if isinstance(listNode, Node):
-	    arg = e.libenv.argument("gui_input")
-            arg.add_node(str(nameArg), listNode)
-            tm.add(str(name), arg, ["thread", "gui"])
+        configs = ConfigManager.Get()
+        mconf = configs.configByName(str(name))
+        arg = mconf.argumentByName(nameArg)
+        if isinstance(listNode, Node):
+            args = mconf.generate({arg.name(): listNode})
+            tm.add(str(name), args, ["thread", "gui"])
 	else:
-          for i in range(0, len(listNode)) :
-              arg = libtypes.argument("gui_input")
-              arg.add_node(str(nameArg), listNode[i])
-              tm.add(str(name), arg, ["thread", "gui"])
+            if arg.inputType() == Argument.List:
+                args = mconf.generate({arg.name(): listNode})
+                tm.add(str(name), args, ["thread", "gui"])
+            else:
+                for i in listNode:
+                    args = mconf.generate({arg.name(): i})
+                    tm.add(str(name), args, ["thread", "gui"])
         

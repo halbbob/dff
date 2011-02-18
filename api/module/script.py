@@ -20,9 +20,8 @@ from api.exceptions.libexceptions import *
 class Script(object):
     def __init__(self, name):
 	self.name = name
-#        self.env = env.env()
         self.vfs = vfs.vfs()
-	self.res = {}#libtypes.results(self.name)
+	self.res = {}
 	self.stateinfo = ""
 
     #def stateInfo(self):

@@ -106,8 +106,17 @@ std::list<Argument*>	Config::argumentsByFlags(uint16_t flags)
   std::map<std::string, Argument*>::iterator	mit;
   std::list<Argument*>				fargs;
 
+  uint16_t					itype;
+  uint16_t					rtype;
+  uint16_t					type;
+  
+  itype = flags & 0x0300;
+  rtype = flags & 0x0c00;
+  type = flags & 0x00FF;
   for (mit = this->__arguments.begin(); mit != this->__arguments.end(); mit++)
-    if (mit->second->flags() == flags)
+    if (((type != 0) && (mit->second->type() == type)) ||
+        ((itype != 0) && (mit->second->inputType() == itype)) ||
+	((rtype != 0) && (mit->second->requirementType() == rtype)))
       fargs.push_back(mit->second);
   return fargs;
 }

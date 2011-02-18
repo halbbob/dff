@@ -20,7 +20,9 @@ set(apiguiwidget_srcs
   nodebrowser.py
   layoutmanager.py
   nodeview.py
+  varianttreewidget.py
   propertytable.py
+  resulttable.py
   textedit.py
   devicesdialog.py
 )

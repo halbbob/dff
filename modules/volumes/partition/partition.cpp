@@ -165,6 +165,7 @@ void Partition::start(std::map<std::string, Variant*> args)
 	      this->__root->setFsobj(this);
 	      this->dos->open(this->parent->open(), 0, this->__root, this, this->parent);
 	      this->registerTree(this->parent, this->__root);
+	      this->res = this->dos->result();
 	    }
 	}
       catch(vfsError e)

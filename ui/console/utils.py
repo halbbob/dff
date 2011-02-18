@@ -29,7 +29,7 @@ def get_arg_with_no_key(args):
     return res
 
 
-def keyPriority(params):
+def keyPriority(arguments):
     priority = {0: [], 1: []}
 
     for param in params.itervalues():
@@ -43,8 +43,8 @@ def keyPriority(params):
     return priority
 
 
-def needs_no_key(params):
-    priority = keyPriority(params)
+def needs_no_key(arguments):
+    priority = keyPriority(arguments)
     if len(priority[0]) == 1:
         return priority[0][0]
     elif len(priority[1]) == 1:
