@@ -14,20 +14,11 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
-#from api.vfs import *
-#from api.env import *
-#from api.loader import *
-#from api.type import *
 from api.manager.manager import ApiManager
-from api.types.libtypes import typeId
-#import os.path, os, sys
+from api.types.libtypes import typeId, Argument, Parameter, ConfigManager
 import sys
-#import dircache
 import utils
 import re
-#from types import *
-#predefined arguments types:
-#node, path, driver, script
 
 class Completion():
     funcMapper = {typeId.Node: "complete_node",
@@ -38,33 +29,12 @@ class Completion():
         #init framework core dependencies
 	self.api = ApiManager()
         self.loader = self.api.loader()
-        self.modules = self.loader.modules
         self.vfs = self.api.vfs()
+        self.confmanager = ConfigManager.Get()
         self.shell_key = [";", "<", ">", "&", "|", "&", ";"]
 	self.OS = self.api.OS()
 	self.console = raw_input
  
-#    def get_completion_scope(self, arg, begidx):
-#        cur_arg = None
-#        prev_arg = None
-#        opt = []
-
-#        for a in arg:
-#            opt.append(a.arg)
-#            if begidx <= a.end:
-#                if begidx >= a.start:
-#                    cur_arg = a.arg
-#                elif cur_arg == None:
-#                    cur_arg = ""
-#            if self.is_cmd_arg(a.arg):
-#                if cur_arg == None:
-#                    opt = []
-#                    opt.append(a.arg)
-#                else:
-#                    break
-#        return opt, cur_arg
-#        #print "\ncurrent argument:", cur_arg, "of completion scope:", opt
-
 
     def complete_node(self):
         #print "complete node"
@@ -246,11 +216,12 @@ class Completion():
         longest_tag = 1
         longest_modname = 1
 
-        for modname in self.modules.iterkeys():
+        modnames = self.confmanager.configsName()
+        for modname in modnames:
             if (self.cur_str == "") or (self.cur_str != "" and modname.startswith(self.cur_str)):
                 if longest_modname < len(modname):
                     longest_modname = len(modname)
-		tag = self.modules[modname].tags
+                tag = self.modules[modname].tags
                 if longest_tag < len(tag):
                     longest_tag = len(tag)
                 if tag not in out["matches"]:
@@ -267,13 +238,6 @@ class Completion():
             out = ""
         return out
         
-
-#    def is_cmd_arg(self, arg):
-#	if arg in self.loader.modules:
-#          return True
-#        else:
-#          return False
-
 
     def complete_key(self):
         out = {"type": "key", 
@@ -333,27 +297,46 @@ class Completion():
     #   - No --> if path mandatory ?
     #     - 
     # - if both optional, no completion
+
+    def remaining_required(self):
+        rargs = self.config.argumentsByRequirementType(Argument.Required)
+        res = []
+        if len(rargs):
+            for rarg in rargs:
+                for arg in self.args:
+                    if rarg.name().find(arg) == -1:
+                        print rarg.name()
+                        res.append(rarg)
+        return res
+
+
+    def remaining_optional(self):
+        rargs = self.config.argumentsByRequirementType(Argument.Required)
+        res = []
+        if len(rargs):
+            for rarg in rargs:
+                for arg in self.args:
+                    if rarg.name().find(arg) == -1:
+                        print rarg.name()
+                        res.append(rarg)
+
+
     def complete_empty(self):
         out = None
 
-        if self.prev_arg != None:
-            if self.prev_arg.type() != typeId.Bool:
-                print "completion.complete_empty() --> self.prev_arg != Bool"
-                out = self.complete_value()
-            else:
-                print "completion.complete_empty() --> self.prev_arg == Bool"
+        if self.prev_arg != None and self.prev_arg.type() != Argument.Empty:
+            out = self.complete_value()
         else:
             print "completion.complete_empty() --> self.prev_arg == None"
-            arg_with_no_key = utils.get_arg_with_no_key(self.args)
-            needs_no_key = utils.needs_no_key(self.parameters)
-            if arg_with_no_key == -1:# and needs_no_key != None:
-                if needs_no_key.type() in [typeId.Path, typeId.Node]:
-                    self.prev_arg = needs_no_key
-                    out = self.complete_value()
-                else:
-                    out = self.complete_key()
-            else:
+            optionalNodes = self.config.argumentsByFlags(Argument.Optional|typeId.Node)
+            optionalPathes = self.config.argumentsByFlags(Argument.Optional|typeId.Path)
+            remainingRequired = len(self.reduce_required())
+            if remainingRequired > 1:
                 out = self.complete_key()
+            elif 
+                out = self.complete_key()
+            else:
+                out = self.complete_value()
         return out
 
 
@@ -389,10 +372,10 @@ class Completion():
 
 
     def setContext(self, line, begidx):
-        self.modules = self.loader.modules
         self.args, self.bopt = utils.split_line(line)
         self.cur_str = ""
         self.prev_str = ""
+        self.modules = self.loader.modules
         start_scope_idx = 0
         end_scope_idx = len(self.args)
         for item in self.bopt:
@@ -424,23 +407,18 @@ class Completion():
 
         #module is known: get its conf and complete with parameters
         else:
-            try:
-                module = self.modules[self.args[0]]
-                self.conf = module.conf
-                self.parameters = self.conf.parameters()
-                print self.prev_str
+            self.config = self.confmanager.configByName(self.args[0])
+            if self.config != None:
+                self.arguments = self.config.arguments()
                 if self.prev_str.startswith("--") != -1:
-                    try:
-                        self.prev_arg = self.parameters[self.prev_str[2:]]
-                    except IndexError:
-                        self.prev_arg = None
+                    self.prev_arg = self.config.argumentByName(self.prev_str[2:])
                 else:
                     self.prev_arg = None
                 if self.cur_str == "":
                     matches = self.complete_empty()
                 else:
                     matches = self.complete_current()
-            except KeyError:
+            else:
                 print "\nmodule <" + self.args[0] + "> does not exist. Cannot complete"
                 matches = ""
 
