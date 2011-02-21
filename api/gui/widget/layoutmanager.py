@@ -21,7 +21,7 @@ import os
 import types
 
 from api.vfs import *
-from api.gui.model.vfsitemmodel import TreeModel, NodeTreeProxyModel
+from api.gui.model.vfsitemmodel import TreeModel#, NodeTreeProxyModel
 from api.vfs.libvfs import VFS
 from api.gui.widget.nodeview import NodeTreeView
 from api.types.libtypes import typeId

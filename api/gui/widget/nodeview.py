@@ -88,14 +88,19 @@ class NodeLinkTreeView(QTreeView):
      self.VFS = VFS.Get()
      self.setSelectionMode(QAbstractItemView.SingleSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectItems)
-     self.setUniformRowHeights(False)
+     self.setUniformRowHeights(True)
+     self.setSortingEnabled(False)
+
+
+  def indexRowSizeHint(self, index):
+     return 2
 
   def mousePressEvent(self, e):
     index = self.indexAt(e.pos())
     if index.isValid():
       indexWasExpanded = self.isExpanded(index)
       QTreeView.mousePressEvent(self, e)
-      index = self.model().mapToSource(index)
+      #index = self.model().mapToSource(index)
       node = self.VFS.getNodeFromPointer(index.internalId())
 #      if (self.isExpanded(index) == indexWasExpanded):
         #index = self.model().mapToSource(index)
@@ -116,6 +121,9 @@ class NodeTreeView(QTreeView, NodeViewEvent):
      self.setSelectionMode(QAbstractItemView.SingleSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectItems)
      self.setExpandsOnDoubleClick(False)
+     self.setUniformRowHeights(True)
+     self.setSortingEnabled(False)
+     print 'ttata'
 
 class NodeTableView(QTableView, NodeViewEvent):
    def __init__(self, parent):

@@ -30,7 +30,7 @@ from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
 from api.gui.widget.propertytable import PropertyTable
-from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel, NodeTreeProxyModel
+from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel#, NodeTreeProxyModel
 
 from ui.gui.utils.menu import MenuTags
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
@@ -137,8 +137,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
 
-    self.treeProxyModel = NodeTreeProxyModel()
-    self.treeProxyModel.setSourceModel(self.treeModel)
+    self.treeProxyModel = self.treeModel#NodeTreeProxyModel()
+    #self.treeProxyModel.setSourceModel(self.treeModel)
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
 
