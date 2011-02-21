@@ -299,53 +299,6 @@ class Completion():
     #     - 
     # - if both optional, no completion
 
-    def remaining_required(self):
-        return res
-
-
-    def remaining_optional(self):
-        rargs = self.config.argumentsByRequirementType(Argument.Optional)
-        res = []
-        if len(rargs):
-            for rarg in rargs:
-                for arg in self.args:
-                    if rarg.name().find(arg) == -1:
-                        print rarg.name()
-                        res.append(rarg)
-        return res
-
-
-    def setProvidedArguments(self):
-        self.providedArguments = {}
-        self.currentArgument = None
-        self.previousArgument = None
-        for lineArgument in self.lineArguments:
-            if lineArgument.startswith("--"):
-                larg = lineArgument[2:]
-                arg = self.config.argumentByName(larg)
-                if arg != None:
-                    if lineArgument == self.currentStr:
-                        self.currentArgument = arg
-                    if lineArgument == self.previousStr:
-                        self.previousArgument = arg
-                    self.providedArguments[larg] = arg
-                else:
-                    print larg, " is not a valid argument"
-            else:
-                self.previousStr
-                larg = lineArgument
-        #if self.previousStr.startswith("--"):
-        #    prevstr = self.previousStr[2:]
-        #else:
-        #    prevstr = self.previousStr
-        #if prevstr in self.argumentsNames:
-        #    
-        #    for lineArgument in self.lineArguments:
-        #        if rarg.name().find(arg) == -1:
-        #            res.append(rarg)
-        return res
-
-
     def complete_empty(self):
         out = None
 
@@ -399,35 +352,79 @@ class Completion():
 
 
     def disambiguator(self):
-            nodeargs = self.config.argumentsByType(typeId.Node)
-            pathargs = self.config.argumentsByType(typeId.Path)
-            if len(nodeargs) == 1:
-                nodearg = nodeargs[0]
-                if len(pathargs) == 0:
-                    self.currentArgument = nodearg
-                if len(pathargs) == 1 and nodearg.requirementType() == Argument.Required and pathargs[0].requirementType() == Argument.Optional:
-                    self.currentArgument = nodearg
-            elif len(pathargs) == 1 and len(nodeargs) == 0:
-                self.currentArgument = pathargs[0]
-        
+        requirednodes = self.config.argumentsByFlags(typeId.Node|Argument.Required)
+        #print "required nodes:"
+        #for rnode in requirednodes:
+        #    print rnode.name()
+
+        optionalnodes = self.config.argumentsByFlags(typeId.Node|Argument.Optional)
+        #print "optional nodes:"
+        #for onode in optionalnodes:
+        #    print onode.name()
+
+        requiredpathes = self.config.argumentsByFlags(typeId.Path|Argument.Required)
+        #print "required pathes:"
+        #for rpath in requiredpathes:
+        #    print rpath.name()
+
+        optionalpathes = self.config.argumentsByFlags(typeId.Path|Argument.Optional)
+        #print "optional pathes:"
+        #for opath in optionalpathes:
+        #    print opath.name()
+
+
+        rnodes = len(requirednodes)
+        onodes = len(optionalnodes)
+        rpathes = len(requiredpathes)
+        opathes = len(optionalpathes)
+        if rnodes == 1 and rpathes == 0:
+            return requirednodes[0]
+        if onodes == 1 and opathes == 0 and rnodes == 0 and rpathes == 0:
+            return optionalnodes[0]
+        if rpathes == 1 and rnodes == 0:
+            return requiredpathes[0]
+        if opathes == 1 and onodes == 0 and rnodes == 0 and rpathes == 0:
+            return optionalpathes[0]
+        return None
+
 
     def setContext(self):
+        arguments = self.config.argumentsName()
+        self.providedArguments = []
         self.remainingArguments = []
-        self.remainingArguments.extend(self.config.argumentsName())
         self.currentArgument = None
-        i = 0
-        while i != len(self.lineArguments) and self.lineArguments[i].startswith("--") != -1:
-            argument = self.config.argumentByName(self.lineArguments[i][2:])
-            if self.currentStr == self.lineArguments[i]:
-                self.currentArgument = argument
+        i = 1
+        while i != len(self.lineArguments):
+            print "set context:", self.lineArguments[i]
+            if self.lineArguments[i].startswith("--") == True:
+                argument = self.config.argumentByName(self.lineArguments[i][2:])
+                if self.currentStr == self.lineArguments[i]:
+                    self.currentArgument = argument
+                if argument != None:
+                    self.providedArguments.append(argument.name())
+                    #self.remainingArguments.remove(argument.name())
+            elif self.lineArguments[i-1].startswith("--") == True:
+                prevarg = self.config.argumentByName(self.lineArguments[i-1][2:])
+                if argument.inputType() == Argument.Empty:
+                    argument = self.disambiguator()
+                else:
+                    argument = prevarg
+            else:
+                argument = self.disambiguator()
             if argument != None:
-                self.remainingArguments.remove(argument.name())
+                if self.currentStr == self.lineArguments[i] or self.currentStr:
+                    print "current argument:", argument.name()
+                    self.currentArgument = argument
+                if argument.name() not in self.providedArguments:
+                    self.providedArguments.append(argument.name())
+                    
             i += 1
-        if i < len(self.lineArguments):
-            self.currentArgument = self.disambiguator()
-        for arg in self.remainingArguments:
-            print arg
-
+        print "\nremaining arguments:"
+        for argument in arguments:
+            if argument not in self.providedArguments:
+                self.remainingArguments.append(argument)
+        print self.remainingArguments
+        
 
 
     def dispatch(self):
@@ -450,9 +447,9 @@ class Completion():
         matches = []
         endscope = len(self.lineArguments)
         startscope = 0
-        self.currentarg = -1
         i = 0
         self.currentStr = ""
+        self.previousStr = ""
         while i != len(self.lineArguments):
             carg = self.lineArguments[i]
             argstart = self.startIndexes[i]
@@ -461,14 +458,20 @@ class Completion():
                 if begidx <= argstart:
                     endscope = i
                 else:
+                    self.previousStr = ""
                     startscope = i + 1
             else:
-                if begidx >= argstart and begidx <= argend:
-                    self.currentarg = i
+                if begidx >= argstart:
+                    if begidx <= argend:
+                        self.currentStr = carg
+                    else:
+                        self.previousStr = carg
+                        self.currentStr = ""
             i += 1
-        if self.currentarg != -1:
-            self.currentStr = self.lineArguments[self.currentarg]
-        #print self.lineArguments[startscope:endscope], self.currentStr
+        self.lineArguments = self.lineArguments[startscope:endscope]
+        print "\ncurrent context:", self.lineArguments
+        print "currentstr:", self.currentStr
+        print "previousstr:", self.previousStr
         if len(self.lineArguments) == 0 or (len(self.lineArguments) == 1 and self.currentStr != ""):
             matches = self.completeModules()
             if len(matches) == 0:
