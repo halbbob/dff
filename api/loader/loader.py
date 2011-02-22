@@ -207,7 +207,7 @@ class loader():
               module = sys.modules[modname]
               del module
 
-            file, pathname, description = imp.find_module(modname)
+            file, pathname, description = imp.find_module(modname, [os.path.dirname(module_path)])
             try:
                module = imp.load_module(modname, file, pathname, description)
                cl = getattr(module, modname)
