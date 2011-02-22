@@ -28,19 +28,24 @@ Attribute::Attribute(VFile *vfile)
   _mftIndex = 0;
 
   _baseOffset = 0;
-  _attributeRealOffset = 0;
   _mftEntrySize = 0;
   _indexRecordSize = 0;
   _sectorSize = 0;
   _clusterSize = 0;
   _currentRunIndex = 0;
   _fixupIndexes = NULL;
+  _offsetList = NULL;
   _runAmount = 0;
 }
 
 Attribute::~Attribute()
 {
-  ;
+  if (_fixupIndexes != NULL) {
+    delete _fixupIndexes;
+  }
+  if (_offsetList != NULL) {
+    delete _offsetList;
+  }
 }
 
 void	Attribute::setOrigin(AttributeHeader *header, uint8_t *readBuffer,

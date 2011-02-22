@@ -24,7 +24,7 @@
 MftEntry::MftEntry(VFile *vfile)
 {
   _vfile = vfile;
-  _mftEntryBlock = new MftEntryBlock;
+  _mftEntryBlock = NULL;
   _bufferOffset = 0;
   _previousReadOffset = 0;
   _clusterSize = 0;
@@ -34,12 +34,20 @@ MftEntry::MftEntry(VFile *vfile)
   _sectorSize = 0;
   _currentAttribute = new Attribute(_vfile);
   _readBuffer = NULL;
+  _fixupValues = NULL;
 }
 
 MftEntry::~MftEntry()
 {
-  delete _mftEntryBlock;
-  delete _readBuffer;
+  if (_readBuffer != NULL) {
+    delete _readBuffer;
+  }
+  if (_fixupValues != NULL) {
+    delete _fixupValues;
+  }
+  if (_currentAttribute != NULL) {
+    delete _currentAttribute;
+  }
 }
 
 MftEntryBlock	*MftEntry::getMftEntryBlock()
@@ -155,7 +163,7 @@ void	MftEntry::_bufferedRead(uint64_t offset, uint32_t size)
 #else
   DEBUG(INFO, "requesting read to 0x%llx with size 0x%x\n", offset, size);
 #endif
-  if (_readBuffer) {
+  if (_readBuffer != NULL) {
     delete _readBuffer;
   }
 
@@ -216,7 +224,9 @@ bool			MftEntry::isMftEntryBlock(uint64_t offset)
   /* Direct read amount of data needed in _vfile to validate if we are at the
    * begining of an MFT entry */
   _vfile->seek(offset);
-  _vfile->read(_mftEntryBlock, MFTENTRY_HEADER_SIZE);
+  //  _vfile->read(_mftEntryBlock, MFTENTRY_HEADER_SIZE);
+  _vfile->read(_readBuffer, MFTENTRY_HEADER_SIZE);
+  _mftEntryBlock = (MftEntryBlock *)_readBuffer;
   
   /* Validate MFT Signature */
   return _validateSignature();

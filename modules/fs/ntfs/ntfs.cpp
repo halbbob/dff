@@ -49,7 +49,7 @@ Ntfs::Ntfs() : mfso("ntfs")
 
 Ntfs::~Ntfs()
 {
-  if (_mftMainFile)
+  if (_mftMainFile != NULL)
     delete _mftMainFile;
 }
 
@@ -154,8 +154,9 @@ void					Ntfs::_createDeletedWithParent(std::string fileNameS,
 #endif
       _mftMainFile->entryDiscovered(parentId);
       current = new NtfsNode(dirName.c_str(), 0, current, this, false,
-			     metaFileName, metaSI, parent, parentId,
-			     _mftMainFile->data()->offsetFromID(parentId));
+			     (metaSI != NULL), parent, parentId,
+			     _mftMainFile->data()->offsetFromID(parentId),
+			     _node);
       //XXX	_mftMainFile->entryDiscovered(id);
       DEBUG(INFO, "creating %s as deleted\n", dirName.c_str());
       current->setDeleted();
@@ -170,9 +171,8 @@ void					Ntfs::_createDeletedWithParent(std::string fileNameS,
   if (_ntfsNodeExists(fileNameS, current) == NULL ||
       !_mftMainFile->isEntryDiscovered(mftEntry)) {
     newFile = new NtfsNode(fileNameS, data->getSize(), current, this, file,
-			   fileName, SI, _mftEntry, mftEntry, offset);
+			   (SI != NULL), _mftEntry, mftEntry, offset, _node);
     DEBUG(INFO, "Created (usual) node : %s in %s\n", fileName->getFileName().c_str(), "tmp");
-    newFile->node(_node);
     if (file) {
       newFile->data(data);
     }
@@ -243,12 +243,13 @@ void	Ntfs::_createOrphanOrDeleted(std::string fileNameS,
    */
   if (orphan) {
     if (!_orphan) {
-      _orphan = new NtfsNode("$Orphans", 0, _root, this, false, NULL, SI, _mftEntry);
+      _orphan = new NtfsNode("$Orphans", _root, this);
       _orphan->setDeleted();
     }
-    if (_ntfsNodeExists(fileNameS, _orphan) == NULL || !_mftMainFile->isEntryDiscovered(mftEntry)) {
-      newFile = new NtfsNode(fileNameS, data->getSize(), _orphan, this, true, fileName, SI, _mftEntry, mftEntry, offset);
-      newFile->node(_node);
+    if (_ntfsNodeExists(fileNameS, _orphan) == NULL ||
+	!_mftMainFile->isEntryDiscovered(mftEntry)) {
+      newFile = new NtfsNode(fileNameS, data->getSize(), _orphan, this, true,
+			     (SI != NULL), _mftEntry, mftEntry, offset, _node);
       newFile->data(data);
       DEBUG(INFO, "creating %s as deleted in orphans\n", fileName->getFileName().c_str());
       newFile->setDeleted();
@@ -330,18 +331,18 @@ uint32_t			Ntfs::_searchIndexesInEntry(uint64_t mftEntryDirOffset,
       uint16_t		savedBufferOffset;
       uint16_t		savedAttributeOffset;
 
-      DEBUG(CRITICAL, "Parsing for 0x%llx\n", mftEntryDirOffset);
+      DEBUG(INFO, "Parsing for 0x%llx\n", mftEntryDirOffset);
       attributeList = new AttributeAttributeList(_vfile, *attribute);
       attributeList->setMftEntry(_mftMainFile->data()->idFromOffset(mftEntryDirOffset));
       externalIndexRoot = attributeList->getExternalAttributeIndexRoot();
       externalIndexAlloc = attributeList->getExternalAttributeIndexAlloc();
 
 #if __WORDSIZE == 64
-      DEBUG(CRITICAL, "index root is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexRoot, externalIndexRoot, _mftMainFile->data()->offsetFromID(externalIndexRoot));
-      DEBUG(CRITICAL, "index allocation is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
+      DEBUG(INFO, "index root is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexRoot, externalIndexRoot, _mftMainFile->data()->offsetFromID(externalIndexRoot));
+      DEBUG(INFO, "index allocation is external and is mftentry %u (0x%x) offset 0x%lx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
 #else
-      DEBUG(CRITICAL, "index root is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexRoot, externalIndexRoot, _mftMainFile->data()->offsetFromID(externalIndexRoot));
-      DEBUG(CRITICAL, "index allocation is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
+      DEBUG(INFO, "index root is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexRoot, externalIndexRoot, _mftMainFile->data()->offsetFromID(externalIndexRoot));
+      DEBUG(INFO, "index allocation is external and is mftentry %u (0x%x) offset 0x%llx\n", externalIndexAlloc, externalIndexAlloc, _mftMainFile->data()->offsetFromID(externalIndexAlloc));
 #endif
       if (externalIndexRoot) {
 
@@ -520,9 +521,9 @@ NtfsNode			*Ntfs::_createRegularADSNodes(uint64_t offset,
     std::ostringstream	name;
 
     name << metaFName->getFileName() << data[iADS]->getExtName();
-    returnNode = new NtfsNode(name.str(), data[iADS]->getSize(), currentDir, this,
-			      true, metaFName, metaSI, _mftEntry, mftID,
-			      offset);
+    returnNode = new NtfsNode(name.str(), data[iADS]->getSize(), currentDir,
+			      this, true, (metaSI != NULL), _mftEntry, mftID,
+			      offset, _node);
     returnNode->data(data[iADS]);
   }
 
@@ -652,10 +653,9 @@ void				Ntfs::_createRegularNode(Node *currentDir,
     if (curMftEntry != NTFS_ROOT_DIR_MFTENTRY) {
       if (ads <= 1) {
 	newNode = new NtfsNode(fullFileName->getFileName().c_str(),
-			       data->getSize(), currentDir, this, (fileType == 1),
-			       fullFileName, metaSI, _mftEntry, curMftEntry,
-			       offset);
-	newNode->node(_node);
+			       data->getSize(), currentDir, this,
+			       (fileType == 1), (metaSI != NULL), _mftEntry,
+			       curMftEntry, offset, _node);
 	if (fileType == 1 && newNode) {
 	  newNode->data(data);
 	}
@@ -1029,10 +1029,10 @@ void					Ntfs::_checkOrphanEntries()
 
   while (i < mftAmountOfRecords) {
     if (it == entryMap.end() || i != it->first) {
-      DEBUG(CRITICAL, "Checking id 0x%x\n", i);
+      DEBUG(INFO, "Checking id 0x%x\n", i);
       _mftMainFile->entryDiscovered(i);
       if ((offset = _mftMainFile->data()->offsetFromID(i))) {
-	DEBUG(CRITICAL, "Parsing id 0x%x\n", i);
+	DEBUG(INFO, "Parsing id 0x%x\n", i);
 	if (_mftEntry->decode(offset)) {
 	  AttributeFileName		*metaFileName = NULL;
 	  AttributeFileName		*fullFileName = NULL;
@@ -1043,9 +1043,9 @@ void					Ntfs::_checkOrphanEntries()
 	  uint32_t			ads = 0;
 	  
 #if __WORDSIZE == 64
-	  DEBUG(CRITICAL, "Offset is 0x%lx\n", offset);
+	  DEBUG(INFO, "Offset is 0x%lx\n", offset);
 #else
-	  DEBUG(CRITICAL, "Offset is 0x%llx\n", offset);
+	  DEBUG(INFO, "Offset is 0x%llx\n", offset);
 #endif
 	  while ((attribute = _mftEntry->getNextAttribute())) {
 	    attribute->readHeader();
@@ -1101,7 +1101,7 @@ void					Ntfs::_checkOrphanEntries()
       }
     }
     if (it != entryMap.end() && i == it->first) {
-	  DEBUG(CRITICAL, "inc it\n");
+      DEBUG(INFO, "inc it\n");
       it++;
     }
     i++;
@@ -1280,7 +1280,7 @@ void		Ntfs::start(std::map<std::string, Variant*> args)
 	// Mft is valid
 
 	DEBUG(INFO, "\tValid MFTEntry found\n");
-	_root = new NtfsNode("NTFS", 0, NULL, this, false, NULL, NULL, NULL);
+	_root = new NtfsNode("NTFS", NULL, this);
 
 	mftEntryNumber = 0;
 	_mftMainFile = new MftFile(_vfile, _boot->mftEntrySize(),
