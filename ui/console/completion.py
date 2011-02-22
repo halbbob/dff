@@ -22,8 +22,8 @@ import re
 import types
 
 class Completion():
-    funcMapper = {typeId.Node: "complete_node",
-                  typeId.Path: "complete_path"
+    funcMapper = {typeId.Node: "completeNode",
+                  typeId.Path: "completePath"
                   }
 
     def __init__(self, raw_input):
@@ -35,9 +35,46 @@ class Completion():
         self.shell_key = [";", "<", ">", "&", "|", "&&", ";"]
 	self.OS = self.api.OS()
 	self.console = raw_input
- 
+        self.DEBUG = True
 
-    def complete_node(self):
+
+    def currentScopeInList(self):
+        dbg = "\n ==== currentScopeList ===="
+        dbg += "\n    current str to process " + self.currentStr
+        if self.currentLarg == -1:
+            resstr = ""
+        elif len(self.currentStr) == 1:
+            resstr = self.currentStr
+        else:
+            beforeidx = 0
+            afteridx = len(self.currentStr)
+            strpos = self.begidx - self.startIndexes[self.currentLarg]
+            dbg += "\n    cursor pos in current string " + str(strpos)
+            dbg += "\n    current string length " + str(afteridx)
+            if strpos == len(self.currentStr):
+                print self.currentStr[-1:]
+                beforematch = re.search('(?<!\\\)\,', self.currentStr[::-1])
+                if beforematch != None:
+                    beforeidx = len(self.currentStr) - beforematch.start(0)
+                    dbg += "\n    beforematch @ " + str(beforeidx)
+            else:
+                if self.currentStr[strpos] == ",":
+                    afteridx = strpos
+                else:
+                    aftermatch = re.search('(?<!\\\)\,', self.currentStr[strpos:])
+                    if aftermatch != None:
+                        afteridx = aftermatch.start(0)
+                        dbg += "\n    aftermatch @ " + str(afteridx)
+                beforematch = re.search('(?<!\\\)\,', self.currentStr[:strpos])
+                if beforematch != None:
+                    beforeidx = beforematch.start(0)
+                    dbg += "\n    beforematch @ " + str(beforeidx)
+            resstr = self.currentStr[beforeidx:afteridx]
+        dbg += "\n    resulting str: " + resstr
+        self.debug(dbg)
+        return resstr
+
+    def completeNode(self):
         #print "complete node"
         rpath = ""
         supplied = ""
@@ -47,7 +84,10 @@ class Completion():
                "supplied": "",
                "matched": 0}
 
-        path = self.cur_str
+        if self.currentArgument.inputType() == Argument.List:
+            path = self.currentScopeInList()
+        else:
+            path = self.currentStr
         if path == "" or path[0] != "/":
             if self.vfs.getcwd().path() == "" and self.vfs.getcwd().name() == "":
                 rpath = "/"
@@ -69,7 +109,7 @@ class Completion():
         out["supplied"] = supplied
         if node:
             if not node.hasChildren():
-                if self.cur_str == "/":
+                if path == "/":
                     out["matches"].append("")
                 else:
                     out["matches"].append("/")
@@ -104,7 +144,7 @@ class Completion():
         return out
         
 
-    def complete_path(self):
+    def completePath(self):
         #print "complete path"
         rpath = ""
         supplied = ""
@@ -113,8 +153,11 @@ class Completion():
                "length": 1,
                "supplied": "",
                "matched": 0}
-        path = self.cur_str
 
+        if self.currentArgument.inputType() == Argument.List:
+            path = self.currentScopeInList()
+        else:
+            path = self.currentStr
         if path == "":
             #rpath = os.getcwd() + "/"
             rpath = self.OS.getcwd() + '/'
@@ -180,11 +223,11 @@ class Completion():
         return out
 
 
-    def complete_value(self):
+    def completeParameters(self):
         out = []
-
-        if self.prev_arg.type() in [typeId.Node, typeId.Path]:
-            func = getattr(self, Completion.funcMapper[self.prev_arg.type()])
+        return out
+        if self.currentStr != "":
+            func = getattr(self, Completion.funcMapper[self.currentArgument.type()])
             out = func()
         else:
         
@@ -240,30 +283,28 @@ class Completion():
         return out
 
 
-    def completeKeys(self):
+    def completeArguments(self):
         out = {"type": "key", 
                "required": [],
                "optional": [],
                "length": 1,
                "matched": 0}
 
-        arg_with_no_key = utils.get_arg_with_no_key(self.args)
-        needs_no_key = utils.needs_no_key(self.parameters)
-        for kparam in self.parameters.iterkeys():
-            param = self.parameters[kparam]
-            if (param.type() == typeId.Path or param.type() == typeId.Node) and (arg_with_no_key != -1) and (needs_no_key != None):
-                pass
-            else:
-                arg = "--" + kparam
-                if arg not in self.args and arg.startswith(self.cur_str):
-                    if len(arg) > out["length"]:
-                        out["length"] = len(arg)
-                    if param.isOptional():
-                        out["optional"].append(arg)
-                    else:
-                        out["required"].append(arg)
-                    out["matched"] += 1
-
+        for argname in self.remainingArguments:
+            argument = self.config.argumentByName(argname)
+            match = False
+            if self.currentStr == "--":
+                match = True
+            elif self.currentStr.startswith("--") and argname.startswith(self.currentStr[2:]):
+                match = True
+            if match:
+                out["matched"] += 1
+                if len(argname) > out["length"]:
+                    out["length"] = len(argname)
+                if argument.requirementType() in [Argument.Empty, Argument.Optional]:
+                    out["optional"].append(argname)
+                else:
+                    out["required"].append(argname)
         if out["matched"] == 0:
             out = ""
         elif out["matched"] == 1:
@@ -271,82 +312,6 @@ class Completion():
                 out = out["optional"][0]
             else:
                 out = out["required"][0]
-
-        return out
-
-
-    # Priority on empty
-    #  -- required and neither Node nor Path
-    #  -- Node or Path
-    # Iter on parameters
-    #   isRequired()
-    #   Is Path ?
-    #     - No --> continue
-    #     - Yes --> nokey++
-    #       - Is optional ?
-    #         - Yes --> nokey++
-    #         - No --> nokey++
-    #   Is Node ?
-    #     - No --> continue
-    #     - Yes --> nokey++
-    #   Is Required ?
-    #     - No --> continue
-    #     - Yes --> key++
-    #are Path and Node in conf:
-    # - Are there other required params
-    #   - Yes --> complete_key
-    #   - No --> if path mandatory ?
-    #     - 
-    # - if both optional, no completion
-
-    def complete_empty(self):
-        out = None
-
-        if self.prev_arg != None and self.prev_arg.type() != Argument.Empty:
-            out = self.complete_value()
-        else:
-            if len(self.remainingRequired) == 0:
-                out = self.complete_value()
-            elif len(self.remainingRequired) == 1:
-                if self.remainingRequired[0].type() == typeId.Node:
-                    out = self.complete_node()
-                if self.remainingRequired[0].type() == typeId.Path:
-                    out = self.complete_path()
-                else:
-                    out = self.complete_key()
-            else:
-                out = self.complete_key()
-        return out
-
-
-    def complete_current(self):
-        out = None
-
-        if self.cur_str.startswith("-"):
-            out = self.complete_key()
-        else:
-            if self.prev_arg != None:
-                if self.prev_arg.type() != typeId.Bool:
-                    out = self.complete_value()
-                else:
-                    print "completion.complete_current() --> self.prev_arg == Bool"
-            else:
-                
-                print "completion.complete_current() --> self.prev_arg == None"
-            #for var in self.vars:
-            #    arg = "--" + var.name()
-            #    if arg == self.prev_str:
-            #        out = self.complete_value()
-            #    else:
-            #        out = self.complete_key()
-            #else:
-            #arg_with_no_key = utils.get_arg_with_no_key(self.args)
-            #needs_no_key = utils.needs_no_key(self.vars)
-            #if self.args.index(self.cur_str) == arg_with_no_key:
-            #    self.prev_arg = needs_no_key
-            #    out = self.complete_value()
-            #else:
-            #    out = self.complete_key()
 
         return out
 
@@ -388,60 +353,131 @@ class Completion():
         return None
 
 
+    def debug(self, msg):
+        if self.DEBUG:
+            print "  ", msg
+
+
     def setContext(self):
         arguments = self.config.argumentsName()
-        self.providedArguments = []
+        self.providedArguments = {}
         self.remainingArguments = []
         self.currentArgument = None
         i = 1
+        carg = None
+        keylessarg = self.disambiguator()
+        keylessfilled = -1
+        dbg = "\n  ==== setContext() ===="
         while i != len(self.lineArguments):
-            print "set context:", self.lineArguments[i]
-            if self.lineArguments[i].startswith("--") == True:
-                argument = self.config.argumentByName(self.lineArguments[i][2:])
-                if self.currentStr == self.lineArguments[i]:
-                    self.currentArgument = argument
+            dbg += "\n    current larg: " + self.lineArguments[i]
+            larg = self.lineArguments[i]
+            if larg.startswith("--") == True:
+                dbg += "\n      Starting with --" 
+                argument = self.config.argumentByName(larg[2:])
                 if argument != None:
-                    self.providedArguments.append(argument.name())
-                    #self.remainingArguments.remove(argument.name())
-            elif self.lineArguments[i-1].startswith("--") == True:
-                prevarg = self.config.argumentByName(self.lineArguments[i-1][2:])
-                if argument.inputType() == Argument.Empty:
-                    argument = self.disambiguator()
+                    dbg += "\n      argument found: " + argument.name()
+                    carg = argument
+                    if carg.inputType() == Argument.Empty:
+                        if self.currentLarg == -1:
+                            self.currentArgument = None
+                        self.providedArguments[carg.name()] = True
+                    else:
+                        if self.currentLarg == -1:
+                            self.currentArgument = carg
+                        self.providedArguments[carg.name()] = None
                 else:
-                    argument = prevarg
+                    self.currentArgument = None
+                    dbg += "\n      argument not found"
             else:
-                argument = self.disambiguator()
-            if argument != None:
-                if self.currentStr == self.lineArguments[i] or self.currentStr:
-                    print "current argument:", argument.name()
-                    self.currentArgument = argument
-                if argument.name() not in self.providedArguments:
-                    self.providedArguments.append(argument.name())
-                    
+                if carg != None:
+                    dbg += "\n      Not starting with --\n      carg setted --> name: " + str(carg.name()) + " input type: " + str(carg.inputType())
+                    if carg.inputType() in [Argument.Single, Argument.List]:
+                        if carg != keylessarg:
+                            dbg += "\n      carg != keylessarg"
+                            if self.providedArguments[carg.name()] == None:
+                                dbg += "\n      carg parameter not setted yet. Associating parameter: " + larg
+                                if self.currentLarg == i:
+                                    self.currentArgument = carg
+                                else:
+                                    self.currentArgument = None
+                                self.providedArguments[carg.name()] = larg
+                            else:
+                                dbg += "\n      carg parameter already setted"
+                                if keylessarg != None and not self.providedArguments.has_key(keylessarg.name()):
+                                    dbg += "\n      keylessarg exists and not yet registered. Associating: " + str(keylessarg.name()) + " --> " + larg
+                                    carg = keylessarg
+                                    if self.currentLarg == i:
+                                        self.currentArgument = carg
+                                    else:
+                                        self.currentArgument = None
+                                    self.providedArguments[keylessarg.name()] = larg
+                                else:
+                                    self.currentArgument = None
+                                    dbg += "\n      keylessarg already exists and already setted"
+                        else:
+                            self.currentArgument = None
+                            dbg += "\n      larg does not start with -- | carg == keylessarg but has been already provided"
+                    else:
+                        self.currentArgument = None
+                        dbg += "\n      larg does not start with -- | carg != None | carg is Empty"
+                else:
+                    dbg += "\n      Not starting with --\n      carg NOT setted"
+                    if keylessarg != None and not self.providedArguments.has_key(keylessarg.name()):
+                        dbg += "\n      keylessarg exists and not yet registered. Associating: " + str(keylessarg.name()) + " --> " + larg
+                        carg = keylessarg
+                        if self.currentLarg == i:
+                            self.currentArgument = carg
+                        else:
+                            self.currentArgument = None
+                        self.providedArguments[keylessarg.name()] = larg
+                    else:
+                        self.currentArgument = None
+                        dbg += "\n      larg does not start with -- | carg == None and keylessarg either already provided or not setted"
             i += 1
-        print "\nremaining arguments:"
         for argument in arguments:
-            if argument not in self.providedArguments:
+            if argument not in self.providedArguments.keys():
                 self.remainingArguments.append(argument)
-        print self.remainingArguments
-        
+        dbg += "\n\n    provided arguments: " + str(self.providedArguments)
+        dbg += "\n    remaining arguments: " + str(self.remainingArguments)
+        self.debug(dbg)
 
 
     def dispatch(self):
-        return []
-                #if self.prev_str.startswith("--") != -1:
-                #    self.prev_arg = self.config.argumentByName(self.prev_str[2:])
-                #else:
-                #    self.prev_arg = None
-                #if self.cur_str == "":
-                #    matches = self.complete_empty()
-                #else:
-                #    matches = self.complete_current()
-
-            
+        matches = ""
+        keylessarg = self.disambiguator()
+        dbg = "\n ==== dispatch() ===="
+        compfunc = None
+        if self.currentArgument != None:
+            dbg += "\n    current argument to complete: " + str(self.currentArgument.name())
+            compfunc = getattr(self, "completeParameters")
+            #if self.currentArgument.type() == typeId.Node:
+            #    matches = self.completeNode()
+            #elif self.currentArgument.type() == typeId.Path:
+            #    matches = self.completePath()
+        elif len(self.remainingArguments) > 0:
+            if keylessarg != None and keylessarg.name() in self.remainingArguments:
+                opt = 0
+                for argument in self.remainingArguments:
+                    if self.config.argumentByName(argument).requirementType() == Argument.Optional:
+                        opt += 1
+                if opt in [len(self.remainingArguments), len(self.remainingArguments) - 1]:
+                    self.currentArgument = keylessarg
+                    compfunc = getattr(self, "completeParameters")
+                else:
+                    compfunc = getattr(self, "completeArguments")
+            else:
+                dbg += "\n    currentArgument is NONE and there is remaining arguments "
+                compfunc = getattr(self, "completeArguments")
+        else:
+            dbg += "\n    nothing to complete"
+        if compfunc != None:
+            matches = compfunc()
+        self.debug(dbg)
+        return matches
 
 
     def complete(self, line, begidx):
+        self.begidx = begidx
         self.modules = self.loader.modules
         self.lineArguments, self.startIndexes, self.endIndexes = utils.split_line(line)
         matches = []
@@ -450,6 +486,9 @@ class Completion():
         i = 0
         self.currentStr = ""
         self.previousStr = ""
+        self.currentLarg = -1
+        self.previousLarg = -1
+        dbg = "\n  ==== complete() ===="
         while i != len(self.lineArguments):
             carg = self.lineArguments[i]
             argstart = self.startIndexes[i]
@@ -459,19 +498,32 @@ class Completion():
                     endscope = i
                 else:
                     self.previousStr = ""
+                    self.previousLarg = -1
                     startscope = i + 1
             else:
                 if begidx >= argstart:
                     if begidx <= argend:
                         self.currentStr = carg
+                        self.currentLarg = i
                     else:
-                        self.previousStr = carg
+                        #self.previousStr = carg
+                        self.previousLarg = i
+                        self.currentLarg = -1
                         self.currentStr = ""
             i += 1
+        dbg += "\n    processed line: " + str(self.lineArguments)
         self.lineArguments = self.lineArguments[startscope:endscope]
-        print "\ncurrent context:", self.lineArguments
-        print "currentstr:", self.currentStr
-        print "previousstr:", self.previousStr
+        dbg += "\n    processed scope: " + str(self.lineArguments)
+        if self.currentLarg != -1:
+            dbg += "\n    currentLarg: " + str(self.lineArguments[self.currentLarg])
+        else:
+            dbg += "\n    currentLarg:"
+        if self.previousLarg != -1:
+            dbg += "\n    previousLarg: " + str(self.lineArguments[self.previousLarg])
+        else:
+            dbg += "\n    previousLarg:"
+        self.debug(dbg)
+
         if len(self.lineArguments) == 0 or (len(self.lineArguments) == 1 and self.currentStr != ""):
             matches = self.completeModules()
             if len(matches) == 0:
