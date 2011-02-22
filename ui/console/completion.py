@@ -14,20 +14,12 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
-#from api.vfs import *
-#from api.env import *
-#from api.loader import *
-#from api.type import *
 from api.manager.manager import ApiManager
-from api.types.libtypes import typeId
-#import os.path, os, sys
+from api.types.libtypes import typeId, Argument, Parameter, ConfigManager
 import sys
-#import dircache
 import utils
 import re
-#from types import *
-#predefined arguments types:
-#node, path, driver, script
+import types
 
 class Completion():
     funcMapper = {typeId.Node: "complete_node",
@@ -38,33 +30,12 @@ class Completion():
         #init framework core dependencies
 	self.api = ApiManager()
         self.loader = self.api.loader()
-        self.modules = self.loader.modules
         self.vfs = self.api.vfs()
-        self.shell_key = [";", "<", ">", "&", "|", "&", ";"]
+        self.confmanager = ConfigManager.Get()
+        self.shell_key = [";", "<", ">", "&", "|", "&&", ";"]
 	self.OS = self.api.OS()
 	self.console = raw_input
  
-#    def get_completion_scope(self, arg, begidx):
-#        cur_arg = None
-#        prev_arg = None
-#        opt = []
-
-#        for a in arg:
-#            opt.append(a.arg)
-#            if begidx <= a.end:
-#                if begidx >= a.start:
-#                    cur_arg = a.arg
-#                elif cur_arg == None:
-#                    cur_arg = ""
-#            if self.is_cmd_arg(a.arg):
-#                if cur_arg == None:
-#                    opt = []
-#                    opt.append(a.arg)
-#                else:
-#                    break
-#        return opt, cur_arg
-#        #print "\ncurrent argument:", cur_arg, "of completion scope:", opt
-
 
     def complete_node(self):
         #print "complete node"
@@ -238,7 +209,7 @@ class Completion():
         return out
 
 
-    def complete_modules(self):
+    def completeModules(self):
         out = {"type": "module",
                "matches": {},
                "length": {"tag": 1, "module": 1},
@@ -246,11 +217,12 @@ class Completion():
         longest_tag = 1
         longest_modname = 1
 
-        for modname in self.modules.iterkeys():
-            if (self.cur_str == "") or (self.cur_str != "" and modname.startswith(self.cur_str)):
+        modnames = self.confmanager.configsName()
+        for modname in modnames:
+            if (self.currentStr == "") or (modname.startswith(self.currentStr)):
                 if longest_modname < len(modname):
                     longest_modname = len(modname)
-		tag = self.modules[modname].tags
+                tag = self.modules[modname].tags
                 if longest_tag < len(tag):
                     longest_tag = len(tag)
                 if tag not in out["matches"]:
@@ -266,16 +238,9 @@ class Completion():
         elif out["matched"] == 0:
             out = ""
         return out
-        
-
-#    def is_cmd_arg(self, arg):
-#	if arg in self.loader.modules:
-#          return True
-#        else:
-#          return False
 
 
-    def complete_key(self):
+    def completeKeys(self):
         out = {"type": "key", 
                "required": [],
                "optional": [],
@@ -333,23 +298,20 @@ class Completion():
     #   - No --> if path mandatory ?
     #     - 
     # - if both optional, no completion
+
     def complete_empty(self):
         out = None
 
-        if self.prev_arg != None:
-            if self.prev_arg.type() != typeId.Bool:
-                print "completion.complete_empty() --> self.prev_arg != Bool"
-                out = self.complete_value()
-            else:
-                print "completion.complete_empty() --> self.prev_arg == Bool"
+        if self.prev_arg != None and self.prev_arg.type() != Argument.Empty:
+            out = self.complete_value()
         else:
-            print "completion.complete_empty() --> self.prev_arg == None"
-            arg_with_no_key = utils.get_arg_with_no_key(self.args)
-            needs_no_key = utils.needs_no_key(self.parameters)
-            if arg_with_no_key == -1:# and needs_no_key != None:
-                if needs_no_key.type() in [typeId.Path, typeId.Node]:
-                    self.prev_arg = needs_no_key
-                    out = self.complete_value()
+            if len(self.remainingRequired) == 0:
+                out = self.complete_value()
+            elif len(self.remainingRequired) == 1:
+                if self.remainingRequired[0].type() == typeId.Node:
+                    out = self.complete_node()
+                if self.remainingRequired[0].type() == typeId.Path:
+                    out = self.complete_path()
                 else:
                     out = self.complete_key()
             else:
@@ -369,6 +331,7 @@ class Completion():
                 else:
                     print "completion.complete_current() --> self.prev_arg == Bool"
             else:
+                
                 print "completion.complete_current() --> self.prev_arg == None"
             #for var in self.vars:
             #    arg = "--" + var.name()
@@ -388,63 +351,139 @@ class Completion():
         return out
 
 
-    def setContext(self, line, begidx):
-        self.modules = self.loader.modules
-        self.args, self.bopt = utils.split_line(line)
-        self.cur_str = ""
-        self.prev_str = ""
-        start_scope_idx = 0
-        end_scope_idx = len(self.args)
-        for item in self.bopt:
-            if item["arg"][0] in self.shell_key or item["arg"] == "--modules":
-                if begidx >= item["end"]:
-                    start_scope_idx = self.bopt.index(item) + 1
-                    self.prev_str = ""
-                    self.cur_str = ""
-                else:
-                    end_scope_idx = self.bopt.index(item)
-            else:
-                if begidx >= item["start"] and begidx <= item["end"]:
-                    self.cur_str = item["arg"]
-                if item["end"] < begidx:
-                    self.prev_str = item["arg"]
+    def disambiguator(self):
+        requirednodes = self.config.argumentsByFlags(typeId.Node|Argument.Required)
+        #print "required nodes:"
+        #for rnode in requirednodes:
+        #    print rnode.name()
 
-        self.args = self.args[start_scope_idx:end_scope_idx]
+        optionalnodes = self.config.argumentsByFlags(typeId.Node|Argument.Optional)
+        #print "optional nodes:"
+        #for onode in optionalnodes:
+        #    print onode.name()
+
+        requiredpathes = self.config.argumentsByFlags(typeId.Path|Argument.Required)
+        #print "required pathes:"
+        #for rpath in requiredpathes:
+        #    print rpath.name()
+
+        optionalpathes = self.config.argumentsByFlags(typeId.Path|Argument.Optional)
+        #print "optional pathes:"
+        #for opath in optionalpathes:
+        #    print opath.name()
+
+
+        rnodes = len(requirednodes)
+        onodes = len(optionalnodes)
+        rpathes = len(requiredpathes)
+        opathes = len(optionalpathes)
+        if rnodes == 1 and rpathes == 0:
+            return requirednodes[0]
+        if onodes == 1 and opathes == 0 and rnodes == 0 and rpathes == 0:
+            return optionalnodes[0]
+        if rpathes == 1 and rnodes == 0:
+            return requiredpathes[0]
+        if opathes == 1 and onodes == 0 and rnodes == 0 and rpathes == 0:
+            return optionalpathes[0]
+        return None
+
+
+    def setContext(self):
+        arguments = self.config.argumentsName()
+        self.providedArguments = []
+        self.remainingArguments = []
+        self.currentArgument = None
+        i = 1
+        while i != len(self.lineArguments):
+            print "set context:", self.lineArguments[i]
+            if self.lineArguments[i].startswith("--") == True:
+                argument = self.config.argumentByName(self.lineArguments[i][2:])
+                if self.currentStr == self.lineArguments[i]:
+                    self.currentArgument = argument
+                if argument != None:
+                    self.providedArguments.append(argument.name())
+                    #self.remainingArguments.remove(argument.name())
+            elif self.lineArguments[i-1].startswith("--") == True:
+                prevarg = self.config.argumentByName(self.lineArguments[i-1][2:])
+                if argument.inputType() == Argument.Empty:
+                    argument = self.disambiguator()
+                else:
+                    argument = prevarg
+            else:
+                argument = self.disambiguator()
+            if argument != None:
+                if self.currentStr == self.lineArguments[i] or self.currentStr:
+                    print "current argument:", argument.name()
+                    self.currentArgument = argument
+                if argument.name() not in self.providedArguments:
+                    self.providedArguments.append(argument.name())
+                    
+            i += 1
+        print "\nremaining arguments:"
+        for argument in arguments:
+            if argument not in self.providedArguments:
+                self.remainingArguments.append(argument)
+        print self.remainingArguments
         
 
+
+    def dispatch(self):
+        return []
+                #if self.prev_str.startswith("--") != -1:
+                #    self.prev_arg = self.config.argumentByName(self.prev_str[2:])
+                #else:
+                #    self.prev_arg = None
+                #if self.cur_str == "":
+                #    matches = self.complete_empty()
+                #else:
+                #    matches = self.complete_current()
+
+            
+
+
     def complete(self, line, begidx):
+        self.modules = self.loader.modules
+        self.lineArguments, self.startIndexes, self.endIndexes = utils.split_line(line)
         matches = []
-
-        #set context for the completion
-        self.setContext(line, begidx)
-
-        #complete modules or part of module name
-        if (len(self.args) == 0) or (len(self.args) == 1 and self.cur_str != ""):
-            matches = self.complete_modules()
-
-        #module is known: get its conf and complete with parameters
+        endscope = len(self.lineArguments)
+        startscope = 0
+        i = 0
+        self.currentStr = ""
+        self.previousStr = ""
+        while i != len(self.lineArguments):
+            carg = self.lineArguments[i]
+            argstart = self.startIndexes[i]
+            argend = self.endIndexes[i]
+            if carg in self.shell_key:
+                if begidx <= argstart:
+                    endscope = i
+                else:
+                    self.previousStr = ""
+                    startscope = i + 1
+            else:
+                if begidx >= argstart:
+                    if begidx <= argend:
+                        self.currentStr = carg
+                    else:
+                        self.previousStr = carg
+                        self.currentStr = ""
+            i += 1
+        self.lineArguments = self.lineArguments[startscope:endscope]
+        print "\ncurrent context:", self.lineArguments
+        print "currentstr:", self.currentStr
+        print "previousstr:", self.previousStr
+        if len(self.lineArguments) == 0 or (len(self.lineArguments) == 1 and self.currentStr != ""):
+            matches = self.completeModules()
+            if len(matches) == 0:
+                print "\nmodule < " + self.currentStr + " > does not exist"
         else:
-            try:
-                module = self.modules[self.args[0]]
-                self.conf = module.conf
-                self.parameters = self.conf.parameters()
-                print self.prev_str
-                if self.prev_str.startswith("--") != -1:
-                    try:
-                        self.prev_arg = self.parameters[self.prev_str[2:]]
-                    except IndexError:
-                        self.prev_arg = None
-                else:
-                    self.prev_arg = None
-                if self.cur_str == "":
-                    matches = self.complete_empty()
-                else:
-                    matches = self.complete_current()
-            except KeyError:
-                print "\nmodule <" + self.args[0] + "> does not exist. Cannot complete"
-                matches = ""
-
-        if isinstance(matches, list) and len(matches) == 1:
+            self.config = self.confmanager.configByName(self.lineArguments[0])
+            if self.config != None:
+                self.setContext()
+                matches = self.dispatch()
+            else:
+                print "\nmodule < " + self.lineArguments[0] + " > does not exist"
+        if type(matches) == types.ListType and len(matches) == 1:
             return matches[0]
         else:
             return matches
