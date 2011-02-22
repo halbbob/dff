@@ -20,7 +20,6 @@ set(viewer_srcs
   cat.py
   viewerimage.py
   player.py
-  EXIF.py
 )
 
 install_file(viewer ${viewer_srcs})

@@ -20,6 +20,8 @@
 
 AttributeReparsePoint::AttributeReparsePoint(Attribute &parent)
 {
+  _fixupIndexes = NULL;
+  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _attributeResidentDataHeader = new AttributeResidentDataHeader(*(parent.residentDataHeader()));
 
@@ -32,7 +34,8 @@ AttributeReparsePoint::AttributeReparsePoint(Attribute &parent)
 
 AttributeReparsePoint::~AttributeReparsePoint()
 {
-  ;
+  delete _attributeResidentDataHeader;
+  delete _attributeHeader;
 }
 
 void	AttributeReparsePoint::content()

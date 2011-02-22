@@ -21,6 +21,8 @@
 
 AttributeIndexAllocation::AttributeIndexAllocation(VFile *vFile, uint64_t indexAllocOffset)
 {
+  _fixupIndexes = NULL;
+  _offsetList = NULL;
   _vfile = vFile;
   _baseOffset = indexAllocOffset;
   _indexRecordSize = 4096;
@@ -75,6 +77,8 @@ AttributeIndexAllocation::AttributeIndexAllocation(VFile *vFile, uint64_t indexA
 
 AttributeIndexAllocation::AttributeIndexAllocation(Attribute &parent)
 {
+  _fixupIndexes = NULL;
+  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _readBuffer = parent.readBuffer();
   _baseOffset = parent.baseOffset();
@@ -109,7 +113,7 @@ AttributeIndexAllocation::AttributeIndexAllocation(Attribute &parent)
 
 AttributeIndexAllocation::~AttributeIndexAllocation()
 {
-  ;
+  delete _attributeHeader;
 }
 
 /**

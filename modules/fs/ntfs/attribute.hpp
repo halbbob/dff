@@ -245,8 +245,6 @@ public:
   AttributeHeader	*attributeHeader() { return _attributeHeader; };
   uint8_t		*readBuffer() { return _readBuffer; };
   uint16_t		attributeOffset() { return _attributeOffset; };
-  uint64_t		attributeRealOffset() { return _attributeRealOffset; };
-  void			attributeRealOffset(uint64_t real) { _attributeRealOffset = real; };
   uint16_t		bufferOffset() { return _bufferOffset; };
   VFile			*vfile() { return _vfile; };
   AttributeResidentDataHeader		*residentDataHeader() { return _attributeResidentDataHeader; };
@@ -301,7 +299,6 @@ protected:
   uint32_t	_runAmount;
 
   uint64_t	_baseOffset;
-  uint64_t	_attributeRealOffset;
   uint16_t	_mftEntrySize;
   uint16_t	_indexRecordSize;
   uint16_t	_sectorSize;

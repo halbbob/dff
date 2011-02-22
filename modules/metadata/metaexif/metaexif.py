@@ -1,9 +1,13 @@
 from api.module.script import Script 
 from api.module.module import Module
-from api.types.libtypes import Variant, VMap, Argument, typeId
+from api.types.libtypes import Variant, VMap, Argument, typeId, vtime
 from api.vfs.libvfs import AttributesHandler
+import time
 
 import EXIF 
+
+# Mostly in the form 2009:12:14 14:47:11
+dateTimeTags = [0x0132, 0x9003, 0x9004]
 
 class EXIFHandler(AttributesHandler):
   def __init__(self):
@@ -31,10 +35,21 @@ class EXIFHandler(AttributesHandler):
           if ifd == "Thumbnail":
             ifd = "IFD 1 (Thumbnail)"
           key = tag[spaceidx:].strip()
-          try:
-            val = str(tags[tag])
-          except:
-            val = "cannot be decoded"
+          val = None
+          if tags[tag].tag in dateTimeTags:
+            # Try converting from usual string format to vtime, or to string
+            # if it fails.
+            try:
+              vt = time.strptime(str(tags[tag]), '%Y:%m:%d %H:%M:%S')
+              val = vtime(vt.tm_year, vt.tm_mon, vt.tm_mday, vt.tm_hour, vt.tm_min, vt.tm_sec, 0)
+              val.thisown = False
+            except ValueError:
+              pass
+          if not val:
+            try:
+              val = str(tags[tag])
+            except:
+              val = "cannot be decoded"
           if ifd not in sortedTags.keys():
             sortedTags[ifd] = []
           sortedTags[ifd].append((key, val))

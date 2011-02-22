@@ -20,6 +20,8 @@
 
 AttributeStandardInformation::AttributeStandardInformation(Attribute &parent)
 {
+  _offsetList = NULL;
+  _fixupIndexes = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _attributeResidentDataHeader = new AttributeResidentDataHeader(*(parent.residentDataHeader()));
 
@@ -38,7 +40,9 @@ AttributeStandardInformation::AttributeStandardInformation(Attribute &parent)
 
 AttributeStandardInformation::~AttributeStandardInformation()
 {
-  ;
+  delete _data;
+  delete _attributeResidentDataHeader;
+  delete _attributeHeader;
 }
 
 void		AttributeStandardInformation::content()

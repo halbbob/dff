@@ -100,6 +100,7 @@ public:
   void		continueAt(uint16_t, uint16_t);
   uint16_t	bufferOffset() { return _bufferOffset; };
   uint16_t	attributeOffset() { return _attributeOffset; };
+  VFile		*vfile() { return _vfile; };
 
 private:
   VFile					*_vfile;

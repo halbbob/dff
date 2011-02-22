@@ -20,6 +20,8 @@
 
 AttributeAttributeList::AttributeAttributeList(VFile *vFile, Attribute &parent)
 {
+  _fixupIndexes = NULL;
+  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
 
   _readBuffer = parent.readBuffer();
@@ -55,6 +57,7 @@ AttributeAttributeList::AttributeAttributeList(VFile *vFile, Attribute &parent)
       }
     }
     _dataOffset = 0;
+    _attributeResidentDataHeader = NULL;
   }
   else {
     uint8_t	i;
@@ -68,13 +71,20 @@ AttributeAttributeList::AttributeAttributeList(VFile *vFile, Attribute &parent)
     }
 
     _dataOffset = _attributeResidentDataHeader->contentOffset;
+    _attributeNonResidentDataHeader = NULL;
   }
   //  content();
 }
 
 AttributeAttributeList::~AttributeAttributeList()
 {
-  ;
+  if (_attributeNonResidentDataHeader != NULL) {
+    delete _attributeNonResidentDataHeader;
+  }
+  if (_attributeResidentDataHeader != NULL) {
+    delete _attributeResidentDataHeader;
+  }
+  delete _attributeHeader;
 }
 
 void		AttributeAttributeList::content()

@@ -26,6 +26,8 @@ AttributeData::AttributeData()
 
 AttributeData::AttributeData(Attribute &parent)
 {
+  _fixupIndexes = NULL;
+  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _readBuffer = parent.readBuffer();
   _baseOffset = 0;
@@ -47,6 +49,7 @@ AttributeData::AttributeData(Attribute &parent)
 
     _attributeNonResidentDataHeader = new AttributeNonResidentDataHeader(*(parent.nonResidentDataHeader()));
     size(_attributeNonResidentDataHeader->attributeContentActualSize);
+    _attributeResidentDataHeader = NULL;
   }
   else {
     uint8_t	i;
@@ -58,6 +61,7 @@ AttributeData::AttributeData(Attribute &parent)
     for (i = 0; i < _fixupIndexesSize; i++) {
       _fixupIndexes[i] = parent.fixupIndexes()[i];
     }
+    _attributeNonResidentDataHeader = NULL;
   }
     
   DEBUG(INFO, "Data copy ok !!!!\n");
@@ -65,7 +69,16 @@ AttributeData::AttributeData(Attribute &parent)
 
 AttributeData::~AttributeData()
 {
-  ;
+  //  if (_fixupIndexes != NULL) {
+  //    delete _fixupIndexes;
+  //  }
+  if (_attributeNonResidentDataHeader != NULL) {
+    delete _attributeNonResidentDataHeader;
+  }
+  if (_attributeResidentDataHeader != NULL) {
+    delete _attributeResidentDataHeader;
+  }
+  delete _attributeHeader;
 }
 
 void	AttributeData::content()
