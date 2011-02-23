@@ -10,17 +10,17 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Frederic Baguelin <fba@digital-forensic.org>
+#  Christophe Malinge <cma@digital-forensic.org>
 
-add_subdirectory(hexedit)
-add_subdirectory(bindiff)
-add_subdirectory(timeline)
-
-set(viewer_srcs
+set(timeline_srcs
   __init__.py
-  cat.py
-  viewerimage.py
-  player.py
+  compute_thread.py
+  dffdatetime.py
+  drawer.py
+  list_thread.py
+  paint_area.py
+  options_layout.py
+  timeline.py
 )
 
-install_file(viewer ${viewer_srcs})
+install_file(timeline ${timeline_srcs})
