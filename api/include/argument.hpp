@@ -84,6 +84,7 @@ public:
   void				addParameters(std::list<Variant*> params, uint16_t type, int32_t min = -1, int32_t max=-1);
 
   std::list<Variant*>		parameters();
+  uint32_t			parametersCount();
   //void				setName(std::string name);
   std::string			name();
 

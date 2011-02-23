@@ -17,15 +17,17 @@
 from api.manager.manager import ApiManager
 from api.types.libtypes import typeId, Argument, Parameter, ConfigManager
 import sys
+import os
+import dircache
 import utils
 import re
 import types
 
-class Completion():
-    funcMapper = {typeId.Node: "completeNode",
-                  typeId.Path: "completePath"
-                  }
+class UnifiedNodePath():
+    def __init__(self, arg):
+        pass
 
+class Completion():
     def __init__(self, raw_input):
         #init framework core dependencies
 	self.api = ApiManager()
@@ -33,17 +35,18 @@ class Completion():
         self.vfs = self.api.vfs()
         self.confmanager = ConfigManager.Get()
         self.shell_key = [";", "<", ">", "&", "|", "&&", ";"]
-	self.OS = self.api.OS()
 	self.console = raw_input
         self.DEBUG = True
 
 
-    def currentScopeInList(self):
-        dbg = "\n ==== currentScopeList ===="
+    def currentParameter(self):
+        dbg = "\n ==== currentParameter() ===="
         dbg += "\n    current str to process " + self.currentStr
         if self.currentLarg == -1:
             resstr = ""
         elif len(self.currentStr) == 1:
+            resstr = self.currentStr
+        elif self.currentArgument.inputType() == Argument.Single:
             resstr = self.currentStr
         else:
             beforeidx = 0
@@ -74,181 +77,110 @@ class Completion():
         self.debug(dbg)
         return resstr
 
-    def completeNode(self):
-        #print "complete node"
+
+
+    def setPathContext(self, ctype):
         rpath = ""
         supplied = ""
-        out = {"type": "path",
-               "matches": [],
-               "length": 1,
-               "supplied": "",
-               "matched": 0}
-
-        if self.currentArgument.inputType() == Argument.List:
-            path = self.currentScopeInList()
-        else:
-            path = self.currentStr
+        children = None
+        path = self.currentParameter()
         if path == "" or path[0] != "/":
-            if self.vfs.getcwd().path() == "" and self.vfs.getcwd().name() == "":
-                rpath = "/"
+            if ctype == typeId.Node:
+                rpath = self.vfs.getcwd().absolute() + "/"
             else:
-                rpath = str(self.vfs.getcwd().absolute() + "/").replace("//", "/")
-
-        idx = path.rfind("/")
-        if idx == -1:
+                rpath = os.getcwd() + "/"
             supplied = path
         else:
-            supplied = path[idx+1:]
-            rpath += path[:idx]
-        try:
-	    rpath = rpath.replace("\ ", " ")
-            node = self.vfs.getnode(rpath)
-        except OSError, e:
-            out["matches"].append("")
-        supplied = supplied.replace("\ ", " ")
-        out["supplied"] = supplied
-        if node:
-            if not node.hasChildren():
-                if path == "/":
-                    out["matches"].append("")
-                else:
-                    out["matches"].append("/")
-                out["matched"] += 1
+            path = path.replace("//", "/")
+            idx = path.rfind("/")
+            if idx == -1:
+                supplied = ""
+                rpath = path
             else:
-                list = node.children()
-                if supplied == "":
-                    for i in list:
-                        name = i.name()
-                        if i.hasChildren():
-                            if len(name + "/") > out["length"]:
-                                out["length"] = len(name + "/")
-                            out["matches"].append(name + "/")
-                        else:
-                            if len(name) > out["length"]:
-                                out["length"] = len(name)
-                            out["matches"].append(name)
-                        out["matched"] += 1
+                supplied = path[idx+1:]
+                rpath += path[:idx+1]
+        rpath = rpath.replace("\ ", " ")
+        supplied = supplied.replace("\ ", " ")
+        if ctype == typeId.Node:
+            node = self.vfs.getnode(rpath)
+            if node:
+                if node.hasChildren():
+                    children = node.children()
                 else:
-                    for i in list:
-                        name = i.name()
-                        if name.startswith(supplied) == True:
-                            if i.hasChildren():
-                                if len(name + "/") > out["length"]:
-                                    out["length"] = len(name + "/")
-                                out["matches"].append(name + "/")
-                            else:
-                                if len(name) > out["length"]:
-                                    out["length"] = len(name)
-                                out["matches"].append(name)
-                            out["matched"] += 1
-        return out
-        
+                    children = []
+        elif os.path.exists(rpath):
+            if os.path.isdir(rpath):
+                children = dircache.listdir(rpath)
+            else:
+                children = []
+        return (path, rpath, supplied, children)
 
-    def completePath(self):
-        #print "complete path"
-        rpath = ""
-        supplied = ""
+
+    def completePathes(self):
         out = {"type": "path",
                "matches": [],
                "length": 1,
                "supplied": "",
                "matched": 0}
 
-        if self.currentArgument.inputType() == Argument.List:
-            path = self.currentScopeInList()
-        else:
-            path = self.currentStr
-        if path == "":
-            #rpath = os.getcwd() + "/"
-            rpath = self.OS.getcwd() + '/'
-        else:
-            idx = path.rfind("/")
-            if idx == -1:
-                rpath = self.OS.getcwd() + "/"
-                supplied = path
+        ctype = self.currentArgument.type()
+        itype = self.currentArgument.inputType()
+        path, rpath, supplied, children = self.setPathContext(ctype)
 
-            elif idx == 0:
-              supplied = path[idx+1:]  
-              rpath = path[:idx+1]
-
-            else:
-                supplied = path[idx+1:]
-                if path[0] != "/":
-                    #rpath = os.getcwd() + "/" + path[:idx+1]
-                    rpath = self.OS.getcwd() + "/" + path[:idx+1]
-                else:
-                    rpath = path[:idx+1]
-
-        #directory listing
-        rpath = rpath.replace("\ ", " ")
-        supplied = supplied.replace("\ ", " ")
+        dbg = "\n ==== completePathes() ===="
+        if children == None:
+            dbg += "\n    cannot complete with provided path"
+            self.debug(dbg)
+            return ""
         out["supplied"] = supplied
-        try:
-#	    a = dircache.listdir(rpath)
-            a = self.OS.listdir(rpath)
-        except OSError, e:
-            return
-        if a:
-            #completion on a path
-            if supplied == "":
-                for it in a:
-                    #if os.path.isdir(rpath + '/' + it):
-                    if self.OS.isdir(rpath + '/' + it):
-                        #it = it.replace(" ", "\ ")
-                        if len(it + "/") > out["length"]:
-                            out["length"] = len(it + "/")
-                        out["matches"].append(it + '/')
-                    else:
-                        #it = it.replace(" ", "\ ")
-                        if len(it) > out["length"]:
-                            out["length"] = len(it)
-                        out["matches"].append(it)
-                    out["matched"] += 1
+        dbg += "\n    path: " + path
+        dbg += "\n    relative path: " + rpath
+        dbg += "\n    supplied str: " + supplied
+        if len(children) == 0:
+            if rpath == "/":
+                if path == "":
+                    out["matches"].append("/")
+                else:
+                    out["matches"].append("")
             else:
-                for it in a:
-                    if it.startswith(supplied) == True:
-                        #if os.path.isdir(rpath + '/' + it):
-                        if self.OS.isdir(rpath + '/' + it):
-                            #it = it.replace(" ", "\ ")
-                            #print it
-                            if len(it + "/") > out["length"]:
-                                out["length"] = len(it + "/")
-                            out["matches"].append(it + '/')
-                        else:
-                            if len(it) > out["length"]:
-                                out["length"] = len(it)
-                            #it = it.replace(" ", "\ ")
-                            out["matches"].append(it)
-                        out["matched"] += 1
-        return out
-
-
-    def completeParameters(self):
-        out = []
-        return out
-        if self.currentStr != "":
-            func = getattr(self, Completion.funcMapper[self.currentArgument.type()])
-            out = func()
+                out["matches"].append("/")
+            out["matched"] += 1
         else:
+            for child in children:
+                if ctype == typeId.Node:
+                    name = child.name()
+                else:
+                    name = child
+                if supplied == "" or name.startswith(supplied):
+                    if (ctype == typeId.Node and child.hasChildren()) or os.path.isdir(rpath + name):
+                        if len(name + "/") > out["length"]:
+                            out["length"] = len(name + "/")
+                        out["matches"].append(name + "/")
+                    else:
+                        if len(name) > out["length"]:
+                            out["length"] = len(name)
+                        out["matches"].append(name)
+                    out["matched"] += 1
+        self.debug(dbg)
+        return out
         
-            out = {"type": "predefined",
-                   "matches": [],
-                   "matched": 0,
-                   "length": 1}
-            defaults = self.prev_arg.defaults()
-            for default in defaults:
-                if default.type() == typeId.List:
-                    for item in default.value():
-                        out["matches"]
-                print default
-            #lmatch = len(match)
-            #if lmatch > 0:
-            #    out["matches"].extend(match)
-            #    out["matched"] += lmatch
-            #    if len(str(val)) > out["length"]:
-            #        out["length"] = len(str(val))
-            #if out["matched"] == 1:
-            #    out = out["matches"][0]
+
+    def completePredefined(self):
+        parameter = self.currentParameter()
+        out = {"type": "predefined",
+               "matches": [],
+               "matched": 0,
+               "length": 1}
+        predefs = self.currentArgument.parameters()
+        for predef in predefs:
+            val = str(predef.value())
+            if parameter == "" or val.startswith(parameter):
+                if len(val) > out["length"]:
+                    out["length"] = len(val)
+                out["matches"].append(val)
+                out["matched"] += 1
+        if out["matched"] == 1:
+            out = out["matches"][0]
         return out
 
 
@@ -293,7 +225,7 @@ class Completion():
         for argname in self.remainingArguments:
             argument = self.config.argumentByName(argname)
             match = False
-            if self.currentStr == "--":
+            if self.currentStr in ["", "-"]:
                 match = True
             elif self.currentStr.startswith("--") and argname.startswith(self.currentStr[2:]):
                 match = True
@@ -312,36 +244,20 @@ class Completion():
                 out = out["optional"][0]
             else:
                 out = out["required"][0]
-
+            out = "--" + out
         return out
 
 
     def disambiguator(self):
         requirednodes = self.config.argumentsByFlags(typeId.Node|Argument.Required)
-        #print "required nodes:"
-        #for rnode in requirednodes:
-        #    print rnode.name()
-
         optionalnodes = self.config.argumentsByFlags(typeId.Node|Argument.Optional)
-        #print "optional nodes:"
-        #for onode in optionalnodes:
-        #    print onode.name()
-
         requiredpathes = self.config.argumentsByFlags(typeId.Path|Argument.Required)
-        #print "required pathes:"
-        #for rpath in requiredpathes:
-        #    print rpath.name()
-
         optionalpathes = self.config.argumentsByFlags(typeId.Path|Argument.Optional)
-        #print "optional pathes:"
-        #for opath in optionalpathes:
-        #    print opath.name()
-
-
         rnodes = len(requirednodes)
         onodes = len(optionalnodes)
         rpathes = len(requiredpathes)
         opathes = len(optionalpathes)
+
         if rnodes == 1 and rpathes == 0:
             return requirednodes[0]
         if onodes == 1 and opathes == 0 and rnodes == 0 and rpathes == 0:
@@ -372,22 +288,26 @@ class Completion():
             dbg += "\n    current larg: " + self.lineArguments[i]
             larg = self.lineArguments[i]
             if larg.startswith("--") == True:
-                dbg += "\n      Starting with --" 
-                argument = self.config.argumentByName(larg[2:])
-                if argument != None:
-                    dbg += "\n      argument found: " + argument.name()
-                    carg = argument
-                    if carg.inputType() == Argument.Empty:
-                        if self.currentLarg == -1:
-                            self.currentArgument = None
-                        self.providedArguments[carg.name()] = True
-                    else:
-                        if self.currentLarg == -1:
-                            self.currentArgument = carg
-                        self.providedArguments[carg.name()] = None
+                dbg += "\n      Starting with --"
+                dbg += "\n      currentlarg --> " + str(self.currentLarg) + " | i --> " + str(i) + " | currentArgument --> " + str(self.currentArgument)
+                if self.currentArgument != None and self.currentArgument.inputType() != Argument.Empty and self.currentLarg == i:
+                    dbg += "\n      special case where provided parameters startswith -- | carg --> " + str(self.currentArgument.name()) + " | larg --> " + larg  
+                    self.providedArguments[self.currentArgument.name()] = larg
                 else:
-                    self.currentArgument = None
-                    dbg += "\n      argument not found"
+                    argument = self.config.argumentByName(larg[2:])
+                    if argument != None:
+                        dbg += "\n      argument found: " + argument.name()
+                        carg = argument
+                        if carg.inputType() == Argument.Empty:
+                            if self.currentLarg == -1:
+                                self.currentArgument = None
+                            self.providedArguments[carg.name()] = True
+                        else:
+                            self.currentArgument = carg
+                            self.providedArguments[carg.name()] = None
+                    else:
+                        dbg += "\n      argument not found"
+                        self.currentArgument = None
             else:
                 if carg != None:
                     dbg += "\n      Not starting with --\n      carg setted --> name: " + str(carg.name()) + " input type: " + str(carg.inputType())
@@ -440,39 +360,56 @@ class Completion():
         dbg += "\n\n    provided arguments: " + str(self.providedArguments)
         dbg += "\n    remaining arguments: " + str(self.remainingArguments)
         self.debug(dbg)
-
+        
 
     def dispatch(self):
         matches = ""
-        keylessarg = self.disambiguator()
         dbg = "\n ==== dispatch() ===="
         compfunc = None
         if self.currentArgument != None:
-            dbg += "\n    current argument to complete: " + str(self.currentArgument.name())
-            compfunc = getattr(self, "completeParameters")
-            #if self.currentArgument.type() == typeId.Node:
-            #    matches = self.completeNode()
-            #elif self.currentArgument.type() == typeId.Path:
-            #    matches = self.completePath()
-        elif len(self.remainingArguments) > 0:
-            if keylessarg != None and keylessarg.name() in self.remainingArguments:
-                opt = 0
-                for argument in self.remainingArguments:
-                    if self.config.argumentByName(argument).requirementType() == Argument.Optional:
-                        opt += 1
-                if opt in [len(self.remainingArguments), len(self.remainingArguments) - 1]:
-                    self.currentArgument = keylessarg
-                    compfunc = getattr(self, "completeParameters")
+            parg = self.providedArguments[self.currentArgument.name()]
+            if parg == None or parg == self.currentStr:
+                dbg += "\n    current argument to complete: " + str(self.currentArgument.name())
+                if self.currentArgument.type() in [typeId.Node, typeId.Path]: 
+                    compfunc = getattr(self, "completePathes")
                 else:
-                    compfunc = getattr(self, "completeArguments")
+                    compfunc = getattr(self, "completePredefined")
             else:
-                dbg += "\n    currentArgument is NONE and there is remaining arguments "
                 compfunc = getattr(self, "completeArguments")
         else:
-            dbg += "\n    nothing to complete"
+            dbg += "\n    no current argument to complete"
+            keylessarg = self.disambiguator()
+            if len(self.remainingArguments) > 0:
+                dbg += "\n      remaining arguments exist --> total: " + str(len(self.remainingArguments))
+                if keylessarg != None and keylessarg.name() in self.remainingArguments:
+                    req = 0
+                    dbg += "\n      keylessarg != None and has not been provided yet"
+                    requiredargs = self.config.argumentsByRequirementType(Argument.Required)
+                    for requiredarg in requiredargs:
+                        rname = requiredarg.name()
+                        if rname in self.remainingArguments and rname != keylessarg.name():
+                            req += 1
+                    if req == 0:
+                        dbg += "\n      keylessarg < " + str(keylessarg.name()) + " > can be used as default"
+                        self.currentArgument = keylessarg
+                        if self.currentArgument.type() in [typeId.Node, typeId.Path]: 
+                            compfunc = getattr(self, "completePathes")
+                        else:
+                            compfunc = getattr(self, "completePredefined")
+                    else:
+                        dbg += "\n      keylessarg can not be used as default, complete with remaining arguments"
+                        compfunc = getattr(self, "completeArguments")
+                else:
+                    dbg += "\n      either keylessarg is None or keylessarg already used"
+                    compfunc = getattr(self, "completeArguments")
+            else:
+                dbg += "\n    nothing to complete"
+        self.debug(dbg)
         if compfunc != None:
             matches = compfunc()
-        self.debug(dbg)
+            #print matches
+            if self.currentStr.startswith("-") and (type(matches) in [types.ListType, types.StringType] and len(matches) == 0) or (type(matches) == types.DictType and matches["matched"] == 0):
+                matches = self.completeArguments()
         return matches
 
 
