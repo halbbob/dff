@@ -46,9 +46,7 @@ class Line_to_arguments():
         generated_arguments = []
         #generated_args
         for a in self.args:
-            if a in ["|", "&", "&&", ">>", "<<", ">", "<"]:
- #               cmds.append(cmd)
-  #              cmd = []
+            if a in [";", "<", ">", "&", "|", "&&"]:
 		pass
             else:
                 cmd.append(a)
