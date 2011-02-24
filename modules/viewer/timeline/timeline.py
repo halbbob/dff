@@ -15,7 +15,7 @@
 #
 
 # System imports
-from datetime import timedelta
+from datetime import datetime, timedelta
 from PyQt4.QtCore import QDateTime, Qt, QPointF, QRectF, SIGNAL, QString
 from PyQt4.QtGui import QPixmap, QColor, QWidget, QVBoxLayout, QSplitter, QPainter
 
@@ -25,7 +25,6 @@ from api.module.module import Module
 from api.module.script import Script
 
 # Timeline imports
-from dffdatetime import DffDatetime
 from paint_area import PaintArea
 from options_layout import OptionsLayout
 from compute_thread import WorkerThread, CountThread, MaxOccThread
@@ -48,8 +47,8 @@ class Timeline(QWidget, Script):
                    ['green', Qt.green], ['yellow', Qt.yellow],
                    ['magenta', Qt.magenta], ['cyan', Qt.cyan]]
     self.stateinfo = 'Initialized'
-    self.dateMin = DffDatetime(9999, 12, 31, 23, 59, 59, 999999)
-    self.dateMax = DffDatetime(1, 1, 1)
+    self.dateMin = long(0xffffffffffffffff)
+    self.dateMax = long(0)
     self.baseDateMin = self.dateMin
     self.baseDateMax = self.dateMax
     self.selDateMin = None
@@ -105,11 +104,23 @@ class Timeline(QWidget, Script):
       days = usec / (86400 * 1000000)
       seconds = (usec - days * 86400 * 1000000) / 1000000
       misec = usec - days * 86400 * 1000000 - seconds * 1000000
-      if days >= 1 and DffDatetime.fromordinal(days) >= DffDatetime.fromordinal(1):
-        return DffDatetime.fromordinal(days) + timedelta(seconds = seconds, microseconds = misec)
+      if days >= 1 and datetime.fromordinal(days) >= datetime.fromordinal(1):
+        return datetime.fromordinal(days) + timedelta(seconds = seconds, microseconds = misec)
       return None
 
+  def toUSec(self, dtime):
+    return dtime.toordinal() * 86400 * 1000000 + dtime.hour * 3600 * 1000000 + dtime.minute * 60 * 1000000 + dtime.second * 1000000 + dtime.microsecond
 
+  def dumpTimeMap(self):
+    print self.timeMap
+    for k in self.timeMap.keys():
+      print 'module:', k
+      for attr in self.timeMap[k]:
+        sAttrPath = '/'
+        for v in attr[:-1]:
+          sAttrPath += v + '/'
+        print ' ', sAttrPath, ':', attr[-1]
+      
   def countThreadOver(self):
       if not self.nodeCount:
         self.setStateInfo('No timestamp found any subset of ' + self.node.absolute())
@@ -117,6 +128,7 @@ class Timeline(QWidget, Script):
         return
       self.setStateInfo(str(self.nodeCount) + ' nodes found')
 
+#      self.dumpTimeMap()
 # Find/virtual draw maximum size of Y text
       painter = QPainter()
       nullPixmap = QPixmap(self.ploter.width, self.ploter.height)
@@ -153,25 +165,25 @@ class Timeline(QWidget, Script):
 
   def findMaxValue(self):
       self.xRange = (self.ploter.width - self.m - self.draw.yLeftMargin) / self.lineHeight
-      self.xHop = (self.baseDateMax.usec - self.baseDateMin.usec) / self.xRange
+      self.xHop = (self.baseDateMax - self.baseDateMin) / self.xRange
 
   def maxOccThreadOver(self):
       self.updatePaintingArea()
 
   def zoomMaxOcc(self):
     self.xRange = (self.ploter.width - self.m - self.draw.yLeftMargin) / self.lineHeight
-    xHop = (self.selDateMax.usec - self.selDateMin.usec) / self.xRange
+    xHop = (self.selDateMax - self.selDateMin) / self.xRange
     newMaxOcc = 0
     for family in self.options.configuration:
       for time in family[1]:
-        timeChecked = self.selDateMin.usec
-        if timeChecked == self.selDateMax.usec:
+        timeChecked = self.selDateMin
+        if timeChecked == self.selDateMax:
 # Every nodes have the same time, setting maxOcc computing time + 100usec
-          occ = time[1][5][1].elementsInRange(self.fromUSec(timeChecked), self.fromUSec(timeChecked + 100), time[1][5][1])
+          occ = self.elementsInRange(time[1][5][1], timeChecked, timeChecked + 100)
           if occ > newMaxOcc:
               newMaxOcc = occ
-        while timeChecked <= self.selDateMax.usec:
-          occ = time[1][5][1].elementsInRange(self.fromUSec(timeChecked), self.fromUSec(timeChecked + xHop), time[1][5][1])
+        while timeChecked <= self.selDateMax:
+          occ = self.elementsInRange(time[1][5][1], timeChecked, timeChecked + xHop)
           if occ > newMaxOcc:
             newMaxOcc = occ
           timeChecked += xHop
@@ -285,16 +297,16 @@ class Timeline(QWidget, Script):
 
   def nodesInRange(self, x1, x2):
     if not self.selDateMin:
-      timeCheck = self.baseDateMin.usec
-      timeMax = self.baseDateMax.usec
+      timeCheck = self.baseDateMin
+      timeMax = self.baseDateMax
     else:
-      timeCheck = self.selDateMin.usec
-      timeMax = self.selDateMax.usec
+      timeCheck = self.selDateMin
+      timeMax = self.selDateMax
     count = 0
     while timeCheck < timeMax:
       for family in self.options.configuration:
         for time in family[1]:
-          occ = time[1][5][1].elementsInRange(self.fromUSec(timeCheck), self.fromUSec(timeCheck + self.xHop), time[1][5][1])
+          occ = self.elementsInRange(time[1][5][1], timeCheck, timeCheck + self.xHop)
           if occ:
               if self.lineMatched(timeCheck, occ, x1, x2) and time[1][0][1]:
                 count += occ
@@ -320,8 +332,8 @@ class Timeline(QWidget, Script):
       dateMin = self.selDateMin
       dateMax = self.selDateMax
 
-    if (dateMax - dateMin) > timedelta(0):
-      x = ((usec - dateMin.usec) * (self.ploter.width - self.m - self.draw.yLeftMargin)) / (dateMax.usec - dateMin.usec) + self.draw.yLeftMargin
+    if (dateMax - dateMin) > 0:
+      x = ((usec - dateMin) * (self.ploter.width - self.m - self.draw.yLeftMargin)) / (dateMax - dateMin) + self.draw.yLeftMargin
       if x <= self.draw.yLeftMargin:
         x += 3
       x_min = x - 2
@@ -330,8 +342,39 @@ class Timeline(QWidget, Script):
         return True
     return False
 
+  def elementsInRange(self, root, tMin, tMax):
+    ''' Returns amount of node in a date range, given as long
+
+    Dichotomic search, but this can be improved because we only search for
+    smaller timestamp and decrease index if greather.
+    '''
+    if not tMin or not tMax:
+      return 0
+    nodesCount = 0
+    iMin, iMax = 0, len(root['dates']) - 1
+    iCurrent = iMax / 2
+    # Sync cursor in dates list on tMin ; should be improved
+    while iMin != iMax or not iMax:
+      if tMin >= root['dates'][iCurrent] or not iCurrent:
+        while iCurrent and tMin >= root['dates'][iCurrent]:
+          # Should be improved
+          iCurrent -= 1
+        break
+      elif tMin < root['dates'][iCurrent]:
+        iMax = iCurrent
+        iCurrent = iMin + ((iCurrent - iMin) / 2)
+
+    # Count amount of nodes between tMin and tMax
+    endOfList = len(root['dates'])
+    while iCurrent < endOfList and tMax >= root['dates'][iCurrent]:
+      if tMin <= root['dates'][iCurrent]:
+        nodesCount += len(root['nodes'][iCurrent])
+      iCurrent += 1
+      
+    return nodesCount
+
 class timeline(Module):
-  """ Tachatte
+  """ Fetch all timestamp from children of a node and create a nice view.
   """
   def __init__(self):
     Module.__init__(self, 'timeline', Timeline)

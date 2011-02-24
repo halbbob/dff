@@ -17,8 +17,6 @@
 from datetime import timedelta
 from PyQt4.QtCore import QString, QThread, SIGNAL, QMutex, QWaitCondition, QMutexLocker
 
-from dffdatetime import DffDatetime
-
 from api.types.libtypes import typeId
 
 class WorkerThread(QThread):
@@ -157,21 +155,17 @@ class MaxOccThread(QThread):
       newMaxOcc = 0
       for family in self.timeline.options.configuration:
         for time in family[1]:
-          timeChecked = self.baseDateMin.usec
-          if timeChecked == self.baseDateMax.usec:
+          timeChecked = self.baseDateMin
+          if timeChecked == self.baseDateMax:
 # Every nodes have the same time, setting maxOcc computing time + 100usec
-            occ = time[1][5][1].elementsInRange(self.timeline.fromUSec(timeChecked), self.timeline.fromUSec(timeChecked + 100), time[1][5][1])
+            occ = self.timeline.elementsInRange(time[1][5][1], timeChecked, timeChecked + 100)
             if occ > newMaxOcc:
               newMaxOcc = occ
-          while timeChecked <= self.baseDateMax.usec:
-            try:
-             occ = time[1][5][1].elementsInRange(self.timeline.fromUSec(timeChecked), self.timeline.fromUSec(timeChecked + self.xHop), time[1][5][1])
-            except:
-             occ = 0
+          while timeChecked <= self.baseDateMax:
+            occ = self.timeline.elementsInRange(time[1][5][1], timeChecked, timeChecked + self.xHop)
             if occ > newMaxOcc:
               newMaxOcc = occ
             timeChecked += self.xHop
-            # percent = ((self.baseDateMin.usec + timeChecked) * 100) / (self.baseDateMin.usec + self.baseDateMax.usec)
             
       self.timeline.maxOcc = newMaxOcc
       self.timeline.setStateInfo('Done - check max amount of nodes in range is ' + str(newMaxOcc) + ' nodes')

@@ -14,11 +14,9 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
-from datetime import timedelta
-
 from PyQt4.QtCore import Qt, QPoint, QLineF
 
-from dffdatetime import DffDatetime
+from datetime import datetime
 
 class Drawer():
   def __init__(self, timeline):
@@ -74,11 +72,11 @@ class Drawer():
     x = self.yLeftMargin
     y = self.ploter.height - self.m
     if not self.selDateMin:
-      date = self.baseDateMin.usec
-      shift_date = (self.baseDateMax.usec - self.baseDateMin.usec) / scale
+      date = self.baseDateMin
+      shift_date = (self.baseDateMax - self.baseDateMin) / scale
     else:
-      date = self.selDateMin.usec
-      shift_date = (self.selDateMax.usec - self.selDateMin.usec) / scale
+      date = self.selDateMin
+      shift_date = (self.selDateMax - self.selDateMin) / scale
     while i <= scale + 1:
       pen.setColor(Qt.black)
       pen.setStyle(Qt.SolidLine)
@@ -143,10 +141,10 @@ class Drawer():
     xRange = (self.ploter.width - self.m - self.yLeftMargin) / self.timeline.lineHeight
 # Find secs between each x hop
     if not self.timeline.selDateMin:
-      self.xHop = (self.baseDateMax.usec - self.baseDateMin.usec) / xRange
+      self.xHop = (self.baseDateMax - self.baseDateMin) / xRange
     else:
 # We are in a zoom
-      self.xHop = (self.selDateMax.usec - self.selDateMin.usec) / xRange
+      self.xHop = (self.selDateMax - self.selDateMin) / xRange
 # FIXME no need to set it for each line ...!
     self.timeline.xHop = self.xHop
     self.drawEverythingInX(elements)
@@ -154,23 +152,20 @@ class Drawer():
 
   def drawEverythingInX(self, elements):
     if not self.timeline.selDateMin:
-      timeChecked = self.baseDateMin.usec
-      limit = self.baseDateMax.usec
+      timeChecked = self.baseDateMin
+      limit = self.baseDateMax
     else:
-      timeChecked = self.selDateMin.usec
-      limit = self.selDateMax.usec
+      timeChecked = self.selDateMin
+      limit = self.selDateMax
     while timeChecked <= limit:
-      try:
-        occ = elements.elementsInRange(self.timeline.fromUSec(timeChecked), self.timeline.fromUSec(timeChecked + self.xHop), elements)
-      except:
-        occ = 0
+      occ = self.timeline.elementsInRange(elements, timeChecked, timeChecked + self.xHop)
       if occ:
           self.drawOneLine(timeChecked, occ)
       timeChecked += self.xHop
       if self.xHop <= 0:
-# FIXME ca a change...        self.timeline.res.add_const("error", "Not enough different date in this node")
+# FIXME set stateinfo to ("error", "Not enough different date in this node")
         return
-# FIXME ca a change aussi !    self.timeline.res.add_const("result", "no problem")
+# FIXME set stateinfo to ("result", "no problem")
     return
     
   def drawOneLine(self, timeChecked, occ):
@@ -183,8 +178,8 @@ class Drawer():
       dateMax = self.timeline.selDateMax
       maxOcc = self.timeline.maxOccZoom
 
-    if (dateMax - dateMin) > timedelta(0):
-      x = ((timeChecked - dateMin.usec) * (self.ploter.width - self.m - self.yLeftMargin)) / (dateMax.usec - dateMin.usec) + self.yLeftMargin
+    if (dateMax - dateMin) > 0:
+      x = ((timeChecked - dateMin) * (self.ploter.width - self.m - self.yLeftMargin)) / (dateMax - dateMin) + self.yLeftMargin
       y = (((maxOcc - occ) * (self.ploter.height - self.m - (self.m / 3))) / maxOcc) + (self.m / 3)
       if x <= self.yLeftMargin:
           x += 3
@@ -211,28 +206,28 @@ class Drawer():
     usecX = 0
     if not self.selDateMin or not self.selDateMax:
 # Click from main (original) view
-      usecX = ((x - self.yLeftMargin) * (self.baseDateMax.usec - self.baseDateMin.usec)) / (self.ploter.width - self.m - self.yLeftMargin)
-      usecX += self.baseDateMin.usec
-      if usecX < self.baseDateMin.usec:
-        usecX = self.baseDateMin.usec
-      if usecX > self.baseDateMax.usec:
-        usecX = self.baseDateMax.usec
+      usecX = ((x - self.yLeftMargin) * (self.baseDateMax - self.baseDateMin)) / (self.ploter.width - self.m - self.yLeftMargin)
+      usecX += self.baseDateMin
+      if usecX < self.baseDateMin:
+        usecX = self.baseDateMin
+      if usecX > self.baseDateMax:
+        usecX = self.baseDateMax
 # Avoid microseconds
       usecStr = str(int(usecX))
       usecX = int(usecStr[:-6] + '000000')
       ret = self.timeline.fromUSec(usecX)
-      return DffDatetime(ret.year, ret.month, ret.day, ret.hour, ret.minute, ret.second, 0)
+      return datetime(ret.year, ret.month, ret.day, ret.hour, ret.minute, ret.second, 0)
     else:
 # Click already from a zoom view 
-      usecX = ((x - self.yLeftMargin) * (self.selDateMax.usec - self.selDateMin.usec)) / (self.ploter.width - self.m - self.yLeftMargin)
-      usecX += self.selDateMin.usec
-      if usecX < self.selDateMin.usec:
-        usecX = self.selDateMin.usec
-      if usecX > self.selDateMax.usec:
-        usecX = self.selDateMax.usec
+      usecX = ((x - self.yLeftMargin) * (self.selDateMax - self.selDateMin)) / (self.ploter.width - self.m - self.yLeftMargin)
+      usecX += self.selDateMin
+      if usecX < self.selDateMin:
+        usecX = self.selDateMin
+      if usecX > self.selDateMax:
+        usecX = self.selDateMax
 # Avoid microseconds
       usecStr = str(int(usecX))
       usecX = int(usecStr[:-6] + '000000')
       ret = self.timeline.fromUSec(usecX)
-      return DffDatetime(ret.year, ret.month, ret.day, ret.hour, ret.minute, ret.second, 0)
+      return datetime(ret.year, ret.month, ret.day, ret.hour, ret.minute, ret.second, 0)
     return None
