@@ -40,7 +40,7 @@ class CAT(QTextEdit, Script):
   def g_display(self):
     QTextEdit.__init__(self, None)
     self.setReadOnly(1)
-    self.append(self.buff)
+    self.append(QString.fromUtf8(self.buff))
 
   def updateWidget(self):
 	pass
