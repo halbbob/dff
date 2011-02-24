@@ -14,142 +14,115 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
-from api.manager.manager import ApiManager
 from api.types.libtypes import typeId, Argument, Parameter, ConfigManager
-import sys
-import os
-import dircache
-import utils
-import re
-import types
+from api.vfs.vfs import vfs
+from api.loader.loader import loader
+import sys, os, dircache, utils, re, types
 
 
-class LineContext():
-    def __init__(self):
-        self.DEBUG = True
-        rx = re.compile('(?=&&).')
-        m = rx.search(line, 0)
-        while m:
-            print m.end(0)
-            m = rx.search(line, m.end(0))
-
-
-    def debug(self, msg):
-        if self.DEBUG:
-            print "  ", msg
-
-    def splitLine(line):
-        startidx = 0
-        argument = ""
-        i = 0
-        arguments = []
-        startIndexes = []
-        endIndexes = []
-        shell_key = [";", "<", ">", "&", "|", "&"]
-        
-        re.search()
-
-        while i < len(line):
-            if line[i] == " " and (line[i-1] != "\\") and (len(argument.split()) != 0):
-                arguments.append(argument)
-                startIndexes.append(startidx)
-                endIndexes.append(i)
-                argument = ""
-                startidx = i
-            elif line[i] in shell_key and (line[i-1] != "\\"):
-                if len(argument.split()) != 0:
-                    arguments.append(argument)
-                    startIndexes.append(startidx)
-                    endIndexes.append(i)
-                argument = ""
-                startidx = i
-                while i < len(line) and line[i] in shell_key:
-                    argument += line[i]
-                    i += 1
-                arguments.append(argument)
-                startIndexes.append(startidx)
-                endIndexes.append(i)
-                if i < len(line):
-                    argument = line[i]
-                else:
-                    argument = ""
-                startidx = i
-            elif len(argument.split()) == 0:
-                startidx = i
-                argument = line[i]
-            else:
-                argument = argument + line[i]
-            i += 1
-        if len(argument.split()) != 0:
-            arguments.append(argument)
-            startIndexes.append(startidx)
-            endIndexes.append(i)
-        return (arguments, startIndexes, endIndexes)
-
-
-        self.begidx = begidx
-        self.modules = self.loader.modules
-        self.lineArguments, self.startIndexes, self.endIndexes = utils.split_line(line)
-        matches = []
-        endscope = len(self.lineArguments)
-        startscope = 0
-        i = 0
+class Context():
+    def __init__(self, DEBUG = False):
+        self.DEBUG = DEBUG
+        self.confmanager = ConfigManager.Get()
+        self.config = None
+        self.keylessarg = None
+        self.currentArgument = None
+        self.providedArguments = {}
+        self.remainingArguments = []
+        self.threaded = False
         self.currentStr = ""
-        self.previousStr = ""
-        self.currentLarg = -1
-        self.previousLarg = -1
-        dbg = "\n  ==== complete() ===="
-        while i != len(self.lineArguments):
-            carg = self.lineArguments[i]
-            argstart = self.startIndexes[i]
-            argend = self.endIndexes[i]
-            if carg in self.shell_key:
-                if begidx <= argstart:
-                    endscope = i
-                else:
-                    self.previousStr = ""
-                    self.previousLarg = -1
-                    startscope = i + 1
+        self.vfs = vfs()
+        self.currentStrScope = 0
+        self.paramsplit = re.compile('(?<!\\\)\,')
+        self.badargs = []
+
+
+    def debug(self, dbg):
+        if self.DEBUG:
+            print dbg
+
+
+    def __makeParameter(self, argument, parameter):
+        if argument.type() == typeId.Node:
+            n = self.vfs.getnode(parameter)
+            if n:
+                return n
             else:
-                if begidx >= argstart:
-                    if begidx <= argend:
-                        self.currentStr = carg
-                        self.currentLarg = i
-                    else:
-                        #self.previousStr = carg
-                        self.previousLarg = i
-                        self.currentLarg = -1
-                        self.currentStr = ""
-            i += 1
-        dbg += "\n    processed line: " + str(self.lineArguments)
-        self.lineArguments = self.lineArguments[startscope:endscope]
-        dbg += "\n    processed scope: " + str(self.lineArguments)
-        if self.currentLarg != -1:
-            dbg += "\n    currentLarg: " + str(self.lineArguments[self.currentLarg])
+                raise ValueError("Node " + str(parameter)  + " provided to argument < " + argname + " >")
         else:
-            dbg += "\n    currentLarg:"
-        if self.previousLarg != -1:
-            dbg += "\n    previousLarg: " + str(self.lineArguments[self.previousLarg])
-        else:
-            dbg += "\n    previousLarg:"
+            return parameter
+
+
+    def makeArguments(self):
+        command = {}
+        dbg = "\n ==== Context.makeCommand() ===="
+        if len(self.badargs) > 0:
+            raise KeyError("cannot generate config for module < " + self.config.origin() + " > The following arguments do not exist: " + str(self.badargs)) 
+        for argname in self.providedArguments.keys():
+            argument = self.config.argumentByName(argname)
+            parameters = self.providedArguments[argname]
+            if argument.inputType() == Argument.List:
+                l = []
+                iterator = self.paramsplit.finditer(parameters)
+                itcount = 0
+                previdx = 0
+                for match in iterator:
+                    itcount += 1
+                    pos = match.span()
+                    parameter = parameters[previdx:pos[0]]
+                    previdx = pos[1]
+                    dbg += "\n    adding parameter: < " + str(parameter) + " > to list"
+                    try:
+                        realparam = self.__makeParameter(argument, parameter)
+                        l.append(realparam)
+                    except:
+                        raise
+                if itcount == 0 or previdx != len(parameters):
+                    dbg += "\n    adding parameter: < " + parameters[previdx:] + " > to list"
+                    try:
+                        realparam = self.__makeParameter(argument, parameters[previdx:])
+                        l.append(parameters[previdx:])
+                    except:
+                        raise
+                command[argname] = l
+            else:
+                dbg += "\n    adding parameter: < " + str(parameters)
+                try:
+                    realparam = self.__makeParameter(argument, parameters)
+                    command[argname] = realparam
+                except:
+                    raise
+        if self.DEBUG:
+            dbg += "\n    resulting command arguments:"
+            for argname in command.keys():
+                dbg += "\n      " + argname + " --> " + str(command[argname])
         self.debug(dbg)
+        return command
+                
+    
 
-        if len(self.lineArguments) == 0 or (len(self.lineArguments) == 1 and self.currentStr != ""):
-            matches = self.completeModules()
-            if len(matches) == 0:
-                print "\nmodule < " + self.currentStr + " > does not exist"
+    def dump(self):
+        buff = "\n ==== Context.dump() ===="
+        buff += "\n    associated config: "
+        if self.config != None:
+            buff += self.config.origin()
+            lparg = len(self.providedArguments)
+            buff += "\n    provided arguments: " + str(lparg)
+            if lparg != 0:
+                for argname in self.providedArguments.keys():
+                    buff += "\n      " + argname + " --> " + str(self.providedArguments[argname])
+            lrarg = len(self.remainingArguments)
+            buff += "\n    remaining arguments: " + str(lrarg)
+            if lrarg != 0:
+                for argname in self.remainingArguments:
+                    buff += "\n      " + argname
+            buff += "\n    threaded: " + str(self.threaded)
         else:
-            self.config = self.confmanager.configByName(self.lineArguments[0])
-            if self.config != None:
-                self.setContext()
-                matches = self.dispatch()
-            else:
-                print "\nmodule < " + self.lineArguments[0] + " > does not exist"
-        if type(matches) == types.ListType and len(matches) == 1:
-            return matches[0]
-        else:
-            return matches
-
+            buff += " None"
+        buff += "\n    currentStr: " + self.currentStr
+        buff += "\n    currentStrScope: " + str(self.currentStrScope) 
+        return buff
+        
 
     def disambiguator(self):
         requirednodes = self.config.argumentsByFlags(typeId.Node|Argument.Required)
@@ -161,155 +134,257 @@ class LineContext():
         rpathes = len(requiredpathes)
         opathes = len(optionalpathes)
 
+        dbg = "\n ==== Context.disambiguator() ===="
         if rnodes == 1 and rpathes == 0:
-            return requirednodes[0]
+            self.keylessarg = requirednodes[0]
         if onodes == 1 and opathes == 0 and rnodes == 0 and rpathes == 0:
-            return optionalnodes[0]
+            self.keylessarg = optionalnodes[0]
         if rpathes == 1 and rnodes == 0:
-            return requiredpathes[0]
+            self.keylessarg = requiredpathes[0]
         if opathes == 1 and onodes == 0 and rnodes == 0 and rpathes == 0:
-            return optionalpathes[0]
-        return None
-
-    
-    def setContext(self):
-        arguments = self.config.argumentsName()
-        self.providedArguments = {}
-        self.remainingArguments = []
-        self.currentArgument = None
-        i = 1
-        carg = None
-        keylessarg = self.disambiguator()
-        keylessfilled = -1
-        dbg = "\n  ==== setContext() ===="
-        while i != len(self.lineArguments):
-            dbg += "\n    current larg: " + self.lineArguments[i]
-            larg = self.lineArguments[i]
-            if larg.startswith("--") == True:
-                dbg += "\n      Starting with --"
-                dbg += "\n      currentlarg --> " + str(self.currentLarg) + " | i --> " + str(i) + " | currentArgument --> " + str(self.currentArgument)
-                if self.currentArgument != None and self.currentArgument.inputType() != Argument.Empty and self.currentLarg == i:
-                    dbg += "\n      special case where provided parameters startswith -- | carg --> " + str(self.currentArgument.name()) + " | larg --> " + larg  
-                    self.providedArguments[self.currentArgument.name()] = larg
-                else:
-                    argument = self.config.argumentByName(larg[2:])
-                    if argument != None:
-                        dbg += "\n      argument found: " + argument.name()
-                        carg = argument
-                        if carg.inputType() == Argument.Empty:
-                            if self.currentLarg == -1:
-                                self.currentArgument = None
-                            self.providedArguments[carg.name()] = True
-                        else:
-                            self.currentArgument = carg
-                            self.providedArguments[carg.name()] = None
-                    else:
-                        dbg += "\n      argument not found"
-                        self.currentArgument = None
-            else:
-                if carg != None:
-                    dbg += "\n      Not starting with --\n      carg setted --> name: " + str(carg.name()) + " input type: " + str(carg.inputType())
-                    if carg.inputType() in [Argument.Single, Argument.List]:
-                        if carg != keylessarg:
-                            dbg += "\n      carg != keylessarg"
-                            if self.providedArguments[carg.name()] == None:
-                                dbg += "\n      carg parameter not setted yet. Associating parameter: " + larg
-                                if self.currentLarg == i:
-                                    self.currentArgument = carg
-                                else:
-                                    self.currentArgument = None
-                                self.providedArguments[carg.name()] = larg
-                            else:
-                                dbg += "\n      carg parameter already setted"
-                                if keylessarg != None and not self.providedArguments.has_key(keylessarg.name()):
-                                    dbg += "\n      keylessarg exists and not yet registered. Associating: " + str(keylessarg.name()) + " --> " + larg
-                                    carg = keylessarg
-                                    if self.currentLarg == i:
-                                        self.currentArgument = carg
-                                    else:
-                                        self.currentArgument = None
-                                    self.providedArguments[keylessarg.name()] = larg
-                                else:
-                                    self.currentArgument = None
-                                    dbg += "\n      keylessarg already exists and already setted"
-                        else:
-                            self.currentArgument = None
-                            dbg += "\n      larg does not start with -- | carg == keylessarg but has been already provided"
-                    else:
-                        self.currentArgument = None
-                        dbg += "\n      larg does not start with -- | carg != None | carg is Empty"
-                else:
-                    dbg += "\n      Not starting with --\n      carg NOT setted"
-                    if keylessarg != None and not self.providedArguments.has_key(keylessarg.name()):
-                        dbg += "\n      keylessarg exists and not yet registered. Associating: " + str(keylessarg.name()) + " --> " + larg
-                        carg = keylessarg
-                        if self.currentLarg == i:
-                            self.currentArgument = carg
-                        else:
-                            self.currentArgument = None
-                        self.providedArguments[keylessarg.name()] = larg
-                    else:
-                        self.currentArgument = None
-                        dbg += "\n      larg does not start with -- | carg == None and keylessarg either already provided or not setted"
-            i += 1
-        for argument in arguments:
-            if argument not in self.providedArguments.keys():
-                self.remainingArguments.append(argument)
-        dbg += "\n\n    provided arguments: " + str(self.providedArguments)
-        dbg += "\n    remaining arguments: " + str(self.remainingArguments)
+            self.keylessarg = optionalpathes[0]
+        if self.keylessarg != None:
+            dbg += "\n    keylessarg exists and has been setted to < " + str(self.keylessarg.name()) + " >"
+        else:
+            dbg += "\n    keylessarg does not exist"
         self.debug(dbg)
 
 
+    def parameterToken(self, token):
+        dbg = "==== Context.parameterToken() ===="
+        if self.currentArgument == None:
+            dbg += "\n    currentArgument == None"
+            if self.keylessarg != None and self.keylessarg.name() in self.remainingArguments:
+                dbg += "\n    keylessarg exists and not setted yet. " + str(self.keylessarg.name()) + " --> " + token
+                self.providedArguments[self.keylessarg.name()] = token
+                self.remainingArguments.remove(self.keylessarg.name())
+                self.currentArgument = self.keylessarg
+        elif self.providedArguments[self.currentArgument.name()] == None:
+            dbg += "\n    currentArgument exists and not setted yet. " + str(self.currentArgument.name()) + " --> " + token
+            self.providedArguments[self.currentArgument.name()] = token
+            self.remainingArguments.remove(self.currentArgument.name())
+        else:
+            dbg += "\n    currentArgument already setted"
+            self.currentArgument = None
+        self.debug(dbg)
+
+    def __argumentToken(self, token):
+        dbg = "\n ==== Context.__argumentToken() ===="
+        argument = self.config.argumentByName(token[2:])
+        if argument != None:
+            argname = argument.name()
+            dbg += "\n      argument found: " + argname
+            if argname in self.remainingArguments:
+                self.providedArguments[argname] = None
+                if argument.inputType() == Argument.Empty:
+                    self.remainingArguments.remove(argname)
+                    self.currentArgument = None
+                else:
+                    self.currentArgument = argument
+            else:
+                dbg += "\n      argument < " + argname + " > already provided"
+        else:
+            self.badargs.append(token)
+            dbg += "\n      argument not found"
+            self.currentArgument = None
+
+
+    def argumentToken(self, token):
+        dbg = "\n ==== Context.argumentToken() ===="
+        if self.currentArgument != None:
+            if self.currentArgument.inputType() != Argument.Empty:
+                dbg += "\n    token starts with -- and currentArgument != None and is not a switch"
+                argname = self.currentArgument.name()
+                if self.providedArguments[argname] == None:
+                    dbg += "\n    currentArgument exists and not setted yet. " + str(argname) + " --> " + token
+                    self.remainingArguments.remove(argname)
+                    self.providedArguments[argname] = token
+                else:
+                    self.__argumentToken(token)
+            else:
+                self.remainingArguments.remove(argname)
+                self.providedArguments[argname] = None
+                self.currentArgument = None
+        else:
+            self.__argumentToken(token)
+        self.debug(dbg)
+
+
+    def configToken(self, token):
+        self.config = self.confmanager.configByName(token)
+        if self.config != None:
+            self.disambiguator()
+            argsname = self.config.argumentsName()
+            for argname in argsname:
+                self.remainingArguments.append(argname)
+
+
+    def addToken(self, token):
+        dbg = "\n ==== Context.addToken() ===="
+        if self.config == None:
+            self.configToken(token)
+        else:
+            if token.startswith("--"):
+                self.argumentToken(token)
+            else:
+                self.parameterToken(token)
+
+
+
+class LineParser():
+    def __init__(self, DEBUG = False):
+        self.DEBUG = DEBUG
+        self.ctxs = []
+        self.shellKeys = [";", "<", ">", "&", "|"]
+
+
+    def debug(self, msg):
+        if self.DEBUG:
+            print "  ", msg
+
+
+    def currentContext(self):
+        if self.scopeCtx >= 0:
+            return self.contexts[self.scopeCtx]
+        return None
+
+
+    def manageShellKeys(self, key, startidx, endidx):
+        dbg = "\n ==== LineParser.manageShellKeys() ===="
+        if key == "&":
+            self.contexts[self.ctxpos].threaded = True
+            if self.begidx >= endidx:
+                ctx = Context(self.DEBUG)
+                self.ctxpos += 1
+                self.contexts.append(ctx)                      
+        if key == "&&" and self.begidx >= startidx + 1:
+            dbg += "\n    key found and begidx in the middle of " + key
+            dbg += "\n    two new contexts added"
+            self.contexts.append(Context(self.DEBUG))
+            self.ctxpos += 1
+        self.debug(dbg)
+
+
+    def manageToken(self, token, startidx, endidx):
+        dbg = "\n ==== LineParser.manageToken() ===="
+        dbg += "\n    token found <" + token + ">"
+        dbg += "\n    startidx: " + str(startidx)
+        dbg += "\n    endidx: " + str(endidx)
+        self.contexts[self.ctxpos].addToken(token)
+        if self.begidx >= startidx and self.begidx <= endidx:
+            dbg += "\n      cursor pos is in token: " + token + " @ " + str(self.begidx - startidx)
+            self.scopeCtx = self.ctxpos
+            self.contexts[self.ctxpos].currentStr = token
+            self.contexts[self.ctxpos].currentStrScope = self.begidx - startidx
+
+
+    def makeCommands(self, line):
+        begidx = len(line)
+        self.makeContexts(line, begidx)
+        commands = []
+        dbg = "\n ==== LineParser.makeCommands() ===="
+        for context in self.contexts:
+            try:
+                commands.append((context.config.origin(), context.makeArguments(), context.threaded))
+            except (KeyError, ValueError):
+                raise
+        if self.DEBUG:
+            dbg += "\n    stacked commands:"
+            for command in commands:
+                dbg += "\n      command name: " + command[0]
+                dbg += "\n      arguments: " + str(command[1])
+                dbg += "\n      to thread: " + str(command[2]) + "\n"
+        self.debug(dbg)
+        return commands
+
+
+    def makeContexts(self, line, begidx = -1):
+        self.begidx = begidx
+        self.contexts = []
+        self.scopeCtx = -1
+        self.ctxpos = 0
+        startidx = 0
+        i = 0
+        token = ""
+
+        dbg = "\n ==== LineParser.makeContext() ===="
+        dbg += "\n    line: |" + line + "|"
+        dbg += "\n    begidx: " + str(begidx)
+        if len(line) != 0:
+            ctx = Context(self.DEBUG)
+            self.contexts.append(ctx)
+        while i < len(line):
+            if line[i] == " " and (line[i-1] != "\\") and (len(token.split()) != 0):
+                self.manageToken(token, startidx, i)
+                token = ""
+                startidx = i
+            elif line[i] in self.shellKeys and (line[i-1] != "\\"):
+                if len(token.split()) != 0:
+                    self.manageToken(token, startidx, i)
+                token = ""
+                startidx = i
+                key = ""
+                while i < len(line) and line[i] in self.shellKeys:
+                    key += line[i]
+                    i += 1
+                self.manageShellKeys(key, startidx, i)
+                startidx = i
+                if i < len(line):
+                    token = line[i]
+                else:
+                    token = ""
+                startidx = i
+            elif len(token.split()) == 0:
+                startidx = i
+                token = line[i]
+            else:
+                token = token + line[i]
+            i += 1
+        if len(token.split()) != 0:
+            self.manageToken(token, startidx, i)
+            dbg += "\n    last token found <" + token + ">"
+            dbg += "\n    startidx: " + str(startidx)
+            dbg += "\n    endidx: " + str(i)
+        if self.begidx == len(line):
+            self.scopeCtx = self.ctxpos
+
+        if self.DEBUG:
+            print dbg
+            for ctx in self.contexts:
+                print ctx.dump()
+
+
 class Completion():
-    def __init__(self, raw_input):
-        #init framework core dependencies
-	self.api = ApiManager()
-        self.loader = self.api.loader()
-        self.vfs = self.api.vfs()
+    def __init__(self, console, DEBUG = False):
+        self.DEBUG = DEBUG
+	self.console = console
+        self.lp = LineParser(DEBUG)
         self.confmanager = ConfigManager.Get()
-        self.shell_key = [";", "<", ">", "&", "|", "&&"]
-	self.console = raw_input
-        self.DEBUG = True
+        self.loader = loader()
+        self.vfs = vfs()
 
 
     def currentParameter(self):
         dbg = "\n ==== currentParameter() ===="
-        dbg += "\n    current str to process " + self.currentStr
-        if self.currentLarg == -1:
-            resstr = ""
-        elif len(self.currentStr) == 1:
-            resstr = self.currentStr
-        elif self.currentArgument.inputType() == Argument.Single:
-            resstr = self.currentStr
+        dbg += "\n    current str to process: |" + self.context.currentStr + "|"
+        if len(self.context.currentStr) in  [0, 1] or self.context.currentArgument.inputType() == Argument.Single:
+            resstr = self.context.currentStr
         else:
-            beforeidx = 0
-            afteridx = len(self.currentStr)
-            strpos = self.begidx - self.startIndexes[self.currentLarg]
-            dbg += "\n    cursor pos in current string " + str(strpos)
-            dbg += "\n    current string length " + str(afteridx)
-            if strpos == len(self.currentStr):
-                print self.currentStr[-1:]
-                beforematch = re.search('(?<!\\\)\,', self.currentStr[::-1])
-                if beforematch != None:
-                    beforeidx = len(self.currentStr) - beforematch.start(0)
-                    dbg += "\n    beforematch @ " + str(beforeidx)
-            else:
-                if self.currentStr[strpos] == ",":
-                    afteridx = strpos
-                else:
-                    aftermatch = re.search('(?<!\\\)\,', self.currentStr[strpos:])
-                    if aftermatch != None:
-                        afteridx = aftermatch.start(0)
-                        dbg += "\n    aftermatch @ " + str(afteridx)
-                beforematch = re.search('(?<!\\\)\,', self.currentStr[:strpos])
-                if beforematch != None:
-                    beforeidx = beforematch.start(0)
-                    dbg += "\n    beforematch @ " + str(beforeidx)
-            resstr = self.currentStr[beforeidx:afteridx]
+            startidx = 0
+            endidx = self.context.currentStrScope
+            dbg += "\n    cursor pos in current string " + str(endidx)
+            iterator = re.finditer('(?<!\\\)\,', self.context.currentStr)
+            itcount = 0
+            for match in iterator:
+                itcount += 1
+                pos = match.span()
+                if endidx >= pos[1]:
+                    resstr = self.context.currentStr[pos[1]:endidx]
+            if itcount == 0:
+                resstr = self.context.currentStr
         dbg += "\n    resulting str: " + resstr
         self.debug(dbg)
         return resstr
-
 
 
     def setPathContext(self, ctype):
@@ -356,8 +431,8 @@ class Completion():
                "supplied": "",
                "matched": 0}
 
-        ctype = self.currentArgument.type()
-        itype = self.currentArgument.inputType()
+        ctype = self.context.currentArgument.type()
+        itype = self.context.currentArgument.inputType()
         path, rpath, supplied, children = self.setPathContext(ctype)
 
         dbg = "\n ==== completePathes() ===="
@@ -404,7 +479,7 @@ class Completion():
                "matches": [],
                "matched": 0,
                "length": 1}
-        predefs = self.currentArgument.parameters()
+        predefs = self.context.currentArgument.parameters()
         for predef in predefs:
             val = str(predef.value())
             if parameter == "" or val.startswith(parameter):
@@ -427,7 +502,7 @@ class Completion():
 
         modnames = self.confmanager.configsName()
         for modname in modnames:
-            if (self.currentStr == "") or (modname.startswith(self.currentStr)):
+            if (self.context == None) or (modname.startswith(self.context.currentStr)):
                 if longest_modname < len(modname):
                     longest_modname = len(modname)
                 tag = self.modules[modname].tags
@@ -455,12 +530,12 @@ class Completion():
                "length": 1,
                "matched": 0}
 
-        for argname in self.remainingArguments:
-            argument = self.config.argumentByName(argname)
+        for argname in self.context.remainingArguments:
+            argument = self.context.config.argumentByName(argname)
             match = False
-            if self.currentStr in ["", "-"]:
+            if self.context.currentStr in ["", "-"]:
                 match = True
-            elif self.currentStr.startswith("--") and argname.startswith(self.currentStr[2:]):
+            elif self.context.currentStr.startswith("--") and argname.startswith(self.context.currentStr[2:]):
                 match = True
             if match:
                 out["matched"] += 1
@@ -481,129 +556,20 @@ class Completion():
         return out
 
 
-    def disambiguator(self):
-        requirednodes = self.config.argumentsByFlags(typeId.Node|Argument.Required)
-        optionalnodes = self.config.argumentsByFlags(typeId.Node|Argument.Optional)
-        requiredpathes = self.config.argumentsByFlags(typeId.Path|Argument.Required)
-        optionalpathes = self.config.argumentsByFlags(typeId.Path|Argument.Optional)
-        rnodes = len(requirednodes)
-        onodes = len(optionalnodes)
-        rpathes = len(requiredpathes)
-        opathes = len(optionalpathes)
-
-        if rnodes == 1 and rpathes == 0:
-            return requirednodes[0]
-        if onodes == 1 and opathes == 0 and rnodes == 0 and rpathes == 0:
-            return optionalnodes[0]
-        if rpathes == 1 and rnodes == 0:
-            return requiredpathes[0]
-        if opathes == 1 and onodes == 0 and rnodes == 0 and rpathes == 0:
-            return optionalpathes[0]
-        return None
-
-
     def debug(self, msg):
         if self.DEBUG:
             print "  ", msg
 
 
-    def setContext(self):
-        arguments = self.config.argumentsName()
-        self.providedArguments = {}
-        self.remainingArguments = []
-        self.currentArgument = None
-        i = 1
-        carg = None
-        keylessarg = self.disambiguator()
-        keylessfilled = -1
-        dbg = "\n  ==== setContext() ===="
-        while i != len(self.lineArguments):
-            dbg += "\n    current larg: " + self.lineArguments[i]
-            larg = self.lineArguments[i]
-            if larg.startswith("--") == True:
-                dbg += "\n      Starting with --"
-                dbg += "\n      currentlarg --> " + str(self.currentLarg) + " | i --> " + str(i) + " | currentArgument --> " + str(self.currentArgument)
-                if self.currentArgument != None and self.currentArgument.inputType() != Argument.Empty and self.currentLarg == i:
-                    dbg += "\n      special case where provided parameters startswith -- | carg --> " + str(self.currentArgument.name()) + " | larg --> " + larg  
-                    self.providedArguments[self.currentArgument.name()] = larg
-                else:
-                    argument = self.config.argumentByName(larg[2:])
-                    if argument != None:
-                        dbg += "\n      argument found: " + argument.name()
-                        carg = argument
-                        if carg.inputType() == Argument.Empty:
-                            if self.currentLarg == -1:
-                                self.currentArgument = None
-                            self.providedArguments[carg.name()] = True
-                        else:
-                            self.currentArgument = carg
-                            self.providedArguments[carg.name()] = None
-                    else:
-                        dbg += "\n      argument not found"
-                        self.currentArgument = None
-            else:
-                if carg != None:
-                    dbg += "\n      Not starting with --\n      carg setted --> name: " + str(carg.name()) + " input type: " + str(carg.inputType())
-                    if carg.inputType() in [Argument.Single, Argument.List]:
-                        if carg != keylessarg:
-                            dbg += "\n      carg != keylessarg"
-                            if self.providedArguments[carg.name()] == None:
-                                dbg += "\n      carg parameter not setted yet. Associating parameter: " + larg
-                                if self.currentLarg == i:
-                                    self.currentArgument = carg
-                                else:
-                                    self.currentArgument = None
-                                self.providedArguments[carg.name()] = larg
-                            else:
-                                dbg += "\n      carg parameter already setted"
-                                if keylessarg != None and not self.providedArguments.has_key(keylessarg.name()):
-                                    dbg += "\n      keylessarg exists and not yet registered. Associating: " + str(keylessarg.name()) + " --> " + larg
-                                    carg = keylessarg
-                                    if self.currentLarg == i:
-                                        self.currentArgument = carg
-                                    else:
-                                        self.currentArgument = None
-                                    self.providedArguments[keylessarg.name()] = larg
-                                else:
-                                    self.currentArgument = None
-                                    dbg += "\n      keylessarg already exists and already setted"
-                        else:
-                            self.currentArgument = None
-                            dbg += "\n      larg does not start with -- | carg == keylessarg but has been already provided"
-                    else:
-                        self.currentArgument = None
-                        dbg += "\n      larg does not start with -- | carg != None | carg is Empty"
-                else:
-                    dbg += "\n      Not starting with --\n      carg NOT setted"
-                    if keylessarg != None and not self.providedArguments.has_key(keylessarg.name()):
-                        dbg += "\n      keylessarg exists and not yet registered. Associating: " + str(keylessarg.name()) + " --> " + larg
-                        carg = keylessarg
-                        if self.currentLarg == i:
-                            self.currentArgument = carg
-                        else:
-                            self.currentArgument = None
-                        self.providedArguments[keylessarg.name()] = larg
-                    else:
-                        self.currentArgument = None
-                        dbg += "\n      larg does not start with -- | carg == None and keylessarg either already provided or not setted"
-            i += 1
-        for argument in arguments:
-            if argument not in self.providedArguments.keys():
-                self.remainingArguments.append(argument)
-        dbg += "\n\n    provided arguments: " + str(self.providedArguments)
-        dbg += "\n    remaining arguments: " + str(self.remainingArguments)
-        self.debug(dbg)
-        
-
     def dispatch(self):
         matches = ""
         dbg = "\n ==== dispatch() ===="
         compfunc = None
-        if self.currentArgument != None:
-            parg = self.providedArguments[self.currentArgument.name()]
-            if parg == None or parg == self.currentStr:
-                dbg += "\n    current argument to complete: " + str(self.currentArgument.name())
-                if self.currentArgument.type() in [typeId.Node, typeId.Path]: 
+        if self.context.currentArgument != None:
+            parg = self.context.providedArguments[self.context.currentArgument.name()]
+            if parg == None or parg == self.context.currentStr:
+                dbg += "\n    current argument to complete: " + str(self.context.currentArgument.name())
+                if self.context.currentArgument.type() in [typeId.Node, typeId.Path]:
                     compfunc = getattr(self, "completePathes")
                 else:
                     compfunc = getattr(self, "completePredefined")
@@ -611,21 +577,20 @@ class Completion():
                 compfunc = getattr(self, "completeArguments")
         else:
             dbg += "\n    no current argument to complete"
-            keylessarg = self.disambiguator()
-            if len(self.remainingArguments) > 0:
-                dbg += "\n      remaining arguments exist --> total: " + str(len(self.remainingArguments))
-                if keylessarg != None and keylessarg.name() in self.remainingArguments:
+            if len(self.context.remainingArguments) > 0:
+                dbg += "\n      remaining arguments exist --> total: " + str(len(self.context.remainingArguments))
+                if self.context.keylessarg != None and self.context.keylessarg.name() in self.context.remainingArguments:
                     req = 0
                     dbg += "\n      keylessarg != None and has not been provided yet"
-                    requiredargs = self.config.argumentsByRequirementType(Argument.Required)
+                    requiredargs = self.context.config.argumentsByRequirementType(Argument.Required)
                     for requiredarg in requiredargs:
                         rname = requiredarg.name()
-                        if rname in self.remainingArguments and rname != keylessarg.name():
+                        if rname in self.context.remainingArguments and rname != self.context.keylessarg.name():
                             req += 1
-                    if req == 0:
-                        dbg += "\n      keylessarg < " + str(keylessarg.name()) + " > can be used as default"
-                        self.currentArgument = keylessarg
-                        if self.currentArgument.type() in [typeId.Node, typeId.Path]: 
+                    if req == 0 and not self.context.currentStr.startswith("--"):
+                        dbg += "\n      keylessarg < " + str(self.context.keylessarg.name()) + " > can be used as default"
+                        self.context.currentArgument = self.context.keylessarg
+                        if self.context.currentArgument.type() in [typeId.Node, typeId.Path]: 
                             compfunc = getattr(self, "completePathes")
                         else:
                             compfunc = getattr(self, "completePredefined")
@@ -640,71 +605,25 @@ class Completion():
         self.debug(dbg)
         if compfunc != None:
             matches = compfunc()
-            #print matches
-            if self.currentStr.startswith("-") and (type(matches) in [types.ListType, types.StringType] and len(matches) == 0) or (type(matches) == types.DictType and matches["matched"] == 0):
-                matches = self.completeArguments()
+            #if self.context.currentStr.startswith("-") and (type(matches) in [types.ListType, types.StringType] and len(matches) == 0) or (type(matches) == types.DictType and matches["matched"] == 0):
+            #    matches = self.completeArguments()
         return matches
 
 
     def complete(self, line, begidx):
-        self.begidx = begidx
         self.modules = self.loader.modules
-        self.lineArguments, self.startIndexes, self.endIndexes = utils.split_line(line)
-        matches = []
-        endscope = len(self.lineArguments)
-        startscope = 0
-        i = 0
-        self.currentStr = ""
-        self.previousStr = ""
-        self.currentLarg = -1
-        self.previousLarg = -1
-        dbg = "\n  ==== complete() ===="
-        while i != len(self.lineArguments):
-            carg = self.lineArguments[i]
-            argstart = self.startIndexes[i]
-            argend = self.endIndexes[i]
-            if carg in self.shell_key:
-                if begidx <= argstart:
-                    endscope = i
-                else:
-                    self.previousStr = ""
-                    self.previousLarg = -1
-                    startscope = i + 1
-            else:
-                if begidx >= argstart:
-                    if begidx <= argend:
-                        self.currentStr = carg
-                        self.currentLarg = i
-                    else:
-                        #self.previousStr = carg
-                        self.previousLarg = i
-                        self.currentLarg = -1
-                        self.currentStr = ""
-            i += 1
-        dbg += "\n    processed line: " + str(self.lineArguments)
-        self.lineArguments = self.lineArguments[startscope:endscope]
-        dbg += "\n    processed scope: " + str(self.lineArguments)
-        if self.currentLarg != -1:
-            dbg += "\n    currentLarg: " + str(self.lineArguments[self.currentLarg])
-        else:
-            dbg += "\n    currentLarg:"
-        if self.previousLarg != -1:
-            dbg += "\n    previousLarg: " + str(self.lineArguments[self.previousLarg])
-        else:
-            dbg += "\n    previousLarg:"
-        self.debug(dbg)
-
-        if len(self.lineArguments) == 0 or (len(self.lineArguments) == 1 and self.currentStr != ""):
+        self.lp.makeContexts(line, begidx)
+        self.context = self.lp.currentContext()
+        matches = ""
+        if self.context == None:
+            matches = self.completeModules()
+        elif self.context.config == None:
             matches = self.completeModules()
             if len(matches) == 0:
-                print "\nmodule < " + self.currentStr + " > does not exist"
+                print "\nmodule < " + self.context.currentStr + " > does not exist"
         else:
-            self.config = self.confmanager.configByName(self.lineArguments[0])
-            if self.config != None:
-                self.setContext()
-                matches = self.dispatch()
-            else:
-                print "\nmodule < " + self.lineArguments[0] + " > does not exist"
+            matches = self.dispatch()
+
         if type(matches) == types.ListType and len(matches) == 1:
             return matches[0]
         else:
