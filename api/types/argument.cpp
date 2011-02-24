@@ -112,6 +112,11 @@ std::list<Variant*>		Argument::parameters()
   return this->__parameters;
 }
 
+uint32_t			Argument::parametersCount()
+{
+  return this->__parameters.size();
+}
+
 int32_t			Argument::minimumParameters()
 {
   return this->__minparams;
