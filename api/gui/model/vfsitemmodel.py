@@ -100,7 +100,6 @@ class TypeWorker(QThread):
     self.qmutex.unlock()
 
   def clear(self):
-    #print "clea() " #!!!! si plusieur browser va clear la liste des autres
     self.qmutex.lock()
     self.typeQueue = []
     self.setUniq.clear()
@@ -130,11 +129,6 @@ class TypeWorker(QThread):
            img = thumb.getImage(ftype, node, index)
            if img:
              parent.emit(SIGNAL('dataImage'), index, node, img)
-           else:
-	     pass #XXX there is not setStaticAttribute now !
-             #val = Variant("broken " + str(ftype))
-             #val.thisown = False
-             #node.setStaticAttribute("type", val)
 
 typeWorker = TypeWorker()
 typeWorker.start()
@@ -320,7 +314,6 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
         + self.disp_module + self.del_sort
 
   def index(self, row, column, parent = QModelIndex()):
-    #print "index(self, row, column, parent)"
     if not self.hasIndex(row, column, parent):
       return QModelIndex()
     if parent.isValid():
@@ -335,7 +328,6 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     return index
 
   def parent(self, index):
-    #print "parent(self, index)"
     if not index.isValid():
       return QModelIndex()
     childItem = self.VFS.getNodeFromPointer(index.internalId())
@@ -346,7 +338,6 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     return index
 
   def hasChildren(self, parent):
-    #print "hasChildren(self, parent)"
     if not parent.isValid():
 	self.parentItem = self.rootItem
         return self.rootItem.hasChildren()
@@ -441,40 +432,35 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     self.deletedTr = self.tr('Deleted')
 
 
-#class NodeTreeProxyModel(QSortFilterProxyModel):
-  #def __init__(self, parent = None):
-    #QSortFilterProxyModel.__init__(self, parent)
-    #self.VFS = VFS.Get()
-#
-  #def data(self, index, role):
-    #if index.isValid():
-      #if role == Qt.CheckStateRole:
-        #return QVariant()
-      #else:
-        #origindex = self.mapToSource(index)
-        #if origindex.isValid():
-          #return self.sourceModel().data(origindex, role)
-        #else:
-          #return QVariant()
-    #else:
-      #return QVariant()
-#
-  #def filterAcceptsRow(self, row, parent):
-##    return True
-    #index = self.sourceModel().index(row, 0, parent)
-    #if index.isValid():
-      #return True
-      #node = self.VFS.getNodeFromPointer(index.internalId())
-#
-      #if node.hasChildren() or node.isDir() or node.parent().absolute() == "/": # or node.isDir():
-        #return True
-    #return False
-#
-  #def sort(self, col, order):
-    #return
-#
-  #def columnCount(self, parent = QModelIndex()):
-     #return 1
+class NodeTreeProxyModel(QSortFilterProxyModel):
+  def __init__(self, parent = None):
+    QSortFilterProxyModel.__init__(self, parent)
+    self.VFS = VFS.Get()
+
+  def data(self, index, role):
+    if index.isValid():
+      if role == Qt.CheckStateRole:
+        return QVariant()
+      else:
+        origindex = self.mapToSource(index)
+        if origindex.isValid():
+          return self.sourceModel().data(origindex, role)
+        else:
+          return QVariant()
+    else:
+      return QVariant()
+
+  def filterAcceptsRow(self, row, parent):
+    index = self.sourceModel().index(row, 0, parent)
+    if index.isValid():
+#      return True
+      node = self.VFS.getNodeFromPointer(index.internalId())
+      if node.hasChildren() or node.isDir() or node.parent().absolute() == "/":
+        return True
+    return False
+
+  def columnCount(self, parent = QModelIndex()):
+     return 1
 
 class TreeModel(QAbstractItemModel, EventHandler):
   numberPopulated = QtCore.pyqtSignal(int)  
@@ -489,6 +475,8 @@ class TreeModel(QAbstractItemModel, EventHandler):
     if event:
       self.VFS.connection(self)
     self.nb_item = 4
+    self.currentNode = None
+    self.nb_pop = 0
 
   def nodeClicked(self, mouseButton, node, index = None):
     if node == None:
@@ -498,15 +486,13 @@ class TreeModel(QAbstractItemModel, EventHandler):
     if node == None:
       return
     self.rootChildCount = node.childCount()
-    self.fetchedItems = 0
-    # self.node_list = node.children()
-    # self.nb_item = len(node.children())
     typeWorker.clear()
     self.rootItem = node
+    self.currentNode = node
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
     self.reset()
-    
+
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     if role != Qt.DisplayRole:
       return QVariant()
@@ -514,21 +500,19 @@ class TreeModel(QAbstractItemModel, EventHandler):
       return QVariant(self.tr('Name'))
 
   def data(self, index, role):
-    #print "data(self, index, role) called"
     if not index.isValid():
-      #print "data invalid !"
       return QVariant()
-
-
     node = self.VFS.getNodeFromPointer(index.internalId())
-
+    if node == None:
+      return QVariant()
+    if not node.hasChildren() and not node.isDir():
+      return QVariant()
     column = index.column()
     if role == Qt.ForegroundRole:
       if column == 0:
         if node.isDeleted():
           return  QVariant(QColor(Qt.red))
     if role == Qt.DisplayRole :
-      #print "drawing node" + node.name()
       return QVariant(node.name())
     if role == Qt.DecorationRole:
       if column == HNAME:
@@ -539,7 +523,9 @@ class TreeModel(QAbstractItemModel, EventHandler):
      return 1
 
   def index(self, row, column, parent = QModelIndex()):
-    print "index(self, row, column, parent)"
+    self.nb_pop = self.nb_pop + 1
+    if (self.nb_pop % 1000 == 0) or (self.nb_pop == self.currentNode.childCount()):
+      self.numberPopulated.emit(self.nb_pop)
     if not self.hasIndex(row, column, parent):
       return QModelIndex()
     if parent.isValid():
@@ -547,101 +533,44 @@ class TreeModel(QAbstractItemModel, EventHandler):
     else:
       parentItem = self.rootItem
     childItem = parentItem.children()[row]
-    #if not childItem.hasChildren() and not childItem.isDir():
-      #return QModelIndex()
+    if not childItem.hasChildren() and not childItem.isDir():
+      return QModelIndex()
     index = self.createIndex(row, column, long(childItem.this))
     return index
 
   def parent(self, index):
-    print "parent(self, index)"
     if not index.isValid():
       return QModelIndex()
     childItem = self.VFS.getNodeFromPointer(index.internalId())
-
     parentItem = childItem.parent()
     if parentItem.this == self.rootItem.this:
       return QModelIndex()
-    #if childItem.isDir() or childItem.hasChildren():
     index = self.createIndex(parentItem.at() , 0, long(parentItem.this))	
     return index
-    #return QModelIndex()
 
   def hasChildren(self, parent):
-    print "hasChildren(self, parent)"
     if not parent.isValid():
-	self.parentItem = self.rootItem
-	return self.rootItem.hasChildren()
+      return self.rootItem.hasChildren()
     else :
-      self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-      return self.parentItem.hasChildren()
+      parentItem = self.VFS.getNodeFromPointer(parent.internalId())
+      return parentItem.hasChildren()
 
   def flags(self, flag):
      return (Qt.ItemIsSelectable | Qt.ItemIsEnabled )  
 
   def Event(self, e):
-    print "event(self, e)"
     self.emit(SIGNAL("layoutAboutToBeChanged()"))
     self.emit(SIGNAL("layoutChanged()"))
-
-  def canFetchMore(self, index):
-     print "canFetchMore(self, index)"
-     if not index.isValid():
-	node = self.rootItem
-        print "CAN FETCHMORE INVALID ITEM"
-     else:
-	node = self.VFS.getNodeFromPointer(index.internalId())
-     try :
-       nItems =  self.mindex[index.internalId()] 
-     except KeyError:
-       print "CAN FETCH MORE KEY ERROR"
-       self.mindex[index.internalId()] = 0
-       nItems = 0
-   
-     if nItems < node.childCount():
-	print "canFetchmore return True"
-	return True
-     else :
-	print "canFetchmore return False"
-	return False
-     
-
-  def fetchMore(self, index):
-     print "fetchMore(index)"
-     #if not index.isValid():
-	#return QModelIndex()
-     if not index.isValid():
-	node = self.rootItem
-     else:
-	node = self.VFS.getNodeFromPointer(index.internalId())
-     try :
-       fetchedItems = self.mindex[index.internalId()]
-     except KeyError:
-       self.mindex[index.internalId()] = 0
-       fetchedItems = 0    
-     remainder = node.childCount() - fetchedItems
-     if remainder < 50:
-       itemsToFetch = remainder
-     else:
-       itemsToFetch = 50
-     print "fetchMore inserting " + str(itemsToFetch) + " items " + str(fetchedItems)
-     self.beginInsertRows(index, fetchedItems, fetchedItems + itemsToFetch - 1)
-     self.mindex[index.internalId()] += itemsToFetch
-     self.endInsertRows()
-     self.numberPopulated.emit(itemsToFetch)
 	
   def rowCount(self, parent):
-    print "row count called "
-    #if not parent.isValid():
-      #parentItem = self.rootItem
-    #else:
-      #parentItem = self.VFS.getNodeFromPointer(parent.internalId())
     if not parent.isValid():
-	return self.rootItem.childCount()
+      return self.rootItem.childCount()
     else :
       try :
+        node = self.VFS.getNodeFromPointer(parent.internalId())
+        return node.childCount()
 	return self.mindex[parent.internalId()]
       except KeyError:	
 	return  0
-    #return parentItem.childCount()
 
 

@@ -59,7 +59,7 @@ class GenNodes(mfso):
        #self.number_of_nodes = args["number_of_nodes"].value()
        self.root = Node("node-test")
        self.__disown__()
-       for x in xrange(0, 80000):	#print creation tous les x pourcent
+       for x in xrange(0, 5789):
 	  xnode = Node(str(x), 0, self.root, self)
 	  if (x % 10000) == 0:
 		print "have create " + str(x) + " nodes"
