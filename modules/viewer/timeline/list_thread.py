@@ -16,7 +16,7 @@
 
 from PyQt4.QtCore import QString, QThread, SIGNAL
 
-from dffdatetime import DffDatetime
+from datetime import datetime
 from api.types.libtypes import vtime, typeId
 
 class DataThread(QThread):
@@ -26,71 +26,56 @@ class DataThread(QThread):
         self.configuration = None
         self.node = None
         self.count = 0
-# Min EPOCH
-        # self.dateMin = DffDatetime(1, 1, 1)
-# Max EPOCH
-        # self.dateMax = DffDatetime(9999, 12, 31, 23, 59, 59, 999999)
         parent.connect(self, SIGNAL("finished()"), callback)
 
     def insert(self, data, node, root, dateLimits):
-#        data = data.value()
-        if data.month == 0:
-            validM = 1
-        elif data.month > 12:
-            validM = 12
-        else:
-            validM = data.month
-        if data.day == 0:
-            validD = 1
-        elif data.day > 31:
-            validD = 31
-        else:
-            validD = data.day
-        if data.hour > 23:
-            validH = 23
-        else:
-            validH = data.hour
-        if data.minute > 59:
-            validMi = 59
-        else:
-            validMi = data.minute
-        if data.second > 59:
-            validS = 59
-        else:
-            validS = data.second
-        try:
-         data = DffDatetime(data.year, validM, validD, validH, validMi, validS, data.usecond)
-        except:
-         return
-        if not root:
-            root = Element(data, node)
+        ''' List insert using dichotomy
+
+        There is two lists, one for ordered dates, and one other for
+        corresponding nodes. If several nodes have the same timestamp, they are
+        registered in the same list entry in an array.
+        '''
+        data = self.timeline.toUSec(datetime(data.year, data.month, data.day, data.hour, data.minute, data.second, data.usecond))
+
+        if not root['dates']:
+            root['dates'] = [data]
+            root['nodes'] = [[node.this]]
             dateLimits[0] = data
             dateLimits[1] = data
         else:
-            current = root
-            while current:
-                if data == current.data:
-                    current.addNode(node)
+            iMin, iMax = 0, len(root['dates']) - 1
+            iCurrent = iMax / 2
+            while iMin != iMax or not iMax:
+                if data == root['dates'][iCurrent]:
+                    root['nodes'][iCurrent].append(node.this)
                     break
-                elif data < current.data:
-                    newElement = Element(data, node)
-                    if current.prev:
-                        newElement.prev = current.prev
-                        current.prev.next = newElement
-                    current.prev = newElement
-                    newElement.next = current
-                    if current == root:
-                        root = newElement
-                    if data < dateLimits[0]:
-                        dateLimits[0] = data
-                    break
-                elif data > current.data and not current.next:
-                    newElement = Element(data, node)
-                    newElement.prev = current
-                    current.next = newElement
+                elif data > root['dates'][iCurrent] and iCurrent == len(root['dates']) - 1:
+                    root['dates'].append(data)
+                    root['nodes'].append([node.this])
                     dateLimits[1] = data
                     break
-                current = current.next
+                elif data > root['dates'][iCurrent] and data < root['dates'][iCurrent + 1]:
+                    root['dates'].insert(iCurrent + 1, data)
+                    root['nodes'].insert(iCurrent + 1, [node.this])
+                    break
+                elif data < root['dates'][iCurrent] and not iCurrent:
+                    root['dates'].insert(0, data)
+                    root['nodes'].insert(0, [node.this])
+                    dateLimits[0] = data
+                    break
+                elif data < root['dates'][iCurrent] and data > root['dates'][iCurrent - 1]:
+                    root['dates'].insert(iCurrent, data)
+                    root['nodes'].insert(iCurrent, [node.this])
+                    break
+                elif data > root['dates'][iCurrent]:
+                    iMin = iCurrent
+                    iCurrent = iCurrent + ((iMax - iCurrent) / 2)
+                    if iCurrent == iMin:
+                        iCurrent += 1
+                elif data < root['dates'][iCurrent]:
+                    iMax = iCurrent
+                    iCurrent = iMin + ((iCurrent - iMin) / 2)
+
         return root, dateLimits
 
 
@@ -143,16 +128,14 @@ class DataThread(QThread):
           if oneNode.hasChildren():
             self.populate(oneNode)
 
-#    def start(self):
+
     def run(self):
       self.timeline.setStateInfo('Registering nodes dates')
       self.configuration = self.timeline.options.configuration
       self.node = self.timeline.node
       self.populate(self.node)
       self.timeline.setStateInfo('Done - ' + str(self.timeline.timesCount) + ' dates from ' + str(self.timeline.nodeCount) + ' nodes registered')
-#      self.timeline.timeListArray.append(self)
-#      self.timeline.dataSourceUpdated()
-      
+
       
     def dump(self, root, dateLimits):
         current = root

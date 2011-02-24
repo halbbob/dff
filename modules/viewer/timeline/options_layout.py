@@ -21,9 +21,6 @@ from api.vfs import vfs, libvfs
 from api.vfs.libvfs import Node, VLink
 #DEvent
 
-from dffdatetime import DffDatetime
-
-#class OptionsLayout(QWidget):
 class OptionsLayout(QTabWidget):
     '''
 
@@ -165,16 +162,16 @@ class OptionsLayout(QTabWidget):
       self.totalNodes.setText(sTimes + '\n' + sNodes)
       
       if self.timeline.baseDateMin != self.timeline.dateMin:
-        self.startTime.setText('From ' + str(self.timeline.baseDateMin.strftime('%d.%m.%Y %H:%M:%S')))
+        self.startTime.setText('From ' + str(self.timeline.fromUSec(self.timeline.baseDateMin).strftime('%d.%m.%Y %H:%M:%S')))
       if self.timeline.selDateMin:
-        self.selStartTime.setText('From ' + str(self.timeline.selDateMin.strftime('%d.%m.%Y %H:%M:%S')))
+        self.selStartTime.setText('From ' + str(self.timeline.fromUSec(self.timeline.selDateMin).strftime('%d.%m.%Y %H:%M:%S')))
       else:
         self.selStartTime.setText('No selection start time')
         
       if self.timeline.baseDateMax != self.timeline.dateMax:
-        self.endTime.setText('To ' + str(self.timeline.baseDateMax.strftime('%d.%m.%Y %H:%M:%S')))
+        self.endTime.setText('To ' + str(self.timeline.fromUSec(self.timeline.baseDateMax).strftime('%d.%m.%Y %H:%M:%S')))
       if self.timeline.selDateMax:
-        self.selEndTime.setText('To ' + str(self.timeline.selDateMax.strftime('%d.%m.%Y %H:%M:%S')))
+        self.selEndTime.setText('To ' + str(self.timeline.fromUSec(self.timeline.selDateMax).strftime('%d.%m.%Y %H:%M:%S')))
       else:
         self.selEndTime.setText('No selection end time')
       
@@ -210,8 +207,8 @@ class OptionsLayout(QTabWidget):
                                                               ['checkBox', None],
                                                               ['colorWidget', None],
                                                               ['colorWidgetIndex', -1],
-                                                              ['orderedNodeList', None],
-                                                              ['dateLimits', [DffDatetime(1, 1, 1), DffDatetime(9999, 12, 31, 23, 59, 59, 999999)]],
+                                                              ['orderedNodeList', {'dates':None, 'nodes':None}],
+                                                              ['dateLimits', [long(0), long(0xffffffffffffffff)]],
                                                               ['mainPixmap', [True, None]],
                                                               ['zoomPixmap', [True, None]]]])
               else:
@@ -220,8 +217,8 @@ class OptionsLayout(QTabWidget):
                                                               ['checkBox', None],
                                                               ['colorWidget', None],
                                                               ['colorWidgetIndex', -1],
-                                                              ['orderedNodeList', None],
-                                                              ['dateLimits', [DffDatetime(1, 1, 1), DffDatetime(9999, 12, 31, 23, 59, 59, 999999)]],
+                                                              ['orderedNodeList', {'dates':None, 'nodes':None}],
+                                                              ['dateLimits', [long(0), long(0xffffffffffffffff)]],
                                                               ['mainPixmap', [True, None]],
                                                               ['zoomPixmap', [True, None]]]])
 
@@ -372,8 +369,8 @@ class OptionsLayout(QTabWidget):
       rect = self.timeline.ploter.selectionRect.rect()
       newSelDateMin = self.timeline.draw.findXTime(rect.x())
       newSelDateMax = self.timeline.draw.findXTime(rect.x() + rect.width())
-      self.timeline.selDateMin = newSelDateMin
-      self.timeline.selDateMax = newSelDateMax
+      self.timeline.selDateMin = self.timeline.toUSec(newSelDateMin)
+      self.timeline.selDateMax = self.timeline.toUSec(newSelDateMax)
       self.newInformations()
       
       self.dezoomButton.setEnabled(True)
@@ -410,6 +407,7 @@ class OptionsLayout(QTabWidget):
           if time[1][0][1]:
             nodes = []
             nodesData = []
+            # XXX this func has been destroyed
             nodesData.append(time[1][5][1].elementsInRangeToNodesArray(exportSelDateMin, exportSelDateMax, time[1][5][1]))
             for oneGroupNode in nodesData:
               for nodeData in oneGroupNode:

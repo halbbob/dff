@@ -15,7 +15,6 @@
 set(timeline_srcs
   __init__.py
   compute_thread.py
-  dffdatetime.py
   drawer.py
   list_thread.py
   paint_area.py
