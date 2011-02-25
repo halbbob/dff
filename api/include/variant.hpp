@@ -21,6 +21,7 @@
 #include <stdint.h>
 #else
 #include "wstdint.h"
+#pragma warning(disable: 4290)
 #endif
 
 #include <iostream>
@@ -130,7 +131,7 @@ public:
   EXPORT Variant(std::map<std::string, class Variant*> m);
   EXPORT Variant(void *user);
 
-  bool	convert(uint8_t itype, void *res)
+  EXPORT bool	convert(uint8_t itype, void *res)
   {
     bool	ret;
 
@@ -377,20 +378,20 @@ public:
       return T();
   }
 
-  std::string	toString() throw (std::string);
-  std::string	toHexString() throw (std::string);
-  std::string	toOctString() throw (std::string);
-  uint16_t	toUInt16() throw (std::string);
-  int16_t	toInt16() throw (std::string);
-  uint32_t	toUInt32() throw (std::string);
-  int32_t	toInt32() throw (std::string);
-  uint64_t	toUInt64() throw (std::string);
-  int64_t	toInt64() throw (std::string);
-  char*		toCArray() throw (std::string);
-  char		toChar() throw (std::string);
-  bool		toBool() throw (std::string);
-  uint8_t	type();
-  std::string	typeName();
+  EXPORT std::string	toString() throw (std::string);
+  EXPORT std::string	toHexString() throw (std::string);
+  EXPORT std::string	toOctString() throw (std::string);
+  EXPORT uint16_t	toUInt16() throw (std::string);
+  EXPORT int16_t	toInt16() throw (std::string);
+  EXPORT uint32_t	toUInt32() throw (std::string);
+  EXPORT int32_t	toInt32() throw (std::string);
+  EXPORT uint64_t	toUInt64() throw (std::string);
+  EXPORT int64_t	toInt64() throw (std::string);
+  EXPORT char*		toCArray() throw (std::string);
+  EXPORT char		toChar() throw (std::string);
+  EXPORT bool		toBool() throw (std::string);
+  EXPORT uint8_t	type();
+  EXPORT std::string	typeName();
 
 private:  
   uint8_t	_type;

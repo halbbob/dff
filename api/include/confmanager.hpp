@@ -42,12 +42,12 @@ public:
     static ConfigManager single;
     return &single;
   }
-  void					registerConf(class Config* c) throw(std::string);
-  std::list<class Config*>		configs();
-  std::list<std::string>		configsName();
-  class Config*				configByName(std::string confname);
-  std::map<std::string, Constant*>	constantsByName(std::string constname);
-  std::map<std::string, Argument*>	argumentsByName(std::string argname);
+  EXPORT void					registerConf(class Config* c) throw(std::string);
+  EXPORT std::list<class Config*>		configs();
+  EXPORT std::list<std::string>		configsName();
+  EXPORT class Config*				configByName(std::string confname);
+  EXPORT std::map<std::string, Constant*>	constantsByName(std::string constname);
+  EXPORT std::map<std::string, Argument*>	argumentsByName(std::string argname);
 };
 
 #endif
