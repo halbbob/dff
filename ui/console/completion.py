@@ -150,7 +150,7 @@ class Context():
         self.debug(dbg)
 
 
-    def parameterToken(self, token):
+    def parameterToken(self, token, current):
         dbg = "==== Context.parameterToken() ===="
         if self.currentArgument == None:
             dbg += "\n    currentArgument == None"
@@ -159,7 +159,7 @@ class Context():
                 self.providedArguments[self.keylessarg.name()] = token
                 self.remainingArguments.remove(self.keylessarg.name())
                 self.currentArgument = self.keylessarg
-        elif self.providedArguments[self.currentArgument.name()] == None:
+        elif self.providedArguments[self.currentArgument.name()] == None or current:
             dbg += "\n    currentArgument exists and not setted yet. " + str(self.currentArgument.name()) + " --> " + token
             self.providedArguments[self.currentArgument.name()] = token
             self.remainingArguments.remove(self.currentArgument.name())
@@ -168,7 +168,7 @@ class Context():
             self.currentArgument = None
         self.debug(dbg)
 
-    def __argumentToken(self, token):
+    def __argumentToken(self, token, current):
         dbg = "\n ==== Context.__argumentToken() ===="
         argument = self.config.argumentByName(token[2:])
         if argument != None:
@@ -189,7 +189,7 @@ class Context():
             self.currentArgument = None
 
 
-    def argumentToken(self, token):
+    def argumentToken(self, token, current):
         dbg = "\n ==== Context.argumentToken() ===="
         if self.currentArgument != None:
             if self.currentArgument.inputType() != Argument.Empty:
@@ -200,13 +200,13 @@ class Context():
                     self.remainingArguments.remove(argname)
                     self.providedArguments[argname] = token
                 else:
-                    self.__argumentToken(token)
+                    self.__argumentToken(token, current)
             else:
                 self.remainingArguments.remove(argname)
                 self.providedArguments[argname] = None
                 self.currentArgument = None
         else:
-            self.__argumentToken(token)
+            self.__argumentToken(token, current)
         self.debug(dbg)
 
 
@@ -219,15 +219,19 @@ class Context():
                 self.remainingArguments.append(argname)
 
 
-    def addToken(self, token):
+    def addToken(self, token, current, begidx, startidx):
         dbg = "\n ==== Context.addToken() ===="
+        if current:
+            self.currentStr = token
+            self.currentStrScope = begidx - startidx
         if self.config == None:
-            self.configToken(token)
+            if not current:
+                self.configToken(token)
         else:
             if token.startswith("--"):
-                self.argumentToken(token)
+                self.argumentToken(token, current)
             else:
-                self.parameterToken(token)
+                self.parameterToken(token, current)
 
 
 
@@ -252,33 +256,44 @@ class LineParser():
     def manageShellKeys(self, key, startidx, endidx):
         dbg = "\n ==== LineParser.manageShellKeys() ===="
         if key == "&":
+            dbg += "\n    & found"
+            dbg += "\n    begidx: " + str(self.begidx)
+            dbg += "\n    endidx: " + str(endidx)
             self.contexts[self.ctxpos].threaded = True
-            if self.begidx >= endidx:
+            if self.begidx >= endidx and endidx != len(self.line):
+                dbg += "\n    incrementing ctxpos"
                 ctx = Context(self.DEBUG)
+                self.contexts.append(ctx)
                 self.ctxpos += 1
-                self.contexts.append(ctx)                      
-        if key == "&&" and self.begidx >= startidx + 1:
-            dbg += "\n    key found and begidx in the middle of " + key
-            dbg += "\n    two new contexts added"
+                self.scopeCtx = self.ctxpos
+        elif key == "&&":
             self.contexts.append(Context(self.DEBUG))
             self.ctxpos += 1
+            if self.begidx == startidx + 1:
+                self.scopeCtx = self.ctxpos
+                dbg += "\n    key found and begidx in the middle of " + key
+                #self.contexts.append(Context(self.DEBUG))
         self.debug(dbg)
 
 
     def manageToken(self, token, startidx, endidx):
         dbg = "\n ==== LineParser.manageToken() ===="
         dbg += "\n    token found <" + token + ">"
+        dbg += "\n    begidx: " + str(self.begidx)
         dbg += "\n    startidx: " + str(startidx)
         dbg += "\n    endidx: " + str(endidx)
-        self.contexts[self.ctxpos].addToken(token)
+        current = False
         if self.begidx >= startidx and self.begidx <= endidx:
             dbg += "\n      cursor pos is in token: " + token + " @ " + str(self.begidx - startidx)
             self.scopeCtx = self.ctxpos
-            self.contexts[self.ctxpos].currentStr = token
-            self.contexts[self.ctxpos].currentStrScope = self.begidx - startidx
+            current = True
+        self.debug(dbg)
+        self.contexts[self.ctxpos].addToken(token, current, self.begidx, startidx)
+
 
 
     def makeCommands(self, line):
+        line = line.rstrip()
         begidx = len(line)
         self.makeContexts(line, begidx)
         commands = []
@@ -302,6 +317,7 @@ class LineParser():
         self.begidx = begidx
         self.contexts = []
         self.scopeCtx = -1
+        self.line = line
         self.ctxpos = 0
         startidx = 0
         i = 0
@@ -313,52 +329,60 @@ class LineParser():
         if len(line) != 0:
             ctx = Context(self.DEBUG)
             self.contexts.append(ctx)
-        while i < len(line):
-            if line[i] == " " and (line[i-1] != "\\") and (len(token.split()) != 0):
-                self.manageToken(token, startidx, i)
-                token = ""
-                startidx = i
-            elif line[i] in self.shellKeys and (line[i-1] != "\\"):
-                if len(token.split()) != 0:
+            while i < len(line):
+                if line[i] == " " and (line[i-1] != "\\") and (len(token.split()) != 0):
                     self.manageToken(token, startidx, i)
-                token = ""
-                startidx = i
-                key = ""
-                while i < len(line) and line[i] in self.shellKeys:
-                    key += line[i]
-                    i += 1
-                self.manageShellKeys(key, startidx, i)
-                startidx = i
-                if i < len(line):
+                    token = ""
+                    startidx = i
+                elif line[i] in self.shellKeys and (line[i-1] != "\\"):
+                    if len(token.split()) != 0:
+                        self.manageToken(token, startidx, i)
+                    token = ""
+                    startidx = i
+                    key = ""
+                    while i < len(line) and line[i] in self.shellKeys:
+                        key += line[i]
+                        i += 1
+                    self.manageShellKeys(key, startidx, i)
+                    startidx = i
+                    if i < len(line):
+                        token = line[i]
+                    else:
+                        token = ""
+                    startidx = i
+                elif len(token.split()) == 0:
+                    startidx = i
                     token = line[i]
                 else:
-                    token = ""
-                startidx = i
-            elif len(token.split()) == 0:
-                startidx = i
-                token = line[i]
-            else:
-                token = token + line[i]
-            i += 1
-        if len(token.split()) != 0:
-            self.manageToken(token, startidx, i)
-            dbg += "\n    last token found <" + token + ">"
-            dbg += "\n    startidx: " + str(startidx)
-            dbg += "\n    endidx: " + str(i)
-        if self.begidx == len(line):
-            self.scopeCtx = self.ctxpos
+                    token = token + line[i]
+                i += 1
+            if len(token.split()) != 0:
+                self.manageToken(token, startidx, i)
+                dbg += "\n    last token found <" + token + ">"
+                dbg += "\n    startidx: " + str(startidx)
+                dbg += "\n    endidx: " + str(i)
+            if self.begidx == len(line):
+                self.scopeCtx = self.ctxpos
 
-        if self.DEBUG:
-            print dbg
-            for ctx in self.contexts:
-                print ctx.dump()
+            if self.DEBUG:
+                dbg += "\n    current context: "
+                if self.contexts[self.scopeCtx].config:
+                    dbg += str(self.contexts[self.scopeCtx].config.origin())
+                else:
+                    dbg += "None"
+                dbg += "\n    scopeCtx: " + str(self.scopeCtx)
+                dbg += "\n    ctxpox: " + str(self.ctxpos)
+                print dbg
+                for ctx in self.contexts:
+                    print ctx.dump()
+                print 
 
 
 class Completion():
     def __init__(self, console, DEBUG = False):
         self.DEBUG = DEBUG
 	self.console = console
-        self.lp = LineParser(DEBUG)
+        self.lp = LineParser(self.DEBUG)
         self.confmanager = ConfigManager.Get()
         self.loader = loader()
         self.vfs = vfs()
@@ -367,21 +391,23 @@ class Completion():
     def currentParameter(self):
         dbg = "\n ==== currentParameter() ===="
         dbg += "\n    current str to process: |" + self.context.currentStr + "|"
+        resstr = ""
         if len(self.context.currentStr) in  [0, 1] or self.context.currentArgument.inputType() == Argument.Single:
-            resstr = self.context.currentStr
+            resstr = self.context.currentStr[:self.context.currentStrScope]
         else:
-            startidx = 0
             endidx = self.context.currentStrScope
             dbg += "\n    cursor pos in current string " + str(endidx)
             iterator = re.finditer('(?<!\\\)\,', self.context.currentStr)
-            itcount = 0
+            startidx = 0
             for match in iterator:
-                itcount += 1
                 pos = match.span()
-                if endidx >= pos[1]:
-                    resstr = self.context.currentStr[pos[1]:endidx]
-            if itcount == 0:
-                resstr = self.context.currentStr
+                dbg += "\n    " + str(pos)
+                dbg += "\n    " + str(endidx)
+                if pos[1] <= endidx:
+                    startidx = pos[1]
+            dbg += "\n    startidx: " + str(startidx)
+            dbg += "\n    endidx: " + str(endidx)
+            resstr = self.context.currentStr[startidx:endidx]
         dbg += "\n    resulting str: " + resstr
         self.debug(dbg)
         return resstr
@@ -397,7 +423,12 @@ class Completion():
                 rpath = self.vfs.getcwd().absolute() + "/"
             else:
                 rpath = os.getcwd() + "/"
-            supplied = path
+            path = path.replace("//", "/")
+            if path.rfind("/") != -1:
+                supplied = ""
+                rpath += path
+            else:
+                supplied = path
         else:
             path = path.replace("//", "/")
             idx = path.rfind("/")
@@ -451,7 +482,10 @@ class Completion():
                 else:
                     out["matches"].append("")
             else:
-                out["matches"].append("/")
+                if rpath[-1] != "/":
+                    out["matches"].append("/")
+                else:
+                    out["matches"].append("")
             out["matched"] += 1
         else:
             for child in children:
@@ -502,7 +536,7 @@ class Completion():
 
         modnames = self.confmanager.configsName()
         for modname in modnames:
-            if (self.context == None) or (modname.startswith(self.context.currentStr)):
+            if (self.context == None) or modname.startswith(self.context.currentStr[:self.context.currentStrScope]) or self.context.currentStr[:self.context.currentStrScope] == "":
                 if longest_modname < len(modname):
                     longest_modname = len(modname)
                 tag = self.modules[modname].tags
@@ -533,9 +567,9 @@ class Completion():
         for argname in self.context.remainingArguments:
             argument = self.context.config.argumentByName(argname)
             match = False
-            if self.context.currentStr in ["", "-"]:
+            if self.context.currentStr[:self.context.currentStrScope] in ["", "-"]:
                 match = True
-            elif self.context.currentStr.startswith("--") and argname.startswith(self.context.currentStr[2:]):
+            elif self.context.currentStr.startswith("--") and argname.startswith(self.context.currentStr[2:self.context.currentStrScope]):
                 match = True
             if match:
                 out["matched"] += 1
@@ -567,13 +601,16 @@ class Completion():
         compfunc = None
         if self.context.currentArgument != None:
             parg = self.context.providedArguments[self.context.currentArgument.name()]
+            dbg += "\n    currentArgument exists: " + str(self.context.currentArgument.name())
+            dbg += "\n    associated parameter: " + str(parg)
             if parg == None or parg == self.context.currentStr:
-                dbg += "\n    current argument to complete: " + str(self.context.currentArgument.name())
+                dbg += "\n    completing parameters for argument: " + str(self.context.currentArgument.name())
                 if self.context.currentArgument.type() in [typeId.Node, typeId.Path]:
                     compfunc = getattr(self, "completePathes")
                 else:
                     compfunc = getattr(self, "completePredefined")
             else:
+                dbg += "\n    completing argument for currentStr: " + str(self.context.currentStr) 
                 compfunc = getattr(self, "completeArguments")
         else:
             dbg += "\n    no current argument to complete"
@@ -605,8 +642,6 @@ class Completion():
         self.debug(dbg)
         if compfunc != None:
             matches = compfunc()
-            #if self.context.currentStr.startswith("-") and (type(matches) in [types.ListType, types.StringType] and len(matches) == 0) or (type(matches) == types.DictType and matches["matched"] == 0):
-            #    matches = self.completeArguments()
         return matches
 
 
@@ -622,7 +657,8 @@ class Completion():
             if len(matches) == 0:
                 print "\nmodule < " + self.context.currentStr + " > does not exist"
         else:
-            matches = self.dispatch()
+            if self.context.currentStr != self.context.config.origin():
+                matches = self.dispatch()
 
         if type(matches) == types.ListType and len(matches) == 1:
             return matches[0]
