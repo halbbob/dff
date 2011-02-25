@@ -47,7 +47,7 @@ class console(Cmd):
 	self.stdin = self
 	self.completekey = '\t'
 	self.comp_raw = complete_raw_input(self)
-        self.completion = completion.Completion(self.comp_raw, DEBUG)
+        self.completion = completion.Completion(self.comp_raw, self.DEBUG)
 	self.proc = None
 	if os.name == 'posix' and sigstp:
   	  signal.signal(signal.SIGTSTP, self.bg)

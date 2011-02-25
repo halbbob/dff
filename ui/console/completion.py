@@ -81,7 +81,7 @@ class Context():
                     dbg += "\n    adding parameter: < " + parameters[previdx:] + " > to list"
                     try:
                         realparam = self.__makeParameter(argument, parameters[previdx:])
-                        l.append(parameters[previdx:])
+                        l.append(realparam)
                     except:
                         raise
                 command[argname] = l
@@ -159,7 +159,7 @@ class Context():
                 self.providedArguments[self.keylessarg.name()] = token
                 self.remainingArguments.remove(self.keylessarg.name())
                 self.currentArgument = self.keylessarg
-        elif self.providedArguments[self.currentArgument.name()] == None or current:
+        elif self.providedArguments[self.currentArgument.name()] == None or (current and self.providedArguments[self.currentArgument.name()] == self.currentStr):
             dbg += "\n    currentArgument exists and not setted yet. " + str(self.currentArgument.name()) + " --> " + token
             self.providedArguments[self.currentArgument.name()] = token
             self.remainingArguments.remove(self.currentArgument.name())
@@ -424,9 +424,10 @@ class Completion():
             else:
                 rpath = os.getcwd() + "/"
             path = path.replace("//", "/")
-            if path.rfind("/") != -1:
-                supplied = ""
-                rpath += path
+            idx = path.rfind("/")
+            if idx != -1:
+                supplied = path[idx+1:]
+                rpath += path[:idx]
             else:
                 supplied = path
         else:
@@ -439,7 +440,9 @@ class Completion():
                 supplied = path[idx+1:]
                 rpath += path[:idx+1]
         rpath = rpath.replace("\ ", " ")
+        rpath = rpath.replace("//", "/")
         supplied = supplied.replace("\ ", " ")
+        supplied = supplied.replace("//", "/")
         if ctype == typeId.Node:
             node = self.vfs.getnode(rpath)
             if node:
