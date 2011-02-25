@@ -268,12 +268,12 @@
     try
       {
 	predef_obj = Argument_validateParams(self, obj, &ptype, &min, &max);
-	//std::cout << "setted min: " << min << " setted max: " << max << std::endl;
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	if (predef_obj != NULL)
 	  {
 	    itype = self->type();
 	    lsize = PyList_Size(predef_obj);
+	    i = 0;
 	    while ((i != lsize) && err.empty())
 	      {
 		item = PyList_GetItem(predef_obj, i);
