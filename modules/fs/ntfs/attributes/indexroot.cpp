@@ -20,10 +20,6 @@
 
 AttributeIndexRoot::AttributeIndexRoot(Attribute &parent)
 {
-  _indexEntries = NULL;
-  _entriesContent = NULL;
-  _fixupIndexes = NULL;
-  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _attributeResidentDataHeader = new AttributeResidentDataHeader(*(parent.residentDataHeader()));
 
@@ -45,6 +41,7 @@ AttributeIndexRoot::AttributeIndexRoot(Attribute &parent)
   _nextVCN = 0;
   _baseOffset = parent.baseOffset();
   _lastEntryFound = false;
+  _attributeRealOffset = parent.attributeRealOffset();
 
   _entriesAmount = _saveEntries();
 
@@ -55,11 +52,7 @@ AttributeIndexRoot::AttributeIndexRoot(Attribute &parent)
 
 AttributeIndexRoot::~AttributeIndexRoot()
 {
-  // FIXME free _indexEntris and _entriesContent
-  delete _nodeHeader;
-  delete _data;
-  delete _attributeResidentDataHeader;
-  delete _attributeHeader;
+  ;
 }
 
 uint32_t	AttributeIndexRoot::_saveEntries()
