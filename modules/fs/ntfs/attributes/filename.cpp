@@ -24,8 +24,6 @@ AttributeFileName::AttributeFileName(Attribute &parent)
   uint16_t	i = 0;
   uint8_t	*name;
 
-  _fixupIndexes = NULL;
-  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _attributeResidentDataHeader = new AttributeResidentDataHeader(*(parent.residentDataHeader()));
 
@@ -59,9 +57,7 @@ AttributeFileName::AttributeFileName(Attribute &parent)
 
 AttributeFileName::~AttributeFileName()
 {
-  delete _data;
-  delete _attributeResidentDataHeader;
-  delete _attributeHeader;
+  ;
 }
 
 std::string	AttributeFileName::getFileName()

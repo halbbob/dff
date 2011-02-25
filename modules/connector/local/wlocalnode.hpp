@@ -36,10 +36,10 @@ public:
   WLocalNode(std::string, uint64_t, Node *, fso *, uint8_t);
   ~WLocalNode();
   void			setBasePath(const char *);
-  virtual void	extendedAttributes(Attributes *);
+  /*virtual void	extendedAttributes(Attributes *);
   virtual void	modifiedTime(vtime *);
   virtual void	accessedTime(vtime *);
-  virtual void	createdTime(vtime *);
+  virtual void	createdTime(vtime *);*/
 };
 
 #endif
