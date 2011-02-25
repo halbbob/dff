@@ -16,7 +16,7 @@
 
 from datetime import timedelta
 from PyQt4.QtCore import Qt, QRectF
-from PyQt4.QtGui import QGraphicsView, QPixmap, QColor, QGraphicsScene, QPen
+from PyQt4.QtGui import QGraphicsView, QGraphicsScene, QPen
 
 class PaintArea(QGraphicsView):
     def __init__(self, parent):
@@ -76,8 +76,8 @@ class PaintArea(QGraphicsView):
         self.timeline.options.exportButton.setEnabled(False)
         self.timeline.options.selectedNodes.setText('Nothing selected')
         if self.timeline.selDateMin:
-          self.timeline.options.selStartTime.setText('From ' + str(self.timeline.selDateMin.strftime('%d.%m.%Y %H:%M:%S')))
-          self.timeline.options.selEndTime.setText('To ' + str(self.timeline.selDateMax.strftime('%d.%m.%Y %H:%M:%S')))
+          self.timeline.options.selStartTime.setText('From ' + str(self.timeline.fromUSec(self.timeline.baseDateMin).strftime('%d.%m.%Y %H:%M:%S')))
+          self.timeline.options.selEndTime.setText('To ' + str(self.timeline.fromUSec(self.timeline.baseDateMax).strftime('%d.%m.%Y %H:%M:%S')))
         else:
           self.timeline.options.selStartTime.setText('No selection start time')
           self.timeline.options.selEndTime.setText('No selection end time')

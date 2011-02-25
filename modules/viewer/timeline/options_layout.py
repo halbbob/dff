@@ -14,25 +14,21 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
-from PyQt4.QtCore import Qt, SIGNAL, QString, QDateTime, QThread, QRect
-from PyQt4.QtGui import QWidget, QCheckBox, QHBoxLayout, QVBoxLayout, QComboBox, QDateTimeEdit, QLabel, QGraphicsView, QGraphicsTextItem, QGraphicsScene, QTabWidget, QGroupBox, QPushButton, QPalette, QScrollArea
+from PyQt4.QtCore import Qt, SIGNAL, QString, QRect
+from PyQt4.QtGui import QWidget, QCheckBox, QHBoxLayout, QVBoxLayout, QComboBox, QLabel, QTabWidget, QGroupBox, QPushButton, QPalette, QScrollArea
 
 from api.vfs import vfs, libvfs
 from api.vfs.libvfs import Node, VLink
-#DEvent
 
 class OptionsLayout(QTabWidget):
-    '''
+    ''' Manages right pannel.
 
-    TODO
-     - Time can only be checked only if total time checked < amount of colors available
-     - When a time is checked verify that the color used by this time is not already used by another time, if it the case :
-      - Swap color with the already used one
-      - Use a color available / not already used
-    
+    Provides general informations, navigation and timestamp selection.
+    Navigation allow user to zoom in timeline.
+    Timestamp selection allow user to select which timestamp to display with
+    which color.
     '''
     def __init__(self, parent):
-#        QWidget.__init__(self)
         QTabWidget.__init__(self)
         self.setTabPosition(QTabWidget.East)
         self.init(parent)
@@ -47,45 +43,6 @@ class OptionsLayout(QTabWidget):
         self.configuration = []
         self.zoom = False
         self.exportedNode = None
-
-# conf =
-#  [
-#   ['extended', []],
-#   ['static', []],
-#   ['usual', [
-#              ['accessed', [
-#                            ['checked', True],
-#                            ['color', 'blue'],
-#                            ['checkBox', None],
-#                            ['colorWidgetIndex', -1]
-#                           ]
-#              ],
-#              ['changed', [
-#                            ['checked', True],
-#                            ['color', 'yellow'],
-#                            ['checkBox', None],
-#                            ['colorWidgetIndex', -1]
-#                           ]
-#              ],
-#              ['created', [
-#                            ['checked', True],
-#                            ['color', 'green'],
-#                            ['checkBox', None],
-#                            ['colorWidgetIndex', -1]
-#                           ]
-#              ],
-#              ['modified', [
-#                            ['checked', True],
-#                            ['color', 'cyan'],
-#                            ['checkBox', None],
-#                            ['colorWidgetIndex', -1]
-#                           ]
-#              ]
-#             ]
-#   ]
-#  ]
-# 
-# conf = [['extended', []], ['static', []], ['usual', [['accessed', [['checked', True], ['color', 'blue'], ['checkBox', None], ['colorWidgetIndex', -1]]], ['changed', [['checked', True], ['color', 'yellow'], ['checkBox', None], ['colorWidgetIndex', -1]]], ['created', [['checked', True], ['color', 'green'], ['checkBox', None], ['colorWidgetIndex', -1]]], ['modified', [['checked', True], ['color', 'cyan'], ['checkBox', None], ['colorWidgetIndex', -1]]]]]]
 
     def initShape(self):
         self.h = QHBoxLayout()
@@ -406,12 +363,9 @@ class OptionsLayout(QTabWidget):
         for time in family[1]:
           if time[1][0][1]:
             nodes = []
-            nodesData = []
-            # XXX this func has been destroyed
-            nodesData.append(time[1][5][1].elementsInRangeToNodesArray(exportSelDateMin, exportSelDateMax, time[1][5][1]))
-            for oneGroupNode in nodesData:
-              for nodeData in oneGroupNode:
-                for node in nodeData.nodeArray:
+            everyNodes = self.timeline.elementsInRangeToNodeList(time[1][5][1], self.timeline.toUSec(exportSelDateMin), self.timeline.toUSec(exportSelDateMax))
+            for oneGroupNode in everyNodes:
+                for node in oneGroupNode:
                     nodes.append(node)
             if len(nodes):
               if not self.exportedNode:
@@ -424,24 +378,23 @@ class OptionsLayout(QTabWidget):
                   self.exportedNode = Node(self.timeline.node.name(), 0, baseNode)
                   self.exportedNode.__disown__()
                   self.exportedNode.setDir()
-              baseFamilyName = self.exportedNode.absolute() + '/' + time[0]
-              baseFamilyNode = vfs.vfs().getnode(baseFamilyName)
-              if not baseFamilyNode:
-# Create /timeline/<ParentName>/<accessed|modified|etc.> if needed
-                  baseFamilyNode = Node(time[0], 0, self.exportedNode)
-		  baseFamilyNode.__disown__()
-                  baseFamilyNode.setDir()
-              timeBaseName = baseFamilyName + '/' + str(exportSelDateMin.strftime('%d.%m.%Y %H:%M:%S')) + ' to ' + str(exportSelDateMax.strftime('%d.%m.%Y %H:%M:%S'))
+              timeBaseName = self.exportedNode.absolute() + '/' + str(exportSelDateMin.strftime('%d.%m.%Y %H:%M:%S')) + ' to ' + str(exportSelDateMax.strftime('%d.%m.%Y %H:%M:%S'))
               timeBaseNode = vfs.vfs().getnode(timeBaseName)
               if not timeBaseNode:
-# Create /timeline/<ParentName>/<Time>/dateStart to dateEnd/
-                  timeBaseNode = Node(str(exportSelDateMin.strftime('%d.%m.%Y %H:%M:%S')) + ' to ' + str(exportSelDateMax.strftime('%d.%m.%Y %H:%M:%S')), 0, baseFamilyNode)
+# Create /timeline/<ParentName>/dateStart to dateEnd/<Module:FullTimestampAttributePath>/
+                  timeBaseNode = Node(str(exportSelDateMin.strftime('%d.%m.%Y %H:%M:%S')) + ' to ' + str(exportSelDateMax.strftime('%d.%m.%Y %H:%M:%S')), 0, self.exportedNode)
                   timeBaseNode.__disown__()
                   timeBaseNode.setDir()
+
+              baseFamilyName = timeBaseNode.absolute() + '/' + ':'.join([family[0]] + time[0])
+              baseFamilyNode = vfs.vfs().getnode(baseFamilyName)
+              if not baseFamilyNode:
+# Create /timeline/<ParentName>/dateStart to dateEnd//<Module:FullTimestampAttributePath> if needed
+                  baseFamilyNode = Node(':'.join([family[0]] + time[0]), 0, timeBaseNode)
+		  baseFamilyNode.__disown__()
+                  baseFamilyNode.setDir()
+
               for node in nodes:
 # Add each node in array as child
-		  l = VLink(node, timeBaseNode)
-		  l.__disown__()	#XXX RELINKER TOUTE LES NODES POUR LES DIRECTORY (SI ON VEUX ...)
-                  #timeBaseNode.addChild(node)
-#              e = DEvent()
-#              self.VFS.notify(e)
+		  l = VLink(node, baseFamilyNode)
+		  l.__disown__()

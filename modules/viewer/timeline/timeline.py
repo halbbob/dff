@@ -16,7 +16,7 @@
 
 # System imports
 from datetime import datetime, timedelta
-from PyQt4.QtCore import QDateTime, Qt, QPointF, QRectF, SIGNAL, QString
+from PyQt4.QtCore import Qt, QPointF, QRectF, SIGNAL, QString
 from PyQt4.QtGui import QPixmap, QColor, QWidget, QVBoxLayout, QSplitter, QPainter
 
 # DFF imports
@@ -372,6 +372,37 @@ class Timeline(QWidget, Script):
       iCurrent += 1
       
     return nodesCount
+
+  def elementsInRangeToNodeList(self, root, tMin, tMax):
+    ''' Returns a list of nodes pointer, made of nodes in given date range.
+    
+    Dichotomic search, but this can be improved because we only search for
+    smaller timestamp and decrease index if greather.
+    '''
+    if not tMin or not tMax:
+      return 0
+    nodesList = []
+    iMin, iMax = 0, len(root['dates']) - 1
+    iCurrent = iMax / 2
+    # Sync cursor in dates list on tMin ; should be improved
+    while iMin != iMax or not iMax:
+      if tMin >= root['dates'][iCurrent] or not iCurrent:
+        while iCurrent and tMin >= root['dates'][iCurrent]:
+          # Should be improved
+          iCurrent -= 1
+        break
+      elif tMin < root['dates'][iCurrent]:
+        iMax = iCurrent
+        iCurrent = iMin + ((iCurrent - iMin) / 2)
+
+    # Count amount of nodes between tMin and tMax
+    endOfList = len(root['dates'])
+    while iCurrent < endOfList and tMax >= root['dates'][iCurrent]:
+      if tMin <= root['dates'][iCurrent]:
+        nodesList.append(root['nodes'][iCurrent])
+      iCurrent += 1
+      
+    return nodesList
 
 class timeline(Module):
   """ Fetch all timestamp from children of a node and create a nice view.
