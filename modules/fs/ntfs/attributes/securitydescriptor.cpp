@@ -20,8 +20,6 @@
 
 AttributeSecurityDescriptor::AttributeSecurityDescriptor(Attribute &parent)
 {
-  _fixupIndexes = NULL;
-  _offsetList = NULL;
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _readBuffer = parent.readBuffer();
   _baseOffset = 0;
@@ -40,7 +38,6 @@ AttributeSecurityDescriptor::AttributeSecurityDescriptor(Attribute &parent)
   if (_attributeHeader->nonResidentFlag) {
     setRunList();
     DEBUG(INFO, "TODO !!\n");
-    _attributeResidentDataHeader = NULL;
   }
   else {
     _attributeResidentDataHeader = new AttributeResidentDataHeader(*(parent.residentDataHeader()));
@@ -51,10 +48,7 @@ AttributeSecurityDescriptor::AttributeSecurityDescriptor(Attribute &parent)
 
 AttributeSecurityDescriptor::~AttributeSecurityDescriptor()
 {
-  if (_attributeResidentDataHeader != NULL) {
-    delete _attributeResidentDataHeader;
-  }
-  delete _attributeHeader;
+  ;
 }
 
 void	AttributeSecurityDescriptor::content()

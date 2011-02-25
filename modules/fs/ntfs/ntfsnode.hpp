@@ -29,12 +29,14 @@
 class NtfsNode : public Node
 {
 public:
-  NtfsNode(std::string, Node *, class Ntfs *);
-  NtfsNode(std::string, uint64_t, Node *, Ntfs *, bool, bool, MftEntry *,
-	   uint32_t, uint64_t, Node *);
+
+  NtfsNode(std::string, uint64_t, Node *, class Ntfs *, bool, AttributeFileName *,
+	   AttributeStandardInformation *, MftEntry *);
+  NtfsNode(std::string, uint64_t, Node *, Ntfs *, bool, AttributeFileName *,
+	   AttributeStandardInformation *, MftEntry *, uint32_t, uint64_t);
   ~NtfsNode();
   virtual void			fileMapping(FileMapping *);
-  //  void				node(Node *node) { _node = node; };
+  void				node(Node *node) { _node = node; };
   void				contentOffset(uint64_t offset) { _contentOffset = offset; };
   void				data(AttributeData *data) { _data = data; };
   uint32_t			getMftEntry() { return _mftEntry; };
@@ -64,11 +66,7 @@ private:
   std::pair<std::string, class Variant *>	_dataToAttr(std::string, uint16_t);
 
   
-  bool			_hasAttrSI;
-  uint16_t	_clusterSize;
-  uint16_t	_mftEntrySize;
-  uint16_t	_indexRecordSize;
-  uint16_t	_sectorSize;
+  AttributeFileName	*_metaFileName;
 };
 
 #endif
