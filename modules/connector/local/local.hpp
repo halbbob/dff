@@ -55,17 +55,19 @@ public:
 #ifndef WIN32
   void				iterdir(std::string path, Node* parent);
 #else
-  void 		frec(const char *, Node *rfv);
+  std::string	relativePath(std::string path);
+  void			createPath(std::string origPath);
+  void 			frec(const char *, Node *rfv);
 #endif
   local();
   ~local();
-  int32_t	vopen(Node* handle);
-  int32_t 	vread(int fd, void *buff, unsigned int size);
-  int32_t 	vclose(int fd);
-  uint64_t 	vseek(int fd, uint64_t offset, int whence);
-  int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
-  uint32_t	status(void);
-  uint64_t	vtell(int32_t fd);
+  int32_t		vopen(Node* handle);
+  int32_t 		vread(int fd, void *buff, unsigned int size);
+  int32_t 		vclose(int fd);
+  uint64_t 		vseek(int fd, uint64_t offset, int whence);
+  int32_t		vwrite(int fd, void *buff, unsigned int size) { return 0; };
+  uint32_t		status(void);
+  uint64_t		vtell(int32_t fd);
   virtual void	start(std::map<std::string, Variant* > args);
 };
 #endif

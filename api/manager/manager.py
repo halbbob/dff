@@ -17,6 +17,8 @@
 from api.types import libtypes
 from api.search import libsearch
 from api.datatype import libdatatype
+from api.exceptions import libexceptions
+from api.events import libevents
 from api.vfs import vfs, libvfs
 from api.types import OS
 from dircache import listdir
