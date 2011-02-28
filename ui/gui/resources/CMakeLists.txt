@@ -18,7 +18,6 @@ set(ui_resources_files
   applymodule.ui
   bookmarkdialog.ui
   devicesdialog.ui
-  env.ui
   errors.ui
   evidencedialog.ui
   extractdialog.ui
@@ -32,7 +31,7 @@ set(ui_resources_files
   nodeviewbox.ui
   output.ui
   preferences.ui
-  propertytable.ui
+  varianttreewidget.ui
   shell.ui
   taskmanager.ui
   selectattrs.ui
@@ -55,7 +54,6 @@ set(resources_srcs
   ui_applymodule.py
   ui_bookmarkdialog.py
   ui_devicesdialog.py
-  ui_env.py
   ui_errors.py
   ui_evidencedialog.py
   ui_extractdialog.py
@@ -69,7 +67,7 @@ set(resources_srcs
   ui_nodeviewbox.py
   ui_output.ui
   ui_preferences.py
-  ui_propertytable.py
+  ui_varianttreewidget.py
   ui_shell.py
   ui_taskmanager.py
   ui_selectattrs.py

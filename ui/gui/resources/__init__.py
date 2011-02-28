@@ -13,4 +13,4 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 # 
 
-__all__ = ["ui_devicesdialog", "ui_env", "ui_mainwindow", "ui_modules", "ui_preferences", "ui_shell", "ui_taskmanager"]
+__all__ = ["ui_devicesdialog", "ui_mainwindow", "ui_modules", "ui_preferences", "ui_shell", "ui_taskmanager"]

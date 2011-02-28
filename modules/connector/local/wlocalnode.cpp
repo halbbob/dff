@@ -73,7 +73,7 @@ void				WLocalNode::wtimeToVtime(FILETIME *tt, vtime *vt)
 	vt->yday = 0;	// FIXME
 	vt->usecond = stUTC.wMilliseconds;
 }
-
+/*
 void							WLocalNode::modifiedTime(vtime* vt)
 {
 	WIN32_FILE_ATTRIBUTE_DATA	info;
@@ -130,3 +130,4 @@ void		WLocalNode::extendedAttributes(Attributes* attr)
 	// TODO
 	// In attributes, interresting values are ReadOnly, and ... ? Find other !
 }
+*/

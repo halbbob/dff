@@ -19,6 +19,7 @@ import  line_to_arguments
 from cmd import *
 from api.manager.manager import ApiManager
 from api.taskmanager.taskmanager import *
+from api.types.libtypes import ConfigManager
 
 import threading
 from ui.console.complete_raw_input import complete_raw_input
@@ -29,8 +30,10 @@ INTRO = "\nWelcome to the Digital Forensic Framework\n"
 IDENTCHARS = string.ascii_letters + string.digits + '\ _='
 
 class console(Cmd):
-    def __init__(self, completekey='tab', stdin=None, stdout=None, sigstp=True):
+    def __init__(self, completekey='tab', stdin=None, stdout=None, sigstp=True, DEBUG = False):
         Cmd.__init__(self, completekey, stdin, stdout)
+        self.cm = ConfigManager.Get()
+        self.DEBUG = DEBUG
         self.history = history()
         self.api = ApiManager()
         self.vfs = self.api.vfs()
@@ -44,14 +47,13 @@ class console(Cmd):
 	self.stdin = self
 	self.completekey = '\t'
 	self.comp_raw = complete_raw_input(self)
-        self.completion = completion.Completion(self.comp_raw)
+        self.completion = completion.Completion(self.comp_raw, self.DEBUG)
 	self.proc = None
 	if os.name == 'posix' and sigstp:
   	  signal.signal(signal.SIGTSTP, self.bg)
-
     def bg(self, signum, trace):
 	if self.proc:
-	   proc = self.proc	
+	   proc = self.proc
 	   proc.event.set()
   	   proc.exec_flags += ["thread"]
 	   print "\n\n[" + str(proc.pid) + "]" + " background " + proc.name
@@ -74,23 +76,24 @@ class console(Cmd):
         try:
 	    if line == 'exit' or line == 'quit':
 	      return 'stop'
-            exc_list = self.line_to_arguments.generate(line)
-            if exc_list != None and len(exc_list) > 0:
-                for exc in exc_list:
-		    exec_type = ["console"]
-                    if line[-1:] == "&":
-		      exec_type += ["thread"]
-                    for cmd, args in exc.iteritems():
-                       if cmd != None:
-    		          self.history.add(line.strip())
-    		          self.proc = self.taskmanager.add(cmd, args,exec_type)
-			  if self.proc:
-			    if wait:
-				self.proc.event.wait()
-			    else:
-			      while not self.proc.event.isSet():
-				self.comp_raw.get_char(1)
-			  self.proc = None
+            self.history.add(line.strip())
+            commands = self.completion.lp.makeCommands(line)
+            if len(commands):
+                for command in commands:
+                    exec_type = ["console"]
+                    cmd = command[0]
+                    config = self.cm.configByName(cmd)
+                    args = config.generate(command[1])
+                    if command[2]:
+                        exec_type += ["thread"]
+                    self.proc = self.taskmanager.add(cmd, args, exec_type)
+                    if self.proc:
+                        if wait:
+                            self.proc.event.wait()
+                        else:
+                            while not self.proc.event.isSet():
+		    		self.comp_raw.get_char(1)
+                            self.proc = None
             else:
                 return self.emptyline()
         except:

@@ -268,12 +268,12 @@
     try
       {
 	predef_obj = Argument_validateParams(self, obj, &ptype, &min, &max);
-	//std::cout << "setted min: " << min << " setted max: " << max << std::endl;
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	if (predef_obj != NULL)
 	  {
 	    itype = self->type();
 	    lsize = PyList_Size(predef_obj);
+	    i = 0;
 	    while ((i != lsize) && err.empty())
 	      {
 		item = PyList_GetItem(predef_obj, i);
@@ -1485,8 +1485,13 @@ VMap.__repr__ = __vmap_repr_proxy__
 namespace std
 {
   %template(MapString)       map<string, string>;
-  %template(ArgumentList)	std::list<Argument*>;
+  %template(ListString)      list<string>;
+  %template(ArgumentList)    std::list<Argument*>;
+  %template(ConfigList)      std::list<Config*>;
+  %template(ConstantList)    std::list<Constant*>;
   %template(MapVtime)        map<string, vtime* >;
+  %template(MapConstant)     map<std::string, Constant*>;
+  %template(MapArgument)     map<std::string, Argument*>;
   %template(MapInt)          map<string, unsigned int>;
 };
 

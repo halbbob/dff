@@ -43,15 +43,15 @@ class ui():
       self.c.cmdloop()
      except AttributeError:
        loader().do_load(self.modPath)
-       self.c = console()
+       self.c = console(DEBUG = self.debug)
        self.c.cmdloop()
 
   def cmd(self, command):
     try :
-     self.c.onecmd(command) 
+     self.c.onecmd(command)
     except AttributeError:
      loader().do_load(self.modPath)
-     self.c = console()
+     self.c = console(DEBUG = self.debug)
      self.c.onecmd(command) 
 
 class usage():

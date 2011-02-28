@@ -69,63 +69,85 @@ local::~local()
 {
 }
 
-void						local::start(argument *arg)
+void						local::start(std::map<std::string, Variant* > args)
 {
-  std::string			path;
-  Path				*lpath;
-  WIN32_FILE_ATTRIBUTE_DATA	info;
-  s_ull				sizeConverter;
+  std::map<std::string, Variant* >::iterator	argit;
+ 
   
-  try
-  {	 
-    arg->get("parent", &(this->parent));
-  }
-  catch (envError e)
-  {
+  if ((argit = args.find("parent")) != args.end())
+    this->parent = argit->second->value<Node*>();
+  else
     this->parent = VFS::Get().GetNode("/");
-  }
-  try 
+  if ((argit = args.find("path")) != args.end())
+    if (argit->second == NULL)
+      throw(envError("local module requires at least one path parameter"));
+  else
+    throw(envError("local module requires path argument"));
+
+  std::list<Variant *>				paths = argit->second->value<std::list<Variant* > >();
+  std::list<Variant* >::iterator	path = paths.begin();
+  for  (; path != paths.end(); path++)
   {
-    arg->get("path", &lpath);
-  } 
-  catch (envError e)
-  {
-     res->add_const("error", "conf " + e.error);
-     return ;
+	  this->createPath(((*path)->value<Path*>())->path);
   }
-  while (lpath->path.find('/') != std::string::npos) {
-	lpath->path[lpath->path.find('/')] = '\\';
+
+}
+
+std::string local::relativePath(std::string path)
+{
+  std::string relPath;
+
+  while (path.find('/') != std::string::npos) {
+	path[path.find('/')] = '\\';
   }
-  if ((lpath->path.rfind('/') + 1) == lpath->path.length())
-    lpath->path.resize(lpath->path.rfind('/'));
-  if ((lpath->path.rfind('\\') + 1) == lpath->path.length())
-    lpath->path.resize(lpath->path.rfind('\\'));
-  path = lpath->path;
-  if (path.rfind("\\") <= path.size())
-    path = path.substr(path.rfind("\\") + 1);
+  if ((path.rfind('/') + 1) == path.length())
+    path.resize(path.rfind('/'));
+  if ((path.rfind('\\') + 1) == path.length())
+    path.resize(path.rfind('\\'));
+  relPath = path;
+  if (relPath.rfind("\\") <= relPath.size())
+    relPath = relPath.substr(relPath.rfind("\\") + 1);
   else 
-    path = path.substr(path.rfind("/") + 1);
-  if(!GetFileAttributesExA(lpath->path.c_str(), GetFileExInfoStandard, &info))
+	relPath = relPath.substr(relPath.rfind("/") + 1);
+
+  return relPath;
+}
+
+void	local::createPath(std::string origPath)
+{
+  WIN32_FILE_ATTRIBUTE_DATA	info;
+  s_ull						sizeConverter;
+
+  cout << "createPath( " << origPath << " )" << endl;
+  std::string relPath = this->relativePath(origPath);
+  cout << "createPath relPath " << relPath << endl;
+
+  if(!GetFileAttributesExA(origPath.c_str(), GetFileExInfoStandard, &info))
   {
-    res->add_const("error", string("error stating file:" + path)); 
+//    res->add_const("error", string("error stating file:" + relPath)); 
+	  res["error"] = new Variant(std::string("error stating file: " + relPath));
     return ;
   }
   if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
   {
+	  cout << "create directory not yet implemented" << endl;
+	  /*
     // Create a virtual directory
-    this->__root = new WLocalNode(path, 0, NULL, this, WLocalNode::DIR);	
-    this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
+    this->__root = new WLocalNode(relPath, 0, NULL, this, WLocalNode::DIR);	
+    this->basePath = origPath.substr(0, origPath.rfind('\\'));
     this->__root->setBasePath(this->basePath.c_str());
     //recurse
-    this->frec(lpath->path.c_str(), this->__root);
+    this->frec(origPath.c_str(), this->__root);*/
   }
   else 
   {
+	cout << "create a virtual file" << endl;
 	// Create a virtual file
     sizeConverter.Low = info.nFileSizeLow;
     sizeConverter.High = info.nFileSizeHigh;
-    this->__root = new WLocalNode(path, sizeConverter.ull, NULL, this, WLocalNode::FILE);
-    this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
+    this->__root = new WLocalNode(origPath, sizeConverter.ull, NULL, this, WLocalNode::FILE);
+    this->basePath = origPath.substr(0, origPath.rfind('\\'));
+	cout << "seting base path" << this->basePath << endl;
     this->__root->setBasePath(this->basePath.c_str());
   }
   this->registerTree(this->parent, this->__root);
@@ -160,10 +182,7 @@ int local::vclose(int fd)
 }
 
 uint64_t	local::vseek(int fd, uint64_t offset, int whence)
-{
-  PLONG		highSeek = NULL;
-  uint32_t	lowSeek;
-  
+{ 
   s_ull				sizeConverter;
   sizeConverter.ull = offset;	
   

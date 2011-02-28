@@ -29,7 +29,7 @@ def get_arg_with_no_key(args):
     return res
 
 
-def keyPriority(params):
+def keyPriority(arguments):
     priority = {0: [], 1: []}
 
     for param in params.itervalues():
@@ -43,8 +43,8 @@ def keyPriority(params):
     return priority
 
 
-def needs_no_key(params):
-    priority = keyPriority(params)
+def needs_no_key(arguments):
+    priority = keyPriority(arguments)
     if len(priority[0]) == 1:
         return priority[0][0]
     elif len(priority[1]) == 1:
@@ -55,48 +55,52 @@ def needs_no_key(params):
 
 def split_line(line):
     startidx = 0
-    arg = ""
-    opt = []
+    argument = ""
     i = 0
     
-    bopt = []
-
+    arguments = []
+    startIndexes = []
+    endIndexes = []
     shell_key = [";", "<", ">", "&", "|", "&", ";"]
 
     while i < len(line):
-        if line[i] == " " and (line[i-1] != "\\") and (len(arg.split()) != 0):
-            opt.append(arg)
-            bopt.append({"start": startidx, "end": i, "arg": arg})
-            arg = ""
+        if line[i] == " " and (line[i-1] != "\\") and (len(argument.split()) != 0):
+            arguments.append(argument)
+            startIndexes.append(startidx)
+            endIndexes.append(i)
+            argument = ""
             startidx = i
         elif line[i] in shell_key and (line[i-1] != "\\"):
-            if len(arg.split()) != 0:
-                opt.append(arg)
-                bopt.append({"start": startidx, "end": i, "arg": arg})
-            arg = ""
+            if len(argument.split()) != 0:
+                arguments.append(argument)
+                startIndexes.append(startidx)
+                endIndexes.append(i)
+            argument = ""
             startidx = i
             while i < len(line) and line[i] in shell_key:
-                arg += line[i]
+                argument += line[i]
                 i += 1
-            opt.append(arg)
-            bopt.append({"start": startidx, "end": i, "arg": arg})
+            arguments.append(argument)
+            startIndexes.append(startidx)
+            endIndexes.append(i)
             if i < len(line):
-                arg = line[i]
+                argument = line[i]
             else:
-                arg = ""
+                argument = ""
             startidx = i
-        elif len(arg.split()) == 0:
+        elif len(argument.split()) == 0:
             startidx = i
-            arg = line[i]
+            argument = line[i]
         else:
-            arg = arg + line[i]
+            argument = argument + line[i]
         i += 1
 
-    if len(arg.split()) != 0:
-        bopt.append({"start": startidx, "end": i, "arg": arg})
-        opt.append(arg)
+    if len(argument.split()) != 0:
+        arguments.append(argument)
+        startIndexes.append(startidx)
+        endIndexes.append(i)
 
-    return opt, bopt
+    return (arguments, startIndexes, endIndexes)
 
 
 def get_absolute_path(value):

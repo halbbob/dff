@@ -10,22 +10,16 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
 #  Christophe Malinge <cma@digital-forensic.org>
 
-#### Deploying python __init__ script
-set(apiguiwidget_srcs
+set(timeline_srcs
   __init__.py
-  dockwidget.py
-  nodebrowser.py
-  layoutmanager.py
-  nodeview.py
-  varianttreewidget.py
-  propertytable.py
-  resulttable.py
-  textedit.py
-  devicesdialog.py
+  compute_thread.py
+  drawer.py
+  list_thread.py
+  paint_area.py
+  options_layout.py
+  timeline.py
 )
 
-install_file(apiguiwidget ${apiguiwidget_srcs})
-
+install_file(timeline ${timeline_srcs})

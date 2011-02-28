@@ -106,7 +106,8 @@ class EXTRACT(Script):
 
   def extractNodes(self, nodes, path, recursive):
     self.initContext(nodes, path, recursive)
-    for node in nodes:
+    for vnode in nodes:
+      node = vnode.value()
       syspath = self.path + node.name()
       if not self.recursive:
         if node.isFile():
@@ -127,7 +128,8 @@ class EXTRACT(Script):
 
 
   def extractedItemsCount(self, nodes):
-    for node in nodes:
+    for vnode in nodes:
+      node = vnode.value()
       if node.isFile():
         self.total_files += 1
         if node.hasChildren() and self.recursive:
@@ -141,7 +143,8 @@ class EXTRACT(Script):
 
   def recurse(self, nodes, vpath):
     recnodes = []
-    for node in nodes:
+    for vnode in nodes:
+      node = vnode.value()
       syspath = self.path + vpath + node.name()
       if node.isFile():
         if node.hasChildren():
@@ -182,7 +185,8 @@ class EXTRACT(Script):
 
 
   def countOmmited(self, nodes):
-    for node in nodes:
+    for vnode in nodes:
+      node = vnode.value()
       if node.isFile():
         self.ommited_files += 1
         if node.hasChildren() and self.recursive:
@@ -239,7 +243,7 @@ class extract(Module):
   """Extract file in your operating system file system."""
   def __init__(self):
     Module.__init__(self, "extract", EXTRACT)
-    self.conf.addArgument({"name": "file",
+    self.conf.addArgument({"name": "files",
                            "description": "Files or directories list to extract",
                            "input": Argument.Required|Argument.List|typeId.Node})
     self.conf.addArgument({"name": "syspath",

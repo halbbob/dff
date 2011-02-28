@@ -15,14 +15,10 @@
 #
 
 
-from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QMessageBox
+from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QVBoxLayout, QHBoxLayout, QDialogButtonBox
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
-
-#from api.loader import *
-#from api.env import *
 from api.taskmanager.taskmanager import *
-
-from ui.gui.utils.utils import Utils
+from api.gui.widget.varianttreewidget import VariantTreeWidget
 from ui.gui.resources.ui_taskmanager import Ui_TaskManager
 
 class Processus(QTreeWidget, Ui_TaskManager):
@@ -82,22 +78,36 @@ class Processus(QTreeWidget, Ui_TaskManager):
             QTreeWidget.changeEvent(self, event)
 
 
-class procMB(QMessageBox):
-  def __init__(self, parent, mainWindow, pid):
-   QMessageBox.__init__(self, parent)
-   self.setWindowTitle("Results")
-   self.tm = TaskManager()
-   self.pid = pid
-   self.env = env.env()
-   res = ""
-   for proc in self.tm.lprocessus:
-     if str(proc.pid) == self.pid:
-	try :
-          for type, name, val in self.env.get_val_map(proc.res.val_m):
-	        res += name + ": " + val + "\n"
-        except AttributeError:
-              pass
-        mainWindow.emit(SIGNAL("strResultView"), proc)
-   if res == "":
-      res = "No result"		
-   self.setText(res)
+class procMB(QDialog):
+    def __init__(self, parent, mainWindow, pid):
+        QDialog.__init__(self, parent)
+        self.translation()
+        self.setWindowTitle(self.nameTitle)
+        self.tm = TaskManager()
+        self.pid = pid
+        res = {}
+        for proc in self.tm.lprocessus:
+            if str(proc.pid) == self.pid:
+                res = proc.res
+        self.box = QVBoxLayout()
+        self.setLayout(self.box)
+        self.dialogButtonsLayout = QHBoxLayout()
+        self.dialogButtonsBox = QDialogButtonBox()
+        self.dialogButtonsBox.setStandardButtons(QDialogButtonBox.Ok)
+        self.connect(self.dialogButtonsBox, SIGNAL("accepted()"), self.accept)
+        self.dialogButtonsLayout.addWidget(self.dialogButtonsBox)
+        if len(res) > 0:
+            self.vwidget = VariantTreeWidget(self)
+            self.vwidget.fillMap(self.vwidget, res)
+            self.box.addWidget(self.vwidget)
+            self.box.addLayout(self.dialogButtonsLayout)
+            self.setMinimumSize(800, 600)
+        else:
+            label = QLabel(self.noResult)
+            self.box.addWidget(label)
+        self.box.addLayout(self.dialogButtonsLayout)
+            
+
+    def translation(self):
+        self.nameTitle = self.tr('Results')
+        self.noResult = self.tr("No results")
