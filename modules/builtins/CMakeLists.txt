@@ -16,14 +16,14 @@
 #add_subdirectory (cls)
 
 set(builtins_srcs
-  #cd.py
+  cd.py
   #fg.py
   #history.py
   #info.py
   #jobs.py
   #link.py
   load.py
-  #ls.py
+  ls.py
   #open.py
   #show_cwd.py
   #show_db.py
