@@ -85,7 +85,7 @@ class console(Cmd):
                     config = self.cm.configByName(cmd)
                     args = config.generate(command[1])
                     if command[2]:
-                        exec_type += ["thread"]
+                        exec_type.append("thread")
                     self.proc = self.taskmanager.add(cmd, args, exec_type)
                     if self.proc:
                         if wait:
