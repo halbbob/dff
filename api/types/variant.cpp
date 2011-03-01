@@ -19,21 +19,21 @@
 
 typeId::typeId()
 {
-  this->mapping.insert(std::pair<char*, uint8_t>( (char*)typeid(int16_t*).name(), typeId::Int16));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint16_t*).name(), typeId::UInt16));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int32_t*).name(), typeId::Int32));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint32_t*).name(), typeId::UInt32));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int64_t*).name(), typeId::Int64));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint64_t*).name(), typeId::UInt64));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char*).name(), typeId::Char));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char**).name(), typeId::CArray));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(void**).name(), typeId::VoidPtr));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::string *).name(), typeId::String));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class vtime**).name(), typeId::VTime));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Node**).name(), typeId::Node));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Path**).name(), typeId::Path));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::map<std::string, class Variant*> *).name(), typeId::Map));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::list<class Variant*> *).name(), typeId::List));
+  this->mapping.insert(std::pair<std::string, uint8_t>( typeid(int16_t*).name(), typeId::Int16));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint16_t*).name(), typeId::UInt16));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(int32_t*).name(), typeId::Int32));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint32_t*).name(), typeId::UInt32));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(int64_t*).name(), typeId::Int64));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint64_t*).name(), typeId::UInt64));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(char*).name(), typeId::Char));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(char**).name(), typeId::CArray));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(void**).name(), typeId::VoidPtr));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::string *).name(), typeId::String));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class vtime**).name(), typeId::VTime));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class Node**).name(), typeId::Node));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class Path * *).name(), typeId::Path));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::map<std::string, class Variant*> *).name(), typeId::Map));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::list<class Variant*> *).name(), typeId::List));
 
 
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Invalid, "Invalid"));
@@ -51,10 +51,35 @@ typeId::typeId()
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Node, "Node*"));
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Path, "Path*"));
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::VoidPtr, "void*"));
-
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::vector<class Variant*> *).name(), typeId::List));
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::set<class Variant*> *).name(), typeId::List));
 }
+
+uint8_t	typeId::getType(std::string type)
+  {
+	std::map<std::string, uint8_t>::iterator it;
+
+    it = this->mapping.find(type);
+    if (it != this->mapping.end())
+	{
+      return it->second;
+	}
+    else
+	{
+      return 0;
+	}
+  }
+
+std::string	typeId::typeToName(uint8_t t)
+  {
+    std::map<uint8_t, std::string>::iterator it;
+    
+    it = this->rmapping.find(t);
+    if (it != this->rmapping.end())
+      return it->second;
+    else
+      return "";
+  }
 
 typeId::~typeId()
 {

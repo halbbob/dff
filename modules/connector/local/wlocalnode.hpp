@@ -21,25 +21,18 @@
 
 class WLocalNode: public Node
 {
-protected:
-  std::string	basePath;
-  bool			cleanPath;
-  void			wtimeToVtime(FILETIME *, vtime *);
-  //struct stat*	localStat();
-
+private:
+  vtime*			wtimeToVtime(FILETIME *);
 public:
+  std::string	originalPath;
   enum Type
     {
       FILE,
       DIR
     };
-  WLocalNode(std::string, uint64_t, Node *, fso *, uint8_t);
+  WLocalNode(std::string, uint64_t, Node *, fso *, uint8_t, std::string);
   ~WLocalNode();
-  void			setBasePath(const char *);
-  /*virtual void	extendedAttributes(Attributes *);
-  virtual void	modifiedTime(vtime *);
-  virtual void	accessedTime(vtime *);
-  virtual void	createdTime(vtime *);*/
+  Attributes		_attributes(void);
 };
 
 #endif

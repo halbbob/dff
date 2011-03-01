@@ -25,7 +25,11 @@ INCLUDE_DIRECTORIES(../include)
 
 
 add_definitions(-D__STDC_LIMIT_MACROS)
-SET_SOURCE_FILES_PROPERTIES(libtypes.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(libtypes.i PROPERTIES CPLUSPLUS ON)	
+set(CMAKE_SWIG_FLAGS -threads -fvirtual -fastdispatch)
+IF (WIN32)
+  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DWIN32)	
+ENDIF(WIN32)
 SWIG_ADD_MODULE(libtypes python libtypes.i constant.cpp argument.cpp config.cpp path.cpp vtime.cpp Time.cpp variant.cpp confmanager.cpp)
 SWIG_LINK_LIBRARIES(libtypes ${PYTHON_LIBRARIES})
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

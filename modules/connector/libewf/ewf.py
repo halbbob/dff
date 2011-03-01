@@ -65,7 +65,7 @@ class EWF(fso):
     self.fdm = FdManager()
 
   def start(self, args):
-    efile = args['file'].value().path
+    efile = args['files'].value().path
     if efile[-4] == ".":
       efile = efile[:-2]
     self.files = glob(efile + '*')

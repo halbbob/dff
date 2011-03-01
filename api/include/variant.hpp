@@ -39,14 +39,13 @@ class typeId
 {
 private:
   
-  std::map<char*, uint8_t>		mapping;
+  std::map<std::string, uint8_t>		mapping;
   std::map<uint8_t, std::string>	rmapping;
   EXPORT typeId();
   EXPORT ~typeId();
   typeId&          operator=(typeId&);
   typeId(const typeId&);
-  //typeId(const typeId &);
-  //typeId	&operator=(const typeId &);
+  
   
 public:
   enum Type
@@ -75,36 +74,11 @@ public:
 
   static typeId   *Get()
   {
-  /*
-    if (!_instance)
-      _instance = new typeId();
-    return _instance;
-	*/
 	static typeId single;
 	return &single;
   }
-
-  EXPORT uint8_t	getType(char *type)
-  {
-    std::map<char*, uint8_t>::iterator it;
-    
-    it = this->mapping.find(type);
-    if (it != this->mapping.end())
-      return it->second;
-    else
-      return 0;
-  }
-
-  std::string	typeToName(uint8_t t)
-  {
-    std::map<uint8_t, std::string>::iterator it;
-    
-    it = this->rmapping.find(t);
-    if (it != this->rmapping.end())
-      return it->second;
-    else
-      return "";
-  }
+  EXPORT uint8_t		getType(std::string type);
+  EXPORT std::string	typeToName(uint8_t t);
 };
 
 
@@ -366,16 +340,19 @@ public:
     uint8_t	itype;
     T		t;
 
-    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+	itype = typeId::Get()->getType(typeid(static_cast<T*>(0)).name());
+
     if (itype != 0)
-      {
-	if (this->convert(itype, &t))
-	  return t;
-	else
-	  return T();
-      }
+    {
+	  if (this->convert(itype, &t))
+	    return t;
+	  else
+	    return T();
+    }
     else
+	{
       return T();
+	}
   }
 
   EXPORT std::string	toString() throw (std::string);
