@@ -93,7 +93,7 @@ windevices::~windevices()
 {
 }
 
-void						windevices::start(argument *arg)
+void						windevices::start(std::map<std::string, Variant* > args)
 {
   std::string		path;
   Path				*lpath;
@@ -101,39 +101,27 @@ void						windevices::start(argument *arg)
   uint64_t			size =0;
   std::string		nname;
 
-  try
-  {	 
-    arg->get("parent", &(this->parent));
-  }
-  catch (envError e)
-  {
-    this->parent = VFS::Get().GetNode("/");
-  }
-  try 
-  {
-    arg->get("path", &lpath);
-  } 
-  catch (envError e)
-  {
-     res->add_const("error", "conf " + e.error);
-     return ;
-  }
-  try
-  {
-    arg->get("size", &size);
-  }
-  catch (envError e)
-  {
-     size = 0;
-  }
-  try 
-  {
-    arg->get("name", &nname);
-  }
-  catch (envError e)
-  {
-    nname = "";
-  }
+  if (args["parent"] == NULL)
+	  throw envError("Device module requires a parent argument.");
+  else
+	  this->parent = args["parent"]->value<Node* >();
+
+  if (args["path"] == NULL)
+     throw envError("Device module require a device path argument.");
+  else
+	  lpath = args["path"]->value<Path *>();
+  
+  if (args["size"] == NULL)
+	 //throw envError("Device module require a size argument.");
+	 size = 0;
+  else 
+	  size = args["size"]->value<uint64_t >();
+
+  if (args["name"] == NULL)
+	  nname = "";
+  else
+	  nname == args["name"]->value<std::string >();
+
   this->devicePath = lpath->path;
   sizeConverter.ull = size;
  
@@ -141,7 +129,7 @@ void						windevices::start(argument *arg)
 			     0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
   if (((HANDLE)hnd) == INVALID_HANDLE_VALUE)
   {
-	res->add_const("error", string("can't open devices"));
+	res["error"] = new Variant(std::string("Can't open devices."));	
     return ;
   }
   else

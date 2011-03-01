@@ -21,18 +21,19 @@
 %include "std_map.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
+
 
 %{
-#include "../include/export.hpp"
+#include "variant.hpp"
+#include "vlink.hpp"
+#include "vtime.hpp"
+#include "export.hpp"
 #include "wdevices.hpp"
-
 %}
 
-%include "../include/export.hpp"
+%import "../../../api/vfs/libvfs.i"
+
 %include "wdevices.hpp"
-
-
 
 namespace std
 {
@@ -42,13 +43,26 @@ namespace std
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import *
+from api.vfs import vfs
 class WINDEVICES(Module):
   """Add windows devices to the VFS"""
   def __init__(self):
     Module.__init__(self, 'windevices', windevices)
-    self.conf.add("parent", "node", True, "The file will be added as son of this node or as the root node by default.")
-    self.conf.add("path", "path", False, "Path to the file or directory on your operating system.")
-    self.conf.add("size", "uint64", False, "Size of the devices.")
-    self.conf.add("name", "string", False, "Name for the created node.")
-    self.tags = "connector"
+    self.tags = "connectors"  
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
+	                   "name": "parent", 
+	                   "description": "The file will be added as son of this node or as the root node by default.",
+                       "parameters": {"type": Parameter.Editable,
+                                          "predefined": [vfs.vfs().getnode("/")]}
+                          })
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Path,  
+	                   "name": "path", 
+	                   "description": "Path to the file or directory on your operating system."})
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt64,
+                        "name": "size",
+                        "description": "Size of the devices."})
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+                        "name": "name",
+                        "description": "Name of the created node."})
 %}
