@@ -24,6 +24,7 @@ from api.types.libtypes import ConfigManager
 import threading
 from ui.console.complete_raw_input import complete_raw_input
 from ui.history import history
+import re
 
 PROMPT = "dff / > "
 INTRO = "\nWelcome to the Digital Forensic Framework\n"
@@ -51,6 +52,7 @@ class console(Cmd):
 	self.proc = None
 	if os.name == 'posix' and sigstp:
   	  signal.signal(signal.SIGTSTP, self.bg)
+
     def bg(self, signum, trace):
 	if self.proc:
 	   proc = self.proc
@@ -77,16 +79,25 @@ class console(Cmd):
 	    if line == 'exit' or line == 'quit':
 	      return 'stop'
             self.history.add(line.strip())
-            commands = self.completion.lp.makeCommands(line)
-            if len(commands):
-                for command in commands:
+            iterator = re.finditer('(?<!\\\)\&&', line)
+            prevpos = 0
+            commands = []
+            itcount = 0
+            for match in iterator:
+                commands.append(line[prevpos:match.span()[0]].strip())
+                prevpos = match.span()[1]
+            if prevpos != len(line):
+                commands.append(line[prevpos:])
+            for command in commands:
+                cmds = self.completion.lp.makeCommands(command)
+                for cmd in cmds:
                     exec_type = ["console"]
-                    cmd = command[0]
-                    config = self.cm.configByName(cmd)
-                    args = config.generate(command[1])
-                    if command[2]:
+                    cname = cmd[0]
+                    config = self.cm.configByName(cname)
+                    args = config.generate(cmd[1])
+                    if cmd[2]:
                         exec_type.append("thread")
-                    self.proc = self.taskmanager.add(cmd, args, exec_type)
+                    self.proc = self.taskmanager.add(cname, args, exec_type)
                     if self.proc:
                         if wait:
                             self.proc.event.wait()

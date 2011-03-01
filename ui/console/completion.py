@@ -50,6 +50,11 @@ class Context():
                 return n
             else:
                 raise ValueError("Node " + str(parameter)  + " provided to argument < " + argname + " >")
+        elif argument.type() == typeId.Path:
+            if parameter[0] != "/":
+                return str(os.getcwd() + "/" + parameter).replace("//", "/")
+            else:
+                return parameter
         else:
             return parameter
 

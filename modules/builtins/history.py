@@ -17,25 +17,43 @@ from api.vfs import *
 from api.module.module import *
 from api.module.script import *
 import ui.history as hist
+from api.types.libtypes import Variant, typeId, Argument
 
 class HISTORY(Script):
   def __init__(self):
     Script.__init__(self, "history")
     self.h = hist.history()
 
+
   def start(self, args):
-    try :
-      if args.get_bool("clear"):
-         self.h.clear()
-      else :	
-        for i in xrange(0, len(self.h.hist)):
-  	  print (str(i) + '\t' + self.h.hist[i]).strip('\n')
-    except KeyError:
-       pass	
+    if len(args) > 1:
+      val = Variant("too many arguments")
+      val.thisown = False
+      self.res["error"] = val
+    elif args.has_key("clear"):
+      self.h.clear()
+    elif args.has_key("last"):
+      last = args["last"].value()
+      if last > len(self.h.hist):
+        last = 0
+      else:
+        last = len(self.h.hist) - last
+      for i in xrange(last, len(self.h.hist)):
+        print (str(i) + '\t' + self.h.hist[i]).strip('\n')
+    else:
+      for i in xrange(0, len(self.h.hist)):
+        print (str(i) + '\t' + self.h.hist[i]).strip('\n')
+
+
 
 class history(Module):
   """Display an history of all launched command"""
   def __init__(self):
    Module.__init__(self, "history", HISTORY)
-   self.conf.add("clear", "bool", True, "Clear the history if true")
+   self.conf.addArgument({"name": "clear",
+                          "description": "clear the history",
+                          "input": Argument.Empty})
+   self.conf.addArgument({"name": "last",
+                          "description": "lists only the last n lines",
+                          "input": Argument.Single|Argument.Optional|typeId.UInt32})
    self.tags = "builtins"

@@ -32,7 +32,6 @@ class LS(Script):
   def start(self, args):
     try:
       self.nodes = args["nodes"].value()
-      print self.nodes
     except IndexError:
       self.nodes = [self.vfs.getcwd()]
     if args.has_key('recursive'):
@@ -56,7 +55,10 @@ class LS(Script):
       if self.rec:
         self.recurse(node)
       else:
-        self.ls(node)
+        if node.hasChildren():
+          children = node.children()
+          for child in children:
+            self.ls(child)
 
   def recurse(self, cur_node):
     if cur_node.hasChildren():
@@ -66,15 +68,18 @@ class LS(Script):
       if next_node.hasChildren():
         self.recurse(next_node)
 
+
   def ls(self, node):
      buff = ""
      print self.display_node(node)
+
 
   def display_node(self, node):
     if self.long:
       return self.display_node_long(node)
     else:
       return self.display_node_simple(node)
+
 
   def display_node_long(self, node):
     buff = node.absolute()
@@ -84,12 +89,14 @@ class LS(Script):
       buff += '\t' + str(node.size())
     return buff
 
+
   def display_node_simple(self, node):
     buff = ''	
     buff = node.name()
     if node.hasChildren():
      buff += "/"
     return buff
+
 
 class ls(Module):
   """List file and directory"""

@@ -33,6 +33,7 @@
 #include <map>
 #include <typeinfo>
 
+#include "path.hpp"
 #include "vtime.hpp"
 
 class typeId

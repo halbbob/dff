@@ -188,6 +188,12 @@ std::string	Variant::toString() throw (std::string)
     res << static_cast<char*>(this->__data.ptr);
   else if (this->_type == typeId::String)
     res << *(static_cast<std::string*>(this->__data.ptr));
+  else if (this->_type == typeId::Path)
+    {
+      class Path*	p;
+      p = static_cast<class Path*>(this->__data.ptr);
+      res << p->path;
+    }
   else
     throw std::string("Cannot convert type < " + this->typeName() + " > to < std::string >");
   return res.str();
