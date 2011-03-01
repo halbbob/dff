@@ -56,30 +56,30 @@ typeId::typeId()
 }
 
 uint8_t	typeId::getType(std::string type)
-  {
-	std::map<std::string, uint8_t>::iterator it;
-
-    it = this->mapping.find(type);
-    if (it != this->mapping.end())
-	{
+{
+  std::map<std::string, uint8_t>::iterator it;
+  
+  it = this->mapping.find(type);
+  if (it != this->mapping.end())
+    {
       return it->second;
-	}
-    else
-	{
+    }
+  else
+    {
       return 0;
-	}
-  }
+    }
+}
 
 std::string	typeId::typeToName(uint8_t t)
-  {
-    std::map<uint8_t, std::string>::iterator it;
-    
-    it = this->rmapping.find(t);
-    if (it != this->rmapping.end())
-      return it->second;
-    else
-      return "";
-  }
+{
+  std::map<uint8_t, std::string>::iterator it;
+  
+  it = this->rmapping.find(t);
+  if (it != this->rmapping.end())
+    return it->second;
+  else
+    return "";
+}
 
 typeId::~typeId()
 {
