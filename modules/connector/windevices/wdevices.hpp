@@ -17,15 +17,16 @@
 #ifndef __WINDEVICES_HH__
 #define __WINDEVICES_HH__
 
+#include "variant.hpp"
 #include "mfso.hpp"
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <list>
 #include <vector>
-#include "variant.hpp"
+#include "node.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
+#include "path.hpp"
 
 #pragma comment(lib, "advapi32.lib")
 
@@ -78,6 +79,6 @@ public:
   int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
   uint32_t	status(void);
   uint64_t	vtell(int32_t fd);
-  virtual void	start(argument* ar);
+  virtual void	start(std::map<std::string, Variant* > args);
 };
 #endif

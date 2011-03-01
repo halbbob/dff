@@ -17,7 +17,7 @@
 #include "wlocalnode.hpp"
 #include <windows.h>
 
-WLocalNode::WLocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj, uint8_t type): Node(Name, size, parent, fsobj)
+WLocalNode::WLocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj, uint8_t type, std::string origPath): Node(Name, size, parent, fsobj)
 {
   switch (type)
     {
@@ -30,104 +30,53 @@ WLocalNode::WLocalNode(std::string Name, uint64_t size, Node* parent, fso* fsobj
     default:
       break;
     }
-  cleanPath = false;
+  this->originalPath = origPath;
 }
 
 WLocalNode::~WLocalNode()
 {
-	//delete this->basePath;
 }
 
-/**
- * Set the physical (real) path on the filesystem on the node
- */
-void			WLocalNode::setBasePath(const char *bp)
+
+Attributes		WLocalNode::_attributes(void)
 {
-  this->basePath = bp;
+	WIN32_FILE_ATTRIBUTE_DATA	info;
+	Attributes					attr;
+   
+	
+	attr["original path"] = new Variant(this->originalPath);
+    if(!GetFileAttributesExA(this->originalPath.c_str(), GetFileExInfoStandard, &info))
+		return attr;
+	
+	attr["modified"] = new Variant(this->wtimeToVtime(&(info.ftLastWriteTime)));
+	attr["accessed"] = new Variant(this->wtimeToVtime(&(info.ftLastAccessTime)));
+	attr["creation"] = new Variant(this->wtimeToVtime(&(info.ftCreationTime)));
+
+	return attr;
 }
 
-void				WLocalNode::wtimeToVtime(FILETIME *tt, vtime *vt)
+
+vtime*				WLocalNode::wtimeToVtime(FILETIME *tt)
 {
 	SYSTEMTIME	stUTC;
+	vtime*	vt = new vtime;
 
 	if (tt == NULL)
-		return ;
+		return vt;
 		
 	if (FileTimeToSystemTime(tt, &stUTC) == 0)
-		return ;
-	
-	// convert modification time to local time.
-	/*
-	FileTimeToSystemTime(&ftWrite, &stUTC);
-	SystemTimeToTzSpecificLocalTime(NULL, &stUTC, &stLocal);
-	*/
-	
+		return vt;
+
   	vt->year = stUTC.wYear;
 	vt->month = stUTC.wMonth;
 	vt->day = stUTC.wDay;
 	vt->hour = stUTC.wHour;
 	vt->minute = stUTC.wMinute;
 	vt->second = stUTC.wSecond;
-	vt->dst = 0;	// FIXME
+	vt->dst = 0;
 	vt->wday = stUTC.wDayOfWeek;
-	vt->yday = 0;	// FIXME
+	vt->yday = 0;
 	vt->usecond = stUTC.wMilliseconds;
-}
-/*
-void							WLocalNode::modifiedTime(vtime* vt)
-{
-	WIN32_FILE_ATTRIBUTE_DATA	info;
-	
-	if (!cleanPath) {
-		std::string					fsPath;
-		fsPath = this->basePath + '\\' + this->absolute();
-		while (fsPath.find('/') != std::string::npos)
-			fsPath[fsPath.find('/')] = '\\';
-		this->basePath = fsPath;
-		cleanPath = true;
-	}
-	if(!GetFileAttributesExA(this->basePath.c_str(), GetFileExInfoStandard, &info))
-		return ;
-	this->wtimeToVtime(&(info.ftLastWriteTime), vt);
-}
 
-void							WLocalNode::accessedTime(vtime* vt)
-{
-	WIN32_FILE_ATTRIBUTE_DATA	info;
-	
-	if (!cleanPath) {
-		std::string					fsPath;
-		fsPath = this->basePath + '\\' + this->absolute();
-		while (fsPath.find('/') != std::string::npos)
-			fsPath[fsPath.find('/')] = '\\';
-		this->basePath = fsPath;
-		cleanPath = true;
-	}
-	if(!GetFileAttributesExA(this->basePath.c_str(), GetFileExInfoStandard, &info))
-		return ;
-	this->wtimeToVtime(&(info.ftLastAccessTime), vt);
+	return vt;
 }
-
-void							WLocalNode::createdTime(vtime* vt)
-{
-	WIN32_FILE_ATTRIBUTE_DATA	info;
-	
-	if (!cleanPath) {
-		std::string					fsPath;
-		fsPath = this->basePath + '\\' + this->absolute();
-		while (fsPath.find('/') != std::string::npos)
-			fsPath[fsPath.find('/')] = '\\';
-		this->basePath = fsPath;
-		cleanPath = true;
-	}
-	if(!GetFileAttributesExA(this->basePath.c_str(), GetFileExInfoStandard, &info))
-		return ;
-	this->wtimeToVtime(&(info.ftCreationTime), vt);
-}
-
-void		WLocalNode::extendedAttributes(Attributes* attr)
-{
-	// TODO
-	// In attributes, interresting values are ReadOnly, and ... ? Find other !
-}
-*/

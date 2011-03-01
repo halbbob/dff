@@ -72,10 +72,10 @@ class Dialog(QObject):
         if ir > 0:
           args = {}
           paths = edialog.manager.get("local")
-          print paths
           if edialog.rawcheck.isChecked():
             module = "local"
             args["path"] = paths
+	    args["parent"] = self.vfs.getnode('/Logical files')
           else:
             module = "ewf"
             args["files"] = paths

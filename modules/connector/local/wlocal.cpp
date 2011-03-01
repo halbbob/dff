@@ -30,30 +30,28 @@ void				local::frec(const char *name, Node *rfv)
 	
   searchPath +=  "\\*";  
   
-  if ((hd = FindFirstFileA(searchPath.c_str(), &find)) != INVALID_HANDLE_VALUE) {
-    do {
-	  WLocalNode	*tmp; //= new Node;
-	  std::string	handle;
-	  
+  if ((hd = FindFirstFileA(searchPath.c_str(), &find)) != INVALID_HANDLE_VALUE) 
+  {
+    do 
+	{
+	  WLocalNode	*tmp;
+	 
 	  if (!strcmp(find.cFileName, ".") || !strcmp(find.cFileName, ".."))
-	    continue ;
+	    continue ;	  
 	  nname = name;
 	  nname += "\\";
 	  nname += find.cFileName;
-	  handle += nname;
 
-	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		// Create a virtual directory
-		tmp = new WLocalNode(find.cFileName, 0, rfv, this, WLocalNode::DIR);
-		tmp->setBasePath(this->basePath.c_str());
+	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
+	  {
+		tmp = new WLocalNode(std::string(find.cFileName), 0, rfv, this, WLocalNode::DIR, nname);
 		this->frec((char *)nname.c_str(), tmp);
 	  }
-	  else {
-		// Create a virtual file
+	  else 
+	  {
 		sizeConverter.Low = find.nFileSizeLow;
 		sizeConverter.High = find.nFileSizeHigh;
-		tmp = new WLocalNode(find.cFileName, sizeConverter.ull, rfv, this, WLocalNode::FILE);
-		tmp->setBasePath(this->basePath.c_str());
+		tmp = new WLocalNode(std::string(find.cFileName), sizeConverter.ull, rfv, this, WLocalNode::FILE, nname);
 	  }
 	} while (FindNextFileA(hd, &find));
     
@@ -71,26 +69,31 @@ local::~local()
 
 void						local::start(std::map<std::string, Variant* > args)
 {
-  std::map<std::string, Variant* >::iterator	argit;
- 
-  
-  if ((argit = args.find("parent")) != args.end())
-    this->parent = argit->second->value<Node*>();
-  else
-    this->parent = VFS::Get().GetNode("/");
-  if ((argit = args.find("path")) != args.end())
-    if (argit->second == NULL)
-      throw(envError("local module requires at least one path parameter"));
-  else
-    throw(envError("local module requires path argument"));
+  std::list<Variant *>							paths;
 
-  std::list<Variant *>				paths = argit->second->value<std::list<Variant* > >();
+  
+  if (args["parent"] == NULL)
+  {
+	  throw (envError("local modules requires parent"));
+  }
+  else
+  {
+      this->parent = args["parent"]->value<Node*>();
+  }
+  if (args["path"])
+  {
+	  paths = args["path"]->value<std::list < Variant *> >();
+	  if (paths.size() == 0)
+		  throw (envError("local module requires at least one path parameter"));
+  }
+  else
+	  throw (envError("local modules requires path argument"));
+
   std::list<Variant* >::iterator	path = paths.begin();
-  for  (; path != paths.end(); path++)
+  for  (; path != paths.end(); ++path)
   {
 	  this->createPath(((*path)->value<Path*>())->path);
   }
-
 }
 
 std::string local::relativePath(std::string path)
@@ -118,46 +121,35 @@ void	local::createPath(std::string origPath)
   WIN32_FILE_ATTRIBUTE_DATA	info;
   s_ull						sizeConverter;
 
-  cout << "createPath( " << origPath << " )" << endl;
-  std::string relPath = this->relativePath(origPath);
-  cout << "createPath relPath " << relPath << endl;
-
+  
   if(!GetFileAttributesExA(origPath.c_str(), GetFileExInfoStandard, &info))
   {
-//    res->add_const("error", string("error stating file:" + relPath)); 
-	  res["error"] = new Variant(std::string("error stating file: " + relPath));
+	res["error"] = new Variant(std::string("error stating file: " + origPath));
     return ;
   }
+
   if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-  {
-	  cout << "create directory not yet implemented" << endl;
-	  /*
-    // Create a virtual directory
-    this->__root = new WLocalNode(relPath, 0, NULL, this, WLocalNode::DIR);	
-    this->basePath = origPath.substr(0, origPath.rfind('\\'));
-    this->__root->setBasePath(this->basePath.c_str());
-    //recurse
-    this->frec(origPath.c_str(), this->__root);*/
+  {	
+    WLocalNode* node = new WLocalNode(this->relativePath(origPath), 0, NULL, this, WLocalNode::DIR, origPath);	
+    this->frec(origPath.c_str(), node);
+	this->registerTree(this->parent, node);
   }
   else 
   {
-	cout << "create a virtual file" << endl;
-	// Create a virtual file
     sizeConverter.Low = info.nFileSizeLow;
     sizeConverter.High = info.nFileSizeHigh;
-    this->__root = new WLocalNode(origPath, sizeConverter.ull, NULL, this, WLocalNode::FILE);
-    this->basePath = origPath.substr(0, origPath.rfind('\\'));
-	cout << "seting base path" << this->basePath << endl;
-    this->__root->setBasePath(this->basePath.c_str());
+	WLocalNode* node = new WLocalNode(this->relativePath(origPath), sizeConverter.ull, NULL, this, WLocalNode::FILE, origPath);
+	this->registerTree(this->parent, node);
   }
-  this->registerTree(this->parent, this->__root);
+  
   return ;
 }
 
-int local::vopen(Node *node)
+int local::vopen(Node *wnode)
 {
+  WLocalNode*	node =	dynamic_cast<WLocalNode *>(wnode);
   if (node != NULL) {
-	std::string	filePath = this->basePath + "/" + node->absolute();
+	std::string	filePath = node->originalPath;
 	
     return ((int)CreateFileA(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ,
 			     0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0));
@@ -205,8 +197,6 @@ uint64_t	local::vtell(int32_t fd)
 
 unsigned int local::status(void)
 {
-//status called
-
   return (nfd);
 }
 

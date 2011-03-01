@@ -420,7 +420,7 @@
       std::map<std::string, Variant*>	res;
       std::list<Argument*>		args;
       std::list<Argument*>::iterator	argit;
-      Variant*				v;
+     
       PyObject*				itemval;
       std::string			argname;
       uint16_t				itype;
@@ -455,6 +455,7 @@
 		  //std::cout << "current argument: " <<  argname << " argument type " << (*argit)->type() << " -- provided parameter type " << obj->ob_type->tp_name << std::endl;
 		  try
 		    {
+				Variant * v = new Variant;
 		      if (itype == Argument::Empty)
 			v = new_Variant__SWIG_17(itemval, typeId::Bool);
 		      else if (itype == Argument::Single)
@@ -462,7 +463,8 @@
 		      else if (itype == Argument::List)
 			v = Config_generateListInput(self, itemval, *argit);
 		      if (v != NULL)
-			res.insert(std::pair<std::string, Variant*>(argname, v));
+		      res[argname] = v;
+			//res.insert(std::pair<std::string, Variant*>(argname, v));
 		      else
 			err = "Argument < " + argname + " >\n" + "parameter provided is not valid (wrong type)";
 		    }

@@ -26,7 +26,7 @@ set(windevices_srcs
 
 SET_SOURCE_FILES_PROPERTIES(windevices.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(WINDEVICES python windevices.i ${windevices_srcs})
-SWIG_LINK_LIBRARIES(WINDEVICES ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv _libvariant)
+SWIG_LINK_LIBRARIES(WINDEVICES ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_WINDEVICES_REAL_NAME} PROPERTIES
