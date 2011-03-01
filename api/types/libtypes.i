@@ -755,11 +755,25 @@
       Variant*	v = NULL;
       bool	err = true;
       int	ecode;
-      
+
+      if (obj == NULL)
+	throw(std::string("Provided PyObject is NULL"));
+
       if (PyLong_Check(obj) || PyInt_Check(obj))
 	{
-	  //printf("Variant::Variant(PyObject* obj, uint8_t type) ---> obj == PyLong_Check || PyInt_Check provided\n");
-	  if (type == uint8_t(typeId::Int16))
+	  if (type == uint8_t(typeId::Bool))
+	    {
+	      bool	b;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      int ecode = SWIG_AsVal_bool(obj, &b);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(b);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::Int16))
 	    {
 	      int16_t	s;
 	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;

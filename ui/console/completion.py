@@ -27,6 +27,7 @@ class Context():
         self.config = None
         self.keylessarg = None
         self.currentArgument = None
+        self.parsedArgument = None
         self.providedArguments = {}
         self.remainingArguments = []
         self.threaded = False
@@ -119,6 +120,11 @@ class Context():
             buff += "\n    threaded: " + str(self.threaded)
         else:
             buff += " None"
+        buff += "\n    currentArgumentScope: "
+        if self.currentArgument != None:
+            buff += str(self.currentArgument.name())
+        else:
+            buff += "None"
         buff += "\n    currentStr: " + self.currentStr
         buff += "\n    currentStrScope: " + str(self.currentStrScope) 
         return buff
@@ -150,63 +156,92 @@ class Context():
         self.debug(dbg)
 
 
-    def parameterToken(self, token, current):
-        dbg = "==== Context.parameterToken() ===="
-        if self.currentArgument == None:
-            dbg += "\n    currentArgument == None"
+    def setCurrent(self, token, pos):
+        dbg = "\n ==== Context.setCurrent() ===="
+        dbg += "\n    token: " + token
+        dbg += "\n    pos: " + str(pos)
+        dbg += "\n    currentstrscope: " + token[:pos]
+        if len(token.split()) != 0:
+            self.currentStr = token
+            self.currentStrScope = pos
+        else:
+            self.currentStrScope = 0
+            self.currentStr = ""
+        if self.parsedArgument != None:
+            dbg += "\n    parsedArgument != None"
+            if self.providedArguments[self.parsedArgument.name()] in [token, None]:
+                dbg += "\n    currentArgument = self.parsedArgument --> " + str(self.parsedArgument.name())
+                self.currentArgument = self.parsedArgument
+            else:
+                dbg += "\n    currentArgument = None"
+                self.currentArgument = None
+        self.debug(dbg)
+
+
+
+    def parameterToken(self, token):
+        dbg = "\n ==== Context.parameterToken() ===="
+        if self.parsedArgument == None:
+            dbg += "\n    parsedArgument == None"
             if self.keylessarg != None and self.keylessarg.name() in self.remainingArguments:
                 dbg += "\n    keylessarg exists and not setted yet. " + str(self.keylessarg.name()) + " --> " + token
                 self.providedArguments[self.keylessarg.name()] = token
                 self.remainingArguments.remove(self.keylessarg.name())
-                self.currentArgument = self.keylessarg
-        elif self.providedArguments[self.currentArgument.name()] == None or (current and self.providedArguments[self.currentArgument.name()] == self.currentStr):
-            dbg += "\n    currentArgument exists and not setted yet. " + str(self.currentArgument.name()) + " --> " + token
-            self.providedArguments[self.currentArgument.name()] = token
-            self.remainingArguments.remove(self.currentArgument.name())
+                self.parsedArgument = self.keylessarg
+        elif self.providedArguments[self.parsedArgument.name()] == None:
+            dbg += "\n    parsedArgument exists and not setted yet. " + str(self.parsedArgument.name()) + " --> " + token
+            self.providedArguments[self.parsedArgument.name()] = token
+            self.remainingArguments.remove(self.parsedArgument.name())
         else:
-            dbg += "\n    currentArgument already setted"
-            self.currentArgument = None
+            dbg += "\n    parsedArgument already setted"
+            self.parsedArgument = None
         self.debug(dbg)
 
-    def __argumentToken(self, token, current):
+
+    def __argumentToken(self, token):
         dbg = "\n ==== Context.__argumentToken() ===="
         argument = self.config.argumentByName(token[2:])
         if argument != None:
             argname = argument.name()
             dbg += "\n      argument found: " + argname
             if argname in self.remainingArguments:
-                self.providedArguments[argname] = None
                 if argument.inputType() == Argument.Empty:
+                    self.providedArguments[argname] = True
                     self.remainingArguments.remove(argname)
-                    self.currentArgument = None
+                    self.parsedArgument = None
                 else:
-                    self.currentArgument = argument
+                    self.providedArguments[argname] = None
+                    self.parsedArgument = argument
             else:
                 dbg += "\n      argument < " + argname + " > already provided"
         else:
             self.badargs.append(token)
             dbg += "\n      argument not found"
-            self.currentArgument = None
+            self.parsedArgument = None
+        self.debug(dbg)
 
 
-    def argumentToken(self, token, current):
+    def argumentToken(self, token):
         dbg = "\n ==== Context.argumentToken() ===="
-        if self.currentArgument != None:
-            if self.currentArgument.inputType() != Argument.Empty:
-                dbg += "\n    token starts with -- and currentArgument != None and is not a switch"
-                argname = self.currentArgument.name()
+        if self.parsedArgument != None:
+            if self.parsedArgument.inputType() != Argument.Empty:
+                dbg += "\n    token starts with -- and parsedArgument != None and is not a switch"
+                argname = self.parsedArgument.name()
                 if self.providedArguments[argname] == None:
-                    dbg += "\n    currentArgument exists and not setted yet. " + str(argname) + " --> " + token
-                    self.remainingArguments.remove(argname)
-                    self.providedArguments[argname] = token
+                    if token[2:] not in self.remainingArguments:
+                        dbg += "\n    currentArgument exists and not setted yet. " + str(argname) + " --> " + token
+                        self.remainingArguments.remove(argname)
+                        self.providedArguments[argname] = token
+                    else:
+                        self.__argumentToken(token)
                 else:
-                    self.__argumentToken(token, current)
+                    self.__argumentToken(token)
             else:
                 self.remainingArguments.remove(argname)
                 self.providedArguments[argname] = None
-                self.currentArgument = None
+                self.parsedArgument = None
         else:
-            self.__argumentToken(token, current)
+            self.__argumentToken(token)
         self.debug(dbg)
 
 
@@ -219,19 +254,28 @@ class Context():
                 self.remainingArguments.append(argname)
 
 
-    def addToken(self, token, current, begidx, startidx):
+    def addToken(self, token, curpos = -1):
         dbg = "\n ==== Context.addToken() ===="
-        if current:
-            self.currentStr = token
-            self.currentStrScope = begidx - startidx
+        dbg += "\n    token: " + token
+        dbg += "\n    curpos: " + str(curpos)
+        self.debug(dbg)
         if self.config == None:
-            if not current:
+            if curpos != -1:
+                self.setCurrent(token, curpos)
+                self.configToken(token[:curpos])
+            else:
                 self.configToken(token)
         else:
             if token.startswith("--"):
-                self.argumentToken(token, current)
+                if curpos != -1:
+                    self.setCurrent(token, curpos)
+                    self.argumentToken(token[:curpos])
+                else:
+                    self.argumentToken(token)
             else:
-                self.parameterToken(token, current)
+                self.parameterToken(token)
+                if curpos != -1:
+                    self.setCurrent(token, curpos)
 
 
 
@@ -260,36 +304,21 @@ class LineParser():
             dbg += "\n    begidx: " + str(self.begidx)
             dbg += "\n    endidx: " + str(endidx)
             self.contexts[self.ctxpos].threaded = True
-            if self.begidx >= endidx and endidx != len(self.line):
-                dbg += "\n    incrementing ctxpos"
-                ctx = Context(self.DEBUG)
-                self.contexts.append(ctx)
-                self.ctxpos += 1
+            dbg += "\n    incrementing ctxpos"
+            ctx = Context(self.DEBUG)
+            self.contexts.append(ctx)
+            self.ctxpos += 1
+            if self.begidx > endidx: #and endidx != len(self.line):
                 self.scopeCtx = self.ctxpos
         elif key == "&&":
             self.contexts.append(Context(self.DEBUG))
             self.ctxpos += 1
             if self.begidx == startidx + 1:
                 self.scopeCtx = self.ctxpos
+                self.contexts.append(Context(self.DEBUG))
+                self.ctxpos += 1
                 dbg += "\n    key found and begidx in the middle of " + key
-                #self.contexts.append(Context(self.DEBUG))
         self.debug(dbg)
-
-
-    def manageToken(self, token, startidx, endidx):
-        dbg = "\n ==== LineParser.manageToken() ===="
-        dbg += "\n    token found <" + token + ">"
-        dbg += "\n    begidx: " + str(self.begidx)
-        dbg += "\n    startidx: " + str(startidx)
-        dbg += "\n    endidx: " + str(endidx)
-        current = False
-        if self.begidx >= startidx and self.begidx <= endidx:
-            dbg += "\n      cursor pos is in token: " + token + " @ " + str(self.begidx - startidx)
-            self.scopeCtx = self.ctxpos
-            current = True
-        self.debug(dbg)
-        self.contexts[self.ctxpos].addToken(token, current, self.begidx, startidx)
-
 
 
     def makeCommands(self, line):
@@ -330,13 +359,21 @@ class LineParser():
             ctx = Context(self.DEBUG)
             self.contexts.append(ctx)
             while i < len(line):
-                if line[i] == " " and (line[i-1] != "\\") and (len(token.split()) != 0):
-                    self.manageToken(token, startidx, i)
+                if line[i] == " " and (line[i-1] != "\\") and len(token.split()) != 0:
+                    if self.begidx >= startidx and self.begidx <= i:
+                        self.scopeCtx = self.ctxpos
+                        self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
+                    else:
+                        self.contexts[self.ctxpos].addToken(token)
                     token = ""
                     startidx = i
                 elif line[i] in self.shellKeys and (line[i-1] != "\\"):
-                    if len(token.split()) != 0:
-                        self.manageToken(token, startidx, i)
+                    if len (token.split()) != 0:
+                        if self.begidx >= startidx and self.begidx <= i:
+                            self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
+                            self.scopeCtx = self.ctxpos
+                        else:
+                            self.contexts[self.ctxpos].addToken(token)
                     token = ""
                     startidx = i
                     key = ""
@@ -356,12 +393,15 @@ class LineParser():
                 else:
                     token = token + line[i]
                 i += 1
+
             if len(token.split()) != 0:
-                self.manageToken(token, startidx, i)
-                dbg += "\n    last token found <" + token + ">"
-                dbg += "\n    startidx: " + str(startidx)
-                dbg += "\n    endidx: " + str(i)
-            if self.begidx == len(line):
+                if self.begidx >= startidx and self.begidx <= i:
+                    self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
+                    self.scopeCtx = self.ctxpos
+                else:
+                    self.contexts[self.ctxpos].addToken(token)
+            elif self.begidx == len(line):
+                self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
                 self.scopeCtx = self.ctxpos
 
             if self.DEBUG:
@@ -622,12 +662,7 @@ class Completion():
                 if self.context.keylessarg != None and self.context.keylessarg.name() in self.context.remainingArguments:
                     req = 0
                     dbg += "\n      keylessarg != None and has not been provided yet"
-                    requiredargs = self.context.config.argumentsByRequirementType(Argument.Required)
-                    for requiredarg in requiredargs:
-                        rname = requiredarg.name()
-                        if rname in self.context.remainingArguments and rname != self.context.keylessarg.name():
-                            req += 1
-                    if req == 0 and not self.context.currentStr.startswith("--"):
+                    if not self.context.currentStr.startswith("--"):
                         dbg += "\n      keylessarg < " + str(self.context.keylessarg.name()) + " > can be used as default"
                         self.context.currentArgument = self.context.keylessarg
                         if self.context.currentArgument.type() in [typeId.Node, typeId.Path]: 
@@ -822,8 +857,6 @@ class Completion():
          sys.stdout.write(type + ": ")
          x = 0
          for key in matches[type]:
-           same = self.strdiff(prev_key, key)
-           prev_key = key
            if x == col:
              sys.stdout.write("\n" + " " * (10))
              x = 0

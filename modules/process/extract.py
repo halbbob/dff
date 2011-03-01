@@ -91,12 +91,17 @@ class EXTRACT(Script):
     if self.files_errors > 0:
       percent = (float(self.files_errors) * 100) / self.total_files
       stats += "file(s) error:       " + str(self.files_errors) + "/" + str(self.total_files) + " (" + str(round(percent, 2)) + "%)\n"
-      self.res.add_const("file(s) errors", "\n" + self.log["files"]["nok"])
+      val = Variant(self.log["files"]["nok"])
+      val.thisown = False
+      self.res["file(s) errors"] = val
+
 
     if self.folders_errors > 0:
       percent = (float(self.folders_errors) * 100) / self.total_folders
       stats += "folder(s) error:     " + str(self.folders_errors) + "/" + str(self.total_folders) + " (" + str(round(percent, 2)) + "%)\n"
-      self.res.add_const("folder(s) errors", "\n" + self.log["folders"]["nok"])
+      val = Variant(self.log["folders"]["nok"])
+      val.thisown = False      
+      self.res["folder(s) errors"] = val
 
     if len(stats):
       v = Variant(stats)
@@ -129,7 +134,10 @@ class EXTRACT(Script):
 
   def extractedItemsCount(self, nodes):
     for vnode in nodes:
-      node = vnode.value()
+      try:
+        node = vnode.value()
+      except AttributeError:
+        node = vnode
       if node.isFile():
         self.total_files += 1
         if node.hasChildren() and self.recursive:
@@ -143,8 +151,7 @@ class EXTRACT(Script):
 
   def recurse(self, nodes, vpath):
     recnodes = []
-    for vnode in nodes:
-      node = vnode.value()
+    for node in nodes:
       syspath = self.path + vpath + node.name()
       if node.isFile():
         if node.hasChildren():
@@ -185,8 +192,7 @@ class EXTRACT(Script):
 
 
   def countOmmited(self, nodes):
-    for vnode in nodes:
-      node = vnode.value()
+    for node in nodes:
       if node.isFile():
         self.ommited_files += 1
         if node.hasChildren() and self.recursive:
