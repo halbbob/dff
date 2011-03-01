@@ -25,6 +25,7 @@ Attributes	ULocalNode::_attributes()
   struct stat*	st;
   Attributes 	vmap;
 
+  vmap["orignal path"] =  new Variant(((local*)this->fsobj())->lpath[this->id()]);
   if ((st = this->localStat()) != NULL)
     {
       vmap["uid"] =  new Variant(st->st_uid);
