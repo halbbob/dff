@@ -49,7 +49,7 @@ class WINDEVICES(Module):
   """Add windows devices to the VFS"""
   def __init__(self):
     Module.__init__(self, 'windevices', windevices)
-    self.tags = "connectors"  
+    self.tags = "Connectors"  
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
 	                   "name": "parent", 
 	                   "description": "The file will be added as son of this node or as the root node by default.",
