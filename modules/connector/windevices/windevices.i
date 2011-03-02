@@ -62,7 +62,7 @@ class WINDEVICES(Module):
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt64,
                         "name": "size",
                         "description": "Size of the devices."})
-    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.String,
                         "name": "name",
                         "description": "Name of the created node."})
 %}
