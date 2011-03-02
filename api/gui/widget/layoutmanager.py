@@ -499,11 +499,13 @@ class addLocalPathButton(QPushButton):
             iReturn = BrowseVFSDialog.exec_()
             if iReturn :
                 node = BrowseVFSDialog.getSelectedNode()
-                print node.absolute()
                 if node :
                     #self.container.clear()
+                  if isinstance(self.container, QListWidget):
                     self.container.insertItem(0, node.absolute())
                     self.container.setCurrentIndex(0)
+                  else:
+		    self.container.insert(node.absolute())
 
 class rmLocalPathButton(QPushButton):
     def __init__(self, container):
