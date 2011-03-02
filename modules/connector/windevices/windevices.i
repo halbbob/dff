@@ -49,7 +49,7 @@ class WINDEVICES(Module):
   """Add windows devices to the VFS"""
   def __init__(self):
     Module.__init__(self, 'windevices', windevices)
-    self.tags = "connectors"  
+    self.tags = "Connectors"  
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
 	                   "name": "parent", 
 	                   "description": "The file will be added as son of this node or as the root node by default.",
@@ -62,7 +62,7 @@ class WINDEVICES(Module):
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt64,
                         "name": "size",
                         "description": "Size of the devices."})
-    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.String,
                         "name": "name",
                         "description": "Name of the created node."})
 %}

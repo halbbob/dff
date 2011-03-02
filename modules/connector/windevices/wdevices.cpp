@@ -120,7 +120,7 @@ void						windevices::start(std::map<std::string, Variant* > args)
   if (args["name"] == NULL)
 	  nname = "";
   else
-	  nname == args["name"]->value<std::string >();
+	  nname = args["name"]->value<std::string >();
 
   this->devicePath = lpath->path;
   sizeConverter.ull = size;

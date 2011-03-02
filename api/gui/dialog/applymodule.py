@@ -143,7 +143,6 @@ class ApplyModule(QDialog, Ui_applyModule):
                         params = True
                     else:                        
                         params = lmanager.get(argname)
-                        print params
                     args[argname] = params
             genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
