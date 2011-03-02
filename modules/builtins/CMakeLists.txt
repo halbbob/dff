@@ -26,7 +26,7 @@ set(builtins_srcs
   ls.py
   open.py
   show_cwd.py
-  #show_db.py
+  show_db.py
   __init__.py
 )
 
