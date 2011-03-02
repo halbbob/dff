@@ -56,11 +56,6 @@ class Dialog(QObject):
 	   args["path"] = str(dev.selectedDevice.blockDevice())
 	   args["parent"] = self.vfs.getnode("/Local devices")
 	   args["size"] = long(dev.selectedDevice.size())
-           #arg = self.env.libenv.argument("gui_input")
-           #arg.thisown = 0
-	   #arg.add_path("path", str(dev.selectedDevice.blockDevice()))
-           #arg.add_node("parent", y)
-           #arg.add_uint64("size", y) 
 	   exec_type = ["thread", "gui"]
 	   try:
              if os.name == "nt":
