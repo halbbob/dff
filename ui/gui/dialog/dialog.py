@@ -52,18 +52,38 @@ class Dialog(QObject):
        dev = DevicesDialog(self.parent)
        if dev.exec_():
 	 if dev.selectedDevice:
-           arg = {"empty": None}
+           args = {}
+	   args["path"] = str(dev.selectedDevice.blockDevice())
+	   args["parent"] = self.vfs.getnode("/Local devices")
+	   args["size"] = long(dev.selectedDevice.size())
            #arg = self.env.libenv.argument("gui_input")
            #arg.thisown = 0
 	   #arg.add_path("path", str(dev.selectedDevice.blockDevice()))
-           #arg.add_node("parent", self.vfs.getnode("/Local devices"))
-           #arg.add_uint64("size", long(dev.selectedDevice.size())) 
+           #arg.add_node("parent", y)
+           #arg.add_uint64("size", y) 
 	   exec_type = ["thread", "gui"]
-           if os.name == "nt":
-             arg.add_string("name", str(dev.selectedDevice.model()))
-             self.taskmanager.add("windevices", arg, exec_type)	
-           else:
-             self.taskmanager.add("local", arg, exec_type)
+	   try:
+             if os.name == "nt":
+	       args["name"] = str(dev.selectedDevice.model())
+               conf = self.loader.get_conf(str("windevices"))
+               genargs = conf.generate(args)
+               self.taskmanager.add("windevices", genargs, exec_type)	
+             else:
+               conf = self.loader.get_conf(str("local"))
+               genargs = conf.generate(args)
+               self.taskmanager.add("local", genargs, exec_type)
+           except RuntimeError:
+             err_type, err_value, err_traceback = sys.exc_info()
+             err_trace =  traceback.format_tb(err_traceback)
+             err_typeval = traceback.format_exception_only(err_type, err_value)
+             terr = QString()
+             detailerr = QString()
+             for err in err_trace:
+               detailerr.append(err)
+               for errw in err_typeval:
+                 terr.append(errw)
+                 detailerr.append(err)
+             self.messageBox(terr, detailerr)
 
   def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """
@@ -82,7 +102,6 @@ class Dialog(QObject):
           self.conf = self.loader.get_conf(str(module))
           try:
             genargs = self.conf.generate(args)
-            self.taskmanager = TaskManager()
             self.taskmanager.add(str(module), genargs, ["thread", "gui"])
           except RuntimeError:
             err_type, err_value, err_traceback = sys.exc_info()
