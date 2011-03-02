@@ -18,40 +18,60 @@ from api.module.module import *
 from api.exceptions.libexceptions import *
 from api.loader import *
 from api.taskmanager.taskmanager import *
-from api.env import *
-
+from api.types.libtypes import Argument, typeId, ConfigManager
+from ui.console.utils import VariantTreePrinter
 
 class Open(Script):
   def __init__(self):
     Script.__init__(self, "open")
     self.loader = loader.loader()
+    self.cm = ConfigManager.Get()
+    self.vtreeprinter = VariantTreePrinter()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
-    self.env = env.env()
+
 
   def start(self, args):
-    node = args.get_node("file")
+    node = args["file"].value()
     self.open(node)
 
+
   def open(self, node):
-    arg = self.env.libenv.argument("gui_input")
-    arg.thisown = 0 
     try:
       mod = node.compatibleModules()[0]
-      if self.lmodules[mod]:
-        conf = self.lmodules[mod].conf
-        cdl = conf.descr_l
-        for a in cdl:
-          if a.type == "node":
-             arg.add_node(a.name, node)
-      self.taskmanager.add(mod, arg, ["thread", "gui"])       
-    except IndexError: 
-      print  "No module register type " + self.node.attr.string["type"]
-    print  "applying module " + mod + " on " + node.absolute()
+      conf = self.cm.configByName(mod)
+      argsnode = conf.argumentsByFlags(typeId.Node|Argument.Required)
+      if len(argsnode) == 1:
+        argnode = argsnode[0]
+        margs = {argnode.name(): node}
+        args = conf.generate(margs)
+        self.taskmanager.add(mod, args, ["thread", "gui"])
+      else:
+        print "There are more than 1 file to provides"
+      print  "applying module " + mod + " on " + node.absolute()
+    except IndexError:
+      typeattr = node.attributesByName("type")
+      print type(typeattr)
+      if typeattr != None:
+        if typeattr.type() == typeId.Map:
+          res = self.vtreeprinter.fillMap(1, typeattr.value())
+          print  "No module register type " + res
+        elif typeattr.type() == typeId.List:
+          res = self.vtreeprinter.fillList(1, typeattr.value())
+          print  "No module register type " + res
+        elif typeattr.type() == typeId.Node:
+          print  "No module register type " + str(typeattr.value().absolute())
+        else:
+          print  "No module register type " + str(typeattr.toString())
+      else:
+        print "No type attribute setted for node " + str(node.absolute())
+
 
 class open(Module): 
   """Automatically apply module in background on a file. The module is determined by the file type."""
   def __init__(self):
    Module.__init__(self, "open", Open)
-   self.conf.add("file", "node", False, "File to open")
+   self.conf.addArgument({"name": "file",
+                          "description": "file to open",
+                          "input": Argument.Single|Argument.Required|typeId.Node})
    self.tags = "builtins"

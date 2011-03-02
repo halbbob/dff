@@ -58,6 +58,10 @@
     {
       SWIG_exception(SWIG_RuntimeError, e.c_str());
     }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
+    }
   catch (Swig::DirectorException e)
     {
       SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -88,6 +92,10 @@
   catch (std::string e)
     {
       SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
     }
   catch (Swig::DirectorException e)
     {
@@ -121,6 +129,10 @@
   catch (std::string e)
     {
       SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
     }
 }
 
