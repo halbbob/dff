@@ -21,6 +21,7 @@ from vmodules import *
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import typeId, Argument
 
 from dfwrapper import *
 #XXX fix dump options
@@ -33,23 +34,19 @@ class Volatility(mfso):
     self.vfs = vfs.vfs()
 
   def start(self, args):
-    self.node = args.get_node('file')
-    try:
-      self.meta = args.get_bool("meta")
-    except KeyError:
-      self.meta = None
-    try :
-      self.dump = args.get_bool("dump") #XXX dump mem / dump disk !
-    except KeyError:
-      self.dump = None
-    try :
-      self.connections = args.get_bool("connection") #XXX dump mem / dump disk !
-    except KeyError:
-      self.connections = None
-    try :
-      self.openfiles = args.get_bool("openfiles")
-    except KeyError:
-      self.openfiles = None
+    self.node = args["file"].value()
+    self.meta = False
+    self.dump = False
+    self.connections = False
+    self.openfiles = False
+    if args.has_key("meta"):
+      self.meta = True
+    if args.has_key("dump"):
+      self.dump = True
+    if args.has_key("connections"):
+      self.connections = True
+    if args.has_key("openfiles"):
+      self.openfiles = True
     self.root = Node("volatility")
     self.root.__disown__()
     self.op = op(self.node)
@@ -85,9 +82,19 @@ class volatility(Module):
   def __init__(self):
    """Analyse a windows-xp ram dump"""
    Module.__init__(self, "volatility", Volatility)
-   self.conf.add("file", "node", False, "Dump to analyse")
-   self.conf.add("meta", "bool", True, "Generate meta-data for each processus")
-   self.conf.add("dump", "bool", True, "Dump processus data content")
-   self.conf.add("openfiles", "bool", True, "List opened files per processus")
-   self.conf.add("connection", "bool", True, "List opened connection per processus")
+   self.conf.addArgument({"name": "file",
+                          "description": "Dump to analyse", 
+                          "input": Argument.Required|Argument.Single|typeId.Node})
+   self.conf.addArgument({"name": "meta",
+                          "description": "Generate meta-data for each processus", 
+                          "input": Argument.Empty})
+   self.conf.addArgument({"name": "dump",
+                          "description": "Dump processus data content",
+                          "input": Argument.Empty})
+   self.conf.addArgument({"name": "openfiles",
+                          "description": "List opened files per processus",
+                          "input": Argument.Empty})
+   self.conf.addArgument({"name": "connection",
+                          "description": "List opened connection per processus",
+                          "input": Argument.Empty})
    self.tags = "Volatile memory"

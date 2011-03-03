@@ -20,12 +20,9 @@ from forensics.win32.network import *
 
 from api.vfs import *
 from api.module.module import *
-from api.env.libenv import *
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import Variant, VMap, vtime
 from api.vfs.libvfs import *
 from api.exceptions import *
-from api.type import *
-from api.type.libtype import vtime
 from datetime import *
 
 class NodeProcessus(Node):
