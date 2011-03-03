@@ -14,8 +14,8 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-#if (defined(WIN64) || defined(WIN32))
 #include "datatype.hpp"
+#if (defined(WIN64) || defined(WIN32))
 #pragma data_seg("dtmSHARED")
 #endif
 DataTypeManager* single = NULL;
