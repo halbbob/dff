@@ -100,14 +100,14 @@ or before applying a file system reconstruction modules."""
                             "name": "spare_size",
                             "description": "Spare size",
                             "parameters": {"type": Parameter.Editable,
-                                           "predefined": [8, 16, 24, 32]}
+                                           "predefined": [16, 8, 24, 32]}
                             })
      
      self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt32,
                             "name": "page_size",
                             "description": "Iterate on each page size",
                             "parameters": {"type": Parameter.Editable,
-                                           "predefined": [256, 512, 1024]}
+                                           "predefined": [512, 256, 1024]}
                             })
 
      self.conf.addArgument({"input": Argument.Empty,

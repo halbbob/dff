@@ -14,19 +14,10 @@
  *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#include "wdevices.hpp"
+#include "devices.hpp"
 #include <String>
 #include <windows.h>
 #include <shlwapi.h>
-
-DeviceNode::DeviceNode(std::string devname, uint64_t size, fso* fsobj,std::string name = "") : Node(devname, size, 0, fsobj)
-{
-  if (name != "")
-    this->__name = name;
-  else
-    this->__name = devname;
-  this->__devname = devname;
-}
 
 DeviceBuffer::DeviceBuffer(HANDLE hndl, uint32_t size,  uint32_t bps, uint64_t devSize)
 {
@@ -84,16 +75,16 @@ int32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 }
 
 
-windevices::windevices(): fso("windevices")
+devices::devices(): fso("devices")
 {
 	this->__fdm = new FdManager;
 }
 
-windevices::~windevices()
+devices::~devices()
 {
 }
 
-void						windevices::start(std::map<std::string, Variant* > args)
+void						devices::start(std::map<std::string, Variant* > args)
 {
   std::string		path;
   Path				*lpath;
@@ -112,7 +103,6 @@ void						windevices::start(std::map<std::string, Variant* > args)
 	  lpath = args["path"]->value<Path *>();
   
   if (args["size"] == NULL)
-	 //throw envError("Device module require a size argument.");
 	 size = 0;
   else 
 	  size = args["size"]->value<uint64_t >();
@@ -150,14 +140,14 @@ void						windevices::start(std::map<std::string, Variant* > args)
 }
 
 
-int windevices::vopen(Node *node)
+int devices::vopen(Node *node)
 {
   fdinfo*	fi;
   int32_t	fd;
 
   if (node != NULL) 
   {
-    fi = new fdinfo;
+    	fi = new fdinfo;
 	int hnd = (int)CreateFileA(((DeviceNode*)node)->__devname.c_str(), GENERIC_READ, FILE_SHARE_READ,
 			     0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	fi->fm = (FileMapping*)new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, node->size());
@@ -170,7 +160,7 @@ int windevices::vopen(Node *node)
     return -1;
 }
 
-int windevices::vread(int fd, void *buff, unsigned int origSize)
+int devices::vread(int fd, void *buff, unsigned int origSize)
 { 
 	fdinfo*				fi;
 	DeviceBuffer*		dbuff;
@@ -203,7 +193,7 @@ int windevices::vread(int fd, void *buff, unsigned int origSize)
 	return aReaded;
 }
 
-int windevices::vclose(int fd)
+int devices::vclose(int fd)
 {
  try
     {
@@ -218,7 +208,7 @@ int windevices::vclose(int fd)
     }
 }
 
-uint64_t	windevices::vseek(int fd, uint64_t offset, int whence)
+uint64_t	devices::vseek(int fd, uint64_t offset, int whence)
 {
   fdinfo*	fi;
   Node*	node;
@@ -257,7 +247,7 @@ uint64_t	windevices::vseek(int fd, uint64_t offset, int whence)
    return ((uint64_t) -1);
   }
 
-uint64_t	windevices::vtell(int32_t fd)
+uint64_t	devices::vtell(int32_t fd)
 {
   fdinfo*	fi;
 
@@ -272,7 +262,7 @@ uint64_t	windevices::vtell(int32_t fd)
     }
 }
 
-unsigned int windevices::status(void)
+unsigned int devices::status(void)
 {
   return (1);
 }

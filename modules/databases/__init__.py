@@ -10,19 +10,7 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Christophe Malinge <cma@digital-forensic.org>
+#
 
-
-add_subdirectory (local)
-add_subdirectory (libewf)
-add_subdirectory(devices)
-
-if(HAVE_FUSE)
-  add_subdirectory (fuse)
-endif(HAVE_FUSE)
-
-set(connector_files
-   __init__.py
-)
-
-install_file(connector ${connector_files})
+__all__ = ["winreg"]

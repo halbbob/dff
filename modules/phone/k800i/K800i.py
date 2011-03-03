@@ -440,14 +440,14 @@ class K800i(Module):
                            "input": Argument.Required|Argument.Single|typeId.Node})
     self.conf.addArgument({"name": "spare-size",
                            "description": "size of nand spare",
-                           "input": Argument.Required|Argument.Single|typeId.UInt32,
+                           "input": Argument.Optional|Argument.Single|typeId.UInt32,
                            "parameters": {"type": Parameter.Editable,
-                                          "predefined": [8, 16, 32, 64]}
+                                          "predefined": [16, 8, 32, 64]}
                            })
     self.conf.addArgument({"name": "page-size",
                            "description": "size of nand page",
-                           "input": Argument.Required|Argument.Single|typeId.UInt32,
+                           "input": Argument.Optional|Argument.Single|typeId.UInt32,
                            "parameters": {"type": Parameter.Editable,
-                                          "predefined": [256, 512, 1024, 2048, 4096]}
+                                          "predefined": [512, 256, 1024, 2048, 4096]}
                            })
     self.tags = "Mobile"

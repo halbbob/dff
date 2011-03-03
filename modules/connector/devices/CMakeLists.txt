@@ -20,24 +20,32 @@ include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 
-set(windevices_srcs
+if (UNIX)
+  set(devices_srcs
+    devicenode.cpp
+    udevices.cpp
+)
+else (UNIX)
+set(devices_srcs
+    devicenode.cpp
     wdevices.cpp
 )
+endif (UNIX)
 
-SET_SOURCE_FILES_PROPERTIES(windevices.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(WINDEVICES python windevices.i ${windevices_srcs})
-SWIG_LINK_LIBRARIES(WINDEVICES ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
+SET_SOURCE_FILES_PROPERTIES(devices.i PROPERTIES CPLUSPLUS ON)
+SWIG_ADD_MODULE(DEVICES python devices.i ${devices_srcs})
+SWIG_LINK_LIBRARIES(DEVICES ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
-set_target_properties (${SWIG_MODULE_WINDEVICES_REAL_NAME} PROPERTIES
+set_target_properties (${SWIG_MODULE_DEVICES_REAL_NAME} PROPERTIES
   PREFIX "../"
   SUFFIX ".pyd"
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
-set(windevices_files
-  WINDEVICES.py
+set(devices_files
+  DEVICES.py
 )
 
-install_lib(${SWIG_MODULE_WINDEVICES_REAL_NAME})
-install_file(windevices ${windevices_files})
+install_lib(${SWIG_MODULE_DEVICES_REAL_NAME})
+install_file(devices ${devices_files})

@@ -28,22 +28,14 @@
 #include "vfs.hpp"
 #include "path.hpp"
 
-#pragma comment(lib, "advapi32.lib")
+using namespace std;
 
+#ifdef WIN32
+#pragma comment(lib, "advapi32.lib")
 #include <windows.h>
 #include <stdio.h>
 #include <aclapi.h>
 
-using namespace std;
-
-class DeviceNode : public Node
-{
-	
-public:
-	std::string		__devname;	
-	DeviceNode(std::string devname, uint64_t size, fso* fsobj,std::string name);
-	
-};
 
 class DeviceBuffer
 {
@@ -61,17 +53,27 @@ public:
    uint32_t			__size;
   int32_t			getData(void* buff, uint32_t size, uint64_t offset);
 };
+#endif
 
-class windevices : public fso
+class DeviceNode : public Node
+{
+	
+public:
+	std::string		__devname;	
+	DeviceNode(std::string devname, uint64_t size, fso* fsobj,std::string name);
+};
+
+
+class devices : public fso
 {
 private:
   Node				*parent;
-  class Node*		__root;
-  FdManager*		__fdm;
+  class Node*			__root;
+  FdManager*			__fdm;
 public:
   std::string devicePath;
-  windevices();
-  ~windevices();
+  devices();
+  ~devices();
   int32_t	vopen(Node* handle);
   int32_t 	vread(int fd, void *buff, unsigned int size);
   int32_t 	vclose(int fd);

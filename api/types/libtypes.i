@@ -45,7 +45,6 @@
 #include "confmanager.hpp"
 #include "path.hpp"
 #include "vtime.hpp"
-#include "Time.h"
   
 #ifndef WIN32
 #include <stdint.h>
@@ -73,7 +72,6 @@
 %include "../include/export.hpp"
 %include "../include/config.hpp"
 %include "../include/path.hpp"
-%include "../include/Time.h"
 %include "../include/vtime.hpp"
 %include "../include/confmanager.hpp"
 

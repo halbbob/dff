@@ -14,7 +14,7 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-%module  WINDEVICES 
+%module  DEVICES 
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"
@@ -28,12 +28,12 @@
 #include "vlink.hpp"
 #include "vtime.hpp"
 #include "export.hpp"
-#include "wdevices.hpp"
+#include "devices.hpp"
 %}
 
 %import "../../../api/vfs/libvfs.i"
 
-%include "wdevices.hpp"
+%include "devices.hpp"
 
 namespace std
 {
@@ -45,10 +45,10 @@ namespace std
 from api.module.module import *
 from api.types.libtypes import *
 from api.vfs import vfs
-class WINDEVICES(Module):
+class DEVICES(Module):
   """Add windows devices to the VFS"""
   def __init__(self):
-    Module.__init__(self, 'windevices', windevices)
+    Module.__init__(self, 'devices', devices)
     self.tags = "Connectors"  
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
 	                   "name": "parent", 

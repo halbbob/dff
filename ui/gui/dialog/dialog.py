@@ -60,13 +60,9 @@ class Dialog(QObject):
 	   try:
              if os.name == "nt":
 	       args["name"] = str(dev.selectedDevice.model())
-               conf = self.loader.get_conf(str("windevices"))
-               genargs = conf.generate(args)
-               self.taskmanager.add("windevices", genargs, exec_type)	
-             else:
-               conf = self.loader.get_conf(str("local"))
-               genargs = conf.generate(args)
-               self.taskmanager.add("local", genargs, exec_type)
+             conf = self.loader.get_conf(str("devices"))
+             genargs = conf.generate(args)
+             self.taskmanager.add("devices", genargs, exec_type)	
            except RuntimeError:
              err_type, err_value, err_traceback = sys.exc_info()
              err_trace =  traceback.format_tb(err_traceback)
