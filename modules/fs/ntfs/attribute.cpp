@@ -510,7 +510,6 @@ bool		Attribute::setDateToVTime(uint64_t value, vtime *setMe)
   if (value > 0) {
     value -= NANOSECS_1601_TO_1970;
     value /= 10000000;
-#if (!defined(WIN32) && !defined(WIN64))
     struct tm	*date;
 
     date = gmtime((time_t *)&value);
@@ -525,7 +524,6 @@ bool		Attribute::setDateToVTime(uint64_t value, vtime *setMe)
     setMe->yday = date->tm_yday;
     //FIXME NTFS has nanosecond precision
     setMe->usecond = 0;
-#endif
     return true;
   }
   return false;
