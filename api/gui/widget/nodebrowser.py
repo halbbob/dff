@@ -136,8 +136,14 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.treeModel = TreeModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
-    self.treeProxyModel = NodeTreeProxyModel()
-    self.treeProxyModel.setSourceModel(self.treeModel)
+#####
+    self.treeProxyModel = self.treeModel #NodeTreeProxyModel()
+    #self.treeProxyModel.setSourceModel(self.treeModel)
+#####
+#    self.treeProxyModel = NodeTreeProxyModel()
+#    self.treeProxyModel.setSourceModel(self.treeModel)
+#####
+
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
 
@@ -146,7 +152,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
 
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-#    self.connect(self.treeView, SIGNAL(""), self.nodeTreeDoubleClicked)
+    #####
+    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.treeModel.nodeClicked)
 
   def addNodeView(self):
     self.addTableView()
@@ -243,18 +250,22 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        self.submenuFile.show()       
 
   def nodeTreeDoubleClicked(self, mouseButton, node, index = None):
-     if self.currentView().enterInDirectory:
-       if node.hasChildren() or node.isDir():
-	 self.currentModel().setRootPath(node) 
+    if node == None:
+      return
+    if self.currentView().enterInDirectory:
+      if node.hasChildren() or node.isDir():
+        self.currentModel().setRootPath(node) 
 
   def nodeDoubleClicked(self, mouseButton, node, index = None):
-     if self.currentView().enterInDirectory:
-       if node.hasChildren() or node.isDir():
-	 self.currentModel().setRootPath(node) 
-       else:
-	 self.openDefault(node)
-     else:  
-         self.openDefault(node)
+    if node == None:
+      return
+    if self.currentView().enterInDirectory:
+      if node.hasChildren() or node.isDir():
+        self.currentModel().setRootPath(node) 
+      else:
+        self.openDefault(node)
+    else:  
+      self.openDefault(node)
 
   def sizeChanged(self, string):
      if self.nodeViewBox.thumbSize.currentIndex() == 0:

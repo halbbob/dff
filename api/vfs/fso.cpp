@@ -35,6 +35,7 @@ std::list<Node *>	fso::updateQueue()
 void	fso::registerTree(Node* parent, Node* head)
 {
   event*  e = new event;
+  e->value = new Variant(head);
 
   parent->addChild(head);
   VFS::Get().notify(e);
