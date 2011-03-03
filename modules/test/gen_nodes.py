@@ -55,11 +55,15 @@ class GenNodes(mfso):
 
     def start(self, args):
        self.parent = args["parent"].value()
+       if args.has_key("count"):
+           self.count = args["count"].value()
+       else:
+           self.count = 50000
        #self.start = args["start_offset"].value()
        #self.number_of_nodes = args["number_of_nodes"].value()
        self.root = Node("node-test")
        self.__disown__()
-       for x in xrange(0, 5789):
+       for x in xrange(0, self.count):
 	  xnode = Node(str(x), 0, self.root, self)
 	  if (x % 10000) == 0:
 		print "have create " + str(x) + " nodes"
@@ -78,6 +82,12 @@ class gen_nodes(Module):
                            "parameters": {"type": Parameter.Editable,
                                           "predefined": [vfs().getnode("/")]}
                           })
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.UInt64,
+                           "name": "count",
+                           "description": "number of nodes to create",
+                           "parameters:": {"type": Parameter.Editable,
+                                           "predefined": [1000, 5000, 10000, 25000, 50000, 70000, 100000, 500000, 1000000, 2**64-1]}
+                           })
  
     #self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt64,
                            #"name": "start_offset",
