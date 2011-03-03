@@ -781,10 +781,10 @@ class TreeModel(QStandardItemModel, EventHandler):
         item.setData(False, Qt.UserRole + 2)
         self.root_item.appendRow(item)
       else:
-        item_name = self.getItemByName(node.parent().absolute(), node.parent())
+        item_name = self.getItemByName(node.parent().absolute(), node.parent(), node)
     self.emit(SIGNAL("layoutChanged()"))
 
-  def getItemByName(self, name, parent):
+  def getItemByName(self, name, parent, new_node):
     """
     Returns a standard item according to a node name, or none if
     no node with the name `name` is found.
@@ -816,6 +816,12 @@ class TreeModel(QStandardItemModel, EventHandler):
       new_item.setData(False, Qt.UserRole + 2)
       item.insertRow(0, new_item)
       item.setData(True, Qt.UserRole + 2)
-
+    else:
+      new_item = QStandardItem(new_node.name())
+      new_item.setData(long(new_node.this), Qt.UserRole + 1)
+      new_item.setData(False, Qt.UserRole + 2)
+      item.insertRow(0, new_item)
+      item.setData(True, Qt.UserRole + 2)
+    
 
       
