@@ -470,7 +470,6 @@ uint64_t	Attribute::nextMftOffset()
 
 void		Attribute::setDateToString(uint64_t value, struct tm **date, std::string *dateString, bool usecond)
 {
-#if (!defined(WIN32) && !defined(WIN64))
   uint64_t	origValue;
 
   if (value > 0) {
@@ -499,10 +498,6 @@ void		Attribute::setDateToString(uint64_t value, struct tm **date, std::string *
     *date = gmtime((time_t *)&zero);
     *dateString = std::string("Not set");
   }
-#else
-  *date = NULL;
-  *dateString = std::string("Not set");
-#endif
 }
 
 bool		Attribute::setDateToVTime(uint64_t value, vtime *setMe)
