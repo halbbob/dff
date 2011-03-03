@@ -14,7 +14,26 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
+#if (defined(WIN64) || defined(WIN32))
 #include "datatype.hpp"
+#pragma data_seg("dtmSHARED")
+#endif
+DataTypeManager* single = NULL;
+#if (defined(WIN64) || defined(WIN32))
+#pragma data_seg()
+#pragma comment(linker, "/section:dtmSHARED,RWS")
+#endif
+
+DataTypeManager* 	DataTypeManager::Get()
+{
+  if (!single)
+  {
+	  single = new DataTypeManager;
+  }
+  return single;
+}
+
+
 
 DataTypeManager::DataTypeManager()
 {
@@ -79,10 +98,10 @@ std::map<std::string, uint32_t>&	DataTypeManager::foundTypes()
 
 DataTypeHandler::DataTypeHandler(std::string hname)
 {
-  DataTypeManager& 	dataTypeManager =  DataTypeManager::Get();
+  DataTypeManager* 	dataTypeManager =  DataTypeManager::Get();
 
   this->name = hname;
-  dataTypeManager.registerHandler(this);
+  dataTypeManager->registerHandler(this);
 }
 
 DataTypeHandler::~DataTypeHandler()

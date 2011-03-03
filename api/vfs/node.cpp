@@ -484,8 +484,8 @@ Variant*	Node::dataType(/*uint32_t wait = 0*event callback*/) /*au lieux de void
 //  if thread.wait(wait) 
 //{
 
-  class DataTypeManager&	typeDB = DataTypeManager::Get();
-  types = typeDB.type(this);  //dynamic type
+  class DataTypeManager*	typeDB = DataTypeManager::Get();
+  types = typeDB->type(this);  //dynamic type
  //}
 
   //ret none if types    

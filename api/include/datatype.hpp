@@ -46,11 +46,7 @@ private:
   std::map<uint32_t, std::string>		typeIdString;
   std::map<uint32_t, DataTypeHandler*>		typeIdHandler; //XXX if typeIdString is same for x handlers
 public:
-  static DataTypeManager& 	Get()
-  {
-    static DataTypeManager single;
-    return single;
-  } 
+  EXPORT static DataTypeManager* 	Get();
   EXPORT bool						registerHandler(DataTypeHandler*);
   EXPORT std::map<std::string, uint32_t>&		foundTypes();
   EXPORT class Variant*				type(Node*);
