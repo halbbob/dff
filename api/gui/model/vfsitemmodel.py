@@ -748,14 +748,25 @@ class TreeModel(QStandardItemModel, EventHandler):
     \warning for convenience, this method always returns `True` for now, so a '+' button is
     displayed for each nodes, even if they do not have any children. 
     """
-    return True
     if not parent.isValid():
-      return self.root_item.hasChildren()
+      return True
     else:
-      node_item = self.item(parent.row(), parent.column())
-      if node_item == None:
+#      node_item = self.getItemFromIndex(parent) #item(parent.row(), parent.column())
+#      if node_item == None:
+#        return False
+      ptr = self.data(parent, Qt.UserRole + 1)
+      if ptr == None:
         return False
-      return node_item.hasChildren()
+      node = self.VFS.getNodeFromPointer(ptr.toULongLong()[0])
+      if node == None:
+        return False
+      if node.name() == "/":
+        return True
+      tmp = node.children()
+      for i in tmp:
+        if i.isDir() or i.hasChildren():
+          return True
+    return False
 
   def flags(self, flag):
     """
