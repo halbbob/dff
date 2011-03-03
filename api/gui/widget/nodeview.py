@@ -187,6 +187,7 @@ class NodeLinkTreeView(QTreeView):
   def indexRowSizeHint(self, index):
     return 2
 
+
 class NodeTreeView(QTreeView, NodeViewEvent):
   def __init__(self, parent):
      QTreeView.__init__(self, parent)
@@ -197,6 +198,7 @@ class NodeTreeView(QTreeView, NodeViewEvent):
      self.setExpandsOnDoubleClick(False)
      self.setUniformRowHeights(True)
      self.setSortingEnabled(False)
+
 
 class NodeTableView(QTableView, NodeViewEvent):
   def __init__(self, parent):

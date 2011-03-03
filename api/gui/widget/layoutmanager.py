@@ -21,10 +21,110 @@ import os
 import types
 
 from api.vfs import *
-from api.gui.model.vfsitemmodel import TreeModel#, NodeTreeProxyModel
+#from api.gui.model.vfsitemmodel import TreeModel
 from api.vfs.libvfs import VFS
-from api.gui.widget.nodeview import NodeTreeView
+#from api.gui.widget.nodeview import NodeLinkTreeView
 from api.types.libtypes import typeId
+from api.gui.box.nodeviewbox import NodeViewBox
+from api.gui.widget.nodeview import NodeTableView, NodeLinkTreeView
+from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
+
+
+class DialogNodeBrowser(QDialog):
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.title = QLabel("Select a node in the Virtual File System :")
+        self.vfs = vfs.vfs()
+        self.VFS = VFS.Get()
+        self.createLayout()
+        self.createModels()
+        self.createViews()
+        self.createButtons()
+
+
+    def createLayout(self):
+        self.baseLayout = QVBoxLayout(self)
+        self.baseLayout.setMargin(0)
+        self.baseLayout.setSpacing(0)
+        self.splitterLayout = QSplitter(self)
+        self.splitterLayout.setMinimumWidth(640)
+        self.baseLayout.insertWidget(0, self.splitterLayout, 1)
+        self.setLayout(self.baseLayout)
+
+
+    def createModels(self):
+        self.treeModel = TreeModel(self)
+        self.tableModel = VFSItemModel(self)
+        self.treeModel.setRootPath(self.vfs.getnode("/"))
+        self.tableModel.setRootPath(self.vfs.getnode("/"))
+    
+  
+    def createViews(self):
+        self.treeView = NodeLinkTreeView(self)
+        self.treeView.setModel(self.treeModel)
+
+        self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeClicked)
+        self.splitterLayout.addWidget(self.treeView)
+
+        self.tableView = NodeTableView(self)
+        self.tableView.setModel(self.tableModel)
+        self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
+        self.splitterLayout.addWidget(self.tableView)
+
+
+    def nodeTreeClicked(self, mouseButton, node, index = None):
+        self.treeView.model().setRootPath(node) 
+
+
+    def nodeDoubleClicked(self, mouseButton, node, index = None):
+        if node == None:
+            return
+        if node.hasChildren() or node.isDir():
+            self.tableView.model().setRootPath(node)
+            
+
+
+    def createButtons(self):
+        self.buttonBox = QDialogButtonBox()
+        self.buttonBox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
+        self.connect(self.buttonBox, SIGNAL("accepted()"),self.accept)
+        self.connect(self.buttonBox, SIGNAL("rejected()"),self.reject)
+        self.baseLayout.addWidget(self.buttonBox)
+        
+
+    def getSelectedNodes(self):
+        indexes = self.tableView.selectionModel().selectedRows()
+        nodes = []
+        for index in indexes:
+            if index.isValid():
+                nodes.append(self.VFS.getNodeFromPointer(index.internalId()))
+        return nodes
+
+
+    def getSelectedNode(self):
+        index = self.tableView.selectionModel().currentIndex()
+        node = None
+        if index.isValid():
+            node = self.VFS.getNodeFromPointer(index.internalId())
+        return node
+
+
+    def setSelectionMode(self, mode):
+        self.tableView.setSelectionMode(mode)
+
+
+    def changeEvent(self, event):
+        """ Search for a language change event
+        
+        This event have to call retranslateUi to change interface language on
+        the fly.
+        """
+        if event.type() == QEvent.LanguageChange:
+            self.model.translation()
+        else:
+            QWidget.changeEvent(self, event)
+
+
 
 class layoutManager(QWidget):
     '''Create a layout manager which will help widget creation and data managment
@@ -240,6 +340,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
+
     def checkUnifiedTypes(self, values):
         if len(values) == 0:
             return
@@ -272,9 +373,11 @@ class layoutManager(QWidget):
                 else:
                     return -1
 
+
     def translation(self):
         self.inputFile = self.tr("File")
         self.inputDirectory = self.tr("Directory")
+
 
     def changeEvent(self, event):
         """ Search for a language change event
@@ -305,6 +408,7 @@ class fieldValidator(QRegExpValidator):
         regexp = QRegExp(exp)
         regexp.setCaseSensitivity(Qt.CaseInsensitive)
         self.setRegExp(regexp)
+
 
 class multipleListWidget(QWidget):
     def __init__(self, parent, typeid, predefs, editable):
@@ -398,66 +502,6 @@ class multipleListWidget(QWidget):
 
 
 
-class VFSDialog(QDialog):
-    def __init__(self):
-        QDialog.__init__(self)
-        self.initShape()
-
-    def initShape(self):
-#        self.vbox = QVBoxLayout(self)
-        self.grid = QGridLayout(self)
-        self.title = QLabel("Select a node in the Virtual File System :")
-        self.vfs = SimpleNodeBrowser(self)
-
-        self.createButtons()
-        
-        self.grid.addWidget(self.title, 0, 0)
-        self.grid.addWidget(self.vfs, 1, 0)
-        self.grid.addWidget(self.buttonbox, 2, 0)
-
-    def createButtons(self):
-        self.buttonbox = QDialogButtonBox()
-        self.buttonbox.setStandardButtons(QDialogButtonBox.Cancel|QDialogButtonBox.Ok)
-        self.connect(self.buttonbox, SIGNAL("accepted()"),self.accept)
-        self.connect(self.buttonbox, SIGNAL("rejected()"),self.reject)
-
-    def getSelectedNode(self):
-        return self.vfs.nodeSelected()
-
-class SimpleNodeBrowser(QWidget):
-    def __init__(self, parent):
-        QWidget.__init__(self, parent)
-        self.type = "filebrowser"
-        self.icon = None
-        self.name = "nodebrowser"
-        self.setObjectName(self.name)
-
-        self.vfs = vfs.vfs()
-        
-        self.addNodeTreeView()
-        self.selection = None
-        
-        self.box = QGridLayout()
-        self.box.addWidget(self.treeView, 0,0)
-        self.setLayout(self.box)
-
-    def addNodeTreeView(self):
-        self.treeModel = TreeModel(self, False)
-        self.treeModel.setRootPath(self.vfs.getnode("/"))
-        self.treeProxyModel = NodeTreeProxyModel()
-        self.treeProxyModel.setSourceModel(self.treeModel)
-        self.treeView = NodeTreeView(self)
-        self.treeView.setMinimumWidth(640)
-        self.treeView.setModel(self.treeModel)
-        self.connect(self.treeView, SIGNAL("nodeClicked"), self.select)
-
-    def select(self, button, node):
-        self.selection = node
-
-    def nodeSelected(self):
-        return self.selection
-
-
 class addLocalPathButton(QPushButton):
     def __init__(self, key, container, inputchoice=None, nodetype=False):
         if isinstance(container, QListWidget):
@@ -495,17 +539,30 @@ class addLocalPathButton(QPushButton):
                 else:
                     self.container.insert(sFileName)
         else:
-            BrowseVFSDialog = VFSDialog()
-            iReturn = BrowseVFSDialog.exec_()
-            if iReturn :
-                node = BrowseVFSDialog.getSelectedNode()
-                if node :
-                    #self.container.clear()
-                  if isinstance(self.container, QListWidget):
-                    self.container.insertItem(0, node.absolute())
-                    self.container.setCurrentIndex(0)
-                  else:
-		    self.container.insert(node.absolute())
+            BrowseVFSDialog = DialogNodeBrowser(self)
+            if isinstance(self.container, QListWidget) or isinstance(self.container, QComboBox):
+                BrowseVFSDialog.setSelectionMode(QAbstractItemView.ExtendedSelection)
+                iReturn = BrowseVFSDialog.exec_()
+                if iReturn :
+                    nodes = BrowseVFSDialog.getSelectedNodes()
+                    index = 0
+                    if len(nodes):
+                        for node in nodes:
+                            self.container.insertItem(index, node.absolute())
+                            index += 1
+                        if isinstance(self.container, QListWidget):
+                            self.container.setCurrentItem(self.container.item(0))
+                        else:
+                            self.container.setCurrentIndex(0)
+            else:
+                BrowseVFSDialog.setSelectionMode(QAbstractItemView.SingleSelection)
+                iReturn = BrowseVFSDialog.exec_()
+                if iReturn :
+                    node = BrowseVFSDialog.getSelectedNode()
+                    if node:
+                        self.container.insert(node.absolute())
+
+
 
 class rmLocalPathButton(QPushButton):
     def __init__(self, container):

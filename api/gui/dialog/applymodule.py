@@ -34,7 +34,8 @@ from api.gui.widget.layoutmanager import *
 
 class ApplyModule(QDialog, Ui_applyModule):
     def __init__(self,  mainWindow):
-        super(QDialog, self).__init__()
+        QDialog.__init__(self, mainWindow)
+        Ui_applyModule.__init__(self)
         self.setupUi(self)
         self.labActivate.setVisible(False)
         self.labType.setVisible(False)
@@ -58,8 +59,10 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.typeModuleField.setText(typeModule)
 
         self.conf = self.loader.get_conf(str(nameModule))
-        self.textEdit.setText(self.conf.description)
-
+        try:
+            self.textEdit.setText(self.conf.description)
+        except TypeError:
+            self.textEdit.setText(self.conf.description())
         args = self.conf.arguments()
         self.createArgShape(args)
     
@@ -170,7 +173,7 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
 
     def messageBox(self, coretxt, detail):
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setWindowTitle(self.configureError)
         msg.setText(self.configureErrorMsg)
         msg.setInformativeText(coretxt)
