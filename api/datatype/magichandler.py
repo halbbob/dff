@@ -27,7 +27,6 @@ from libdatatype import DataTypeManager, DataTypeHandler
 
 class MagicHandler(DataTypeHandler):
   def __init__(self, mtype, name):
-     print "loading magic hadnler"
      DataTypeHandler.__init__(self, name)
      self.__disown__()
      self.vfs = vfs.vfs()
@@ -48,13 +47,9 @@ class MagicHandler(DataTypeHandler):
         buff = f.read(0x2000)
         f.close()
         filemime = self.mime.buffer(buff)
-        #vfilemime = Variant(filemime)
-        #vfilemime.thisown = False
         return filemime
     except IOError, e:
-	#return Variant("None")
 	return "None"
-#	print "magic handler error reading node " + node.absolute()
 
  
 magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")
