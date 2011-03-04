@@ -39,7 +39,7 @@ class PropertyTable(VariantTreeWidget):
       typestr += self.fileText
       if node.hasChildren():
         typestr += self.modAppliedText
-      self.fillCompatModule(node)
+    self.fillCompatModule(node)
     if node.hasChildren():
       self.fillChildren(node)
         

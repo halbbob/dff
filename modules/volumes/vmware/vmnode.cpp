@@ -45,11 +45,6 @@ VMNode::~VMNode()
 {
 }
 
-Attributes*	VMNode::attributes()
-{
-  return NULL;
-}
-
 // avoir une list de chaque link qui compose la node (dans lordre c a dire base a la fin)
 // on parse les extent pour chaque link
 // pour chaque link on va lire extent[cp]
