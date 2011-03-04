@@ -15,25 +15,12 @@
  */
 
 #include "datatype.hpp"
-#if (defined(WIN64) || defined(WIN32))
-#pragma data_seg("dtmSHARED")
-#endif
-DataTypeManager* single = NULL;
-#if (defined(WIN64) || defined(WIN32))
-#pragma data_seg()
-#pragma comment(linker, "/section:dtmSHARED,RWS")
-#endif
 
 DataTypeManager* 	DataTypeManager::Get()
 {
-  if (!single)
-  {
-	  single = new DataTypeManager;
-  }
-  return single;
+  static DataTypeManager single;
+  return &single;
 }
-
-
 
 DataTypeManager::DataTypeManager()
 {

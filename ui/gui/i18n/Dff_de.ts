@@ -1258,7 +1258,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="217"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="676"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1362,37 +1362,37 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="617"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="561"/>
         <source>Size</source>
         <translation type="unfinished">Größe</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="618"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="562"/>
         <source>Accessed time</source>
         <translation type="unfinished">Zugriffszeit (A)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="619"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Changed time</source>
         <translation type="unfinished">Änderungszeit (C)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="620"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Modified time</source>
         <translation type="unfinished">Modifikationszeitpunkt (M)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="621"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Module</source>
         <translation type="unfinished">Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="616"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="560"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="622"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1621,44 +1621,34 @@
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="14"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="15"/>
         <source>Select evidence type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="42"/>
-        <source>Select data type to open in the VFS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="53"/>
-        <source>Data type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="67"/>
-        <source>RAW files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="72"/>
-        <source>EWF files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="77"/>
-        <source>Local directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="113"/>
         <source>Add evidence directory</source>
         <translation type="unfinished">Beweismittel-Verzeichnis hinzufügen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="118"/>
         <source>Add evidence files</source>
         <translation type="unfinished">Beweismittel-Datei hinzufügen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="48"/>
+        <source>Open local files or directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="65"/>
+        <source>RAW format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
+        <source>EWF format</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1684,8 +1674,13 @@
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="106"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
         <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="113"/>
+        <source>No results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

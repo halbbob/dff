@@ -29,13 +29,14 @@ private:
   struct stat*			localStat(void);
   vtime*			utimeToVtime(time_t* t1);
 public:
+  std::string			originalPath;
   enum Type
     {
       FILE,
       DIR
     };
 
-  ULocalNode(std::string name, uint64_t size, Node* parent, class local* fsobj, uint8_t type, uint32_t id);
+  ULocalNode(std::string name, uint64_t size, Node* parent, class local* fsobj, uint8_t type, std::string origPath);
   virtual Attributes	_attributes();
   ~ULocalNode();
 };

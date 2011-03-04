@@ -51,11 +51,7 @@ public:
   Node*		        root;
   set<Node*>            Tree;
 
-  static VFS&   Get() 
-  { 
-    static VFS single; 
-    return single; 
-  }
+  EXPORT static VFS&   Get();
 
   EXPORT virtual void	Event(event *e);
   EXPORT set<Node*>*    GetTree(void);

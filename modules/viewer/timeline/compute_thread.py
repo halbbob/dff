@@ -20,6 +20,11 @@ from PyQt4.QtCore import QString, QThread, SIGNAL, QMutex, QWaitCondition, QMute
 from api.types.libtypes import typeId
 
 class WorkerThread(QThread):
+  ''' Schedule things to do
+
+  Wait all time or launch/wake other threads to recompute max amount of node to
+  display with or without zoom, refresh/redraw paint area, etc. .
+  '''
   def __init__(self, parent = None):
     super(WorkerThread, self).__init__(parent)
     self.mutex = QMutex()
@@ -78,6 +83,9 @@ class WorkerThread(QThread):
       self.mutex.unlock()
 
 class CountThread(QThread):
+  ''' Detects every time attributes in children of a given node.
+
+  '''
   def __init__(self, parent, callback):
     QThread.__init__(self)
     self.timeline = parent
@@ -101,16 +109,16 @@ class CountThread(QThread):
     FIXME Use node.attributeByType ? from cpp, to bench !
     """
     for key in attr.keys():
-      if attr[key].type() == typeId.Map:
+      if attr[key] and attr[key].type() == typeId.Map:
         if mod:
           countMe, timesCount = self.attrRecCount(tab + ' ', attr[key].value(), countMe, timesCount, mod, attrPath + [key])
         else:
           countMe, timesCount = self.attrRecCount(tab + ' ', attr[key].value(), countMe, timesCount, key)
-      elif attr[key].type() == typeId.List:
+      elif attr[key] and attr[key].type() == typeId.List:
         for i in xrange(attr[key].value().size()):
           if attr[key].value()[i].type() == typeId.VTime:
             countMe, timesCount = self.timeFound(timesCount, mod, attrPath + [key])
-      elif attr[key].type() == typeId.VTime:
+      elif attr[key] and attr[key].type() == typeId.VTime:
         countMe, timesCount = self.timeFound(timesCount, mod, attrPath + [key])
     return countMe, timesCount
 
@@ -141,6 +149,10 @@ class CountThread(QThread):
     self.timeline.timeMap = self.timeMap
 
 class MaxOccThread(QThread):
+  ''' Find maximum amount of node from a given resolution.
+
+  Usefull for vertical scaling.
+  '''
   def __init__(self, parent, callback):
     QThread.__init__(self)
     self.timeline = parent

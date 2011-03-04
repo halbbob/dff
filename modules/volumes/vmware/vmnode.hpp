@@ -30,7 +30,6 @@ public:
   VMNode(std::string name, uint64_t size, Node* parent, class VMware *vm, Link *lnk);
   ~VMNode();
   virtual void	fileMapping(FileMapping *fmap);
-  virtual Attributes*	attributes();
 
 private:
 

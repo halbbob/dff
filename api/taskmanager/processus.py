@@ -17,6 +17,7 @@ from api.module.module import *
 from api.vfs.libvfs import *
 from api.taskmanager.scheduler import *
 from api.types import libtypes
+from api.types.libtypes import *
 from api.vfs import *
 from ui.console.utils import VariantTreePrinter
 import threading
@@ -44,6 +45,7 @@ class Processus(Script):
     self.timestart = time.time()
     try :
       self.args = args  #temporaire pour non singleton
+      args.thisown =False 
       self.start(args)  #self.args += args -> pour les singletons garder une liste des args ?
       try :
         if "gui" in self.exec_flags:

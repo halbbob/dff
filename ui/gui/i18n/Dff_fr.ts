@@ -919,7 +919,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="217"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="676"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
@@ -927,37 +927,37 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="616"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="560"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="617"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="561"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="618"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="562"/>
         <source>Accessed time</source>
         <translation>Date d&apos;accès</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="619"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Changed time</source>
         <translation>Date de changement</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="620"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Modified time</source>
         <translation>Date de modification</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="621"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="622"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Deleted</source>
         <translation>Effacé</translation>
     </message>
@@ -1041,7 +1041,7 @@
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="23"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="15"/>
         <source>Select evidence type</source>
         <translation>Sélectionnez le type de données</translation>
     </message>
@@ -1071,27 +1071,27 @@
         <translation type="obsolete">Répertoire local</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="113"/>
         <source>Add evidence directory</source>
         <translation>Ajouter un répertoire</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="156"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="118"/>
         <source>Add evidence files</source>
         <translation>Ajouter un ou plusieurs fichiers</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="78"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="48"/>
         <source>Open local files or directory</source>
         <translation>Ouvrir des fichiers ou répertoires locaux</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="98"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="65"/>
         <source>RAW format</source>
         <translation>Fichiers brut (RAW)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="114"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
         <source>EWF format</source>
         <translation>Fichiers EWF</translation>
     </message>

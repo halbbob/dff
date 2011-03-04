@@ -49,51 +49,38 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="68"/>
         <source>Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="35"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="106"/>
         <source>Model</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="40"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="138"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="45"/>
-        <source>Serial number</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Env</name>
-    <message>
-        <location filename="../../../ui/gui/resources/env.ui" line="20"/>
-        <source>Environment</source>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="38"/>
+        <source>Select a local device to add in the Virtual File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/env.ui" line="31"/>
-        <source>Key</source>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="53"/>
+        <source>Warning : You must run the software with Administrator rights</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/env.ui" line="36"/>
-        <source>Type</source>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="90"/>
+        <source>Block device name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/env.ui" line="41"/>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/env.ui" line="46"/>
-        <source>From</source>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="122"/>
+        <source>Serial</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -635,37 +622,37 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="213"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="230"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="226"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
         <source>Add to bookmarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="252"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="269"/>
         <source>Display search engine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="281"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
         <source>Active thumbnails</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="305"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="322"/>
         <source>Small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="310"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="327"/>
         <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="315"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="332"/>
         <source>Large</source>
         <translation type="unfinished"></translation>
     </message>
@@ -739,92 +726,82 @@
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="24"/>
-        <source>Attribute</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/propertytable.ui" line="29"/>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="166"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="116"/>
         <source>name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="170"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
         <source>folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="168"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
         <source>file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="173"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
         <source>generated by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="174"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
         <source>size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="175"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
         <source>relevant module(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="167"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="117"/>
         <source>node type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="181"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
         <source>attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="176"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
         <source>children</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="177"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
         <source>file(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="179"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
         <source> bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="180"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
         <source>folder(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="178"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
         <source> totalizing </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="169"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
         <source> with module(s) applied on it</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="171"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
         <source> empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="172"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
         <source> deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -876,141 +853,145 @@
     </message>
 </context>
 <context>
+    <name>TreeModel</name>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="676"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="388"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="560"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="389"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="561"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="390"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="562"/>
         <source>Accessed time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="391"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Changed time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="392"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Modified time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="393"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Module</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
+        <source>Deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VariantTreeWidget</name>
+    <message>
+        <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="24"/>
+        <source>Key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="29"/>
+        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>applyModule</name>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="12"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="20"/>
         <source>Apply module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="18"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="26"/>
         <source>Informations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="24"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="94"/>
         <source>Module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="104"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="149"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="52"/>
-        <source>Purpose</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="82"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="127"/>
         <source>Arguments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="97"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="142"/>
         <source>Activate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="111"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="156"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="127"/>
-        <source>Browse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="118"/>
-        <source>Select evidence file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="121"/>
-        <source>There are missing arguments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="124"/>
-        <source>This box is already open</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="14"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="15"/>
         <source>Select evidence type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="42"/>
-        <source>Select data type to open in the VFS</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="53"/>
-        <source>Data type:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="67"/>
-        <source>RAW files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="72"/>
-        <source>EWF files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="77"/>
-        <source>Local directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="113"/>
         <source>Add evidence directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="118"/>
         <source>Add evidence files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="48"/>
+        <source>Open local files or directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="65"/>
+        <source>RAW format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
+        <source>EWF format</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>procMB</name>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
+        <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="113"/>
+        <source>No results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
