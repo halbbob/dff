@@ -13,28 +13,27 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
-from api.module.script import *
-from api.taskmanager.taskmanager import *
-from api.module.module import *
+from api.module.script import Script 
+from api.taskmanager.taskmanager import TaskManager
+from api.module.module import Module 
+from api.types.libtypes import Variant, Argument, typeId, ConfigManager
 
 class POST_PROCESS(Script):
   def __init__(self):
     Script.__init__(self, "post_process")
-    self.vfs = VFS.Get()
     self.tm = TaskManager()
 
   def start(self, args):
-#lister les files / add / remove etc... ca serait plus pratique ..
-#dif add script -> add to list func x
-#if arg script -> del -> del func x
-    mod = args.get_string("modules")
-    #self.vfs.set_callback("post_process", cb_pp)
-    self.tm.addPostProcess(mod)
+    mod = args["module"]
+    if mod:
+      self.tm.addPostProcess(mod)
     return
 
 class post_process(Module):
   """Process a command on each new file created on the vfs"""
   def __init__(self):
     Module.__init__(self, "post_process", POST_PROCESS)
-    self.conf.add("modules", "string", False, "Module to add to the post processing list")
-    self.tags = "process"
+    self.conf.addArgument({"name":"module",
+			   "description": "Module to add to the post processing list",
+			   "input" : Argument.Required|Argument.Single|typeId.String}) 	
+    self.tags = "builtins"
