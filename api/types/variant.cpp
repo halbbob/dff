@@ -17,6 +17,13 @@
 #include "variant.hpp"
 #include "typeinfo"
 
+typeId*	typeId::Get()
+{
+	static typeId single;
+	return &single;
+}
+
+
 typeId::typeId()
 {
   this->mapping.insert(std::pair<std::string, uint8_t>( typeid(int16_t*).name(), typeId::Int16));
@@ -55,6 +62,12 @@ typeId::typeId()
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::set<class Variant*> *).name(), typeId::List));
 }
 
+typeId::~typeId()
+{
+  //  delete this->mapping;
+}
+
+
 uint8_t	typeId::getType(std::string type)
 {
   std::map<std::string, uint8_t>::iterator it;
@@ -81,10 +94,6 @@ std::string	typeId::typeToName(uint8_t t)
     return "";
 }
 
-typeId::~typeId()
-{
-  //  delete this->mapping;
-}
 
 Variant::Variant()
 {

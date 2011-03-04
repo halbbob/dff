@@ -16,6 +16,12 @@
 
 #include "vfs.hpp"
 
+VFS&	VFS::Get()
+{ 
+    static VFS single; 
+    return single; 
+}
+
 VFS::VFS()
 {
   root = new VfsRoot("/");

@@ -37,11 +37,7 @@ private:
   ConfigManager(const ConfigManager&);
   
 public:
-  static ConfigManager   *Get()
-  {
-    static ConfigManager single;
-    return &single;
-  }
+  EXPORT static ConfigManager*		Get();
   EXPORT void					registerConf(class Config* c) throw(std::string);
   EXPORT std::list<class Config*>		configs();
   EXPORT std::list<std::string>		configsName();
