@@ -34,8 +34,18 @@ class DataThread(QThread):
         There is two lists, one for ordered dates, and one other for
         corresponding nodes. If several nodes have the same timestamp, they are
         registered in the same list entry in an array.
+        FIXME checks bellow have to be avoided, but we must do it because extfs
+        for exemple returns invalid times.
         '''
-        data = self.timeline.toUSec(datetime(data.year, data.month, data.day, data.hour, data.minute, data.second, data.usecond))
+        if not data.month:
+            month = 1
+        else:
+            month = data.month
+        if not data.day:
+            day = 1
+        else:
+            day = data.day
+        data = self.timeline.toUSec(datetime(data.year, month, day, data.hour, data.minute, data.second, data.usecond))
 
         if not root['dates']:
             root['dates'] = [data]
