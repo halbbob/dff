@@ -25,7 +25,7 @@ Attributes	ULocalNode::_attributes()
   struct stat*	st;
   Attributes 	vmap;
 
-  vmap["orignal path"] =  new Variant(((local*)this->fsobj())->lpath[this->id()]);
+  vmap["orignal path"] =  new Variant(this->originalPath);
   if ((st = this->localStat()) != NULL)
     {
       vmap["uid"] =  new Variant(st->st_uid);
@@ -46,9 +46,8 @@ struct stat*	ULocalNode::localStat(void)
   struct stat* 	st;
   class local*  Local = static_cast<local*>(this->fsobj());
 
-  file = Local->lpath[this->id()];
   st = (struct stat*)malloc(sizeof(struct stat));
-  if (lstat(file.c_str(), st) != -1)
+  if (lstat(this->originalPath.c_str(), st) != -1)
     return st;
   else
     {
@@ -82,9 +81,9 @@ vtime*		ULocalNode::utimeToVtime(time_t* tt) //XXX unixvtime() ds l 'api !
 }
 
 
-ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, local* fsobj, uint8_t type, uint32_t id): Node(Name, size, parent, fsobj)
+ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, local* fsobj, uint8_t type, std::string origPath): Node(Name, size, parent, fsobj)
 {
-  this->__id = id;
+  this->originalPath = origPath;
   switch (type)
     {
     case DIR:

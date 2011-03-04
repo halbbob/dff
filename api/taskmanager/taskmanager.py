@@ -16,7 +16,7 @@
 from api.events.libevents import EventHandler
 from api.taskmanager.scheduler import sched 
 from api.taskmanager.processus import *
-from api.types.libtypes import Variant, VMap, typeId, Argument, Parameter
+from api.types.libtypes import Variant, VMap, typeId, Argument, Parameter, ConfigManager
 from api.loader import *
 from api.exceptions.libexceptions import *
 import threading
@@ -40,7 +40,7 @@ class TaskManager():
       self.VFS = VFS.Get()
       self.VFS.connection(self)
       self.modPP = []
-
+      self.configManager = ConfigManager.Get()
 #ici add .......... list des post processing
 #penser a pouvoir afficher une conf graphique facile etc....
 
@@ -58,13 +58,17 @@ class TaskManager():
        #print node.isCompatibleModule(mod)
        if node.isCompatibleModule(mod):
 	 #print "post_process add task " + mod + " on node " + str(node.name())
+	 config = self.configManager.configByName(mod)	
          if args == None:
-           args = libenv.argument("post_process")
+           args = {}
+           #args = libenv.argument("post_process")
          if exec_flags == None:
            exec_flags = ["console", "thread"]
-         args.add_node("file", node) #rajoute tjrs ds le meme args ....
+#         args.add_node("file", node) #rajoute tjrs ds le meme args ....
 				     #XXX manque d autre arg genre fat ce plance pas 
-         self.add(mod, args, exec_flags)
+         args["file"] = node
+         arg = config.generate(args)
+         self.add(mod, arg, exec_flags)
 
     def postProcess(self, node, recursive = False):
       #print self.modPP
@@ -81,7 +85,7 @@ class TaskManager():
     def Event(self, e):
       #print "Get event"
       #print e.value.absolute()
-      self.postProcess(e.value, True) #peut etre pas ici pour le recursif mais plus ds addpostproecss?
+      self.postProcess(e.value.value(), True) #peut etre pas ici pour le recursif mais plus ds addpostproecss?
       #XXX pusiqu on revois une list virtuel.... fo suivre les fils on peut pas lesavoir mais c comme sa donc fo faire un for ou rajouter une list ou specifier recursif au module attention au gros partage en couille quand il va avoir des modules sur le quel ca va etre reapplllliquer .............
 ###donc le mieux recreer une list puisque on les a pu et par contre puisqu on a les list de node ds les modules -> passer cette list au modules batch qui prenne une list directe et font juste une instance ou alors les modules prenne qu une node mais c le taskmanager qui s en occupe a l ancinne mais essayer d avoir qu une instnace c mieux (et de update ....) -> c pas pres d etre finie ..........
 

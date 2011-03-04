@@ -31,7 +31,7 @@ class WINREG(mfso):
         self.__disown__()
 
     def start(self, args):
-       self.hive = args['node'].value()
+       self.hive = args['file'].value()
 
        if self.hive.size() > 0:
            phive = parseHive(self.hive, self)
@@ -40,7 +40,7 @@ class winreg(Module):
   """This modules permit to virtualy reconstruct windows registry hives files on the VFS."""
   def __init__(self):
     Module.__init__(self, "winreg", WINREG)
-    self.conf.addArgument({"name": "node",
+    self.conf.addArgument({"name": "file",
                            "description": "Registry hive file",
                            "input": Argument.Required|Argument.Single|typeId.Node})
     self.conf.addConstant({"name": "mime-type", 

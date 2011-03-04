@@ -51,11 +51,10 @@ private:
 #endif
 
 public:
-  std::vector<string>	lpath;
 #ifndef WIN32
-  void				iterdir(std::string path, Node* parent);
+  void			iterdir(std::string path, Node* parent);
 #else
-  std::string	relativePath(std::string path);
+  std::string		relativePath(std::string path);
   void			createPath(std::string origPath);
   void 			frec(const char *, Node *rfv);
 #endif

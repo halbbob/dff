@@ -26,7 +26,7 @@ class POST_PROCESS(Script):
   def start(self, args):
     mod = args["module"]
     if mod:
-      self.tm.addPostProcess(mod)
+      self.tm.addPostProcess(str(mod))
     return
 
 class post_process(Module):
