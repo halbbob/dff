@@ -26,11 +26,11 @@ class FatTests(DffUnittest):
         unittest.TestCase.__init__(self, name)
 
 # It has to be preprocessed by CMake to find path of test image
-    testFile = '${CMAKE_SOURCE_DIR}/testsuite/dftt/5-fat-daylight.zip'
+    testFile = 'C:/dff-os/testsuite/dftt/5-fat-daylight.zip'
     vfsTestFilePath = '/5-fat-daylight.zip/5-fat-daylight/daylight.dd'
-    expectedLoadOutput = '${CMAKE_SOURCE_DIR}/testsuite/results/fattest.5-fat-daylight.load.txt'
-    expectedListOutput = '${CMAKE_SOURCE_DIR}/testsuite/results/fattest.5-fat-daylight.ls.txt'
-    expectedListAccurateOutput = '${CMAKE_SOURCE_DIR}/testsuite/results/fattest.5-fat-daylight.ls_accurate.txt'
+    expectedLoadOutput = 'C:/dff-os/testsuite/results/fattest.5-fat-daylight.load.txt'
+    expectedListOutput = 'C:/dff-os/testsuite/results/fattest.5-fat-daylight.ls.txt'
+    expectedListAccurateOutput = 'C:/dff-os/testsuite/results/fattest.5-fat-daylight.ls_accurate.txt'
 
     
     def test01_LoadDumpFailure(self):

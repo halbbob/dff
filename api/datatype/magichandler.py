@@ -27,6 +27,7 @@ from libdatatype import DataTypeManager, DataTypeHandler
 
 class MagicHandler(DataTypeHandler):
   def __init__(self, mtype, name):
+     print "loading magic hadnler"
      DataTypeHandler.__init__(self, name)
      self.__disown__()
      self.vfs = vfs.vfs()

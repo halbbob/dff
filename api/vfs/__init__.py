@@ -13,5 +13,5 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-__version__ = "${API_VFS_VERSION}"
+__version__ = "2.7.0"
 __all__ = ["vfs", "libvfs", "iodevice"]
