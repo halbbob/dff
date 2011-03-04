@@ -13,5 +13,5 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-__version__ = "1.7.0"
+__version__ = "${API_MAGIC_VERSION}"
 __all__ = ["magic"]
