@@ -219,6 +219,13 @@ std::string	Variant::toString() throw (std::string)
       p = static_cast<class Path*>(this->__data.ptr);
       res << p->path;
     }
+  else if (this->_type == typeId::Bool)
+    {
+      if (this->__data.b)
+	res << "True";
+      else
+	res << "False";
+    }
   else
     throw std::string("Cannot convert type < " + this->typeName() + " > to < std::string >");
   return res.str();

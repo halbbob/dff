@@ -111,14 +111,17 @@ class console(Cmd):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_exception(exc_type, exc_value, exc_traceback, None, sys.stdout)
 
+
     def emptyline(self):
         pass
+
 
     def default(self, line):
         try:
             exec(line) in self._locals, self._globals
         except Exception, e:
             print e.__class__, ":", e
+
 
     def cmdloop(self, intro=None):
         self.preloop()

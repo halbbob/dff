@@ -17,7 +17,7 @@ add_subdirectory (shm)
 set(utils_srcs
   __init__.py
   #integrity.py
-  #fileinfo.py
+  fileinfo.py
   #man.py
 )
 
