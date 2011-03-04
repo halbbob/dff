@@ -13,5 +13,5 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-__version__ = "1.0.0"
+__version__ = "${API_EXCEPTIONS_VERSION}"
 __all__ = ["libexceptions"]

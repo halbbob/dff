@@ -12,5 +12,5 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-__version__ = "1.1.0"
+__version__ = "${API_GUI_VERSION}"
 __all__ = ["widget", "itemview","dialog", "box", "button", "model"]

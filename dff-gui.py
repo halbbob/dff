@@ -1,4 +1,4 @@
-#!C:/Python27/python.exe/python -i
+#!${PYTHON_BIN_PATH}/python -i
 # DFF -- An Open Source Digital Forensics Framework
 # Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
