@@ -32,6 +32,8 @@
 #include "pff.hpp"
 %}
 
+%import "../../../api/vfs/libvfs.i"
+
 %include "pff.hpp"
 
 %pythoncode
@@ -43,7 +45,11 @@ class PFF(Module):
   def __init__(self):
     Module.__init__(self, 'pff', pff)
     self.conf.addArgument({"input":Argument.Required|Argument.Single|typeId.Node,
-                           "node": "file",
+                           "name": "file",
                            "description": "Path to the file mailbox file"})
+    self.conf.addConstant({"name":"mime-type",
+                           "type":typeId.String,
+                           "description":"managed mime type",
+                           "values":["Outlook"]})
     self.tags = "Mailbox"
 %}

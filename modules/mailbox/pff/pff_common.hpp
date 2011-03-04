@@ -17,7 +17,6 @@
 #ifndef __PFF_COMMON_HH__
 #define __PFF_COMMON_HH__
 
-#include "pff_common.hpp"
 #include "vfs.hpp"
 #include "mfso.hpp"
 #include "node.hpp"
