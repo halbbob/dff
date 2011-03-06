@@ -14,8 +14,8 @@
 
 #from api.type.libtype import *
 from api.module import *
-#from api.vfs.libvfs import *
-#from api.exceptions.libexceptions import *
+from api.events.libevents import EventHandler, event
+from api.types.libtypes import typeId, Argument
 
 from CARVER import *
 
@@ -47,10 +47,10 @@ class worker(QThread):
         self.emit(SIGNAL("end(QString)"), QString(res))
 
 
-class carvingProcess(QWidget, DEventHandler):
+class carvingProcess(QWidget, EventHandler):
     def __init__(self):
         QWidget.__init__(self)
-        DEventHandler.__init__(self)
+        EventHandler.__init__(self)
         self.layout = QVBoxLayout()
         self.grid = QGridLayout()
         self.info = QVBoxLayout()
@@ -101,7 +101,7 @@ class carvingProcess(QWidget, DEventHandler):
 
 
     def update(self, e):
-        if e.type == SEEK:
+        if e.type == event.SEEK:
             ref = time.time() - self.time
             self.time = time.time()
             if not str(ref).startswith("0.0"):
@@ -110,14 +110,14 @@ class carvingProcess(QWidget, DEventHandler):
                 self.estimatedLabel.setText("estimated time: " + res)
             res = self.timesec2str(time.time() - self.starttime)
             self.elapsedLabel.setText("elapsed time:    " + res)
-            i = int(e.seek / self.factor)
+            i = int(e.value.value() / self.factor)
             if i > 2147483647:
                 i = 2147483647
             self.emit(SIGNAL("valueChanged(int)"), i)
             info = self.currentProgress.text() + " - " + self.totalLabel.text()
             self.emit(SIGNAL("stateInfo(QString)"), info)
         else:
-            self.totalLabel.setText("total headers found: " + str(e.seek))
+            self.totalLabel.setText("total headers found: " + str(e.value))
             
 
 
@@ -148,9 +148,11 @@ class carvingProcess(QWidget, DEventHandler):
 
 
     def killJob(self):
-        e = DEvent()
-        e.seek = 1
-        e.type = SEEK
+        e = event()
+        val = Variant(1)
+        val.thisown = False
+        e.value = val
+        e.type = event.SEEK
         self.notify(e)
 
 
@@ -170,8 +172,9 @@ class PyCarver(QWidget, mfso):
 
     def start(self, args):
         self.carver.start(args)
-        self.name += " <" + args.get_node("ifile").name() + ">"
-        self.filesize = args.get_node("ifile").size()
+        self.node = args["file"].value()
+        self.name += " <" + self.node.name() + ">"
+        self.filesize = self.node.size()
 
 
     def status(self):
@@ -302,5 +305,7 @@ class interface(Module):
      You can use this modules for finding deleted data or data in slack space or in an unknown file system."""
   def __init__(self):
     Module.__init__(self, 'carver', PyCarver)
-    self.conf.add("ifile", "node", False, "Node to search data in")
+    self.conf.addArgument({"name": "file",
+                           "input": typeId.Node|Argument.Single|Argument.Required,
+                           "description": "Node to search data in"})
     self.tags = "Search"

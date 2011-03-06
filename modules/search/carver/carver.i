@@ -18,6 +18,23 @@
 
 %include "std_string.i"
 %include "std_list.i"
+%include "std_set.i"
+%include "std_map.i"
+%include "windows.i"
+
+%{
+#include "variant.hpp"
+#include "vtime.hpp"
+#include "fso.hpp"
+#include "mfso.hpp"
+#include "node.hpp"
+#include "vlink.hpp"
+#include "vfile.hpp"
+#include "carver.hpp"
+#include "common.hpp"
+#include "../../../api/search/pattern.hpp"
+%}
+
 
 %import "../../../api/vfs/libvfs.i"
 
@@ -55,12 +72,6 @@ else
    }
 }
 
-
-%{
-#include "carver.hpp"
-#include "common.hpp"
-#include "../../../api/search/pattern.hpp"
-%}
 
 %include "carver.hpp"
 %include "common.hpp"

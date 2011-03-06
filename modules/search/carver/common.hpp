@@ -29,9 +29,7 @@
 #include <queue>
 #include <stack>
 
-#include "type.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
 #include "search.hpp"
 #include "pattern.hpp"
 #include "boyer_moore.hpp"
