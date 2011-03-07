@@ -13,8 +13,8 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
-from PyQt4.QtGui import QDialog
-from PyQt4.QtCore import SIGNAL, QEvent
+from PyQt4.QtGui import QDialog, QFileDialog
+from PyQt4.QtCore import SIGNAL, QEvent, QString, QDir
 
 from ui.gui.resources.ui_preferences import Ui_PreferencesDialog
 from ui.gui.configuration.conf import Conf
@@ -47,12 +47,60 @@ class Preferences(QDialog, Ui_PreferencesDialog):
       # Signals handling
       self.connect(self.noHistoryCheckBox, SIGNAL("stateChanged(int)"), self.historyStateChanged)
       self.connect(self.langComboBox, SIGNAL("currentIndexChanged (const QString&)"), self.langChanged)
+
+      # indexation configuration
+      self.init_index_pref()
       
       if parent:
           self.app = parent.app
       else:
           self.app = None
       
+    def init_index_pref(self):
+        """
+        Initialize the configuration of the indexation.
+        """
+        self.root_index_line.setText(self.conf.root_index)
+        self.index_name_line.setText(self.conf.index_name)
+
+        ## TODO : do not create those 2 dirs at this point.
+        root_index_dir = QDir(self.conf.root_index)
+        if not root_index_dir.exists():
+            root_index_dir.mkpath(self.conf.root_index)
+        default_index_dir = QDir(self.conf.index_path)
+        if not default_index_dir.exists():
+            default_index_dir.mkpath(self.conf.index_path)
+
+        # Signal ahndling for browse buttons.
+        self.connect(self.root_index_button, SIGNAL("clicked()"), self.conf_root_index_dir)
+        self.connect(self.index_name_button, SIGNAL("clicked()"), self.conf_index_name_dir)
+
+    def conf_root_index_dir(self):
+        """
+        This slot is used to set the root index directory.
+        """
+        f_dialog = QFileDialog()
+        f_dialog.setDirectory(self.conf.root_index)
+        f_dialog.setFileMode(QFileDialog.DirectoryOnly)
+        f_dialog.setOption(QFileDialog.ShowDirsOnly, True)
+        res = f_dialog.exec_()
+        if res:
+            self.root_index_line.setText(f_dialog.selectedFiles()[0])
+            self.conf.root_index = self.root_index_line.text()
+
+    def conf_index_name_dir(self):
+        """
+        This slot is used to set the index directory.
+        """
+        f_dialog = QFileDialog()
+        f_dialog.setDirectory(self.conf.index_path)
+        f_dialog.setFileMode(QFileDialog.DirectoryOnly)
+        f_dialog.setOption(QFileDialog.ShowDirsOnly, True)
+        res = f_dialog.exec_()
+        if res:
+            self.index_name_line.setText(f_dialog.selectedFiles()[0])
+            self.conf.index_name = self.index_name_line.text()
+
     def langPopulate(self):
         translationPath = sys.modules['ui.gui'].__path__[0] + '/i18n/'
         i = 0

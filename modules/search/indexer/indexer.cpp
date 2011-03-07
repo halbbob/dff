@@ -39,12 +39,20 @@ void    Indexer::start(std::map<std::string, Variant *> args)
       it = args.find("node");
       if (it == args.end())
 	{
-	  std::cerr << "Cannot load 'name' argument." << std::endl;
+	  std::cerr << "Cannot load 'node' argument. Exiting module." << std::endl;
 	  return ;
 	}
       this->__node = it->second->value<Node*>();
 
-      __index = new Index(".");
+      it = args.find("index");
+      if (it == args.end())
+	{
+	  std::cerr << "Cannot load 'index' argument. Exiting module." << std::endl;
+	  return ;
+	}
+      std::string path = it->second->value<string>();
+
+      __index = new Index(path);
       if (!__index->createIndex())
 	{
 	  std::cerr << "Could not create index. Modules 'indexer' will stop."

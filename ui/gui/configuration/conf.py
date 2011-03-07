@@ -14,6 +14,7 @@
 # 
 
 import sys
+from PyQt4.QtCore import QDir
 
 class Conf():
     class __Conf():
@@ -23,6 +24,11 @@ class Conf():
             FIXME based on an ini file, args provided, etc.
             """
             self.initLanguage()
+
+            # indexes configuration
+            self.root_index = QDir.homePath() + "/.dff/indexes"
+            self.index_name = "default"
+            self.index_path = self.root_index + "/" + self.index_name
 
         def initLanguage(self):
             self.language = "en"
