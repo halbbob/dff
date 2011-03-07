@@ -15,7 +15,7 @@
 # 
 
 from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize, QThread, QMutex, QSemaphore
-from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache, QStandardItemModel, QSortFilterProxyModel, QStandardItem
+from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache, QStandardItemModel, QStandardItem, QSortFilterProxyModel
 from PyQt4 import QtCore
 
 import re
@@ -185,6 +185,9 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     # connect the mode to the VFS to receive its events
     if event:
       self.VFS.connection(self)
+
+  def setFilterRegExp(self, regExp):
+    return
 
   def Event(self, e):
     """
@@ -751,9 +754,6 @@ class TreeModel(QStandardItemModel, EventHandler):
     if not parent.isValid():
       return True
     else:
-#      node_item = self.getItemFromIndex(parent) #item(parent.row(), parent.column())
-#      if node_item == None:
-#        return False
       ptr = self.data(parent, Qt.UserRole + 1)
       if ptr == None:
         return False
@@ -792,7 +792,7 @@ class TreeModel(QStandardItemModel, EventHandler):
         item.setData(False, Qt.UserRole + 2)
         self.root_item.appendRow(item)
       else:
-        item_name = self.getItemByName(node.parent().absolute(), node.parent(), node)
+        self.getItemByName(node.parent().absolute(), node.parent(), node)
     self.emit(SIGNAL("layoutChanged()"))
 
   def getItemByName(self, name, parent, new_node):
@@ -802,15 +802,23 @@ class TreeModel(QStandardItemModel, EventHandler):
     """
     l = name.split("/")
     item = self.root_item
-    l.pop(0)
+    l.pop(0) # remove the empty first element of the list
+
     for i in l:
       found = False
-      for j in range(0, item.rowCount()):
+      for j in range(0, item.rowCount()): # find the node
+
+        # get node
         tmp_item = item.child(j)
         if tmp_item == None:
           continue
         tmp_index = self.indexFromItem(tmp_item)
+        if tmp_index == None:
+          continue
         ptr = self.data(tmp_index, Qt.UserRole + 1).toULongLong()[0]
+        if ptr == None:
+          continue
+
         node = self.VFS.getNodeFromPointer(ptr)
         if node != None:
           if node.name() == i:
@@ -821,18 +829,25 @@ class TreeModel(QStandardItemModel, EventHandler):
             found = False
         else:
           found = False
+      if not found:
+        break
+
     if found == False:
-      new_item = QStandardItem(parent.name())
-      new_item.setData(long(parent.this), Qt.UserRole + 1)
-      new_item.setData(False, Qt.UserRole + 2)
-      item.insertRow(0, new_item)
-      item.setData(True, Qt.UserRole + 2)
+      if node.parent().absolute() == parent.absolute():
+        new_item = QStandardItem(parent.name())
+        new_item.setData(long(parent.this), Qt.UserRole + 1)
+        new_item.setData(False, Qt.UserRole + 2)
+        item.insertRow(0, new_item)
+        item.setData(True, Qt.UserRole + 2)
+      elif node.parent().absolute() == parent.parent().absolute():
+        new_item = QStandardItem(parent.name())
+        new_item.setData(long(parent.this), Qt.UserRole + 1)
+        new_item.setData(False, Qt.UserRole + 2)
+        item.insertRow(0, new_item)
+        item.setData(True, Qt.UserRole + 2)
     else:
       new_item = QStandardItem(new_node.name())
       new_item.setData(long(new_node.this), Qt.UserRole + 1)
       new_item.setData(False, Qt.UserRole + 2)
       item.insertRow(0, new_item)
       item.setData(True, Qt.UserRole + 2)
-    
-
-      

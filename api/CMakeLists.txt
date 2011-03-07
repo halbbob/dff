@@ -23,6 +23,7 @@ add_subdirectory (module)
 add_subdirectory (types)
 add_subdirectory (vfs)
 add_subdirectory (search)
+add_subdirectory (index)
 add_subdirectory (tree)
 add_subdirectory (magic)
 # python only
