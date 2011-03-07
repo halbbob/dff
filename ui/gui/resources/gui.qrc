@@ -108,6 +108,8 @@
     <file alias="uncomment.png">icons/actions/uncomment.png</file>
     <file alias="run.png">icons/actions/agt_runit.png</file>
     <file alias="ide.png">icons/app/ksnake.png</file>
+    <file alias="index_search.png">icons/app/index_search.png</file>
+    <file alias="index_search_64x64.png">icons/app/index_search_64x64.png</file>
 
 
 </qresource>
