@@ -49,6 +49,7 @@ private:
   
   
 public:
+  EXPORT static typeId*	Get();
   enum Type
     {
       Invalid = 0,
@@ -73,11 +74,6 @@ public:
       VoidPtr = 16
     };
 
-  static typeId   *Get()
-  {
-	static typeId single;
-	return &single;
-  }
   EXPORT uint8_t		getType(std::string type);
   EXPORT std::string	typeToName(uint8_t t);
 };

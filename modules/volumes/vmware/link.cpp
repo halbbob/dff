@@ -1,0 +1,126 @@
+/*
+ * DFF -- An Open Source Digital Forensics Framework
+ * Copyright (C) 2009-2010 ArxSys
+ *
+ * Author(s):
+ *  MOUNIER Jeremy <jmo@digital-forensic.org>
+ *
+ */
+
+
+#include "link.hpp"
+
+Link::Link(diskDescriptor *desc, int type, Node *vmdkroot)
+{
+  this->_descriptor = desc;
+  this->_type = type;
+  this->_vmdkroot = vmdkroot;
+
+  this->_cid = this->_descriptor->getCID();
+  this->_pcid = this->_descriptor->getPCID();
+
+  if (this->_pcid == CID_NOPARENT)
+    {
+      //      std::cout << "Baselink yes " << std::endl;     
+      this->_baseLink = true;
+    }
+  else
+    this->_baseLink = false;
+  
+  //  this->listExtents();
+    // this->_storageVolumeSize = (ext->sectors * SECTOR_SIZE);
+  
+}
+
+Link::~Link()
+{
+}
+
+
+void	Link::setLinkStorageVolumeSize()
+{
+
+  this->_storageVolumeSize = 0;
+
+  for( vector<Extent*>::iterator ext=this->_extents.begin(); ext!=this->_extents.end(); ++ext)
+    {
+      this->_storageVolumeSize += ((*ext)->sectors * SECTOR_SIZE);
+    }
+}
+
+int	Link::listExtents()
+{
+  list<string>	extnames;
+
+  extnames = this->_descriptor->getExtentNames();
+
+  //  std::cout << "extnames size :  " << extnames.size() << std::endl; 
+
+  Node *parent = this->_vmdkroot->parent();
+	  
+  //  std::cout << "parent :  " << parent->name() << std::endl;
+  
+  std::vector<Node *>next = parent->children();
+
+  for( list<string>::iterator name=extnames.begin(); name!=extnames.end(); ++name)
+    {
+      for( std::vector<Node*>::iterator in=next.begin(); in!=next.end(); ++in)
+	{
+	  if ((*name) == (*in)->name())
+	    {
+	      //	      std::cout << "founded " << (*in)->name() << std::endl;
+	      addExtent((*in));
+	    }
+	}
+    }
+ 
+  //  std::cout << "ext size :  " << this->_extents.size() << std::endl; 
+  //  std::cout << "extname size :  " << extnames.size() << std::endl; 
+  
+  if (this->_extents.size() == extnames.size())
+    {
+      this->setLinkStorageVolumeSize();
+      return 1;
+    }
+  else
+    return -1;
+
+}
+
+int	Link::addExtent(Node *vmdk)
+{
+  uint32_t id;
+
+  id = this->_extents.size();
+
+  Extent *ext = new Extent(vmdk, id);
+  this->_extents.push_back(ext);
+
+  return 1;
+}
+
+bool	Link::isBase()
+{
+  return this->_baseLink;
+}
+
+
+uint64_t	Link::volumeSize()
+{
+  return this->_storageVolumeSize;
+}
+
+string		Link::getCID()
+{
+  return this->_cid;
+}
+
+string		Link::getPCID()
+{
+  return this->_pcid;
+}
+
+vector<Extent*>		Link::getExtents()
+{
+  return this->_extents;
+}

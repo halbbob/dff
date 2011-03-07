@@ -16,6 +16,12 @@
 
 #include "datatype.hpp"
 
+DataTypeManager* 	DataTypeManager::Get()
+{
+  static DataTypeManager single;
+  return &single;
+}
+
 DataTypeManager::DataTypeManager()
 {
   idCounter = 0;
@@ -79,10 +85,10 @@ std::map<std::string, uint32_t>&	DataTypeManager::foundTypes()
 
 DataTypeHandler::DataTypeHandler(std::string hname)
 {
-  DataTypeManager& 	dataTypeManager =  DataTypeManager::Get();
+  DataTypeManager* 	dataTypeManager =  DataTypeManager::Get();
 
   this->name = hname;
-  dataTypeManager.registerHandler(this);
+  dataTypeManager->registerHandler(this);
 }
 
 DataTypeHandler::~DataTypeHandler()

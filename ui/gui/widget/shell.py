@@ -28,9 +28,9 @@ class ShellView(QTextEdit, console, Ui_Shell):
         QTextEdit.__init__(self, parent)
         console.__init__(self, sigstp=False)
         self.setupUi(self)
-        
         self.name = self.windowTitle()
 	self.completion = completion.Completion(self)
+        self.hookTermSize()
 	taskmanager = TaskManager()
         self.vfs = vfs.vfs()
         self.log = log or ''
@@ -55,6 +55,15 @@ class ShellView(QTextEdit, console, Ui_Shell):
 	self.connect(self, SIGNAL(self.sig), self.puttext)
 	self.redirect.addparent(self, ["ui.gui.widget.shell", "ui.console.console", "ui.console.completion", "ui.console.line_to_arguments", "api.taskmanager.taskmanager", "api.taskmanager.scheduler", "api.taskmanager.processus"], True)
         self.writePrompt()
+
+
+    def hookTermSize(self):
+        ca = getattr(sys.modules['ui.console.utils'], "ConsoleAttributes")
+        nt = getattr(ca, "_ConsoleAttributes__nt")
+        posix = getattr(ca, "_ConsoleAttributes__posix")
+        setattr(nt, "terminalSize", self.get_term_size)
+        setattr(posix, "terminalSize", self.get_term_size)
+
 
     def writePrompt(self):
         self.cwd = self.vfs.getcwd()

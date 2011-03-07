@@ -84,19 +84,20 @@
   Variant.__origininit__ = Variant.__init__
   Variant.__init__ = Variant.__proxyinit__
   Variant.funcMapper = {typeId.Char: "_Variant__Char",
-                          typeId.Int16: "_Variant__Int16",
-                          typeId.UInt16: "_Variant__UInt16",
-                          typeId.Int32: "_Variant__Int32",
-                          typeId.UInt32: "_Variant__UInt32",
-                          typeId.Int64: "_Variant__Int64",
-                          typeId.UInt64: "_Variant__UInt64",
-                          typeId.String: "_Variant__String",
-                          typeId.CArray: "_Variant__CArray",
-			  typeId.Node: "_Variant__Node",
-			  typeId.Path: "_Variant__Path",
-                          typeId.VTime: "_Variant__VTime",
-		          typeId.List: "_Variant__VList",
-  		          typeId.Map: "_Variant__VMap"}
+			typeId.Int16: "_Variant__Int16",
+			typeId.UInt16: "_Variant__UInt16",
+			typeId.Int32: "_Variant__Int32",
+			typeId.UInt32: "_Variant__UInt32",
+			typeId.Int64: "_Variant__Int64",
+			typeId.UInt64: "_Variant__UInt64",
+			typeId.Bool: "_Variant__Bool",
+			typeId.String: "_Variant__String",
+			typeId.CArray: "_Variant__CArray",
+			typeId.Node: "_Variant__Node",
+			typeId.Path: "_Variant__Path",
+			typeId.VTime: "_Variant__VTime",
+			typeId.List: "_Variant__VList",
+			typeId.Map: "_Variant__VMap"}
 
 %}
 
@@ -107,6 +108,7 @@
 %template(__UInt32) Variant::value<uint32_t>;
 %template(__Int64) Variant::value<int64_t>;
 %template(__UInt64) Variant::value<uint64_t>;
+%template(__Bool) Variant::value<bool>;
 %template(__CArray) Variant::value<char *>;
 %template(__Node) Variant::value<Node*>;
 %template(__Path) Variant::value<Path*>;

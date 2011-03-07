@@ -39,7 +39,7 @@ class PropertyTable(VariantTreeWidget):
       typestr += self.fileText
       if node.hasChildren():
         typestr += self.modAppliedText
-      self.fillCompatModule(node)
+    self.fillCompatModule(node)
     if node.hasChildren():
       self.fillChildren(node)
         
@@ -96,11 +96,12 @@ class PropertyTable(VariantTreeWidget):
     
   def fillAttributes(self, node):
     vmap = node.attributes()
-    if len(vmap) > 0:
-      itemExtendedAttr = QTreeWidgetItem(self)
-      itemExtendedAttr.setText(0, self.attributeText)
-      self.fillMap(itemExtendedAttr, vmap)
-      self.expandItem(itemExtendedAttr)
+    if vmap:
+      if len(vmap) > 0:
+        itemExtendedAttr = QTreeWidgetItem(self)
+        itemExtendedAttr.setText(0, self.attributeText)
+        self.fillMap(itemExtendedAttr, vmap)
+        self.expandItem(itemExtendedAttr)
 
 
   def fill(self, node = None):

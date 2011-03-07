@@ -65,27 +65,20 @@ uint64_t	Carver::tell()
   return this->ifile->tell();
 }
 
-void		Carver::Event(DEvent *e)
+void		Carver::Event(event* e)
 {
   this->stop = true;
 }
 
-void		Carver::start(argument *arg)
+void		Carver::start(std::map<std::string, Variant*> args)
 {
-  try
-    {
-      arg->get("ifile", &(this->inode));
-      this->ifile = this->inode->open();
-      this->root = new Node("carved", 0, NULL, this);
-      this->root->setDir();
-      this->registerTree(this->inode, this->root);
-      //this->header = new Header(this->inode);
-      //this->footer = new Footer(this->inode);
-    }
-  catch(vfsError e)
-    {
-      throw vfsError("Carver::start() throw\n" +  e.error);
-    }
+  this->inode = args["file"]->value<Node*>();
+  this->ifile = this->inode->open();
+  this->root = new Node("carved", 0, NULL, this);
+  this->root->setDir();
+  this->registerTree(this->inode, this->root);
+  //this->header = new Header(this->inode);
+  //this->footer = new Footer(this->inode);
 }
 
 int		Carver::Read(char *buffer, unsigned int size)
@@ -149,17 +142,17 @@ void		Carver::mapper()
   char		*buffer;
   int		bytes_read;
   int		offset;
-  DEvent	*e;
-  DEvent	*e1;
+  event*	e;
+  event*	e1;
   uint64_t	total_headers;
   uint64_t	offpos;
 
-  e = new DEvent;
-  e1 = new DEvent;
+  e = new event;
+  e1 = new event;
   buffer = (char*)malloc(sizeof(char) * BUFFSIZE);
   int seek;
-  e->type = SEEK;
-  e1->type = OTHER;
+  e->type = event::SEEK;
+  e1->type = event::OTHER;
   total_headers = 0;
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
     {
@@ -195,11 +188,11 @@ void		Carver::mapper()
 		  seek += offset;
 		}
 	    }
-	  e1->seek = total_headers;
+	  e1->value = new Variant(total_headers);
 	  this->notify(e1);
 	}
       //e->arg = (void*)this->tell();
-      e->seek = this->tell();
+      e->value = new Variant(this->tell());
       this->notify(e);
       if (bytes_read == BUFFSIZE)
 	this->ifile->seek(this->tell() - this->maxNeedle, 0);

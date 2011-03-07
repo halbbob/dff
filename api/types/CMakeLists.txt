@@ -26,7 +26,7 @@ INCLUDE_DIRECTORIES(../include)
 
 add_definitions(-D__STDC_LIMIT_MACROS)
 SET_SOURCE_FILES_PROPERTIES(libtypes.i PROPERTIES CPLUSPLUS ON)	
-set(CMAKE_SWIG_FLAGS -threads -fvirtual -fastdispatch)
+set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -threads -fvirtual -fastdispatch)
 IF (WIN32)
   set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DWIN32)	
 ENDIF(WIN32)

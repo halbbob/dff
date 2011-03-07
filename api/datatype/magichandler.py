@@ -47,13 +47,9 @@ class MagicHandler(DataTypeHandler):
         buff = f.read(0x2000)
         f.close()
         filemime = self.mime.buffer(buff)
-        #vfilemime = Variant(filemime)
-        #vfilemime.thisown = False
         return filemime
     except IOError, e:
-	#return Variant("None")
 	return "None"
-#	print "magic handler error reading node " + node.absolute()
 
  
 magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")

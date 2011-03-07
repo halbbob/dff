@@ -24,6 +24,12 @@ ConfigManager::~ConfigManager()
 {
 }
 
+ConfigManager*	ConfigManager::Get()
+{
+    static ConfigManager single;
+    return &single;
+}
+
 void					ConfigManager::registerConf(class Config* conf) throw(std::string)
 {
   std::string	cname;
