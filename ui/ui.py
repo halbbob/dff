@@ -46,13 +46,13 @@ class ui():
        self.c = console(DEBUG = self.debug)
        self.c.cmdloop()
 
-  def cmd(self, command):
+  def cmd(self, command, wait=False):
     try :
      self.c.onecmd(command)
     except AttributeError:
      loader().do_load(self.modPath)
      self.c = console(DEBUG = self.debug)
-     self.c.onecmd(command) 
+     self.c.onecmd(command, wait)
 
 class usage():
    PROGRAM_USAGE = """DFF\nDigital Forensic Framework\n

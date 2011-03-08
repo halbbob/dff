@@ -45,11 +45,12 @@ class Context():
 
     def __makeParameter(self, argument, parameter):
         if argument.type() == typeId.Node:
+            parameter = parameter.replace("\ ", " ")
             n = self.vfs.getnode(parameter)
             if n:
                 return n
             else:
-                raise ValueError("Node " + str(parameter)  + " provided to argument < " + argname + " >")
+                raise ValueError("Node " + str(parameter)  + " provided to argument < " + argument.name() + " > does not exist")
         elif argument.type() == typeId.Path:
             if parameter[0] != "/":
                 return str(os.getcwd() + "/" + parameter).replace("//", "/")

@@ -17,9 +17,9 @@ FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
 include_directories(${PYTHON_INCLUDE_PATH})
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include ${CMAKE_HOME_DIRECTORY}/api/search/)
+
 
 set(carver_srcs
   carver.cpp
@@ -28,7 +28,7 @@ set(carver_srcs
 
 SET_SOURCE_FILES_PROPERTIES(carver.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(CARVER python carver.i ${carver_srcs})
-SWIG_LINK_LIBRARIES(CARVER ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv _libsearch)
+SWIG_LINK_LIBRARIES(CARVER ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_CARVER_REAL_NAME} PROPERTIES

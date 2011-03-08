@@ -19,7 +19,7 @@ from api.taskmanager.scheduler import *
 from api.types import libtypes
 from api.types.libtypes import *
 from api.vfs import *
-#from api.env.env import env
+from ui.console.utils import VariantTreePrinter
 import threading
 
 import time
@@ -35,7 +35,7 @@ class Processus(Script):
     self.args = args
     self.stream = Queue()
     self.event = threading.Event()
-    #self.env = env()
+    self.vtreeprinter = VariantTreePrinter()
     self.timestart = 0
     self.timeend = 0
 
@@ -66,12 +66,10 @@ class Processus(Script):
 	self.result()
 
   def result(self):
-    return None
-    #try :
-    #  for type, name, val in self.env.get_val_map(self.res.val_m):
-    #    print name + ":" +"\n"  + val
-    #except AttributeError, e:
-    #  pass
+    if self.res and len(self.res):
+      buff = self.vtreeprinter.fillMap(0, self.res)
+      print buff
+
 
   def error(self, trace = None):
     if trace:
@@ -87,7 +85,7 @@ class Processus(Script):
          for err in err_trace:
            res += err
          print res
-         self.res["error"] = res
+         self.res["error"] = Variant(res)
          self.state = "fail"
          return
     try :
