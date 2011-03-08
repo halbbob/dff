@@ -17,6 +17,7 @@ set(process_srcs
   evalexp.py
   post_process.py
   extract.py
+  pipe_exec.py
 )
 
 install_file(process ${process_srcs})
