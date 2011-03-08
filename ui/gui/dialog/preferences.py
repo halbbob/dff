@@ -63,14 +63,6 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.root_index_line.setText(self.conf.root_index)
         self.index_name_line.setText(self.conf.index_name)
 
-        ## TODO : do not create those 2 dirs at this point.
-        root_index_dir = QDir(self.conf.root_index)
-        if not root_index_dir.exists():
-            root_index_dir.mkpath(self.conf.root_index)
-        default_index_dir = QDir(self.conf.index_path)
-        if not default_index_dir.exists():
-            default_index_dir.mkpath(self.conf.index_path)
-
         # Signal ahndling for browse buttons.
         self.connect(self.root_index_button, SIGNAL("clicked()"), self.conf_root_index_dir)
         self.connect(self.index_name_button, SIGNAL("clicked()"), self.conf_index_name_dir)
@@ -84,9 +76,9 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         f_dialog.setFileMode(QFileDialog.DirectoryOnly)
         f_dialog.setOption(QFileDialog.ShowDirsOnly, True)
         res = f_dialog.exec_()
-        if res:
-            self.root_index_line.setText(f_dialog.selectedFiles()[0])
-            self.conf.root_index = self.root_index_line.text()
+
+        self.root_index_line.setText(f_dialog.selectedFiles()[0])
+        self.conf.root_index = self.root_index_line.text()
 
     def conf_index_name_dir(self):
         """
@@ -97,9 +89,13 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         f_dialog.setFileMode(QFileDialog.DirectoryOnly)
         f_dialog.setOption(QFileDialog.ShowDirsOnly, True)
         res = f_dialog.exec_()
-        if res:
-            self.index_name_line.setText(f_dialog.selectedFiles()[0])
-            self.conf.index_name = self.index_name_line.text()
+        name = str(f_dialog.selectedFiles()[0])
+        pos = name.rfind("/")
+        if pos != -1:
+            name = name[pos + 1:]
+        self.index_name_line.setText(name)
+        self.conf.index_name = name
+        self.conf.index_path = self.conf.root_index + "/" + name
 
     def langPopulate(self):
         translationPath = sys.modules['ui.gui'].__path__[0] + '/i18n/'

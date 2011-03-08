@@ -16,7 +16,7 @@
 import os
 
 from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog, QDialog, QDialogButtonBox, QComboBox, QPushButton, QFormLayout, QHBoxLayout, QPixmap, QLabel, QApplication
-from PyQt4.QtCore import QObject, QString, SIGNAL, SLOT, Qt, QEvent
+from PyQt4.QtCore import QObject, QString, SIGNAL, SLOT, Qt, QEvent, QDir
 
 from api.taskmanager import *
 from api.taskmanager.taskmanager import * 
@@ -31,7 +31,6 @@ from ui.gui.dialog.preferences import Preferences
 from ui.gui.resources.ui_about import Ui_About
 from ui.gui.resources.ui_evidencedialog import Ui_evidenceDialog
 
-
 class Dialog(QObject):
   def __init__(self, parent):
      QObject.__init__(self)
@@ -45,7 +44,18 @@ class Dialog(QObject):
     """Open a preferences dialog"""
     
     pref = Preferences(self.parent)
-    pref.exec_()
+    ret = pref.exec_()
+    if ret:
+      pref.conf.root_index = pref.root_index_line.text()
+      pref.conf.index_name = pref.index_name_line.text()
+      pref.conf.index_path = pref.conf.root_index + "/" + pref.conf.index_name
+
+      root_index_dir = QDir(pref.conf.root_index)
+      if not root_index_dir.exists():
+        root_index_dir.mkpath(pref.conf.root_index)
+      default_index_dir = QDir(pref.conf.index_path)
+      if not default_index_dir.exists():
+        default_index_dir.mkpath(pref.conf.index_path)
 
   def addDevices(self):
        """Open a device list dialog"""
