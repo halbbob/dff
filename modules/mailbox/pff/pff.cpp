@@ -102,9 +102,12 @@ void pff::create_item()
    if (number_of_sub_items > 0)
    {
      //export_handle_export_sub_items
-     this->export_sub_items(pff_root_item, this->parent);
+     Node* mbox = new Node(std::string("mailbox"), 0, NULL, this); //this facilitate the registering of the tree
+//     this->export_sub_items(pff_root_item, this->parent);
+     this->export_sub_items(pff_root_item, mbox);
 //     if (libpff_item_free(&pff_root_item, &(this->pff_error)) != 1)
   //     throw vfsError(std::string("Unable to free root item."));
+     this->registerTree(this->parent, mbox);
    }  
 
  
