@@ -25,6 +25,17 @@
 #include <CLucene/search/SearchHeader.h>
 #include "../include/node.hpp"
 
+class	AttributeIndex : public AttributesHandler
+{
+public:
+  AttributeIndex(std::string name, std::string query);
+
+  virtual Attributes 	attributes(class Node*);
+
+private:
+  std::string	__query;
+};
+
 class	Index
 {
   /*!

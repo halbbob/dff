@@ -23,12 +23,26 @@
 //#include <QtDebug>
 
 #include "../include/vfs.hpp"
-#include "../include/node.hpp"
-#include "../include/eventhandler.hpp"
+//#include "../include/node.hpp"
+//#include "../include/eventhandler.hpp"
 #include "../include/vlink.hpp"
 #include "../include/index.hpp"
 
 #include <CLucene/queryParser/QueryParser.h>
+
+AttributeIndex::AttributeIndex(std::string name, std::string query) : AttributesHandler(name)
+{
+  this->__query = query;
+}
+
+Attributes 	AttributeIndex::attributes(Node * node)
+{
+  Attributes	vm;
+  Variant * v = new Variant(this->__query);
+
+  vm["query"] = v;
+  return vm;
+}
 
 IndexSearch::IndexSearch()
   : __index(NULL), __location(".")
@@ -106,19 +120,14 @@ void	IndexSearch::__displayResults(lucene::search::Hits * h)
   Node * root = vfs.root;
   Node * query = this->__newIndexation(root);
 
-  // query->setStaticAttribute("Query", new Variant(this->__query));
-
   std::cout << "found " << h->length() << " hits." << std::endl;
-
   for (int32_t i = 0 ; i < h->length(); i++)
     {
-      std::cout << "passage : " << i << std::endl;
       std::string	node_name;
-      lucene::document::Document	doc = h->doc(i);
+      lucene::document::Document & doc = h->doc(i);
       Node *		node = NULL;
 
       node_name = narrow(doc.get(_T("path")));
-      std::cout << "node name :" << node_name << std::endl;
       node = vfs.GetNode(node_name);
       if (node == NULL)
 	{
@@ -127,8 +136,11 @@ void	IndexSearch::__displayResults(lucene::search::Hits * h)
       else
 	VLink * l = new VLink(node, query, node->name());
     }
-  //  DEvent * e = new DEvent();
-  //  vfs.notify(e);
+
+  // to refresh the gui
+  event * e = new event();
+  e->value = new Variant(query);
+  VFS::Get().notify(e);
 }
 
 Node *	IndexSearch::__newIndexation(Node * root)
@@ -136,8 +148,16 @@ Node *	IndexSearch::__newIndexation(Node * root)
   Node * query = NULL;
   Node * tmp = NULL;
   VFS &	vfs = VFS::Get();
+  std::string	node_name;
+  AttributeIndex * attr = new AttributeIndex("index", this->__query);
 
-  query = new Node("Search");
+  if (this->__query.size() > 10)
+    node_name = "Results::" + this->__query.substr(0, 10) + "...";
+  else
+    node_name = "Results::" + this->__query;
+
+  query = new Node(node_name);
+  query->registerAttributes(attr);
 
   //  might need revert
   tmp = vfs.GetNode("/Searched items");
