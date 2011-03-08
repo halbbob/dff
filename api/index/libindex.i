@@ -33,4 +33,11 @@
 %}
 
 %include "../include/export.hpp"
-%include "../include/index.hpp"
+
+class IndexSearch
+{
+public:
+  IndexSearch();
+  IndexSearch(const std::string& location);
+  void  exec_query(const std::string& query, const std::string& must_contain_query = "");
+};
