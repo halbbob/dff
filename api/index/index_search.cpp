@@ -114,7 +114,7 @@ void	IndexSearch::__displayResults(lucene::search::Hits * h)
     {
       std::cout << "passage : " << i << std::endl;
       std::string	node_name;
-      lucene::document::Document	doc = h->doc(i);
+      lucene::document::Document&	doc = h->doc(i);
       Node *		node = NULL;
 
       node_name = narrow(doc.get(_T("path")));
