@@ -35,31 +35,33 @@ class K800IRec(QWidget, mfso):
        self.__disown__()
 
     def start(self, args):
+        self.vfs = vfs.vfs()
+        self.dumpnumber = 1
+        try :
+          self.nor = args['nor'].value()
+          self.nand = args['nand'].value()
+        except IndexError:
+	  return
         try:
-            self.vfs = vfs.vfs()
-            self.dumpnumber = 1
-            self.nor = args['nor'].value()
-            self.nand = args['nand'].value()
-            self.spareSize = args["spare-size"].value()
-            self.pageSize = args["page-size"].value()
-            if self.pageSize == None or self.pageSize < 0:
-                self.pageSize = 512
-            if self.spareSize == None or self.spareSize == -1:
-                self.spareSize = 16
-            self.k800n = Node("k800-base")
-            self.k800n.__disown__()
-            self.boot = SEBootBlock(self.nor, self.pageSize) 
-            self.blockSize = self.boot.blockSize
-            self.nandClean = SpareNode(self,  self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
-            self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
-            self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot)
-            self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
-            self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
+          self.spareSize = args["spare-size"].value()
+        except IndexError:
+          self.spareSize = 16
+        try:
+          self.pageSize = args["page-size"].value()
+        except IndexError:
+	  self.pageSize = 512
+        self.k800n = Node("k800-base")
+        self.k800n.__disown__()
+        self.boot = SEBootBlock(self.nor, self.pageSize) 
+        self.blockSize = self.boot.blockSize
+        self.nandClean = SpareNode(self,  self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
+        self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
+        self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot)
+        self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
+        self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
 
-            self.tables = Tables(self.fullFs, self.blockSize)
-            self.registerTree(self.nand, self.k800n)
-        except KeyError:
-            pass
+        self.tables = Tables(self.fullFs, self.blockSize)
+        self.registerTree(self.nand, self.k800n)
  
     def createDump(self):
        text, ok = QInputDialog.getText(self, "Create dump", "dump name:", QLineEdit.Normal, "k800-restore-" + str(self.dumpnumber)) 
@@ -160,14 +162,14 @@ class K800iRecover(Module):
                            "input": Argument.Required|Argument.Single|typeId.Node})
     self.conf.addArgument({"name": "spare-size",
                            "description": "size of nand spare",
-                           "input": Argument.Required|Argument.Single|typeId.UInt32,
+                           "input": Argument.Optional|Argument.Single|typeId.UInt32,
                            "parameters": {"type": Parameter.Editable,
-                                          "predefined": [8, 16, 32, 64]}
+                                          "predefined": [16, 8, 32, 64]}
                            })
     self.conf.addArgument({"name": "page-size",
                            "description": "size of nand page",
-                           "input": Argument.Required|Argument.Single|typeId.UInt32,
+                           "input": Argument.Optional|Argument.Single|typeId.UInt32,
                            "parameters": {"type": Parameter.Editable,
-                                          "predefined": [256, 512, 1024, 2048, 4096]}
+                                          "predefined": [512, 256, 1024, 2048, 4096]}
                            })
     self.tags = "Mobile"
