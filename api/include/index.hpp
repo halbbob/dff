@@ -17,7 +17,6 @@
 #ifndef __INDEX_H__
 # define __INDEX_H__
 
-//#include <QString>
 #include <string>
 
 #include <CLucene.h>
@@ -178,7 +177,6 @@ private:
 
   std::string	__query;
   std::string	__must;
-  Index *	__index;
   std::string	__location;
 };
 

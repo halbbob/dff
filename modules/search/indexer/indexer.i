@@ -55,6 +55,7 @@ namespace std
 from api.module.module import *
 from api.types.libtypes import Argument, typeId, Variant, Parameter
 from ui.gui.configuration.conf import Conf
+from PyQt4.QtCore import QDir
 
 class INDEXER(Module):
   """This module is a dff module."""
