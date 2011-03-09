@@ -15,8 +15,12 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog
-from api.index.libindex import *
+from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog, QMessageBox
+try:
+  from api.index.libindex import *
+  IndexerFound = True
+except ImportError:
+  IndexerFound = False
 from ui.gui.configuration.conf import Conf
 
 class NodeFilterBox(QWidget):
@@ -75,12 +79,18 @@ class NodeFilterBox(QWidget):
       self.parent.currentProxyModel().setSortCaseSensitivity(caseSensitivity)
 
   def search(self, changed):
-    dff_conf = Conf()
-    if not self.filterContentLineEdit.text().isEmpty():
-      search_engine = IndexSearch(str(dff_conf.index_path))
-      qquery = str(self.filterContentLineEdit.text())
-      qquery = qquery.lstrip()
-      search_engine.exec_query(qquery, "")
+    if IndexerFound:
+      dff_conf = Conf()
+      if not self.filterContentLineEdit.text().isEmpty():
+        search_engine = IndexSearch(str(dff_conf.index_path))
+        qquery = str(self.filterContentLineEdit.text())
+        qquery = qquery.lstrip()
+        search_engine.exec_query(qquery, "")
+      else:
+        msg = QMessageBox.warning(self, "DFF", "Please fill the contain field", QMessageBox.Ok)
+    else:
+      msg = QMessageBox.warning(self, "DFF", "Indexer module not installed", QMessageBox.Ok)
+
 
   def openDictionary(self, changed):
     dialog = QFileDialog()
