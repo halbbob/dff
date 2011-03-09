@@ -40,7 +40,8 @@ endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set(carver_files
   __init__.py
   CARVER.py
-  interface.py
+  carvergui.py
+  carverui.py
   predef.py
   userdef.py
   typeSelection.py

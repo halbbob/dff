@@ -74,9 +74,7 @@
 {
   try
     {
-      SWIG_PYTHON_THREAD_BEGIN_ALLOW;
       $action
-      SWIG_PYTHON_THREAD_END_ALLOW;
     }
   catch (vfsError &e)
     {

@@ -12,21 +12,16 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-from typeSelection import *
-
+from PyQt4.QtGui import QWidget, QGroupBox, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QIcon, QMessageBox
+from PyQt4.Qt import SIGNAL
+from modules.search.carver.utils import QSpinBox
 import string
 
 import time
 
-class userPattern(QGroupBox):
+class userPattern(QWidget):
     def __init__(self):
-        QGroupBox.__init__(self, "User defined patterns")
-        self.setCheckable(True)
-        self.setChecked(False)
+        QWidget.__init__(self)
         self.grid = QGridLayout()
         self.setLayout(self.grid)
         self.patternArea()

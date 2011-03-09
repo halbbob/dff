@@ -62,7 +62,7 @@ class BoyerMoore: public algorithm
   EXPORT virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen, unsigned int *count);
   EXPORT virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen);
   EXPORT unsigned char			*generateBcs(pattern *p);
-  EXPORT int				search(unsigned char *haystack, unsigned int len, pattern *p, unsigned char *bcs);
+  EXPORT int				search(unsigned char *haystack, unsigned int len, pattern *p, unsigned char *bcs, bool debug=false);
   EXPORT virtual bool			preprocess();
   EXPORT virtual bool			setNeedle(unsigned char *needle);
   EXPORT virtual bool			setNeedleSize(unsigned int size);
