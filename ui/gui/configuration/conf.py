@@ -26,9 +26,13 @@ class Conf():
             self.initLanguage()
 
             # indexes configuration
-            self.root_index = QDir.homePath() + "/.dff/indexes"
+            self.root_index = QDir.homePath() + "/.dff_conf/indexes"
             self.index_name = "default"
             self.index_path = self.root_index + "/" + self.index_name
+
+            dir = QDir(self.index_path)
+            if not dir.exists():
+                dir.mkpath(self.index_path)
 
         def initLanguage(self):
             self.language = "en"
