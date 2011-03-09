@@ -16,29 +16,27 @@
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import typeId, Argument, Variant
 
 class EVAL(Script):
   def __init__(self):
     Script.__init__(self, "eval")
 
   def start(self, args):
-    expr = args.get_string("expression")
-    try :
-      hex = args.get_bool("hex")
-    except KeyError:
-      hex = None
+    try:
+      expr = args["expression"].value()
+    except IndexError:
+       raise envError("modules evalexp need an expression to evaluate")
     buff = eval(expr)
-    if hex:
-      self.res.add_const("result", "0x%x" % buff)
-    else:
-      self.res.add_const("result", buff)
+    self.res["result"] = Variant(buff)
  
 class evalexp(Module):
   """Calculate a mathematical expression
 Ex: evalexp 2+2"""
   def __init__(self):
     Module.__init__(self, "eval", EVAL)
-    self.conf.add("expression", "string", False, "expression")
-    self.conf.add("hex", "bool", True, "Display results as an hexadecimal value")
-    self.tags = "process"
-
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+			   "name":"expression",
+			   "description":"expression to compute"
+			})
+    self.tags = "builtins"

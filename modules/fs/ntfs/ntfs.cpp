@@ -523,6 +523,7 @@ NtfsNode			*Ntfs::_createRegularADSNodes(uint64_t offset,
     returnNode = new NtfsNode(name.str(), data[iADS]->getSize(), currentDir, this,
 			      true, metaFName, metaSI, _mftEntry, mftID,
 			      offset);
+    returnNode->node(_node);
     returnNode->data(data[iADS]);
   }
 

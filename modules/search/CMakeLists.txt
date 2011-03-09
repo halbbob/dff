@@ -18,7 +18,6 @@ add_subdirectory (carver)
 
 set(search_srcs
   __init__.py
-#  find.py
 )
 
 install_file(search ${search_srcs})
