@@ -399,29 +399,31 @@ class K800I(mfso):
       try:
         self.nor = args['nor'].value()
         self.nand = args['nand'].value()
+      except IndexError:
+        return 
+      try: 
         self.spareSize = args["spare-size"].value()
+      except IndexError:
+	self.spareSize = 16
+      try:
         self.pageSize = args["page-size"].value()
-        if self.pageSize == None or self.pageSize < 0:
-          self.pageSize = 512
-        if self.spareSize == None or self.spareSize == -1:
-          self.spareSize = 16
-        self.k800n = Node("k800")
-        self.k800n.__disown__()
-        self.boot = SEBootBlock(self.nor, self.pageSize) 
-        self.blockSize = self.boot.blockSize
-        self.nandClean = SpareNode(self, self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
-        self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
-        self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot) 
-        self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
-        self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
-        self.tables = Tables(self.fullFs, self.blockSize)
-        self.virtual = VirtualMap(self, self.k800n, self.fullFs, self.tables, "virtual", self.blockSize)
+      except IndexError:
+	self.pageSize = 512
+      self.k800n = Node("k800")
+      self.k800n.__disown__()
+      self.boot = SEBootBlock(self.nor, self.pageSize) 
+      self.blockSize = self.boot.blockSize
+      self.nandClean = SpareNode(self, self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
+      self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
+      self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot) 
+      self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
+      self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
+      self.tables = Tables(self.fullFs, self.blockSize)
+      self.virtual = VirtualMap(self, self.k800n, self.fullFs, self.tables, "virtual", self.blockSize)
 
-        self.separt =  SEPartitionBlock(self.virtual, self.boot.partitionblock, self.blockSize)
-        self.createPart()
-        self.registerTree(self.nand, self.k800n)
-      except KeyError:
-        pass
+      self.separt =  SEPartitionBlock(self.virtual, self.boot.partitionblock, self.blockSize)
+      self.createPart()
+      self.registerTree(self.nand, self.k800n)
 
     def createPart(self):
       for part in self.separt.partTable:
