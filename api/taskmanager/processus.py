@@ -85,7 +85,7 @@ class Processus(Script):
          for err in err_trace:
            res += err
          print res
-         self.res["error"] = res
+         self.res["error"] = Variant(res)
          self.state = "fail"
          return
     try :
