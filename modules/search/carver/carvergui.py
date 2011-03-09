@@ -12,18 +12,16 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
-#from api.type.libtype import *
-from api.module import *
+from api.module.module import Module
+from api.module.script import Script
 from api.events.libevents import EventHandler, event
-from api.types.libtypes import typeId, Argument
+from api.types.libtypes import typeId, Argument, Parameter, VList, VMap, Variant
+from api.taskmanager.taskmanager import TaskManager
 
-from CARVER import *
+from PyQt4.QtGui import QWidget, QVBoxLayout, QGridLayout, QLabel, QProgressBar, QHBoxLayout, QCheckBox, QPushButton, QTabWidget
+from PyQt4.Qt import SIGNAL
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-from typeSelection import *
+from typeSelection import filetypes, wildcard
 
 import string
 
@@ -33,18 +31,6 @@ from predef import predefPattern
 from userdef import userPattern
 
 from modules.search.carver.utils import QFFSpinBox
-
-class worker(QThread):
-    def __init__(self, **kwargs):
-        QThread.__init__(self)
-        self.args = kwargs["toCarve"]
-        self.mapper = kwargs["mapper"]
-        self.startOffset = kwargs["start"]
-        self.aligned = kwargs["aligned"]
-
-    def run(self):
-        res = self.mapper(self.args, self.startOffset, self.aligned)
-        self.emit(SIGNAL("end(QString)"), QString(res))
 
 
 class carvingProcess(QWidget, EventHandler):
@@ -97,7 +83,13 @@ class carvingProcess(QWidget, EventHandler):
 
 
     def Event(self, e):
-        self.emit(SIGNAL("update"), e)
+        if e.type == event.SEEK:
+            self.emit(SIGNAL("update"), e)
+        elif e.type == event.OTHER:
+            if e.value.type() == typeId.String and e.value == "terminated":
+                self.end("")
+            else:
+                self.emit(SIGNAL("update"), e)
 
 
     def update(self, e):
@@ -121,24 +113,20 @@ class carvingProcess(QWidget, EventHandler):
             
 
 
-    def doJob(self, **kwargs):
-        self.kwargs = kwargs
-        self.factor = kwargs["factor"]
-        self.parsetime = kwargs["max"] / (10*1204*1024)
+    def doJob(self, filesize, factor, start):
+        self.factor = factor
+        self.parsetime = filesize / (10*1204*1024)
         self.elapsedLabel.setText("elapsed time:    00d00h00m00s")
         self.estimatedLabel.setText("estimated time: 00d00h00m00s")
         self.totalLabel.setText("total headers found: 0")
-        maxrange = int(kwargs["max"] / self.factor)
+        maxrange = int(filesize / self.factor)
         if maxrange > 2147483647:
             maxrange = 2147483647
-        self.currentProgress.setRange(kwargs["min"], maxrange)
+        self.currentProgress.setRange(0, maxrange)
         self.currentProgress.setValue(0)
-        self.workerThread = worker(**self.kwargs)
-        self.connect(self.workerThread, SIGNAL("end(QString)"), self.end)
         self.connect(self, SIGNAL("valueChanged(int)"), self.currentProgress.setValue)
         self.time = time.time()
         self.starttime = time.time()
-        self.workerThread.start()
         self.connect(self, SIGNAL("update"), self.update)
 
         
@@ -149,6 +137,7 @@ class carvingProcess(QWidget, EventHandler):
 
     def killJob(self):
         e = event()
+        e.thisown = False
         val = Variant(1)
         val.thisown = False
         e.value = val
@@ -156,22 +145,15 @@ class carvingProcess(QWidget, EventHandler):
         self.notify(e)
 
 
-class PyCarver(QWidget, mfso):
+class CarverGui(QWidget, Script):
     def __init__(self):
-        mfso.__init__(self, "carver")
-        #self.name = "carver"
-        #self.res = results(self.name)
-        self.carver = Carver()
-        setattr(self, "vread", self.carver.vread)
-        setattr(self, "vseek", self.carver.vseek)
-        setattr(self, "vopen", self.carver.vopen)
-        setattr(self, "vclose", self.carver.vclose)
-        self.mapperFunc = getattr(self.carver, "process")
-        #self.addNodesFunc = getattr(self.carver, "AddNodes")
-        self.tellFunc = getattr(self.carver, "tell")
+        Script.__init__(self, "carver-gui")
+        QWidget.__init__(self)
+        self.tm = TaskManager()
+
 
     def start(self, args):
-        self.carver.start(args)
+        self.args = args
         self.node = args["file"].value()
         self.name += " <" + self.node.name() + ">"
         self.filesize = self.node.size()
@@ -199,28 +181,30 @@ class PyCarver(QWidget, mfso):
         self.offsetLayout.addWidget(self.offsetLabel)
         self.offsetLayout.addWidget(self.offsetSpinBox)
 
+
     def setStateInfo(self, sinfo):
         self.stateinfo = str(sinfo)
+
 
     def draw(self):
         #define layout
         self.vbox = QVBoxLayout()
         self.setLayout(self.vbox)
+        self.tabwidgets = QTabWidget()
 
         #define all area
-        #self.user = userPattern()
+        self.user = userPattern()
         self.pp = predefPattern()
+        self.tabwidgets.addTab(self.pp, "Predefined")
+        self.tabwidgets.addTab(self.user, "User defined")
         self.startButton = QPushButton("Start")
         self.stopButton = QPushButton("Stop")
         self.alignedCheck = QCheckBox("match only at the beginning of sector")
         self.startOffset()
         self.carvingProcess = carvingProcess()
-        self.carver.connection(self.carvingProcess)
-        self.carvingProcess.connection(self.carver)
-        self.connect(self.carvingProcess, SIGNAL("stateInfo(QString)"), self.setStateInfo)
         
         #add widget and hide progress bars
-        self.vbox.addWidget(self.pp)
+        self.vbox.addWidget(self.tabwidgets)
         #self.vbox.addWidget(self.user)
         self.vbox.addLayout(self.offsetLayout)
         self.vbox.addWidget(self.alignedCheck)
@@ -237,11 +221,11 @@ class PyCarver(QWidget, mfso):
 
 
     def carvingEnded(self, res):
-        results = str(res).split("\n")
-        print results
-        for item in results:
-            begidx = item.find(":")
-            self.res.add_const(str(item[:begidx]), str(item[begidx+1:] + "\n"))
+        #results = str(res).split("\n")
+        #print results
+        #for item in results:
+        #    begidx = item.find(":")
+        #    self.res.add_const(str(item[:begidx]), str(item[begidx+1:] + "\n"))
         self.startButton.setEnabled(True)
         self.stopButton.setEnabled(False)
 
@@ -252,35 +236,68 @@ class PyCarver(QWidget, mfso):
 
 
     def createContext(self, selected):
-        toCarve = listDescr()
-        toCarve.thisown = False
+        patterns = VList()
+        patterns.thisown = False
         for key, items in selected.iteritems():
             for item in items:
+                pattern = VMap()
+                pattern.thisown = False
                 descr = filetypes[key][item]
+                filetype = Variant(item, typeId.String)
+                filetype.thisown = False
                 for p in descr:
-                    header = pattern()
-                    footer = pattern()
+                    pattern["filetype"] = filetype
+                    header = VMap()
                     header.thisown = False
+                    val = Variant(p[0], typeId.String)
+                    val.thisown = False
+                    header["needle"] = val
+                    val = Variant(len(p[0]), typeId.UInt32)
+                    val.thisown = False
+                    header["size"] = val
+                    footer = VMap()
                     footer.thisown = False
-                    header.needle = p[0]
-                    header.size = len(p[0])
-                    footer.needle = p[1]
-                    footer.size = len(p[1])
-                    if p[0].find(wildcard) != -1 or p[1].find(wildcard) != -1:
-                        header.wildcard = wildcard
-                        footer.wildcard = wildcard
+                    val = Variant(p[1], typeId.String)
+                    val.thisown = False
+                    footer["needle"] = val
+                    val = Variant(len(p[1]), typeId.UInt32)
+                    val.thisown = False
+                    footer["size"] = val
+                    if p[0].find(wildcard) != -1:
+                        val = Variant(wildcard, typeId.Char)
+                        val.thisown = False
+                        header["wildcard"] = val
                     else:
-                        header.wildcard = ""
-                        footer.wildcard = ""
-                    d = description()
-                    d.thisown = False
-                    d.header = header
-                    d.footer = footer
-                    d.type = item
-                    d.window = p[2]
-                    d.aligned = False
-                    toCarve.append(d)
-        return toCarve
+                        val = Variant("", typeId.Char)
+                        val.thisown = False
+                        header["wildcard"] = val
+                    if p[1].find(wildcard) != -1:
+                        val = Variant(wildcard, typeId.Char)
+                        val.thisown = False
+                        footer["wildcard"] = val
+                    else:
+                        val = Variant("", typeId.Char)
+                        val.thisown = False
+                        footer["wildcard"] = val
+                    vheader = Variant(header)
+                    vheader.thisown = False
+                    pattern["header"] = vheader
+                    vfooter = Variant(footer)
+                    vfooter.thisown = False
+                    pattern["footer"] = vfooter
+                    pattern["window"] = Variant(int(p[2]), typeId.UInt32)
+                    if self.alignedCheck.isChecked():
+                        val = Variant(True, typeId.Bool)
+                        val.thisown = False
+                        pattern["aligned"] = val
+                    else:
+                        val = Variant(False, typeId.Bool)
+                        val.thisown = False
+                        pattern["aligned"] = val
+                    patterns.append(pattern)
+        vpatterns = Variant(patterns)
+        vpatterns.thisown = False
+        return vpatterns
         
 
     def startCarving(self):
@@ -288,24 +305,33 @@ class PyCarver(QWidget, mfso):
         self.stopButton.setEnabled(True)
         self.stopButton.setDown(False)
         selected = self.pp.getChecked()
-        toCarve = self.createContext(selected)
+        patterns = self.createContext(selected)
+        args = VMap()
+        args.thisown = False
+        args["patterns"] = patterns
+        args["file"] = self.args["file"]
+        startoff = Variant(self.offsetSpinBox.value(), typeId.UInt64)
+        startoff.thisown = False
+        args["start-offset"] = startoff
         factor = round(float(self.filesize) / 2147483647)
         if factor == 0:
             factor = 1
-        carvingArgs = {"min": 0, "max": self.filesize, "toCarve": toCarve, 
-                       "mapper": self.mapperFunc,
-                       "factor": factor, "start": self.offsetSpinBox.value(),
-                       "aligned": self.alignedCheck.isChecked()}
-        self.carvingProcess.show()
-        self.carvingProcess.doJob(**carvingArgs)
+        proc = self.tm.add("carver", args, ["gui", "thread"])
+        if proc:
+            self.carvingProcess.doJob(self.filesize, factor, self.offsetSpinBox.value())
+            self.carvingProcess.show()
+            self.carvingProcess.connection(proc.inst)
+            proc.inst.connection(self.carvingProcess)
+            self.connect(self.carvingProcess, SIGNAL("stateInfo(QString)"), self.setStateInfo)
 
 
-class interface(Module):
+class carvergui(Module):
   """Search for header and footer of a selected mime-type in a node and create the corresponding file.
      You can use this modules for finding deleted data or data in slack space or in an unknown file system."""
   def __init__(self):
-    Module.__init__(self, 'carver', PyCarver)
+    Module.__init__(self, 'carvergui', CarverGui)
     self.conf.addArgument({"name": "file",
                            "input": typeId.Node|Argument.Single|Argument.Required,
                            "description": "Node to search data in"})
     self.tags = "Search"
+

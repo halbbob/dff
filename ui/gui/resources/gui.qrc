@@ -108,6 +108,8 @@
     <file alias="uncomment.png">icons/actions/uncomment.png</file>
     <file alias="run.png">icons/actions/agt_runit.png</file>
     <file alias="ide.png">icons/app/ksnake.png</file>
+    <file alias="index_search.png">icons/app/index_search.png</file>
+    <file alias="index_search_64x64.png">icons/app/index_search_64x64.png</file>
 
     <file alias="folder_inbox">icons/mailbox/folder_inbox.png</file>
     <file alias="folder_sent_mail">icons/mailbox/folder_sent_mail.png</file>

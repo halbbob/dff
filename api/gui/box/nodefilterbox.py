@@ -15,8 +15,13 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog
-from api.index.libindex import *
+from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog, QMessageBox
+try:
+  from api.index.libindex import *
+  IndexerFound = True
+except ImportError:
+  IndexerFound = False
+from ui.gui.configuration.conf import Conf
 
 class NodeFilterBox(QWidget):
   """
@@ -25,19 +30,6 @@ class NodeFilterBox(QWidget):
   def __init__(self, parent):
     QWidget.__init__(self)
     self.parent = parent
-    # create GUI for filtering node by names
-    self.caseSensitivity = QCheckBox(self.tr("Case sensitivity"))
-    self.recurse = QCheckBox(self.tr("Search recursively"))
-    self.quickSearch = QCheckBox(self.tr("Quick search"))
-    self.quickSearch.setTristate(False)
-    self.quickSearch.setChecked(0)
-
-    self.filterPatternLineEdit = QLineEdit()
-    self.filterPatternLabel = QLabel(self.tr("Pattern:"))
-    self.filterPatternLabel.setEnabled(True)
-    self.filterPatternLineEdit.setEnabled(True)
-    self.filterPatternLabel.setBuddy(self.filterPatternLineEdit)
-    self.filterPatternLineEdit.setText("")
 
     # create the GUI for searching within the content of a node
     self.filterContentLineEdit = QLineEdit()
@@ -45,52 +37,19 @@ class NodeFilterBox(QWidget):
     self.filterContentLabel.setBuddy(self.filterContentLineEdit)
     self.filterContentLineEdit.setText("")
 
-    # widgets to load a dictionnary
-    self.dictLabel = QLabel(self.tr("Dictionnary:"))
-    self.dictionnary = QLineEdit()
-    self.dictionnary.setText("")
-    self.openDict = QPushButton(self.tr("Browse"))
-
-    self.namesDictLabel = QLabel(self.tr("Name list:"))
-    self.namesDictionnary = QLineEdit()
-    self.namesDictionnary.setText("")
-    self.openDictNames = QPushButton(self.tr("Browse"))
-
     # create the button used to launch the search
     self.searchButton = QPushButton(self.tr("&Search"))
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.filterPatternLineEdit.textChanged.connect(self.filterRegExpChanged)
       self.searchButton.clicked.connect(self.search)
-      self.quickSearch.stateChanged.connect(self.quickSearchStateChanged)
-      self.openDict.clicked.connect(self.openDictionary)
-      self.openDictNames.clicked.connect(self.openNamesDictionary)
     else:
-      QtCore.QObject.connect(self.filterPatternLineEdit, SIGNAL("textChanged(QString)"), self.filterRegExpChanged)
       QtCore.QObject.connect(self.searchButton, SIGNAL("clicked(bool)"), self.search)
-      QtCore.QObject.connect(self.openDict, SIGNAL("clicked(bool)"), self.openDictionary)
-      QtCore.QObject.connect(self.quickSearch, SIGNAL("stateChanged(int)"), self.quickSearchStateChanged)
-      QtCore.QObject.connect(self.openDictNames, SIGNAL("clicked(bool)"), self.openNamesDictionary)
 
     # adding all widgets in a QGridLayout
     proxyLayout = QGridLayout()
-    proxyLayout.addWidget(self.filterPatternLabel, 0, 0)
-    proxyLayout.addWidget(self.filterPatternLineEdit, 0, 1, 1, 3)
-    proxyLayout.addWidget(self.namesDictLabel, 0, 4)
-    proxyLayout.addWidget(self.namesDictionnary, 0, 5)
-    proxyLayout.addWidget(self.openDictNames, 0, 6)
-
-    proxyLayout.addWidget(self.filterContentLabel, 1, 0)
-    proxyLayout.addWidget(self.filterContentLineEdit, 1, 1, 1, 3)
-    proxyLayout.addWidget(self.dictLabel, 1, 4)
-    proxyLayout.addWidget(self.dictionnary, 1, 5)
-    proxyLayout.addWidget(self.openDict, 1, 6)
-
-    proxyLayout.addWidget(self.caseSensitivity, 2, 0)
-    proxyLayout.addWidget(self.quickSearch, 2, 1)
-    proxyLayout.addWidget(self.recurse, 2, 2)
-
-    proxyLayout.addWidget(self.searchButton, 2, 6)
+    proxyLayout.addWidget(self.filterContentLabel, 0, 0)
+    proxyLayout.addWidget(self.filterContentLineEdit, 0, 1, 1, 3)
+    proxyLayout.addWidget(self.searchButton, 0, 4)
 
     # set the QGridLayout in the current widget and make it visible
     self.setLayout(proxyLayout)
@@ -120,13 +79,18 @@ class NodeFilterBox(QWidget):
       self.parent.currentProxyModel().setSortCaseSensitivity(caseSensitivity)
 
   def search(self, changed):
-    if not self.filterContentLineEdit.text().isEmpty():
-      search_engine = IndexSearch(".")
-      qquery = str(self.filterContentLineEdit.text())
-      qquery = qquery.lstrip()
-      search_engine.exec_query(qquery, "")
-    elif not self.dictionnary.text().isEmpty():
-      print "to be done"
+    if IndexerFound:
+      dff_conf = Conf()
+      if not self.filterContentLineEdit.text().isEmpty():
+        search_engine = IndexSearch(str(dff_conf.index_path))
+        qquery = str(self.filterContentLineEdit.text())
+        qquery = qquery.lstrip()
+        search_engine.exec_query(qquery, "")
+      else:
+        msg = QMessageBox.warning(self, "DFF", "Please fill the contain field", QMessageBox.Ok)
+    else:
+      msg = QMessageBox.warning(self, "DFF", "Indexer module not installed", QMessageBox.Ok)
+
 
   def openDictionary(self, changed):
     dialog = QFileDialog()

@@ -17,13 +17,23 @@
 #ifndef __INDEX_H__
 # define __INDEX_H__
 
-//#include <QString>
 #include <string>
 
 #include <CLucene.h>
 #include <CLucene/document/Field.h>
 #include <CLucene/search/SearchHeader.h>
 #include "../include/node.hpp"
+
+class	AttributeIndex : public AttributesHandler
+{
+public:
+  AttributeIndex(std::string name, std::string query);
+
+  virtual Attributes 	attributes(class Node*);
+
+private:
+  std::string	__query;
+};
 
 class	Index
 {
@@ -167,7 +177,6 @@ private:
 
   std::string	__query;
   std::string	__must;
-  Index *	__index;
   std::string	__location;
 };
 

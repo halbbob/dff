@@ -55,6 +55,5 @@ bool    EventHandler::notify(event *e)
 
   for (it = this->watchers.begin(); it != this->watchers.end(); it++)
     (*it)->Event(e);
-  //delete e;
   return true;
 }

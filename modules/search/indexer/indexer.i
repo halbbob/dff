@@ -54,16 +54,25 @@ namespace std
 %{
 from api.module.module import *
 from api.types.libtypes import Argument, typeId, Variant, Parameter
+from ui.gui.configuration.conf import Conf
+from PyQt4.QtCore import QDir
 
 class INDEXER(Module):
   """This module is a dff module."""
   def __init__(self):
     Module.__init__(self, 'indexer', Indexer)
+
+    self.dff_conf = Conf()
+    path = self.dff_conf.index_path
+
     self.conf.addArgument({"name": "node",
                            "description": "dir to index",
                            "input": Argument.Required|Argument.Single|typeId.Node})
-    self.conf.addArgument({"name": "ils",
-                           "description": "List inodes",
-                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.String,
+			   "name": "index",
+                           "description": "directory where the index will be stored",
+			   "parameters": {"type": Parameter.NotEditable,
+			   		 "predefined": [str(path)]}
+			   })
     self.tags = "Search"
 %}

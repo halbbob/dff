@@ -801,9 +801,12 @@ class TreeModel(QStandardItemModel, EventHandler):
     no node with the name `name` is found.
     """
     l = name.split("/")
+
+    node = None
     item = self.root_item
     l.pop(0) # remove the empty first element of the list
 
+    found = False
     for i in l:
       found = False
       for j in range(0, item.rowCount()): # find the node
@@ -831,6 +834,9 @@ class TreeModel(QStandardItemModel, EventHandler):
           found = False
       if not found:
         break
+
+    if node == None:
+      return
 
     if found == False:
       if node.parent().absolute() == parent.absolute():

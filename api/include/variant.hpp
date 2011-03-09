@@ -40,7 +40,7 @@ class typeId
 {
 private:
   
-  std::map<std::string, uint8_t>		mapping;
+  std::map<std::string, uint8_t>	mapping;
   std::map<uint8_t, std::string>	rmapping;
   EXPORT typeId();
   EXPORT ~typeId();
@@ -70,11 +70,12 @@ public:
       VTime = 13,
       Node = 14,
       Path = 15,
+      Argument = 16,
       // user types
-      VoidPtr = 16
+      VoidPtr = 17
     };
 
-  EXPORT uint8_t		getType(std::string type);
+  EXPORT uint8_t	getType(std::string type);
   EXPORT std::string	typeToName(uint8_t t);
 };
 
@@ -98,6 +99,7 @@ public:
   EXPORT Variant(vtime *vt);
   EXPORT Variant(class Node *node);
   EXPORT Variant(class Path *path);
+  EXPORT Variant(class Argument *argument);
   EXPORT Variant(std::list<class Variant*> l);
   EXPORT Variant(std::map<std::string, class Variant*> m);
   EXPORT Variant(void *user);
@@ -371,15 +373,16 @@ private:
   uint8_t	_type;
 union Data
 {
-  bool b;
-  char c;
-  int16_t s;
-  uint16_t us;
-  int32_t i;
-  uint32_t ui;
-  int64_t ll;
-  uint64_t ull;
-  void *ptr;
+  bool		b;
+  char		c;
+  int16_t	s;
+  uint16_t	us;
+  int32_t	i;
+  uint32_t	ui;
+  int64_t	ll;
+  uint64_t	ull;
+  std::string	*str;
+  void		*ptr;
 } __data;
 
 };

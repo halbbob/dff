@@ -19,57 +19,65 @@
 #include <string>
 #include <sstream>
 
-//#include <QString>
-//#include <QtDebug>
-
 #include "../include/vfs.hpp"
-#include "../include/node.hpp"
-#include "../include/eventhandler.hpp"
 #include "../include/vlink.hpp"
 #include "../include/index.hpp"
 
-#include <CLucene/queryParser/QueryParser.h>
+#include <CLucene.h> //queryParser/QueryParser.h>
 
-IndexSearch::IndexSearch()
-  : __index(NULL), __location(".")
+AttributeIndex::AttributeIndex(std::string name, std::string query) : AttributesHandler(name)
+{
+  this->__query = query;
+}
+
+Attributes 	AttributeIndex::attributes(Node * node)
+{
+  Attributes	vm;
+  Variant * v = new Variant(this->__query);
+
+  vm["query"] = v;
+  return vm;
+}
+
+IndexSearch::IndexSearch() : __location(".")
 {
 }
 
 IndexSearch::IndexSearch(const std::string & location)
-  : __index(NULL)
 {
   this->__location = location;
 }
 
 IndexSearch::~IndexSearch()
 {
-  if (__index)
-    delete __index;
 }
-
 
 void	IndexSearch::exec_query(const std::string & query,
 				const std::string & must_contain_query)
 {
+
+  lucene::analysis::standard::StandardAnalyzer * an = NULL;
+  lucene::search::IndexSearcher * index = NULL;
+
   if (this->__location.empty())
     return ;
   if (query.empty() && must_contain_query.empty())
     return ;
   this->__query = query;
   this->__must = must_contain_query;
-  lucene::analysis::standard::StandardAnalyzer * an 
-    = new lucene::analysis::standard::StandardAnalyzer;
-  lucene::search::IndexSearcher *	index = NULL;
 
   try
     {
-      index = new lucene::search::IndexSearcher(this->__location.c_str());
+      an = _CLNEW lucene::analysis::standard::StandardAnalyzer;
+      index = _CLNEW lucene::search::IndexSearcher(this->__location.c_str());
     }
-  catch(...)
+  catch(std::exception & e)
     {
-      std::cerr << "Cannot perfrorm search : IOException caught."
-		<< "Does the index exists ?"
+      std::cerr << "Cannot perfrorm search : " << e.what()
+		<< "Does the index exist ?"
 		<< std::endl;
+      _CLDELETE(index);
+      _CLDELETE(an);
       return ;
     }
 
@@ -82,22 +90,28 @@ void	IndexSearch::exec_query(const std::string & query,
     q = lucene::queryParser::QueryParser::parse(qq, _T("contents"), an);
   else
     q = __getMultiSearchQuery(must_contain_query, an);
+
+  // if the query is not NULL and the Hits * is not NULL create VLinks and then
+  // free resources before exiting.
   if (!q)
-    std::cerr << "An error occured while parsing the query." << std::endl;
+    std::cerr << "An error occured while parsing the query. Cannot proceed."
+	      << std::endl;
   else
     {
+      // Get hits and display results if not NULL.
       lucene::search::Hits *  h = index->search(q);
       if (!h)
-	{
-	  std::cerr << "cannot get hits" << std::endl;
-	}
+	std::cerr << "An error eccured while fetching results. Cannot proceed."
+		  << std::endl;
       else
 	{
 	  __displayResults(h);
-	  // _CLDELETE(h);
+	  _CLDELETE(h);
 	}
-      //      _CLDELETE(q);
+      _CLDELETE(q);
     }
+  _CLDELETE(index);
+  _CLDELETE(an);
 }
 
 void	IndexSearch::__displayResults(lucene::search::Hits * h)
@@ -106,29 +120,27 @@ void	IndexSearch::__displayResults(lucene::search::Hits * h)
   Node * root = vfs.root;
   Node * query = this->__newIndexation(root);
 
-  // query->setStaticAttribute("Query", new Variant(this->__query));
+  std::cout << "Found " << h->length() << " hits." << std::endl;
 
-  std::cout << "found " << h->length() << " hits." << std::endl;
-
+  // Browse all hits.
   for (int32_t i = 0 ; i < h->length(); i++)
     {
-      std::cout << "passage : " << i << std::endl;
       std::string	node_name;
-      lucene::document::Document&	doc = h->doc(i);
+      lucene::document::Document & doc = h->doc(i);
       Node *		node = NULL;
 
       node_name = narrow(doc.get(_T("path")));
-      std::cout << "node name :" << node_name << std::endl;
       node = vfs.GetNode(node_name);
       if (node == NULL)
-	{
-	  std::cerr << "Node '" << node_name << "' does not exist." << std::endl;
-	}
+	std::cerr << "Node '" << node_name << "' does not exist." << std::endl;
       else
 	VLink * l = new VLink(node, query, node->name());
     }
-  //  DEvent * e = new DEvent();
-  //  vfs.notify(e);
+
+  // to refresh the gui, otherwise results never appear in the VFS.
+  event * e = new event();
+  e->value = new Variant(query);
+  VFS::Get().notify(e);
 }
 
 Node *	IndexSearch::__newIndexation(Node * root)
@@ -136,42 +148,34 @@ Node *	IndexSearch::__newIndexation(Node * root)
   Node * query = NULL;
   Node * tmp = NULL;
   VFS &	vfs = VFS::Get();
+  std::string	node_name;
 
-  query = new Node("Search");
+  // instanciate a AttributeHandler
+  AttributeIndex * attr = new AttributeIndex("index", this->__query);
 
-  //  might need revert
+  // add the query as an attribute and register it
+  if (this->__query.size() > 10)
+    node_name = "Results::" + this->__query.substr(0, 10) + "...";
+  else
+    node_name = "Results::" + this->__query;
+  query = new Node(node_name);
+  query->registerAttributes(attr);
+
+  // add results in node "Searched items"
   tmp = vfs.GetNode("/Searched items");
   if (!tmp)
     return NULL;
   tmp->addChild(query);
   return query;
-  return NULL;
 }
 
 lucene::search::Query * IndexSearch::__getMultiSearchQuery(const std::string & query,
 						   lucene::analysis::standard::StandardAnalyzer * an)
 {
-  /*  QString	str(query.c_str());
-  QStringList	fields  = str.split(" ");
-  QCLuceneBooleanQuery * bo_q = new QCLuceneBooleanQuery;
-
-  for (int i = 0; i < fields.size(); ++i)
-    {
-      QCLuceneQuery * q = QCLuceneQueryParser::parse(fields.at(i), "contents", *an);
-      if (!q)
-	continue ;
-      bo_q->add(q, true, false);
-    }  
-  if (!this->__query.empty())
-    {
-      QCLuceneQuery * q2
-	= QCLuceneQueryParser::parse(QString(this->__query.c_str()),
-				     "contents", *an);
-      if (!q2)
-	return bo_q;
-      bo_q->add(q2, false, false);
-    }
-    return bo_q; */
+  /*
+    # TODO : research onmultiple keywords. By default clucene perform a logical OR
+    between the different terms of the search. The logical AND should be added.
+  */
   return NULL;
 }
 

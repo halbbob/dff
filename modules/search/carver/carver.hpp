@@ -59,12 +59,12 @@ private:
   int		        createTree();
   void			mapper();
   std::string		generateName(uint64_t start, uint64_t end);
-
+  description*		createDescription(std::map<std::string, Variant*>);
+  void			createContexts(std::list<Variant*> patterns);
 public:
   Carver();
   ~Carver();
   uint64_t		tell();
-  EXPORT string		process(list<description *> *d, uint64_t start, bool aligned);
   virtual void          start(std::map<std::string, Variant*> args);
   virtual void		Event(event* e);
   int			Read(char *buffer, unsigned int size);

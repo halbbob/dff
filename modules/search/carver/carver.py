@@ -1,100 +1,29 @@
-/*
- * DFF -- An Open Source Digital Forensics Framework
- * Copyright (C) 2009-2011 ArxSys
- * This program is free software, distributed under the terms of
- * the GNU General Public License Version 2. See the LICENSE file
- * at the top of the source tree.
- *  
- * See http: *www.digital-forensic.org for more information about this
- * project. Please do not directly contact any of the maintainers of
- * DFF for assistance; the project provides a web site, mailing lists
- * and IRC channels for your use.
- * 
- * Author(s):
- *  Frederic B. <fba@digital-forensic.org>
- */
-
-%module CARVER
-
-%include "std_string.i"
-%include "std_list.i"
-%include "std_set.i"
-%include "std_map.i"
-%include "windows.i"
-
-%{
-#include "variant.hpp"
-#include "vtime.hpp"
-#include "fso.hpp"
-#include "mfso.hpp"
-#include "node.hpp"
-#include "vlink.hpp"
-#include "vfile.hpp"
-#include "carver.hpp"
-#include "common.hpp"
-#include "../../../api/search/pattern.hpp"
-%}
+# DFF -- An Open Source Digital Forensics Framework
+# Copyright (C) 2009-2011 ArxSys
+# This program is free software, distributed under the terms of
+# the GNU General Public License Version 2. See the LICENSE file
+# at the top of the source tree.
+#  
+# See http://www.digital-forensic.org for more information about this
+# project. Please do not directly contact any of the maintainers of
+# DFF for assistance; the project provides a web site, mailing lists
+# and IRC channels for your use.
+# 
+# Author(s):
+#  Frederic B. <fba@digital-forensic.org>
 
 
-%import "../../../api/vfs/libvfs.i"
+from modules.search.carver.CARVER import CARVER
 
-
-%typemap(in) unsigned char *
-{
-if (!PyString_Check($input)) 
-   {
-      	 PyErr_SetString(PyExc_ValueError,"Expected a string");
-   	 return NULL;
-   }
-else
-   {
-	$1 = (unsigned char*)PyString_AsString($input);
-   }
-}
-
-%typemap(in) unsigned char
-{
-if (!PyString_Check($input))
-   {
-      	 PyErr_SetString(PyExc_ValueError,"Expected a string");
-   	 return NULL;
-   }
-else
-   {
-	if (PyString_Size($input) == 1)
-	   {
-		$1 = (unsigned char)PyString_AsString($input)[0];
-   	   }
-	else
-	  {
-		$1 = (unsigned char)PyString_AsString($input)[0];
-	  }
-   }
-}
-
-%include "carver.hpp"
-
-namespace std
-{
-  %template(listDescr)     list<description*>;
-};
-
-%pythoncode
-%{
-from api.module.module import Module
 from api.types.libtypes import Argument, typeId, Variant
 
-class CARVER(Module):
+class carver(Module):
     """Search for header and footer of a selected mime-type in a node and create the corresponding file.
     You can use this modules for finding deleted data or data in slack space or in an unknown file system."""
     def __init__(self):
-        Module.__init__(self, 'carver', Carver)
-
-        self.conf.addArgument({"name": "file",
-	                       "description": "file used by carver",
-                               "input": Argument.Required|Argument.Single|typeId.Node})
-
-        needle = Argument("needle", Argument.Required|Argument.Single|typeId.String, "represents the needle to search in the haystack")
+        Module.__init__(self, 'carver', CARVER)
+        
+        needle = Argument("needle", Argument.Required|Argument.Single|typeId.CArray, "represents the needle to search in the haystack")
         needle.thisown = False
 
         wildcard = Argument("wildcard", Argument.Required|Argument.Single|typeId.Char, "represents wildcard character used to match anything")
@@ -107,13 +36,11 @@ class CARVER(Module):
         header.addSubArgument(needle)
         header.addSubArgument(wildcard)
         header.addSubArgument(size)
-	header.thisown = False
 
         footer = Argument("footer", Argument.Optional|Argument.Single|typeId.Argument, "represents the footer, generally corresponding to the ending magic value")
         footer.addSubArgument(needle)
         footer.addSubArgument(wildcard)
         footer.addSubArgument(size)
-	footer.thisown = False
 
         filetype = Argument("filetype", Argument.Required|Argument.Single|typeId.String, "name of the filetype corresponding to the current pattern automaton")
         filetype.thisown = False
@@ -130,7 +57,7 @@ class CARVER(Module):
         blksize = Argument("blksize", Argument.Optional|Argument.Single|typeId.UInt32)
         blksize.thisown = False
 
-        pattern = Argument("pattern", Argument.Required|Argument.Single|typeId.Argument, "defines a matching context for carving files. Associate a header and a footer")
+        pattern = Argument("pattern", Argument.Required|Argument.List|typeId.Argument, "defines a matching context for carving files. Associate a header and a footer")
         pattern.addSubArgument(filetype)
         pattern.addSubArgument(header)
         pattern.addSubArgument(footer)
@@ -145,8 +72,3 @@ class CARVER(Module):
         patterns.addSubArgument(pattern)
 
         self.conf.addArgument(patterns)
-	self.conf.addArgument({"name": "start-offset",
-	                       "input": Argument.Single|Argument.Optional|typeId.UInt64,
-                      	       "description": "offset where to start carving"})
-	self.tags = "Search"
-%}

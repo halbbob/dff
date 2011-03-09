@@ -14,18 +14,12 @@
 #
 
 from api.vfs import *
-from api.types import libtypes
+from api.types.libtypes import VMap
 from api.exceptions.libexceptions import *
 
 class Script(object):
     def __init__(self, name):
 	self.name = name
         self.vfs = vfs.vfs()
-	self.res = {}
 	self.stateinfo = ""
-
-    #def stateInfo(self):
-        #return self.stateinfo
-#
-    #def res(self):
-        #return self._res
+        self.res = VMap()

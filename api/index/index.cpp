@@ -16,19 +16,15 @@
 
 #include <iostream>
 
+//#include <qt4/QtCore/QDir>
+
 #include <CLucene.h>
+#include <CLucene/util/Reader.h>
+#include <CLucene/util/Misc.h>
+#include <CLucene/util/dirent.h>
+
 #include "../include/vfile.hpp"
 #include "../include/index.hpp"
-/*
-  #include "qanalyzer_p.h"
-  #include "qfield_p.h"
-  #include "../index/includes/qindexreader_p.h"
-*/
-
-//#include "CLucene.h"
-/*#include "CLucene/util/Reader.h"
-#include "CLucene/util/Misc.h"
-#include "CLucene/util/dirent.h" */
 
 Index::Index()
   : __location(""), __writer(NULL), __doc(NULL), __an(NULL), __content(NULL)
@@ -44,9 +40,9 @@ Index::Index(const std::string & location)
 Index::~Index()
 {
   if (this->__writer)
-    delete this->__writer;
-  if (__an)
-    delete __an;
+    _CLDELETE (this->__writer);
+  if (this->__an)
+    _CLDELETE (__an); 
 }
 
 bool	Index::createIndex()
@@ -57,23 +53,30 @@ bool	Index::createIndex()
       return false;
     }
   lucene::index::IndexWriter *	wr = NULL;
-  lucene::analysis::standard::StandardAnalyzer * an
-    = new lucene::analysis::standard::StandardAnalyzer;
-  //  QString str(this->__location.c_str());
+  lucene::analysis::standard::StandardAnalyzer * an = NULL;
+  an = _CLNEW lucene::analysis::standard::StandardAnalyzer;
   try
     {
       if (lucene::index::IndexReader::indexExists(this->__location.c_str()))
 	{
 	  if (lucene::index::IndexReader::isLocked(this->__location.c_str()))
 	    lucene::index::IndexReader::unlock(this->__location.c_str());
-	  wr = new lucene::index::IndexWriter(this->__location.c_str(), an, false, true);
+	  wr = _CLNEW lucene::index::IndexWriter(this->__location.c_str(), an, false, true);
 	}
       else
-	wr = new lucene::index::IndexWriter(this->__location.c_str(), an, true, true);
+	{
+	  wr = _CLNEW lucene::index::IndexWriter(this->__location.c_str(), an, true, true);
+	}
+    }
+  catch(CLuceneError &)
+    {
+      std::cerr << "CLuceneError exception caught. Stopping module."
+		<<std::endl;
+      return false;
     }
   catch(std::exception & e)
     {
-      std::cerr << "Could not instanciate clucene::index::IndexWriter : "
+      std::cerr << "Could not allocate clucene object : "
 		<< e.what() << std::endl;
       return false;
     }
@@ -117,16 +120,18 @@ bool	Index::indexData(Node * data)
 
       STRCPY_AtoT(w_path, data->absolute().c_str(), data->absolute().size());
       w_path[data->absolute().size()] = 0;
-      this->__doc = new lucene::document::Document();
-      path = new lucene::document::Field(_T("path"), w_path,
-		       lucene::document::Field::STORE_YES
-		       | lucene::document::Field::INDEX_UNTOKENIZED);
+
+      this->__doc = _CLNEW lucene::document::Document();
+
+      path = _CLNEW lucene::document::Field(_T("path"), w_path,
+					    lucene::document::Field::STORE_YES
+					    | lucene::document::Field::INDEX_UNTOKENIZED);
       __indexContent(data, content);
       this->__doc->add(*path);
       this->__doc->add(*__content);
       this->__writer->addDocument((this->__doc), (this->__an));
-      //      delete w_path;
-      //      delete path;
+ 
+      _CLDELETE (this->__doc);
     }
   catch(std::exception & e)
     {
@@ -155,13 +160,12 @@ void	Index::__indexContent(Node * data, lucene::document::Field * content)
   while ((nb_read = vf->read(buf, 8192)))
     {
       buf[nb_read] = 0;
-      //QByteArray qarr = QByteArray(buf, nb_read);
       STRCPY_AtoT(tmp,buf, nb_read);
       tmp[nb_read] = 0;
       str.append(tmp);
       tot_read += nb_read;
     }
-  __content = new lucene::document::Field(_T("contents"), str.getBuffer(),
+  __content = _CLNEW lucene::document::Field(_T("contents"), str.getBuffer(),
 				lucene::document::Field::STORE_YES
 				| lucene::document::Field::INDEX_TOKENIZED);
   vf->close();
@@ -179,7 +183,7 @@ void	Index::addDocument(lucene::document::Document * doc)
 lucene::document::Document *	Index::newDocument()
 {
 
-	return NULL;
+  return NULL;
 }
 
 lucene::document::Document *	Index::document() const
