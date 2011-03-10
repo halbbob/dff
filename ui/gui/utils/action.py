@@ -23,7 +23,6 @@ class Action(QAction):
         self.__mainWindow = mainWindow
         self.type = type
         self.parent = parent
-        # if true return name of arg
         
         self.hasOneArg = Utils.hasOneNodeArg(text, type)
         if text <> 0 :
