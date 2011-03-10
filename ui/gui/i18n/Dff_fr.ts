@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr">
 <context>
     <name>About</name>
     <message>
@@ -513,6 +514,36 @@
         <source>DFF Documentation</source>
         <translation>Documentation de DFF</translation>
     </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="382"/>
+        <source>Help</source>
+        <translation>Aide</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="383"/>
+        <source>Open help</source>
+        <translation>Ouvrir l&apos;aide</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="384"/>
+        <source>Error while loading help</source>
+        <translation>Erreur durant le chargement de l&apos;aide</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="385"/>
+        <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
+        <translation>&lt;br&gt;Vous pouvez consulter l&apos;aide en ligne sur &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="386"/>
+        <source>Not an help file.</source>
+        <translation>N&apos;est pas un fichier d&apos;aide.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="387"/>
+        <source>Documentation path not found.</source>
+        <translation>Chemin non trouvé.</translation>
+    </message>
 </context>
 <context>
     <name>Modules</name>
@@ -669,84 +700,109 @@
         <translation>Préférences</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="24"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="34"/>
         <source>Global</source>
         <translation>Globale</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="90"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="38"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="98"/>
         <source>History file full path:</source>
         <translation>Chemin du fichier d&apos;historique :</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
+        <location filename="../resources/preferences.ui" line="48"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="115"/>
         <source>No history file</source>
         <translation>Pas de fichier d&apos;historique</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="80"/>
+        <location filename="../resources/preferences.ui" line="80"/>
         <source>Other settings</source>
-        <translation>Autre paramètres</translation>
+        <translation type="obsolete">Autre paramètres</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="88"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
         <source>No footprint</source>
         <translation>Aucune empreinte</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="137"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="160"/>
         <source>Language</source>
         <translation>Langage</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="143"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="166"/>
         <source>Interface language</source>
         <translation>Langue de l&apos;interface</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="174"/>
         <source>Use interface language:</source>
         <translation>Langue à utiliser :</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="196"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="219"/>
         <source>Indexation</source>
         <translation>Indexation</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="244"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="267"/>
         <source>Index files location</source>
         <translation>Emplacement des fichiers d&apos;index</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="252"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="275"/>
         <source>Root index</source>
         <translation>Index racine</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="279"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="350"/>
         <source>Browse</source>
         <translation>Parcourir</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="269"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="292"/>
         <source>Index name</source>
         <translation>Nom de l&apos;index</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="229"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="252"/>
         <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
         <translation>Sélectionner s&apos;il vous plaît l&apos;emplacement dans lequel vous souhaitez sauvegarder les fichier d&apos;index. Si ces répertoires n&apos;existent pas ils seront crées une fois les changements appliqués.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="40"/>
+        <source>Working environment</source>
+        <translation>Environement de travail</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <source>DFF user directory:</source>
+        <translation>Répertoire utilisateur DFF :</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="328"/>
+        <source>Help and documentation</source>
+        <translation>Aide et documentation</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="340"/>
+        <source>Full path of the help and documentation file:</source>
+        <translation>Chemin complet du fichier d&apos;aide et de documentation :</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="334"/>
+        <source>Help and documentation settings</source>
+        <translation>Paramètres de l&apos;aide et de la documentation</translation>
     </message>
 </context>
 <context>
@@ -1011,12 +1067,12 @@
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="111"/>
         <source>Results</source>
         <translation>Résultats</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="113"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
         <source>No results</source>
         <translation>Aucun résultat</translation>
     </message>

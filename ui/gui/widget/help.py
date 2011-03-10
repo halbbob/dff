@@ -21,13 +21,9 @@ from PyQt4.QtWebKit import QWebView, QWebPage, QWebFrame
 from PyQt4.QtHelp import QHelpEngine
 
 from api.loader import *
-from api.env import *
 from api.taskmanager.taskmanager import *
 
 from ui.gui.utils.utils import Utils
-from ui.gui.widget.stdio import IO 
-
-from ui.redirect import RedirectIO
 
 class Help(QDockWidget):
     def __init__(self, parent=None, path=None):

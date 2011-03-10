@@ -21,7 +21,7 @@ try:
   IndexerFound = True
 except ImportError:
   IndexerFound = False
-from ui.gui.configuration.conf import Conf
+from ui.conf import Conf
 
 class NodeFilterBox(QWidget):
   """
