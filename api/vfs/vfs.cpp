@@ -99,13 +99,10 @@ Node* VFS::GetNode(string path)
   return (tmp);
 }
 
-void	VFS::AddNode(Node *parent, Node* head) /* peut m ettre un s du coup mouahhaha
-ou alors chopper une lsite ce qui evite les for ....... koi ct comme ca avant ????
-*/
+void	VFS::AddNode(Node *parent, Node* head) /
 {
    parent->addChild(head);
    event* e = new event;
    e->value = new Variant(head);
-   //e->type = event::OPEN;
    this->notify(e);
 }

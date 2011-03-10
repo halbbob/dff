@@ -29,9 +29,9 @@ public:
   EXPORT  virtual 	~DataTypeHandler();
   EXPORT  virtual	std::string* type(class Node*) = 0;
   std::string		name;
-};  //* == module->start(node*) ......
+}; 
 
-class DataTypeManager /* : public DEventHandler*/
+class DataTypeManager 
 {
 private:
   EXPORT					DataTypeManager();
@@ -41,31 +41,14 @@ private:
   list<DataTypeHandler*>			handlers;
   uint32_t					idCounter;
   std::map<Node*, std::vector< uint32_t > >	nodeTypeId;
-  //std::map<Node*, NodeHandlerId *>;		nodeTypeId
   std::map<std::string, uint32_t >		uniq; 
   std::map<uint32_t, std::string>		typeIdString;
-  std::map<uint32_t, DataTypeHandler*>		typeIdHandler; //XXX if typeIdString is same for x handlers
+  std::map<uint32_t, DataTypeHandler*>		typeIdHandler; 
 public:
   EXPORT static DataTypeManager* 	Get();
   EXPORT bool						registerHandler(DataTypeHandler*);
   EXPORT std::map<std::string, uint32_t>&		foundTypes();
   EXPORT class Variant*				type(Node*);
 };
-
-
-
-
-/*
-class dataType()
-{
-  uint32_t	index;
-  string	type();
-  string	subtype();
-  //bool		isValid();
-//magic devient un module qui prend une node en entrer on met la gestion ailleurs
-magic.dataTypeManager.registerEngine(self)
-
-*/
-
 
 #endif

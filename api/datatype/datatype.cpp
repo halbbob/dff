@@ -37,12 +37,6 @@ bool		DataTypeManager::registerHandler(DataTypeHandler* handler)
   return true;
 }
 
-/*registerSubHandler("jpeg", jpegchecker)
-{
-  if type == jpeg:
-    return true / false -> type broken
-}*/
-
 Variant*	DataTypeManager::type(Node* node)
 {
   std::list<DataTypeHandler* >::iterator	handler;

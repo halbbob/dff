@@ -16,8 +16,6 @@
 
 #include <iostream>
 
-//#include <qt4/QtCore/QDir>
-
 #include <CLucene.h>
 #include <CLucene/util/Reader.h>
 #include <CLucene/util/Misc.h>

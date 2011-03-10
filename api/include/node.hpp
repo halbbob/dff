@@ -53,13 +53,8 @@ public:
 class Node
 {
 protected:
-  //uint64_t                    offset;
-
-  //XXX parent could be a list of Node. 
-  //    Ex: Raid reconstruction based on two nodes which
-  //    are aggregated to only one Node
   class Node*				__parent;
-  std::set<AttributesHandler*>		__attributesHandlers; //XXX set pour pas avoir de doublon 
+  std::set<AttributesHandler*>		__attributesHandlers; 
   std::vector<class Node *>		__children;
   uint32_t				__childcount;
   std::string				__name;
@@ -67,7 +62,7 @@ protected:
   class fso*				__fsobj;
   uint64_t				__common_attributes;
   //unsigned char			__checkState;
-  uint32_t				__id; //FIX for local and mfso / fso mess in reimplation of vopen 
+  uint32_t				__id; 
   EXPORT virtual Attributes		_attributes();
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
   EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, Variant**);

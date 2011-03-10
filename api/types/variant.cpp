@@ -759,7 +759,6 @@ std::string	Variant::typeName()
 
 bool	Variant::operator==(Variant* v)
 {
-  //std::cout << "Variant::operator==(Variant*)" << std::endl;
   std::stringstream	tmp;
 
   if (v == NULL)
@@ -781,8 +780,6 @@ bool	Variant::operator==(Variant* v)
 
       else if (this->_type == typeId::UInt16)
 	{
-	  //tmp << "this value: " << this->toUInt16() << " --- v value: " << v->toUInt16();
-	  //std::cout << tmp.str() << std::endl;
 	  return this->toUInt16() == v->toUInt16();
 	}
 
