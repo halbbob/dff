@@ -166,7 +166,6 @@ void		Extfs::run(uint64_t root_i_nb)
 			 addr, root_i_nb);
   __add_meta_nodes();
   __reserved_inodes();
-  //  __root_dir->i_list()->clear();
   this->stateinfo = "Finished";
 }
 
@@ -186,11 +185,6 @@ class ExtfsNode *	Extfs::createVfsNode(Node * parent, std::string name,
   if ((inode->file_mode & __IFMT) == __IFLNK)
     {
       size = inode->lower_size;
-      /*
-	ExtfsSymLinkNode * node
-	= new ExtfsSymLinkNode(name, size, parent, this, id);
-	node->setLink();
-      */
       ExtfsNode * node = new ExtfsNode(name, 0, parent, this, id);
       return node;
     }

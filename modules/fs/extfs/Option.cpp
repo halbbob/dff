@@ -47,7 +47,6 @@ void	Option::parse(Extfs * extfs)
 
   extfs->arg_get(__arguments, "jstat", &jstat);
   extfs->arg_get(__arguments, "blk", &blk);
-  //  extfs->arg_get(__arguments, "dir_ls", &dir_path);
   extfs->arg_get(__arguments, "fsstat", &fs_stat);
 
   extfs->arg_get(__arguments, "ils", &ils);
