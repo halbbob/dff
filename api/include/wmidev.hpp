@@ -26,13 +26,6 @@
 #include <iostream>
 #include <comdef.h>
 #include <Wbemidl.h>
-/*#include <windows.h>
-#include <objbase.h>
-#include <atlbase.h>
-#include <iostream>
-#include <wbemidl.h>
-#include <comutil.h>
-*/
 # pragma comment(lib, "wbemuuid.lib")
 
 using namespace std;

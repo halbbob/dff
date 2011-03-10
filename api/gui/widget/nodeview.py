@@ -26,18 +26,10 @@ class NodeViewEvent():
    self.VFS = VFS.Get()
 
   def keyReleaseEvent(self, e):
-    #index = self.currentIndex()
-    # index = self.model().mapToSource(index)
-    #if index.isValid():
-    #  node = self.VFS.getNodeFromPointer(index.internalId())
-    #  self.emit(SIGNAL("nodePressed"), e.key(), node)
-    #self.origView.keyReleaseEvent(self, e)
     pass
 
   def mouseReleaseEvent(self, e):
      index = self.indexAt(e.pos())
-#####
-#     index = self.model().mapToSource(index)
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
        self.emit(SIGNAL("nodeClicked"), e.button(), node)
@@ -45,8 +37,6 @@ class NodeViewEvent():
 
   def mouseDoubleClickEvent(self, e):
      index = self.indexAt(e.pos())
-#####     
-#     index = self.model().mapToSource(index)
      if index.isValid():
        node = self.VFS.getNodeFromPointer(index.internalId())
        self.emit(SIGNAL("nodeDoubleClicked"), e.button(), node) 
@@ -67,14 +57,13 @@ class NodeThumbsView(QListView, NodeViewEvent):
      self.setViewMode(QListView.IconMode)
 
      self.setResizeMode(QListView.Adjust)
-     #elf.setResizeMode(QListView.Fixed)
      self.setEnterInDirectory(True)
      self.setFlow(QListView.LeftToRight)
      self.setMovement(QListView.Static)
      self.setSelectionMode(QAbstractItemView.ExtendedSelection)
      self.setSelectionBehavior(QAbstractItemView.SelectRows)
 
-     self.setBatchSize(10) #augmenter ? 
+     self.setBatchSize(10) 
      self.setWordWrap(False)
      self.setTextElideMode(1)	
      self.setUniformItemSizes(True)

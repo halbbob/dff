@@ -148,7 +148,6 @@ class carvingProcess(QWidget, EventHandler):
 class CarverGui(QWidget, Script):
     def __init__(self):
         Script.__init__(self, "carver-gui")
-        QWidget.__init__(self)
         self.tm = TaskManager()
 
 
@@ -334,4 +333,3 @@ class carvergui(Module):
                            "input": typeId.Node|Argument.Single|Argument.Required,
                            "description": "Node to search data in"})
     self.tags = "Search"
-

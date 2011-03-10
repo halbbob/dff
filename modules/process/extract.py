@@ -43,15 +43,6 @@ class EXTRACT(Script):
     except KeyError:
       pass
     
-    #for node in self.nodes:
-    #  if node.isFile():
-    #    self.total += 1
-    #  if self.rec and self.hasChildren():
-    #    self.total += self.totalFiles(node.children())
-    #for node in self.nodes:
-    #  self.launch(node)
-
-
   def initContext(self, nodes, path, recursive):
     self.path = path
     self.recursive = recursive
@@ -73,12 +64,10 @@ class EXTRACT(Script):
     if self.total_files > 0:
       percent = (float(self.extracted_files) * 100) / self.total_files
       stats += "extracted file(s):   " + str(self.extracted_files) + "/" + str(self.total_files) + " (" + str(round(percent, 2)) + "%)\n"
-      #self.res.add_const("file(s) extracted successfully", "\n" + self.log["files"]["ok"])
 
     if self.total_folders > 0:
       percent = (float(self.extracted_folders) * 100) / self.total_folders
       stats += "extracted folder(s): " + str(self.extracted_folders) + "/" + str(self.total_folders) + " (" + str(round(percent, 2)) + "%)\n" 
-      #self.res.add_const("folder(s) extracted successfully", "\n" + self.log["folders"]["ok"])
 
     if self.ommited_files > 0:
       percent = (float(self.ommited_files) * 100) / self.total_files

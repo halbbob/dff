@@ -21,8 +21,9 @@ import sys, os, dircache, utils, re, types
 
 
 class Context():
-    def __init__(self, DEBUG = False):
+    def __init__(self, DEBUG = False, VERBOSITY = 0):
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
         self.confmanager = ConfigManager.Get()
         self.config = None
         self.keylessarg = None
@@ -39,7 +40,7 @@ class Context():
 
 
     def debug(self, dbg):
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY > 0:
             print dbg
 
 
@@ -99,7 +100,7 @@ class Context():
                     command[argname] = realparam
                 except:
                     raise
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY > 0:
             dbg += "\n    resulting command arguments:"
             for argname in command.keys():
                 dbg += "\n      " + argname + " --> " + str(command[argname])
@@ -286,14 +287,15 @@ class Context():
 
 
 class LineParser():
-    def __init__(self, DEBUG = False):
+    def __init__(self, DEBUG = False, VERBOSITY = 0):
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
         self.ctxs = []
         self.shellKeys = [";", "<", ">", "&", "|"]
 
 
     def debug(self, msg):
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY:
             print "  ", msg
 
 
@@ -311,17 +313,17 @@ class LineParser():
             dbg += "\n    endidx: " + str(endidx)
             self.contexts[self.ctxpos].threaded = True
             dbg += "\n    incrementing ctxpos"
-            ctx = Context(self.DEBUG)
+            ctx = Context(self.DEBUG, self.VERBOSITY - 1)
             self.contexts.append(ctx)
             self.ctxpos += 1
             if self.begidx > endidx: #and endidx != len(self.line):
                 self.scopeCtx = self.ctxpos
         elif key == "&&":
-            self.contexts.append(Context(self.DEBUG))
+            self.contexts.append(Context(self.DEBUG, self.VERBOSITY - 1))
             self.ctxpos += 1
             if self.begidx == startidx + 1:
                 self.scopeCtx = self.ctxpos
-                self.contexts.append(Context(self.DEBUG))
+                self.contexts.append(Context(self.DEBUG, self.VERBOSITY - 1))
                 self.ctxpos += 1
                 dbg += "\n    key found and begidx in the middle of " + key
         self.debug(dbg)
@@ -334,11 +336,12 @@ class LineParser():
         commands = []
         dbg = "\n ==== LineParser.makeCommands() ===="
         for context in self.contexts:
-            try:
-                commands.append((context.config.origin(), context.makeArguments(), context.threaded))
-            except (KeyError, ValueError):
-                raise
-        if self.DEBUG:
+            if context.config != None:
+                try:
+                    commands.append((context.config.origin(), context.makeArguments(), context.threaded, ""))
+                except (KeyError, ValueError) as error:
+                    commands.append((context.config.origin(), None, context.threaded, str(error)))
+        if self.DEBUG and self.VERBOSITY:
             dbg += "\n    stacked commands:"
             for command in commands:
                 dbg += "\n      command name: " + command[0]
@@ -362,7 +365,7 @@ class LineParser():
         dbg += "\n    line: |" + line + "|"
         dbg += "\n    begidx: " + str(begidx)
         if len(line) != 0:
-            ctx = Context(self.DEBUG)
+            ctx = Context(self.DEBUG, self.VERBOSITY - 1)
             self.contexts.append(ctx)
             while i < len(line):
                 if line[i] == " " and (line[i-1] != "\\") and len(token.split()) != 0:
@@ -410,7 +413,7 @@ class LineParser():
                 self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
                 self.scopeCtx = self.ctxpos
 
-            if self.DEBUG:
+            if self.DEBUG and self.VERBOSITY > 0:
                 dbg += "\n    current context: "
                 if self.contexts[self.scopeCtx].config:
                     dbg += str(self.contexts[self.scopeCtx].config.origin())
@@ -425,10 +428,11 @@ class LineParser():
 
 
 class Completion():
-    def __init__(self, console, DEBUG = False):
+    def __init__(self, console, DEBUG = False, VERBOSITY = 0):
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
 	self.console = console
-        self.lp = LineParser(self.DEBUG)
+        self.lp = LineParser(self.DEBUG, self.VERBOSITY - 1)
         self.confmanager = ConfigManager.Get()
         self.loader = loader()
         self.vfs = vfs()
@@ -561,6 +565,7 @@ class Completion():
         out = {"type": "predefined",
                "matches": [],
                "matched": 0,
+               "supplied": parameter,
                "length": 1}
         predefs = self.context.currentArgument.parameters()
         for predef in predefs:
@@ -570,8 +575,6 @@ class Completion():
                     out["length"] = len(val)
                 out["matches"].append(val)
                 out["matched"] += 1
-        if out["matched"] == 1:
-            out = out["matches"][0]
         return out
 
 
@@ -615,11 +618,12 @@ class Completion():
 
         for argname in self.context.remainingArguments:
             argument = self.context.config.argumentByName(argname)
-            match = False
             if self.context.currentStr[:self.context.currentStrScope] in ["", "-"]:
                 match = True
             elif self.context.currentStr.startswith("--") and argname.startswith(self.context.currentStr[2:self.context.currentStrScope]):
                 match = True
+            else:
+                match = False
             if match:
                 out["matched"] += 1
                 if len(argname) > out["length"]:
@@ -640,7 +644,7 @@ class Completion():
 
 
     def debug(self, msg):
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY > 0:
             print "  ", msg
 
 
@@ -683,9 +687,11 @@ class Completion():
                     compfunc = getattr(self, "completeArguments")
             else:
                 dbg += "\n    nothing to complete"
-        self.debug(dbg)
+        #self.debug(dbg)
         if compfunc != None:
             matches = compfunc()
+        dbg += "\n    matches:" + str(matches)
+        self.debug(dbg)
         return matches
 
 
@@ -736,6 +742,10 @@ class Completion():
      max_predef = matches["length"]
      col = self.get_max_col(13, max_predef)
      x = 0
+
+     if matches["matched"] == 1:
+         idx = self.strdiff(matches["supplied"], matches["matches"][0])
+         return matches["matches"][0][idx:]
 
      sys.stdout.write("predefined: ")
      for item in matches["matches"]:
@@ -846,30 +856,51 @@ class Completion():
        return matches
 
 
+    def longestCommonStr(self, str1, str2):
+        minstr = (len("+" + str1) > len("+" + str2) and ("+" + str2) or ("+" + str1))[1:]
+        maxstr = (len(str1) > len(str2) and str1 or str2)
+        if minstr == "" or minstr == maxstr:
+            res = maxstr
+        else:
+            comp = map(lambda x: minstr.startswith(maxstr[:x]), xrange(1, len(maxstr) + 1))
+            idx = comp.index(False)
+            res = maxstr[:idx]
+        return res
+
+
     def insert_key_comp(self, text, matches):
      max_key = matches["length"]
      col = self.get_max_col(10, max_key)
      idx = 0
      filled = 0
-
-     for type in ["required", "optional"]:
-       if len(matches[type]) > 0:
-         filled += 1
-     
      prev_key = text
      same = 0
-     for type in ["required", "optional"]:
-       if len(matches[type]) > 0:
-         sys.stdout.write(type + ": ")
-         x = 0
-         for key in matches[type]:
-           if x == col:
-             sys.stdout.write("\n" + " " * (10))
+
+     if text in ["", "-", "--"]:
+         common = ""
+     else:
+         common = text[2:]
+     for requirement in ["required", "optional"]:
+         if len(matches[requirement]) > 0:
+             filled += 1
+             sys.stdout.write(requirement + ": ")
              x = 0
-           key_arg = key + " " * (max_key + 2 - len(key))
-           sys.stdout.write(key_arg)
-           x += 1
+             for key in matches[requirement]:
+                 if x == col:
+                     sys.stdout.write("\n" + (" " * 10))
+                     x = 0
+                 key_arg = key + " " * (max_key + 2 - len(key))
+                 common = self.longestCommonStr(common, key_arg)
+                 sys.stdout.write(key_arg)
+                 x += 1
          idx += 1
          if idx < filled:
            sys.stdout.write("\n")
-     return self.get_str(text, prev_key[:same])
+     if text == "":
+         return "--" + common
+     elif text == "-":
+         return "-" + common
+     elif "--" + common == text:
+         return ""
+     else:
+         return common

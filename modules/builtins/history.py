@@ -44,8 +44,6 @@ class HISTORY(Script):
       for i in xrange(0, len(self.h.hist)):
         print (str(i) + '\t' + self.h.hist[i]).strip('\n')
 
-
-
 class history(Module):
   """Display an history of all launched command"""
   def __init__(self):

@@ -19,7 +19,6 @@ from modules.databases.winreg.parseHives import *
 
 from api.vfs import *
 from api.module.module import *
-#from api.env.libenv import *
 from api.types.libtypes import Argument, typeId
 from api.vfs.libvfs import *
 

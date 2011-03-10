@@ -184,7 +184,6 @@ class complete_raw_input():
     self.cursor = 0
     c = self.get_char()			  
     if c == 'z':
-	print "BACKGROUNDING THIS FUCKING SHELL !!!!" 
 	return "signal get"
     return  "loop"
 
