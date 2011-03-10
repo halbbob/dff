@@ -28,7 +28,6 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
             item = QTreeWidgetItem(parent)
             item.setText(0, str(key))
             vval = vmap[key]
-            #print "vmap[" + str(key) + "] -->", vval.typeName()
             expand = True
             if vval.type() == typeId.Map:
                 vvmap = vval.value()
@@ -54,7 +53,6 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
 
     def fillList(self, parent, vlist):
         for vval in vlist:
-            #print "vlist[item] -->", vval.typeName()
             if vval.type() == typeId.Map:
                 vmap = vval.value()
                 self.fillMap(parent, vmap)

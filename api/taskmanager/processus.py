@@ -41,12 +41,11 @@ class Processus(Script):
 
   def launch(self, args):
     self.state = "exec"
-    #self.exec_flags = []
     self.timestart = time.time()
     try :
-      self.args = args  #temporaire pour non singleton
-      args.thisown =False 
-      self.start(args)  #self.args += args -> pour les singletons garder une liste des args ?
+      self.args = args 
+      args.thisown = False 
+      self.start(args) 
       try :
         if "gui" in self.exec_flags:
           if "gui" in self.mod.flags:

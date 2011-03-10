@@ -14,7 +14,7 @@
 #
 
 from PyQt4.QtCore import Qt, QString, QEvent
-from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem#, QHeaderView 
+from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem
 from api.gui.widget.varianttreewidget import VariantTreeWidget
 
 class PropertyTable(VariantTreeWidget):

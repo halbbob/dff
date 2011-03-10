@@ -17,8 +17,6 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-#from api.gui.widget.nodefilterbox import NodeFilterBox
-
 from api.gui.model.vfsitemmodel import  VFSItemModel, HMODULE
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, VLink
