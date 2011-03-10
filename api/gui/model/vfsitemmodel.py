@@ -15,7 +15,7 @@
 # 
 
 from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize, QThread, QMutex, QSemaphore
-from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache, QStandardItemModel, QStandardItem, QSortFilterProxyModel
+from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache, QStandardItemModel, QStandardItem
 from PyQt4 import QtCore
 
 import re
@@ -568,41 +568,6 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     self.moduleTr = self.tr('Module')
     self.deletedTr = self.tr('Deleted')
 
-
-class NodeTreeProxyModel(QSortFilterProxyModel):
-  def __init__(self, parent = None):
-    QSortFilterProxyModel.__init__(self, parent)
-    self.VFS = VFS.Get()
-
-#  def data(self, index, role):
-#    
-#    if index.isValid():
-#      if role == Qt.CheckStateRole:
-#        return QVariant()
-#      else:
-#        origindex = self.mapToSource(index)
-#        if origindex.isValid():
-#          return self.sourceModel().data(origindex, role)
-#        else:
-#          return QVariant()
-#    else:
-#      return QVariant()
-
-  def filterAcceptsRow(self, row, parent):
-#    return True
-    index = self.sourceModel().index(row, 0, parent)
-    if index.isValid():
-      node = self.VFS.getNodeFromPointer(index.internalId())
-      if node.hasChildren() or node.isDir() or node.parent().absolute() == "/":
-        return True
-    return False
-
-  def columnCount(self, parent = QModelIndex()):
-     return 1
-
-  def sort(self):
-    return
-
 class TreeModel(QStandardItemModel, EventHandler):
   """
   This class, inheriting QStandardItemModel. This model is used for the QTreeView on the left of
@@ -632,6 +597,9 @@ class TreeModel(QStandardItemModel, EventHandler):
     EventHandler.__init__(self)
     self.__parent = __parent
     self.VFS = VFS.Get()
+
+    # init translation
+    self.translation()
 
     # creating qstandarditem for the default nodes (the four displayed nodes when dff is launched)
     self.root_item = self.invisibleRootItem()
@@ -676,7 +644,7 @@ class TreeModel(QStandardItemModel, EventHandler):
     if role != Qt.DisplayRole:
       return QVariant()
     else:
-      return QVariant(self.tr('Name'))
+      return QVariant(self.nameTr)
 
   def data(self, index, role):
     """
@@ -808,6 +776,8 @@ class TreeModel(QStandardItemModel, EventHandler):
 
     found = False
     for i in l:
+      # iter on the list until the qstandarditem associated with node 'i' is found
+
       found = False
       for j in range(0, item.rowCount()): # find the node
 
@@ -838,6 +808,7 @@ class TreeModel(QStandardItemModel, EventHandler):
     if node == None:
       return
 
+    # add the node in the tree only if its parent is already expended
     if found == False:
       if node.parent().absolute() == parent.absolute():
         new_item = QStandardItem(parent.name())
@@ -857,3 +828,9 @@ class TreeModel(QStandardItemModel, EventHandler):
       new_item.setData(False, Qt.UserRole + 2)
       item.insertRow(0, new_item)
       item.setData(True, Qt.UserRole + 2)
+
+  def translation(self):
+    """
+    Used for translating the framework.
+    """
+    self.nameTr = self.tr('Name')
