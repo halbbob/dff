@@ -170,7 +170,7 @@ else(PYTHON_QT4_LANGUAGE)
 endif(PYTHON_QT4_LANGUAGE)
 
 ## QT .ts to .qm compiler, used by translator objects
-find_program(QT_LANGUAGE_COMPILER NAMES lrelease PATHS ${CMAKE_SYSTEM_PROGRAM_PATH})
+find_program(QT_LANGUAGE_COMPILER NAMES lrelease lrelease-qt4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH})
 if(QT_LANGUAGE_COMPILER)
   message(STATUS "QT translation compiler found: ${QT_LANGUAGE_COMPILER}")
 else(QT_LANGUAGE_COMPILER)
