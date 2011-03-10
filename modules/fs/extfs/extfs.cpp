@@ -135,9 +135,7 @@ void		Extfs::launch(std::map<std::string, Variant*> args)
 void		Extfs::init(bool sb_check, uint64_t sb_force_addr, bool check_alloc)
 {
   __SB = new SuperBlock;
-  std::cout << "node name : " << __node->absolute() << std::endl;
   __vfile = __node->open();
-  std::cerr << "turewbtrhewj" << std::endl;
   __SB->init(__node->size(), __vfile, sb_check, sb_force_addr);
   __GD = new GroupDescriptor(__SB, __SB->block_size());
   __GD->init(__SB->block_size(), __vfile, __SB->group_number(), check_alloc);
