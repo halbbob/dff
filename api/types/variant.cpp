@@ -288,17 +288,10 @@ std::string	Variant::toHexString() throw (std::string)
       std::string::iterator	it;
       std::string		str = *(this->__data.str);
 
-      int	count = 0;
       for (it = str.begin(); it != str.end(); it++)
 	{
 	  res << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(static_cast<unsigned char>(*it));
-	  if (count++ == 15)
-	    {
-	      count = 0;
-	      res << std::endl;
-	    }
-	  else
-	    res << " ";
+	  res << " ";
 	}
     }
   else

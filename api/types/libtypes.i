@@ -1338,10 +1338,18 @@
         self.__origininit__(*args)
 
     def __repr__(self):
-        #if self.type() in [typeId.Char, typeId.CArray, typeId.String]:
-           #buff = "'" + str(self.value()) + "'"
-        #else:
-        buff = str(self.value())
+        if self.type() in [typeId.List, typeId.Map]:
+           return str(self.value())
+        elif self.type() in [typeId.Char, typeId.CArray, typeId.String]:
+           val = self.toString()
+           if val.isalnum():
+              buff = self.toString()
+           else:
+              buff = self.toHexString()
+        elif self.type() == typeId.Node:
+           buff = self.value().absolute()
+        else:
+           buff = self.toString()
         return buff
 
     def value(self):
