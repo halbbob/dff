@@ -82,7 +82,6 @@ uint32_t        Inode::singleIndirectBlockContentAddr(uint32_t block_number)
   addr = ((uint64_t)simple_indirect_block_pointer()) * _SB->block_size();
   if (!addr)
     return 0;
-  // __s_i_blk = addr;
   addr += (block_number * 4);
   _extfs->v_seek_read(addr, (void *)&blocks, sizeof(uint32_t));
   return blocks;

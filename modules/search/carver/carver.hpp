@@ -61,6 +61,9 @@ private:
   std::string		generateName(uint64_t start, uint64_t end);
   description*		createDescription(std::map<std::string, Variant*>);
   void			createContexts(std::list<Variant*> patterns);
+  void			fillResult(context* ctx);
+  std::string		needleToHexString(unsigned char* needle, int size);
+
 public:
   Carver();
   ~Carver();

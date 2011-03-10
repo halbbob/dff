@@ -16,8 +16,10 @@ from api.module.module import Module
 from api.module.script import Script
 from api.events.libevents import EventHandler, event
 from api.types.libtypes import typeId, Argument, Parameter
+from api.taskmanager.taskmanager import TaskManager
+from api.types.libtypes import typeId, Argument, Parameter, VList, VMap, Variant
 
-from typeSelection import filetypes
+from typeSelection import filetypes, wildcard
 
 import string
 
@@ -30,9 +32,90 @@ from userdef import userPattern
 class CarverUi(Script):
     def __init__(self):
         Script.__init__(self, "carverui")
+        self.tm = TaskManager()
 
     def start(self, args):
-        pass
+        patterns = VList()
+        patterns.thisown = False
+        if args.has_key("start-offset"):
+            startoff = args["start-offset"].value()
+        else:
+            startoff = 0
+        if args.has_key("block-aligned"):
+            aligned = True
+        else:
+            aligned = False
+        for mimetype in filetypes.keys():
+            if mimetype in args:
+                vsubtypes = args[mimetype].value()
+                for subtype in filetypes[mimetype].keys():
+                    if subtype in vsubtypes:
+                        pattern = VMap()
+                        pattern.thisown = False
+                        descr = filetypes[mimetype][subtype]
+                        filetype = Variant(subtype, typeId.String)
+                        filetype.thisown = False
+                        for p in descr:
+                            pattern["filetype"] = filetype
+                            header = VMap()
+                            header.thisown = False
+                            val = Variant(p[0], typeId.String)
+                            val.thisown = False
+                            header["needle"] = val
+                            val = Variant(len(p[0]), typeId.UInt32)
+                            val.thisown = False
+                            header["size"] = val
+                            footer = VMap()
+                            footer.thisown = False
+                            val = Variant(p[1], typeId.String)
+                            val.thisown = False
+                            footer["needle"] = val
+                            val = Variant(len(p[1]), typeId.UInt32)
+                            val.thisown = False
+                            footer["size"] = val
+                            if p[0].find(wildcard) != -1:
+                                val = Variant(wildcard, typeId.Char)
+                                val.thisown = False
+                                header["wildcard"] = val
+                            else:
+                                val = Variant("", typeId.Char)
+                                val.thisown = False
+                                header["wildcard"] = val
+                            if p[1].find(wildcard) != -1:
+                                val = Variant(wildcard, typeId.Char)
+                                val.thisown = False
+                                footer["wildcard"] = val
+                            else:
+                                val = Variant("", typeId.Char)
+                                val.thisown = False
+                                footer["wildcard"] = val
+                            vheader = Variant(header)
+                            vheader.thisown = False
+                            pattern["header"] = vheader
+                            vfooter = Variant(footer)
+                            vfooter.thisown = False
+                            pattern["footer"] = vfooter
+                            pattern["window"] = Variant(int(p[2]), typeId.UInt32)
+                            if aligned:
+                                val = Variant(True, typeId.Bool)
+                                val.thisown = False
+                                pattern["aligned"] = val
+                            else:
+                                val = Variant(False, typeId.Bool)
+                                val.thisown = False
+                                pattern["aligned"] = val
+                            patterns.append(pattern)
+        vpatterns = Variant(patterns)
+        vpatterns.thisown = False
+        margs = VMap()
+        margs.thisown = False
+        margs["patterns"] = vpatterns
+        margs["file"] = args["file"]
+        vstartoff = Variant(startoff, typeId.UInt64)
+        vstartoff.thisown = False
+        margs["start-offset"] = vstartoff
+        self.tm.add("carver", margs, ["console"])
+
 
     def c_display(self):
         pass
@@ -46,6 +129,12 @@ class carverui(Module):
     self.conf.addArgument({"name": "file",
                            "input": typeId.Node|Argument.Single|Argument.Required,
                            "description": "Node to search data in"})
+    self.conf.addArgument({"name": "block-aligned",
+                           "input": Argument.Empty,
+                           "description": "if setted only search signatures at the begining of blocks (faster but less accurate)"})
+    self.conf.addArgument({"name": "start-offset",
+                           "input": typeId.UInt64|Argument.Single|Argument.Optional,
+                           "description": "offset from which to start carving"})
     for mimetype in filetypes.keys():
         predefined = []
         for subtype in filetypes[mimetype].keys():

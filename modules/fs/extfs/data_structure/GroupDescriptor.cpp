@@ -234,9 +234,6 @@ uint16_t	GroupDescriptor::dir_nbr(uint32_t group) const
 
 const uint8_t *   GroupDescriptor::unused(uint32_t group) const
 {
-  /*  if (!this->__64_bits_field)
-      return _gr_descr_64[group].unused; */
-  //  return _gr_descr[group].unused.unused;
   return NULL;
 }
 
