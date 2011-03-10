@@ -615,11 +615,12 @@ class Completion():
 
         for argname in self.context.remainingArguments:
             argument = self.context.config.argumentByName(argname)
-            match = False
             if self.context.currentStr[:self.context.currentStrScope] in ["", "-"]:
                 match = True
             elif self.context.currentStr.startswith("--") and argname.startswith(self.context.currentStr[2:self.context.currentStrScope]):
                 match = True
+            else:
+                match = False
             if match:
                 out["matched"] += 1
                 if len(argname) > out["length"]:
@@ -683,9 +684,11 @@ class Completion():
                     compfunc = getattr(self, "completeArguments")
             else:
                 dbg += "\n    nothing to complete"
-        self.debug(dbg)
+        #self.debug(dbg)
         if compfunc != None:
             matches = compfunc()
+        dbg += "\n    matches:" + str(matches)
+        self.debug(dbg)
         return matches
 
 
@@ -846,30 +849,51 @@ class Completion():
        return matches
 
 
+    def longestCommonStr(self, str1, str2):
+        minstr = (len("+" + str1) > len("+" + str2) and ("+" + str2) or ("+" + str1))[1:]
+        maxstr = (len(str1) > len(str2) and str1 or str2)
+        if minstr == "" or minstr == maxstr:
+            res = maxstr
+        else:
+            comp = map(lambda x: minstr.startswith(maxstr[:x]), xrange(1, len(maxstr) + 1))
+            idx = comp.index(False)
+            res = maxstr[:idx]
+        return res
+
+
     def insert_key_comp(self, text, matches):
      max_key = matches["length"]
      col = self.get_max_col(10, max_key)
      idx = 0
      filled = 0
-
-     for type in ["required", "optional"]:
-       if len(matches[type]) > 0:
-         filled += 1
-     
      prev_key = text
      same = 0
-     for type in ["required", "optional"]:
-       if len(matches[type]) > 0:
-         sys.stdout.write(type + ": ")
-         x = 0
-         for key in matches[type]:
-           if x == col:
-             sys.stdout.write("\n" + " " * (10))
+
+     if text in ["", "-", "--"]:
+         common = ""
+     else:
+         common = text[2:]
+     for requirement in ["required", "optional"]:
+         if len(matches[requirement]) > 0:
+             filled += 1
+             sys.stdout.write(requirement + ": ")
              x = 0
-           key_arg = key + " " * (max_key + 2 - len(key))
-           sys.stdout.write(key_arg)
-           x += 1
+             for key in matches[requirement]:
+                 if x == col:
+                     sys.stdout.write("\n" + (" " * 10))
+                     x = 0
+                 key_arg = key + " " * (max_key + 2 - len(key))
+                 common = self.longestCommonStr(common, key_arg)
+                 sys.stdout.write(key_arg)
+                 x += 1
          idx += 1
          if idx < filled:
            sys.stdout.write("\n")
-     return self.get_str(text, prev_key[:same])
+     if text == "":
+         return "--" + common
+     elif text == "-":
+         return "-" + common
+     elif "--" + common == text:
+         return ""
+     else:
+         return common
