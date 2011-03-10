@@ -31,10 +31,11 @@ INTRO = "\nWelcome to the Digital Forensic Framework\n"
 IDENTCHARS = string.ascii_letters + string.digits + '\ _='
 
 class console(Cmd):
-    def __init__(self, completekey='tab', stdin=None, stdout=None, sigstp=True, DEBUG = False):
+    def __init__(self, completekey='tab', stdin=None, stdout=None, sigstp=True, DEBUG = False, VERBOSITY = 0):
         Cmd.__init__(self, completekey, stdin, stdout)
         self.cm = ConfigManager.Get()
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
         self.history = history()
         self.api = ApiManager()
         self.vfs = self.api.vfs()
@@ -48,7 +49,7 @@ class console(Cmd):
 	self.stdin = self
 	self.completekey = '\t'
 	self.comp_raw = complete_raw_input(self)
-        self.completion = completion.Completion(self.comp_raw, self.DEBUG)
+        self.completion = completion.Completion(self.comp_raw, self.DEBUG, self.VERBOSITY)
 	self.proc = None
 	if os.name == 'posix' and sigstp:
   	  signal.signal(signal.SIGTSTP, self.bg)

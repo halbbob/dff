@@ -21,8 +21,9 @@ import sys, os, dircache, utils, re, types
 
 
 class Context():
-    def __init__(self, DEBUG = False):
+    def __init__(self, DEBUG = False, VERBOSITY = 0):
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
         self.confmanager = ConfigManager.Get()
         self.config = None
         self.keylessarg = None
@@ -39,7 +40,7 @@ class Context():
 
 
     def debug(self, dbg):
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY > 0:
             print dbg
 
 
@@ -99,7 +100,7 @@ class Context():
                     command[argname] = realparam
                 except:
                     raise
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY > 0:
             dbg += "\n    resulting command arguments:"
             for argname in command.keys():
                 dbg += "\n      " + argname + " --> " + str(command[argname])
@@ -286,14 +287,15 @@ class Context():
 
 
 class LineParser():
-    def __init__(self, DEBUG = False):
+    def __init__(self, DEBUG = False, VERBOSITY = 0):
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
         self.ctxs = []
         self.shellKeys = [";", "<", ">", "&", "|"]
 
 
     def debug(self, msg):
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY:
             print "  ", msg
 
 
@@ -311,17 +313,17 @@ class LineParser():
             dbg += "\n    endidx: " + str(endidx)
             self.contexts[self.ctxpos].threaded = True
             dbg += "\n    incrementing ctxpos"
-            ctx = Context(self.DEBUG)
+            ctx = Context(self.DEBUG, self.VERBOSITY - 1)
             self.contexts.append(ctx)
             self.ctxpos += 1
             if self.begidx > endidx: #and endidx != len(self.line):
                 self.scopeCtx = self.ctxpos
         elif key == "&&":
-            self.contexts.append(Context(self.DEBUG))
+            self.contexts.append(Context(self.DEBUG, self.VERBOSITY - 1))
             self.ctxpos += 1
             if self.begidx == startidx + 1:
                 self.scopeCtx = self.ctxpos
-                self.contexts.append(Context(self.DEBUG))
+                self.contexts.append(Context(self.DEBUG, self.VERBOSITY - 1))
                 self.ctxpos += 1
                 dbg += "\n    key found and begidx in the middle of " + key
         self.debug(dbg)
@@ -338,7 +340,7 @@ class LineParser():
                 commands.append((context.config.origin(), context.makeArguments(), context.threaded))
             except (KeyError, ValueError):
                 raise
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY:
             dbg += "\n    stacked commands:"
             for command in commands:
                 dbg += "\n      command name: " + command[0]
@@ -362,7 +364,7 @@ class LineParser():
         dbg += "\n    line: |" + line + "|"
         dbg += "\n    begidx: " + str(begidx)
         if len(line) != 0:
-            ctx = Context(self.DEBUG)
+            ctx = Context(self.DEBUG, self.VERBOSITY - 1)
             self.contexts.append(ctx)
             while i < len(line):
                 if line[i] == " " and (line[i-1] != "\\") and len(token.split()) != 0:
@@ -410,7 +412,7 @@ class LineParser():
                 self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
                 self.scopeCtx = self.ctxpos
 
-            if self.DEBUG:
+            if self.DEBUG and self.VERBOSITY > 0:
                 dbg += "\n    current context: "
                 if self.contexts[self.scopeCtx].config:
                     dbg += str(self.contexts[self.scopeCtx].config.origin())
@@ -425,10 +427,11 @@ class LineParser():
 
 
 class Completion():
-    def __init__(self, console, DEBUG = False):
+    def __init__(self, console, DEBUG = False, VERBOSITY = 0):
         self.DEBUG = DEBUG
+        self.VERBOSITY = VERBOSITY
 	self.console = console
-        self.lp = LineParser(self.DEBUG)
+        self.lp = LineParser(self.DEBUG, self.VERBOSITY - 1)
         self.confmanager = ConfigManager.Get()
         self.loader = loader()
         self.vfs = vfs()
@@ -561,6 +564,7 @@ class Completion():
         out = {"type": "predefined",
                "matches": [],
                "matched": 0,
+               "supplied": parameter,
                "length": 1}
         predefs = self.context.currentArgument.parameters()
         for predef in predefs:
@@ -570,8 +574,6 @@ class Completion():
                     out["length"] = len(val)
                 out["matches"].append(val)
                 out["matched"] += 1
-        if out["matched"] == 1:
-            out = out["matches"][0]
         return out
 
 
@@ -641,7 +643,7 @@ class Completion():
 
 
     def debug(self, msg):
-        if self.DEBUG:
+        if self.DEBUG and self.VERBOSITY > 0:
             print "  ", msg
 
 
@@ -739,6 +741,10 @@ class Completion():
      max_predef = matches["length"]
      col = self.get_max_col(13, max_predef)
      x = 0
+
+     if matches["matched"] == 1:
+         idx = self.strdiff(matches["supplied"], matches["matches"][0])
+         return matches["matches"][0][idx:]
 
      sys.stdout.write("predefined: ")
      for item in matches["matches"]:
