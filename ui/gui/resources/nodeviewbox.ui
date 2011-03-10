@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Node View Box</string>
+   <string notr="true">Node View Box</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <property name="margin">
@@ -295,7 +295,7 @@
       <enum>Qt::NoContextMenu</enum>
      </property>
      <property name="toolTip">
-      <string>Active thumbnails</string>
+      <string>Activate thumbnails</string>
      </property>
      <property name="icon">
       <iconset resource="gui.qrc">
