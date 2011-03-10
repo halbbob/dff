@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<!DOCTYPE TS><TS version="1.1" language="fr">
 <context>
     <name>About</name>
     <message>
@@ -882,7 +881,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="679"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="836"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>

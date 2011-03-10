@@ -12,5 +12,5 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
+__version__ = "${API_EVENT_VERSION}"
 __all__ = ["libevents"]
-__version__ = "1.0.0"

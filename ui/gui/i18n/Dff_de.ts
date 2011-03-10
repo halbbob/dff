@@ -880,7 +880,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="679"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="836"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
