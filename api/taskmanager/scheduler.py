@@ -48,7 +48,6 @@ class WorkQueue():
 			self.waitQueue = Queue()
 			self.workerQueue = Queue(max)
 			self.max = max
-			#self.env = env.env()
 			self.event_func = {}
 			for type in event_type:
 				self.event_func[type] = []
