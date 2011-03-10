@@ -30,11 +30,9 @@ class Open(Script):
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
 
-
   def start(self, args):
     node = args["file"].value()
     self.open(node)
-
 
   def open(self, node):
     try:

@@ -335,9 +335,6 @@ class SHOW_DB(Script):
           keymap[cname].append(stres)
     return keymap
 
-
-
-
   def get_alldbinfo(self):
     keymap = {}
     keymap = self.fillAllArgumentsKey(keymap)
@@ -350,7 +347,6 @@ class SHOW_DB(Script):
       for item in keymap[key]:
         res += item
     return res
-      
 
   def start(self, args):
     res = "Variable DB\n"

@@ -229,5 +229,4 @@ This version of unzip store all data in RAM so don't decompress huge file."""
  	                   "type": typeId.String,
  	                   "description": "managed mime type",
  	                   "values": ["Zip"]})
-    #self.conf.add_const('mime-type', 'Zip')
     self.tags = "Archives"

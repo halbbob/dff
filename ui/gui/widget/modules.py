@@ -29,7 +29,6 @@ class Modules(QTreeWidget, Ui_Modules):
     def __init__(self, parent):
         QTreeWidget.__init__(self, parent)
         self.name = "Modules"
-        #self.env = env.env()
         self.tm = TaskManager()
         self.loader = loader.loader()
         self.setupUi(self)
