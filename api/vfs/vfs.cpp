@@ -99,7 +99,7 @@ Node* VFS::GetNode(string path)
   return (tmp);
 }
 
-void	VFS::AddNode(Node *parent, Node* head) /
+void	VFS::AddNode(Node *parent, Node* head)
 {
    parent->addChild(head);
    event* e = new event;

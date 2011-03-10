@@ -31,7 +31,7 @@ class FG(Script):
     jobs = args["pid"].value()
     for proc in self.lprocessus:
       if jobs == proc.pid:
-        print "Displaying processus: " + str(proc.pid) + " name:" + str(proc.name) + " state:" + str(proc.state) + "\n"
+        print "Displaying processus: " + str(proc.pid) + " name: " + str(proc.name) + " state: " + str(proc.state) + "\n"
         try :
 	  text = self.lprocessus[jobs].stream.get(0)
 	  while text:
@@ -39,7 +39,7 @@ class FG(Script):
 	    text = self.lprocessus[jobs].stream.get(0)
         except Empty:
           pass
-        print self.vtreeprinter(0, proc.res)
+        print self.vtreeprinter.fillMap(0, proc.res)
        
 
 class fg(Module):

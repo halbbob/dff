@@ -50,17 +50,6 @@ class MergeNode(Node):
       attr["concatanated files (ordered)"] = vvlist
       return attr
 
-#      fatstart = Variant(self.partTable.start)
-#      fatstart.thisown = False
-#      attr.push("partition start", fatstart)
-#      blocksize = Variant(self.partTable.blocksize)
-#      blocksize.thisown = False
-#      attr.push("blocksize", blocksize)
-#      size = Variant(self.partTable.size)
-#      size.thisown = False
-#      attr.push("size in block", size)
- 
-
 class MERGE(mfso):
     def __init__(self):
        mfso.__init__(self, "merge")

@@ -110,9 +110,7 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.langComboBox.setCurrentIndex(selected)
 
 
-# Signals related
     def historyStateChanged(self, state):
-      # Checked state = 2, else state = 0.
       self.historyLabel.setEnabled((state == 0))
       self.historyLineEdit.setEnabled((state == 0))
       self.historyToolButton.setEnabled((state == 0))

@@ -27,7 +27,6 @@
 #include <vector>
 #include "variant.hpp"
 #include "vfs.hpp"
-//#include "argument.hpp"
 #include "path.hpp"
 #ifdef WIN32
 #include "wlocalnode.hpp"

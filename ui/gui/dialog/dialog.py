@@ -35,7 +35,6 @@ class Dialog(QObject):
   def __init__(self, parent):
      QObject.__init__(self)
      self.parent = parent 
-     #self.env = env.env()
      self.vfs = vfs.vfs()
      self.taskmanager = TaskManager()
      self.loader = loader.loader()

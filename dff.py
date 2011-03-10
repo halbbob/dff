@@ -39,7 +39,7 @@ if __name__ == "__main__":
     """You can place some script command here for testing purpose"""
     argv = usage(sys.argv[1:])
     if argv.graphical == 1:
-        ui = ui('gui', argv.debug)
+        ui = ui('gui', argv.debug, argv.verbosity)
     else:
-        ui = ui('console', argv.debug)
+        ui = ui('console', argv.debug, argv.verbosity)
     ui.launch()

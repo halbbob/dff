@@ -56,7 +56,7 @@ struct stat*	ULocalNode::localStat(void)
     }
 }
 
-vtime*		ULocalNode::utimeToVtime(time_t* tt) //XXX unixvtime() ds l 'api !
+vtime*		ULocalNode::utimeToVtime(time_t* tt) 
 {
   struct tm*	t;
   vtime	*vt = new vtime;
