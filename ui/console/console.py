@@ -79,7 +79,8 @@ class console(Cmd):
         try:
 	    if line == 'exit' or line == 'quit':
 	      return 'stop'
-            self.history.add(line.strip())
+            if len(line.strip()) == 0:
+                return self.emptyline()
             iterator = re.finditer('(?<!\\\)\&&', line)
             prevpos = 0
             commands = []
@@ -89,25 +90,36 @@ class console(Cmd):
                 prevpos = match.span()[1]
             if prevpos != len(line):
                 commands.append(line[prevpos:])
+            noerror = True
             for command in commands:
                 cmds = self.completion.lp.makeCommands(command)
                 for cmd in cmds:
-                    exec_type = ["console"]
-                    cname = cmd[0]
-                    config = self.cm.configByName(cname)
-                    args = config.generate(cmd[1])
-                    if cmd[2]:
-                        exec_type.append("thread")
-                    self.proc = self.taskmanager.add(cname, args, exec_type)
-                    if self.proc:
-                        if wait:
-                            self.proc.event.wait()
-                        else:
-                            while not self.proc.event.isSet():
-		    		self.comp_raw.get_char(1)
+                    if cmd[1] == None and cmd[3] != "":
+                        noerror = False
+                        print "module " + cmd[0]
+                        print "\t" + cmd[3]
+                    else:
+                        exec_type = ["console"]
+                        cname = cmd[0]
+                        config = self.cm.configByName(cname)
+                        try:
+                            args = config.generate(cmd[1])
+                            if cmd[2]:
+                                exec_type.append("thread")
+                            self.proc = self.taskmanager.add(cname, args, exec_type)
+                            if self.proc and not cmd[2]:
+                                if wait:
+                                    self.proc.event.wait()
+                                else:
+                                    while not self.proc.event.isSet():
+                                        self.comp_raw.get_char(1)
+                        except RuntimeError as error:
+                            noerror = False
+                            print "module " + cmd[0]
+                            print "\t" + str(error)
                     self.proc = None
-            else:
-                return self.emptyline()
+            if noerror:
+                self.history.add(line.strip())
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             traceback.print_exception(exc_type, exc_value, exc_traceback, None, sys.stdout)

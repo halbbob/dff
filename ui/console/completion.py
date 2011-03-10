@@ -336,10 +336,11 @@ class LineParser():
         commands = []
         dbg = "\n ==== LineParser.makeCommands() ===="
         for context in self.contexts:
-            try:
-                commands.append((context.config.origin(), context.makeArguments(), context.threaded))
-            except (KeyError, ValueError):
-                raise
+            if context.config != None:
+                try:
+                    commands.append((context.config.origin(), context.makeArguments(), context.threaded, ""))
+                except (KeyError, ValueError) as error:
+                    commands.append((context.config.origin(), None, context.threaded, str(error)))
         if self.DEBUG and self.VERBOSITY:
             dbg += "\n    stacked commands:"
             for command in commands:
