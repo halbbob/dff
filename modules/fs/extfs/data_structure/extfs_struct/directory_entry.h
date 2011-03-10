@@ -44,7 +44,6 @@ typedef	struct	__directory_entry_2nd_version_s
   uint16	entry_length;
   uchar		name_length;
   uchar		file_type;
-  //  uchar		name[255];
 }PACK		dir_entry_v2;
 
 #endif
