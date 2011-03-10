@@ -219,14 +219,7 @@ int32_t  VFile::dfileno()
 
 uint64_t VFile::tell()
 {  
-	//try
-	//{
       return (this->__fsobj->vtell(this->__fd));
-      //}
-      //catch (vfsError e)
-      //{
-      //throw vfsError("VFile::tell() throw\n" + e.error);
-      //}
 }
 
 list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window, uint32_t count)
@@ -301,11 +294,6 @@ uint64_t	VFile::find(char *needle, uint32_t len, char wildcard, uint64_t start, 
   delete l;
   return res;
 }
-
-// uint64_t	VFile::rfind(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
-// {
-//   return 0;
-// }
 
 uint32_t	VFile::count(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
 {

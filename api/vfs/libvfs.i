@@ -801,34 +801,6 @@ namespace std
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));
 
-/* %extend mfso */
-/* { */
-/*   PyObject*	start(PyObject* val) */
-/*   { */
-/*     PyObject*	resultobj = 0; */
-/*     Variant*	params; */
-/*     uint8_t	type; */
-
-    
-/*     SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-/*     SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-/*     type = self->type(); */
-/*     SWIG_PYTHON_THREAD_END_ALLOW; */
-/*     SWIG_PYTHON_THREAD_END_BLOCK; */
-/*     params = pyObjectToVariant(val, type); */
-/*     if (params != NULL) */
-/*       { */
-/*   	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-/*   	SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-/*   	self->addPredefinedParameters(params); */
-/*   	SWIG_PYTHON_THREAD_END_ALLOW; */
-/*   	SWIG_PYTHON_THREAD_END_BLOCK; */
-/*   	resultobj = SWIG_Py_Void(); */
-/*   	return resultobj; */
-/*       } */
-/*   } */
-/* }; */
-
 %extend VFS
 {
 #ifdef SWIGWORDSIZE64

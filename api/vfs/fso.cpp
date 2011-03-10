@@ -19,7 +19,6 @@
 fso::fso(std::string name)
 {
   this->name = name;
-  //this->res = new Results(this->name);
   this->stateinfo = "";
 }
 

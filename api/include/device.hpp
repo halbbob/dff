@@ -1,12 +1,3 @@
-#ifndef __DEVICE_HPP__
-#define __DEVICE_HPP__
-
-#ifndef WIN32
-#include <stdint.h>
-#else
-#include "wstdint.h"
-#endif
-#include <iostream>
 /*
  * DFF -- An Open Source Digital Forensics Framework
  * Copyright (C) 2009-2011 ArxSys
@@ -22,7 +13,15 @@
  * Author(s):
  *  Solal J. <sja@digital-forensic.org>
  */
+#ifndef __DEVICE_HPP__
+#define __DEVICE_HPP__
 
+#ifndef WIN32
+#include <stdint.h>
+#else
+#include "wstdint.h"
+#endif
+#include <iostream>
 #include <vector>
 
 using namespace std;
@@ -40,8 +39,6 @@ public:
 
 class DeviceList
 {
-//private:
-  //std::vector<Device *> 	deviceList;
 public:
 			        DeviceList();
 };

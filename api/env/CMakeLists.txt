@@ -24,7 +24,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
 
 SET_SOURCE_FILES_PROPERTIES(libenv.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(libenv python libenv.i attributes.cpp env.cpp conf.cpp argument.cpp results.cpp vars.cpp)
+SWIG_ADD_MODULE(libenv python libenv.i attributes.cpp conf.cpp argument.cpp results.cpp vars.cpp)
 SWIG_LINK_LIBRARIES(libenv ${PYTHON_LIBRARIES} _libexceptions _libtype)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

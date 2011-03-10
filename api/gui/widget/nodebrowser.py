@@ -101,9 +101,9 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.addOptionsView()
 
   def Event(self, e):
-    self.model.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX pas le bon signal en can fetch more (et la liste doit grossir car on rajoute des nodes ....(
+    self.model.emit(SIGNAL("layoutAboutToBeChanged()")) 
     self.model.emit(SIGNAL("layoutChanged()"))
-    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()")) #XXX ok a deplacer ds le model
+    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()")) 
     self.treeModel.emit(SIGNAL("layoutChanged()"))
 
   def getWindowGeometry(self):
@@ -137,13 +137,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.treeModel = TreeModel(self, True)
     self.treeModel.setRootPath(self.vfs.getnode("/"))
 
-#####
-    self.treeProxyModel = self.treeModel #NodeTreeProxyModel()
-    #self.treeProxyModel.setSourceModel(self.treeModel)
-#####
-#    self.treeProxyModel = NodeTreeProxyModel()
-#    self.treeProxyModel.setSourceModel(self.treeModel)
-#####
+    self.treeProxyModel = self.treeModel 
 
     self.treeView = NodeLinkTreeView(self)
     self.treeView.setModel(self.treeProxyModel)
@@ -153,7 +147,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
 
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-    #####
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.treeModel.nodeClicked)
 
   def addNodeView(self):
@@ -178,7 +171,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.connect(self.tableView, SIGNAL(""), self.selectAttr)
 
   def selectAttr(self):
-    print "select view"
+    pass
     
   def addThumbsView(self):
     self.thumbsView = NodeThumbsView(self)
@@ -198,9 +191,9 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def currentModel(self):
      if self.thumbsView.isVisible():
-       return self.thumbsView.model() #.sourceModel()
+       return self.thumbsView.model() 
      elif self.tableView.isVisible():
-       return self.tableView.model() #.sourceModel()
+       return self.tableView.model() 
  
   def currentView(self):
      if self.thumbsView.isVisible():
@@ -219,7 +212,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def currentNode(self):
      index = self.currentView().selectionModel().currentIndex()
      if index.isValid():
-	 #index = self.currentProxyModel().mapToSource(index)
          return self.VFS.getNodeFromPointer(index.internalId())
 
   def nodePressed(self, key, node, index = None):
@@ -235,7 +227,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       else:
         self.openDefault(node)
     if key == Qt.Key_Backspace:
-      #print node.absolute(), node.parent().absolute()
       self.currentModel().setRootPath(node.parent().parent())
 
   def nodeClicked(self, mouseButton, node, index = None):
@@ -281,10 +272,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        node = self.currentNode()
        if not node:
 	 return
-     #XXX merge variantBaseAPI
-     #arg = self.env.libenv.argument("gui_input")
-     #arg.thisown = 0
-     #XXX merge variantBaseAPI
      try:
        mod = node.compatibleModules()[0]
        if self.lmodules[mod]:
@@ -307,10 +294,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      self.submenuFile = QMenu()
      self.submenuFile.addAction(self.actionOpen)
      self.connect(self.actionOpen, SIGNAL("triggered()"), self.openDefault)
-     ####
      self.submenuFile.addAction(self.actionOpen_in_new_tab)
      self.connect(self.actionOpen_in_new_tab, SIGNAL("triggered()"), self.openAsNewTab)
-     ###
      self.menu = {}
      self.menuModule = self.submenuFile.addMenu(self.actionOpen_with.icon(), self.actionOpen_with.text())
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
@@ -341,9 +326,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def launchExtract(self):
      res = self.extractor.getArgs()
      arg = libtypes.Arguments("gui_input")
-     #XXX MERGEALL
-     #lnodes = self.env.libenv.ListNode()
-     #XXX MERGEALL
      lnodes.thisown = 0
      for node in res["nodes"]:
         lnodes.append(node)
