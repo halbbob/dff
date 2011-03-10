@@ -187,14 +187,11 @@ class parseHive():
         datalen_low = vstruct[3]
         datalen_high = vstruct[4]
         data_off = vstruct[5]
-        # XXX header of data???
-
         if datalen_low > 4:
             self.allocated[offset] = 24 + vnamelen
             self.allocated[data_off + self.blocksize] = 4 + datalen_low
         else:
             self.allocated[offset] = 24 + vnamelen
-#            print "HUHU ", vnamelen
 
     def computeUnallocatedSpace(self):
         prevoffset = 0
@@ -686,16 +683,12 @@ class keyNode(Node):
 #      d = binascii.hexlify(vstruct[5])
 #      d = vstruct[5]
 
-#      print "TYPE : ", type(vstruct[5])
-
       if vstruct[3] <= 4:
           buf = vbuff[12:15]#vstruct[5]
       else:
           buf = self.getData(vstruct[5] + 0x1000, vstruct[3])
 
       d = self.convertData(buf, vstruct[6])
-
-#      print "DDDDDDDDDDDDDDD : ", d
 
       vdata = Variant(d)
       vdata.thisown = False
@@ -756,14 +749,11 @@ class hbinNode(Node):
       Node.__init__(self, name, size, parent, mfso)
       self.hive = hive
       self.parentnode = parent
-#      self.mfso = mfso
-#      self.hname = name
       self.hsize = size
       self.voffset = voffset
       self.__disown__()
       self.setFile()
       setattr(self, "fileMapping", self.fileMapping)
-#      setattr(self, "extendedAttributes", self.extendedAttributes)
 
   def fileMapping(self, fm):
       fm.push(0, self.hsize, self.hive.node(), self.voffset)
@@ -775,13 +765,10 @@ class unallocatedNode(Node):
       self.hive = hive
       self.parentnode = parent
       self.voffset = voffset
-#      self.mfso = mfso
-#      self.hname = name
       self.hsize = size
       self.__disown__()
       self.setFile()
       setattr(self, "fileMapping", self.fileMapping)
-#      setattr(self, "extendedAttributes", self.extendedAttributes)
 
   def fileMapping(self, fm):
       fm.push(0, self.hsize, self.hive.node(), self.voffset)
@@ -794,15 +781,11 @@ class fullUnallocatedNode(Node):
       Node.__init__(self, name, ssize, parent, mfso)
       self.hive = hive
       self.parentnode = parent
-#      self.mfso = mfso
-#      self.hname = name
       self.__disown__()
       self.setFile()
       setattr(self, "fileMapping", self.fileMapping)
-#      setattr(self, "extendedAttributes", self.extendedAttributes)
 
   def getTotalSize(self):
-        # TOTAL UNALLOCATED SIZE
       ssize = 0
       unallocoffsets = self.unallocated.keys()
       for off in unallocoffsets:
@@ -816,7 +799,6 @@ class fullUnallocatedNode(Node):
       unallocoffsets.sort()
 
       for off in unallocoffsets:
-#          print "offset : ", off, " size : ", self.unallocated[off]
           fm.push(current, self.unallocated[off], self.hive.node(), off)
           current += self.unallocated[off]
 

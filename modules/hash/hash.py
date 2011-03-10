@@ -32,7 +32,6 @@ class AttributeHash(AttributesHandler):
        except KeyError:
          return None
 
-#mnettre la fonction de calcul de hash directement ici ou heriter de attributeHash ds class HASH ?
     def setHash(self, node, algo, hash):
         if not self.calculatedHash.has_key(node.this):
             self.calculatedHash[long(node.this)] = {}
@@ -57,7 +56,7 @@ class HASH(Script):
         Script.__init__(self, "hash")   
         self.vfs = vfs.vfs()
         self.attributeHash = AttributeHash("hash") 
-	self.calculatedHash = {}		#XXX modules singleton ?
+	self.calculatedHash = {}
 
     def getHash(self,  algorithm):
         if algorithm == "md5":
@@ -95,7 +94,7 @@ class HASH(Script):
             if not node.size():
                 return 
         except IOError, e:
-            print e #.error, node.absolute()
+            print e
             return ""
         h = self.getHash(algorithm)
         buff = f.read(8192)

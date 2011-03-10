@@ -30,10 +30,8 @@ class INFO(Script, VariantTreePrinter):
     self.tm = TaskManager()
     self.cm = ConfigManager.Get()
 
-
   def show_config(self, modname):
     conf = self.cm.configByName(modname)
-    #res = "\n\tDescription: " + str(conf.description())
     res = "\n\tConfig:"
     arguments = conf.arguments()
     for argument in arguments:
@@ -120,11 +118,9 @@ class INFO(Script, VariantTreePrinter):
   def show_res(self, results):
     res = self.fillMap(3, results, "\n\n\t\tResults:")
     return res
-  
 
   def c_display(self):
      print self.info  
-
 
   def getmodinfo(self, modname):
     self.lproc = self.tm.lprocessus
@@ -143,7 +139,6 @@ class INFO(Script, VariantTreePrinter):
         self.info += "\n\t\texecution time: " + str(delta)
         self.info += self.show_arg(proc.args)
         self.info += self.show_res(proc.res)
-
  
   def start(self, args):
     self.info = ""
@@ -155,7 +150,6 @@ class INFO(Script, VariantTreePrinter):
       self.modules = self.loader.modules
       for modname in self.modules:
         self.getmodinfo(modname)
-        
 
 
 class info(Module):

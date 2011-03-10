@@ -23,12 +23,6 @@ class LS(Script):
     Script.__init__(self, "ls")
     self.vfs = vfs.vfs()
 
-  #def start(self, **kwargs):
-  #  print dir(self)
-  #  self.__dict__.update(kwargs)
-  #  print dir(self)
-
-
   def start(self, args):
     try:
       self.nodes = args["nodes"].value()
@@ -43,8 +37,6 @@ class LS(Script):
     else:
       self.long = False
     self._res = self.launch()
-
-
 
   def launch(self):
     for vnode in self.nodes:
@@ -68,18 +60,15 @@ class LS(Script):
       if next_node.hasChildren():
         self.recurse(next_node)
 
-
   def ls(self, node):
      buff = ""
      print self.display_node(node)
-
 
   def display_node(self, node):
     if self.long:
       return self.display_node_long(node)
     else:
       return self.display_node_simple(node)
-
 
   def display_node_long(self, node):
     buff = node.absolute()
@@ -88,7 +77,6 @@ class LS(Script):
     if not node.hasChildren():
       buff += '\t' + str(node.size())
     return buff
-
 
   def display_node_simple(self, node):
     buff = ''	

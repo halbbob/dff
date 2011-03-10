@@ -17,11 +17,8 @@
 #ifndef __ULOCALNODE_HPP__
 #define __ULOCALNODE_HPP__
 
-//#include "variant.hpp"
 #include "local.hpp"
 #include "node.hpp"
-
-
 
 class ULocalNode: public Node
 {

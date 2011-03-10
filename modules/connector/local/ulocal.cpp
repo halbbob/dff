@@ -88,7 +88,6 @@ void	local::createTree(std::list<Variant *> vl)
       this->basePath = tpath->path.substr(0, tpath->path.rfind('/'));
       if (stat(tpath->path.c_str(), &stbuff) == -1)
 	{
-	  //res->add_const("error", "stat: " + std::string(strerror(errno)));    	
 	  return ;
 	}
       if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
