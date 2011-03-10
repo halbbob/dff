@@ -299,13 +299,12 @@ SET(CPACK_PACKAGE_VENDOR "ArxSys")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT")
 # In order to provide top-level setting of DFF version, three variables bellow
-# must be used in those three files :
-#  ui/gui/dialog/dialog.py
+# must be used in those two files :
 #  ui/gui/gui.py
 #  ui/ui.py
 # See corresponding CMakeLists.txt for CONFIGURE_FILE.
-SET(CPACK_PACKAGE_VERSION_MAJOR "0") 
-SET(CPACK_PACKAGE_VERSION_MINOR "9")
+SET(CPACK_PACKAGE_VERSION_MAJOR "1") 
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
@@ -325,7 +324,7 @@ set(API_TYPE_VERSION "1.0.0")
 set(API_VARIANT_VERSION "1.0.0")
 set(API_VFS_VERSION "2.7.0")
 set(API_DATATYPE_VERSION "1.0.0")
-# Premier commit de code sur le svn : 2007-12-17
+set(API_EVENT_VERSION "1.0.0")
 
 #### Project install for windows
 IF(WIN32 AND NOT UNIX)

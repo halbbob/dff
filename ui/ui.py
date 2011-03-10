@@ -67,7 +67,7 @@ Options:
   -d 	  --debug		     redirect IO to system console
   --verbosity=LEVEL                  set verbosity level when debugging [0-3]
 """
-   VERSION = "1.0"
+   VERSION = "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
 
    def __init__(self, argv):
      self.argv = argv
