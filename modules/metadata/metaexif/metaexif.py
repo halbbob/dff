@@ -73,7 +73,7 @@ class MetaEXIF(Script):
   def start(self, args):
     try:
       node = args['file'].value()
-      self.stateinfo = "registering" + node.name()
+      self.stateinfo = "Registering node: " + str(node.name())
       node.registerAttributes(self.handler)
     except KeyError:
       pass
