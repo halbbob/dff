@@ -105,7 +105,7 @@ class console(Cmd):
                         else:
                             while not self.proc.event.isSet():
 		    		self.comp_raw.get_char(1)
-                            self.proc = None
+                    self.proc = None
             else:
                 return self.emptyline()
         except:
