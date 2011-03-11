@@ -513,32 +513,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="382"/>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="383"/>
-        <source>Open help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="384"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="380"/>
         <source>Error while loading help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="385"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="381"/>
         <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="386"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="382"/>
         <source>Not an help file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="387"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="383"/>
         <source>Documentation path not found.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -691,6 +681,24 @@
     </message>
 </context>
 <context>
+    <name>Preferences</name>
+    <message>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="328"/>
+        <source>Create directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="329"/>
+        <source>Directory creation failure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="330"/>
+        <source>History file is not writable</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PreferencesDialog</name>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="14"/>
@@ -703,17 +711,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="90"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="184"/>
         <source>History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="98"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="192"/>
         <source>History file full path:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="115"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="209"/>
         <source>No history file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -723,47 +731,47 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="160"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="254"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="166"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="260"/>
         <source>Interface language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="174"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="268"/>
         <source>Use interface language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="219"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="313"/>
         <source>Indexation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="267"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="361"/>
         <source>Index files location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="275"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="369"/>
         <source>Root index</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="350"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="534"/>
         <source>Browse</source>
         <translation>Surf</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="292"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="386"/>
         <source>Index name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="252"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="346"/>
         <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -778,18 +786,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="328"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="510"/>
         <source>Help and documentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="340"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="522"/>
         <source>Full path of the help and documentation file:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="334"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="516"/>
         <source>Help and documentation settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="442"/>
+        <source>Provided path does not exists, will ask for creation on submit.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="486"/>
+        <source>Provided path is a readable directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="548"/>
+        <source>Please provide an help.qhc file along with an help.qch file at same directory level.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="595"/>
+        <source>Provided path is not a readable file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="649"/>
+        <source>Provided path is a readable file.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -925,7 +958,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="836"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="834"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
@@ -1055,13 +1088,23 @@
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="111"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="119"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="121"/>
         <source>No results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="118"/>
+        <source>Provided Arguments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="120"/>
+        <source>Processus Information</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

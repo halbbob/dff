@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>462</width>
-    <height>316</height>
+    <width>458</width>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -81,6 +81,100 @@
             </item>
            </layout>
           </item>
+          <item>
+           <widget class="QLabel" name="workDirWillCreate">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>106</red>
+                  <green>104</green>
+                  <blue>100</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string>Provided path does not exists, will ask for creation on submit.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="workDirOK">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>106</red>
+                  <green>104</green>
+                  <blue>100</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string>Provided path is a readable directory.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -92,24 +186,31 @@
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
+            <item row="1" column="0">
              <widget class="QLabel" name="historyLabel">
               <property name="text">
                <string>History file full path:</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item row="1" column="1">
              <widget class="QLineEdit" name="historyLineEdit"/>
             </item>
-            <item row="1" column="0">
+            <item row="1" column="2">
+             <widget class="QPushButton" name="historyToolButton">
+              <property name="text">
+               <string>Browse</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
              <widget class="QCheckBox" name="noHistoryCheckBox">
               <property name="text">
                <string>No history file</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="0" column="1">
              <spacer name="horizontalSpacer_2">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -121,13 +222,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="historyToolButton">
-              <property name="text">
-               <string>Browse</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </item>
@@ -305,6 +399,94 @@
             </item>
            </layout>
           </item>
+          <item>
+           <widget class="QLabel" name="indexDirWillCreate">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>106</red>
+                  <green>104</green>
+                  <blue>100</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string>Provided path does not exists, will ask for creation on submit.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="indexDirOK">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>106</red>
+                  <green>104</green>
+                  <blue>100</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="text">
+             <string>Provided path is a readable directory.</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -333,38 +515,145 @@
          <property name="title">
           <string>Help and documentation settings</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0" colspan="2">
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
            <widget class="QLabel" name="docAndHelpFullPathLabel">
             <property name="text">
              <string>Full path of the help and documentation file:</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLineEdit" name="docAndHelpFullPath"/>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLineEdit" name="docAndHelpFullPath"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="docAndHelpBrowse">
+              <property name="text">
+               <string>Browse</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="docAndHelpBrowse">
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="font">
+             <font>
+              <italic>true</italic>
+             </font>
+            </property>
             <property name="text">
-             <string>Browse</string>
+             <string>Please provide an help.qhc file along with an help.qch file at same directory level.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+          <item>
+           <widget class="QLabel" name="helpNOK">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>255</red>
+                  <green>0</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>106</red>
+                  <green>104</green>
+                  <blue>100</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>314</width>
-              <height>20</height>
-             </size>
+            <property name="text">
+             <string>Provided path is not a readable file.</string>
             </property>
-           </spacer>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
           </item>
-          <item row="2" column="1">
+          <item>
+           <widget class="QLabel" name="helpOK">
+            <property name="palette">
+             <palette>
+              <active>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </active>
+              <inactive>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>0</red>
+                  <green>170</green>
+                  <blue>0</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </inactive>
+              <disabled>
+               <colorrole role="WindowText">
+                <brush brushstyle="SolidPattern">
+                 <color alpha="255">
+                  <red>106</red>
+                  <green>104</green>
+                  <blue>100</blue>
+                 </color>
+                </brush>
+               </colorrole>
+              </disabled>
+             </palette>
+            </property>
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <italic>false</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Provided path is a readable file.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_4">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -389,38 +678,5 @@
  <resources>
   <include location="gui.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>PreferencesDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>257</x>
-     <y>306</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>PreferencesDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>325</x>
-     <y>306</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
