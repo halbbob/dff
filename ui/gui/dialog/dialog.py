@@ -16,7 +16,7 @@
 import os
 
 from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog, QDialog, QDialogButtonBox, QComboBox, QPushButton, QFormLayout, QHBoxLayout, QPixmap, QLabel, QApplication
-from PyQt4.QtCore import QObject, QString, SIGNAL, SLOT, Qt, QEvent
+from PyQt4.QtCore import QObject, QString, SIGNAL, SLOT, Qt, QEvent, QDir
 
 from api.taskmanager import *
 from api.taskmanager.taskmanager import * 
@@ -31,12 +31,10 @@ from ui.gui.dialog.preferences import Preferences
 from ui.gui.resources.ui_about import Ui_About
 from ui.gui.resources.ui_evidencedialog import Ui_evidenceDialog
 
-
 class Dialog(QObject):
   def __init__(self, parent):
      QObject.__init__(self)
      self.parent = parent 
-     #self.env = env.env()
      self.vfs = vfs.vfs()
      self.taskmanager = TaskManager()
      self.loader = loader.loader()
@@ -45,25 +43,47 @@ class Dialog(QObject):
     """Open a preferences dialog"""
     
     pref = Preferences(self.parent)
-    pref.exec_()
+    ret = pref.exec_()
+    if ret:
+      pref.conf.root_index = pref.root_index_line.text()
+      pref.conf.index_name = pref.index_name_line.text()
+      pref.conf.index_path = pref.conf.root_index + "/" + pref.conf.index_name
+
+      root_index_dir = QDir(pref.conf.root_index)
+      if not root_index_dir.exists():
+        root_index_dir.mkpath(pref.conf.root_index)
+      default_index_dir = QDir(pref.conf.index_path)
+      if not default_index_dir.exists():
+        default_index_dir.mkpath(pref.conf.index_path)
 
   def addDevices(self):
        """Open a device list dialog"""
        dev = DevicesDialog(self.parent)
        if dev.exec_():
 	 if dev.selectedDevice:
-           arg = {"empty": None}
-           #arg = self.env.libenv.argument("gui_input")
-           #arg.thisown = 0
-	   #arg.add_path("path", str(dev.selectedDevice.blockDevice()))
-           #arg.add_node("parent", self.vfs.getnode("/Local devices"))
-           #arg.add_uint64("size", long(dev.selectedDevice.size())) 
+           args = {}
+	   args["path"] = str(dev.selectedDevice.blockDevice())
+	   args["parent"] = self.vfs.getnode("/Local devices")
+	   args["size"] = long(dev.selectedDevice.size())
 	   exec_type = ["thread", "gui"]
-           if os.name == "nt":
-             arg.add_string("name", str(dev.selectedDevice.model()))
-             self.taskmanager.add("windevices", arg, exec_type)	
-           else:
-             self.taskmanager.add("local", arg, exec_type)
+	   try:
+             if os.name == "nt":
+	       args["name"] = str(dev.selectedDevice.model())
+             conf = self.loader.get_conf(str("devices"))
+             genargs = conf.generate(args)
+             self.taskmanager.add("devices", genargs, exec_type)	
+           except RuntimeError:
+             err_type, err_value, err_traceback = sys.exc_info()
+             err_trace =  traceback.format_tb(err_traceback)
+             err_typeval = traceback.format_exception_only(err_type, err_value)
+             terr = QString()
+             detailerr = QString()
+             for err in err_trace:
+               detailerr.append(err)
+               for errw in err_typeval:
+                 terr.append(errw)
+                 detailerr.append(err)
+             self.messageBox(terr, detailerr)
 
   def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """
@@ -72,17 +92,16 @@ class Dialog(QObject):
         if ir > 0:
           args = {}
           paths = edialog.manager.get("local")
-          print paths
           if edialog.rawcheck.isChecked():
             module = "local"
             args["path"] = paths
+	    args["parent"] = self.vfs.getnode('/Logical files')
           else:
             module = "ewf"
             args["files"] = paths
           self.conf = self.loader.get_conf(str(module))
           try:
             genargs = self.conf.generate(args)
-            self.taskmanager = TaskManager()
             self.taskmanager.add(str(module), genargs, ["thread", "gui"])
           except RuntimeError:
             err_type, err_value, err_traceback = sys.exc_info()
@@ -158,7 +177,7 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     layout = QHBoxLayout()
     layout.setMargin(0)
     self.manager = layoutManager()
-    self.manager.addPathList("local", typeId.Path, [])
+    self.manager.addPathList("local", typeId.Path, [], [])
     layout.addWidget(self.manager)
     self.pathselector.setLayout(layout)
 

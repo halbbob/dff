@@ -19,7 +19,7 @@ import sys
 
 from PyQt4.QtGui import QAbstractItemView, QApplication, QCheckBox, QDialog, QGridLayout, QLabel, QMessageBox,QSplitter, QVBoxLayout, QWidget, QDialogButtonBox, QPushButton, QLineEdit, QCompleter, QSortFilterProxyModel, QGroupBox, QFileDialog, QSpinBox, QFormLayout, QHBoxLayout, QStackedWidget, QListWidget, QListWidgetItem, QTextEdit, QPalette, QComboBox, QIntValidator
 from PyQt4.QtCore import Qt,  QObject, QRect, QSize, SIGNAL, QModelIndex, QString, QEvent
-# CORE
+
 from api.loader import *
 from api.vfs import *
 from api.taskmanager.taskmanager import *
@@ -34,7 +34,8 @@ from api.gui.widget.layoutmanager import *
 
 class ApplyModule(QDialog, Ui_applyModule):
     def __init__(self,  mainWindow):
-        super(QDialog, self).__init__()
+        QDialog.__init__(self, mainWindow)
+        Ui_applyModule.__init__(self)
         self.setupUi(self)
         self.labActivate.setVisible(False)
         self.labType.setVisible(False)
@@ -58,8 +59,10 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.typeModuleField.setText(typeModule)
 
         self.conf = self.loader.get_conf(str(nameModule))
-        self.textEdit.setText(self.conf.description)
-
+        try:
+            self.textEdit.setText(self.conf.description)
+        except TypeError:
+            self.textEdit.setText(self.conf.description())
         args = self.conf.arguments()
         self.createArgShape(args)
     
@@ -112,12 +115,12 @@ class ApplyModule(QDialog, Ui_applyModule):
             editable = False
         if inputype == Argument.Single:
             if arg.type() in (typeId.Node, typeId.Path):
-                warguments.addPath(arg.name(), arg.type(), predefs, editable)
+                warguments.addPath(arg.name(), arg.type(), predefs, self.__nodesSelected, editable)
             else:
                 warguments.addSingleArgument(arg.name(), predefs, arg.type(), editable)
         elif inputype == Argument.List:
             if arg.type() in (typeId.Node, typeId.Path):
-                warguments.addPathList(arg.name(), arg.type(), predefs)
+                warguments.addPathList(arg.name(), arg.type(), predefs, self.__nodesSelected)
             else:
                 warguments.addListArgument(arg.name(), arg.type(), predefs, editable)
         else:
@@ -143,7 +146,6 @@ class ApplyModule(QDialog, Ui_applyModule):
                         params = True
                     else:                        
                         params = lmanager.get(argname)
-                        print params
                     args[argname] = params
             genargs = self.conf.generate(args)
             self.taskmanager = TaskManager()
@@ -171,7 +173,7 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.stackedargs.setCurrentIndex(self.listargs.row(curitem))
 
     def messageBox(self, coretxt, detail):
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setWindowTitle(self.configureError)
         msg.setText(self.configureErrorMsg)
         msg.setInformativeText(coretxt)
