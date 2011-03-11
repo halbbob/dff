@@ -50,99 +50,122 @@ class GenerateCode():
 
     def generate_script(self,  scriptname):
         buff = self.generate_header()
-        buff += "from api.vfs import *\n\
-from api.module.module import *\n\
+        buff += "import sys\n\
+from api.module.script import Script\n\
+from api.module.module import Module\n\
+from api.types.libtypes import Argument, typeId\n\
+\n\
+from PyQt4.QtCore import QSize, SIGNAL\n\
+from PyQt4.QtGui import QWidget\n\
+from ui.gui.utils.utils import Utils\n\
 \n\
 class " + scriptname.upper() + "(Script):\n\
     def __init__(self):\n\
-	#Module init stuff goes here\n\
+	#Module initialization goes here\n\
 	Script.__init__(self, \"" + scriptname + "\")\n\
 \n\
     def c_display(self):\n\
-	#You can add console display function here\n\
-	#like ncurses func or others display func\n\
-	#ex: print \"buff\"\n\
+	# You can add console display function here\n\
+	# such as ncurses func or others display functions.\n\
+	#ex: print \"something\"\n\
 	pass\n\
 \n\
     def start(self, args):\n\
-        #get your arg here, ex : args.get_node('filename')\n\
-        #do some stuff, ex: print \"Hello\"\n\
-	#you can set your state too, ex : self.stateinfo = \"Processing file\"\n\
-        #return your result, ex: self.res.add_const(\"result\", \"no problem\")\n\
-        print \"Hello World !\"\n\
+       # get your arguments here.\n\
+       # Do soemthing.\n\
+       try:\n\
+          self.parent = args[\"parent\"].value()\n\
+          print \"It seems to work\"\n\
+       except IndexError:\n\
+          print \"Could not get \'parent\' argument.\"\n\
 \n\
 \n\
 class " + scriptname + "(Module):\n\
   def __init__(self):\n\
     Module.__init__(self, \"" + scriptname + "\", " + scriptname.upper() + ")\n\
-    #Add your argument and tags here\n\
-    #self.conf.add(\"filename\", \"node\")\n\
-    #Add your const here\n\
-    #self.conf.add_const(\"mime-type\", \"JPEG\")\n\
+\n\
+    # Add your argument and tags here\n\
+    self.conf.addArgument({\"input\": Argument.Required|Argument.Single|typeId.Node,\n\
+                           \"name\": \"file\",\n\
+                           \"description\": \"Description of your module\"})\n\
     self.tags = \"" + self.tag + "\" \n"
         return buff
 
     def generate_script_gui(self,  scriptname):
         buff = self.generate_header()
-	buff += "from PyQt4 import QtCore, QtGui\n\
-from PyQt4.QtCore import *\n\
-from PyQt4.QtGui import *\n\
-from api.module.module import *\n\
+	buff += "import sys\n\
+from api.module.script import Script\n\
+from api.module.module import Module\n\
+from api.types.libtypes import Argument, typeId\n\
 \n\
-class " + scriptname.upper() + "(QTextEdit, Script):\n\
+from PyQt4.QtCore import QSize, SIGNAL\n\
+from PyQt4.QtGui import QTextEdit\n\
+from ui.gui.utils.utils import Utils\n\
+\n\
+class " + scriptname.upper() + "(Script, QTextEdit):\n\
     def __init__(self):\n\
-	#Module init stuff goes here\n\
+	#Module initialization goes here\n\
 	Script.__init__(self, \"" + scriptname + "\")\n\
 \n\
     def c_display(self):\n\
-	#You can add console display function here\n\
-	#like ncurses func or others display func\n\
-	print self.buff\n\
+	# You can add console display function here\n\
+	# such as ncurses func or others display functions.\n\
+	#ex: print \"something\"\n\
+	pass\n\
 \n\
     def g_display(self):\n\
 	#This function must init a QWidget\n\
 	QTextEdit.__init__(self, None)\n\
-        self.append(self.buff)\n\
-\n\
 \n\
     def updateWidget(self):\n\
 	#you can put your refresh on resize func here\n\
 	pass\n\
 \n\
     def start(self, args):\n\
-        #get your arg here, ex : args.get_node('filename')\n\
-        #do some stuff, ex: print \"Hello\"\n\
-	#you can set your state too, ex : self.stateinfo = \"Processing file\"\n\
-        #return your result, ex: self.res.add_const(\"result\", \"no problem\")\n\
-	self.buff = \"Hello world !\"\n\
+       # get your arguments here.\n\
+       # Do soemthing.\n\
+       try:\n\
+          self.parent = args[\"parent\"].value()\n\
+          print \"It seems to work\"\n\
+       except IndexError:\n\
+          print \"Could not get \'parent\' argument.\"\n\
 \n\
 class " + scriptname + "(Module):\n\
   def __init__(self):\n\
-    Module.__init__(self, \"" + scriptname + "\"," + scriptname.upper() + ")\n\
-    #Add your argument and tags here\n\
-    #self.conf.add(\"filename\", \"node\")\n\
+    Module.__init__(self, \"" + scriptname + "\", " + scriptname.upper() + ")\n\
+\n\
+    # Add your argument and tags here\n\
+    self.conf.addArgument({\"input\": Argument.Required|Argument.Single|typeId.Node,\n\
+                           \"name\": \"file\",\n\
+                           \"description\": \"Description of your module\"})\n\
     self.tags = \"" + self.tag + "\" \n"
-        return buff	
 
+        return buff	
 
     def generate_drivers(self,  drivername):
         buff = self.generate_header()
         buff += "from struct import unpack\n\
-from api.vfs import *\n\
+from api.vfs import * \n\
 from api.module.module import *\n\
-from api.env.libenv import *\n\
-from api.variant.libvariant import Variant, VMap\n\
 from api.vfs.libvfs import *\n\
 from modules.fs.spare import SpareNode\n\
 \n\
+from api.types.libtypes import Variant, VMap, Parameter, Argument, typeId\n\
+from api.vfs.libvfs import AttributesHandler\n\
+from api.vfs.vfs import vfs\n\
 \n\
 class " + drivername + "(Module):\n\
-  \"\"\" " + self.description + " \"\"\"\n\
-  def __init__(self):\n\
-     Module.__init__(self, \"" + drivername + "\", " + drivername.capitalize() +")\n\
-     self.conf.add(\"parent\", \"node\", \"False\", \"Parent node\")\n\
-     # you can add some arguments for your module here by using the self.conf.add method\n\
-    self.tags = \"" + self.tag + "\" \n\
+   \"\"\"\n   " + self.description + "\n   \"\"\"\n\
+   def __init__(self):\n\
+      Module.__init__(self, \"" + drivername + "\", " + drivername.capitalize() +")\n\
+      self.conf.addArgument({\"input\": Argument.Optional|Argument.Single|typeId.Node,\n\
+                            \"name\": \"parent\", \n\
+                            \"description\": \"files or folders will be added as child(ren) of this node or as the root node by default\",\n\
+                            \"parameters\": {\"type\": Parameter.Editable}\n\
+                            })\n\
+\n\
+      # you can add some arguments for your module here by using the self.conf.addArgument method\n\
+      self.tags = \"" + self.tag + "\" \n\
 \n\
 \n\
 class " + drivername.capitalize() + "(mfso):\n\
@@ -151,27 +174,25 @@ class " + drivername.capitalize() + "(mfso):\n\
       mfso.__init__(self, \"" + drivername + "\")\n\
 \n\
       # get the VFS\n\
-      self.vfs = vfs.vfs()\n\
+      self.vfs = VFS.Get()\n\
       self.name = \"" + drivername + "\"\n\
-      self.res = results(self.name)\n\
       self.__disown__()\n\
-    \n\
+\n\
    def start(self, args):\n\
       # get the parent Node\n\
-      self.parent = args.get_node('parent')\n\
+      print \"Running module...\"\n\
+      try:\n\
+         self.parent = args[\"parent\"].value()\n\
+         print \"It seems to work\"\n\
+      except IndexError:\n\
+         print \"Could not get \'parent\' argument.\"\n\
 \n\
 class " + drivername.capitalize() + "Node(Node):\n\
+   \"\"\"\n\
+   The type of node your driver will generate.\n\
+   \"\"\"\n\n\
    def __init__(self, name, size, parent, fso): # you might need more parameters\n\
-        Node.__init__(self, name, size, parent, fso)\n\
-        self.__disown__()\n\
-\n\
-   def fileMapping(self, fm):\n\
-        # here should be the code of the fileMapping method\n\
-        print \"File mapping\"\n\
-\n\
-   def extendedAttributes(self, attr):\n\
-        # if you want to add some extended atrtibutes in your node,\n\
-        # you must call attr.push()\n\
-        attr.thisown = False\n\
+      Node.__init__(self, name, size, parent, fso)\n\
+      self.__disown__()\n\
 "
         return buff

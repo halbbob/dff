@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -1338,10 +1338,18 @@
         self.__origininit__(*args)
 
     def __repr__(self):
-        #if self.type() in [typeId.Char, typeId.CArray, typeId.String]:
-           #buff = "'" + str(self.value()) + "'"
-        #else:
-        buff = str(self.value())
+        if self.type() in [typeId.List, typeId.Map]:
+           return str(self.value())
+        elif self.type() in [typeId.Char, typeId.CArray, typeId.String]:
+           val = self.toString()
+           if val.isalnum():
+              buff = self.toString()
+           else:
+              buff = self.toHexString()
+        elif self.type() == typeId.Node:
+           buff = self.value().absolute()
+        else:
+           buff = self.toString()
         return buff
 
     def value(self):

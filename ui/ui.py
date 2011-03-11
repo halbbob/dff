@@ -21,7 +21,7 @@ from console.console import console
 from gui.gui import *
 from redirect import RedirectIO
 
-from gui.configuration.conf import Conf
+from conf import Conf
 
 class ui():  
   def __init__(self, type, debug = False, verbosity = 0):
@@ -67,7 +67,7 @@ Options:
   -d 	  --debug		     redirect IO to system console
   --verbosity=LEVEL                  set verbosity level when debugging [0-3]
 """
-   VERSION = "1.0"
+   VERSION = "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
 
    def __init__(self, argv):
      self.argv = argv

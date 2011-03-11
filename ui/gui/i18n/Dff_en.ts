@@ -512,6 +512,36 @@
         <source>DFF Documentation</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="382"/>
+        <source>Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="383"/>
+        <source>Open help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="384"/>
+        <source>Error while loading help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="385"/>
+        <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="386"/>
+        <source>Not an help file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="387"/>
+        <source>Documentation path not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Modules</name>
@@ -582,11 +612,6 @@
 <context>
     <name>NodeViewBox</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="14"/>
-        <source>Node View Box</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
@@ -637,11 +662,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
-        <source>Active thumbnails</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="322"/>
         <source>Small</source>
         <translation type="unfinished"></translation>
@@ -654,6 +674,11 @@
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="332"/>
         <source>Large</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
+        <source>Activate thumbnails</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -673,135 +698,180 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="24"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="34"/>
         <source>Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="90"/>
         <source>History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="38"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="98"/>
         <source>History file full path:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
-        <source>...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="115"/>
         <source>No history file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="80"/>
-        <source>Other settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="88"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
         <source>No footprint</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="137"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="160"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="143"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="166"/>
         <source>Interface language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="174"/>
         <source>Use interface language:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="219"/>
+        <source>Indexation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="267"/>
+        <source>Index files location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="275"/>
+        <source>Root index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="350"/>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="292"/>
+        <source>Index name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="252"/>
+        <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="40"/>
+        <source>Working environment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <source>DFF user directory:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="328"/>
+        <source>Help and documentation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="340"/>
+        <source>Full path of the help and documentation file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="334"/>
+        <source>Help and documentation settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="116"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="117"/>
         <source>name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
         <source>folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
         <source>file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
         <source>generated by</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
         <source>size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
         <source>relevant module(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="117"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
         <source>node type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
         <source>attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
         <source>children</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
         <source>file(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
         <source> bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
         <source>folder(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
         <source> totalizing </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
         <source> with module(s) applied on it</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
         <source> empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
         <source> deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -855,7 +925,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="676"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="836"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -863,37 +933,37 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="560"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="561"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="562"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Accessed time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Changed time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="567"/>
         <source>Modified time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="568"/>
         <source>Module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="569"/>
         <source>Deleted</source>
         <translation type="unfinished"></translation>
     </message>
@@ -985,12 +1055,12 @@
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="111"/>
         <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="113"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
         <source>No results</source>
         <translation type="unfinished"></translation>
     </message>

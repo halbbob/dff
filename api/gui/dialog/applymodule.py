@@ -115,12 +115,12 @@ class ApplyModule(QDialog, Ui_applyModule):
             editable = False
         if inputype == Argument.Single:
             if arg.type() in (typeId.Node, typeId.Path):
-                warguments.addPath(arg.name(), arg.type(), predefs, editable)
+                warguments.addPath(arg.name(), arg.type(), predefs, self.__nodesSelected, editable)
             else:
                 warguments.addSingleArgument(arg.name(), predefs, arg.type(), editable)
         elif inputype == Argument.List:
             if arg.type() in (typeId.Node, typeId.Path):
-                warguments.addPathList(arg.name(), arg.type(), predefs)
+                warguments.addPathList(arg.name(), arg.type(), predefs, self.__nodesSelected)
             else:
                 warguments.addListArgument(arg.name(), arg.type(), predefs, editable)
         else:

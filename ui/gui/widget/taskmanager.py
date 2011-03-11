@@ -14,10 +14,11 @@
 #  Jeremy MOUNIER <jmo@digital-forensic.org>
 #
 
-
+import time
+from datetime import datetime
 from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QVBoxLayout, QHBoxLayout, QDialogButtonBox
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
-from api.taskmanager.taskmanager import *
+from api.taskmanager.taskmanager import TaskManager
 from api.gui.widget.varianttreewidget import VariantTreeWidget
 from ui.gui.resources.ui_taskmanager import Ui_TaskManager
 
@@ -26,12 +27,9 @@ class Processus(QTreeWidget, Ui_TaskManager):
         super(QTreeWidget, self).__init__()
         self.setupUi(self)
         self.__mainWindow = parent        
-
         self.name = "Task manager"
         self.tm = TaskManager()
-
         self.initTreeProcess()
-
         
     def initTreeProcess(self):
  	self.connect(self, SIGNAL("itemDoubleClicked(QTreeWidgetItem*,int)"), self.procClicked)
@@ -56,12 +54,13 @@ class Processus(QTreeWidget, Ui_TaskManager):
             item.setText(2, str(proc.state))
           if item.text(3) != str(proc.stateinfo):
 	    item.setText(3, str(proc.stateinfo))
-	  #if not proc.timeend:
-	    #ctime = time.time() - proc.timestart 
-	    #item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
-	  #else:
-	    #ctime = proc.timeend - proc.timestart
-	    #item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
+          stime = datetime.fromtimestamp(proc.timestart)
+          if proc.timeend:
+	    etime = datetime.fromtimestamp(proc.timeend)
+          else:
+	    etime = datetime.fromtimestamp(time.time())
+	  delta = etime - stime
+	  item.setText(4, str(delta))
 
     def deleteInfoProcess(self):
         self.clear()

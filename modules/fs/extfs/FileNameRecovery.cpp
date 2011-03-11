@@ -24,8 +24,6 @@
 #include "include/utils/InodeUtils.h"
 #include "include/ExtfsRawDataNode.h"
 
-//#define DIR_DEBUG
-
 FileNameRecovery::FileNameRecovery(Journal * journal)
 {
   _journal = journal;
@@ -191,9 +189,6 @@ ExtfsNode *   FileNameRecovery::recovery(uint32_t block_number,
 		    node = dir->createNewNode(inode_addr, parent, __name, inode);
 		  else
 		    node = dir->createNewNode(0, parent, __name, inode);
-		  /* 
-		     else if (check_type()) // type dirent == type inode {}
-		  */
 		  node->setDeleted();
 		  node->set_i_nb(dir_e->inode_value());
 		  found = true;
@@ -260,7 +255,6 @@ bool		FileNameRecovery::valid_name(char * name)
     return false;
   if (!strcmp((char *)name, "..") || !strcmp((char *)name, "."))
     return false;
-  //  std::cout << "name : " << name << std::endl;
   return true;
 }
 

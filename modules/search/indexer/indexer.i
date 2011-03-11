@@ -1,6 +1,6 @@
 /*
  * DFF -- An Open Source Digital Forensics Framework
- * Copyright (C) 2009-2010 ArxSys
+ * Copyright (C) 2009-2011 ArxSys
  *
  * This program is free software, distributed under the terms of
  * the GNU General Public License Version 2. See the LICENSE file
@@ -54,7 +54,7 @@ namespace std
 %{
 from api.module.module import *
 from api.types.libtypes import Argument, typeId, Variant, Parameter
-from ui.gui.configuration.conf import Conf
+from ui.conf import Conf
 from PyQt4.QtCore import QDir
 
 class INDEXER(Module):

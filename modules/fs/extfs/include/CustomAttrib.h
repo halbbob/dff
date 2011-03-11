@@ -19,7 +19,6 @@
 #ifndef __CUSTOM_ATTRIB_H__
 #define __CUSTOM_ATTRIB_H__
 
-//#include "../../../api/include/attrib.hpp"
 #include "../data_structure/includes/Inode.h"
 
 class CustomAttrib : public attrib

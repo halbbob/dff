@@ -242,7 +242,7 @@ Attributes 	ExtfsNode::_attributes()
     {
       MfsoAttrib * c_attr = new MfsoAttrib;
       c_attr->setAttrs(inode, &attr, this->__i_nb, this->__inode_addr);
-      vtime* modified = new vtime;	
+      vtime* modified = new vtime;
       c_attr->vtime_from_timestamp(inode->modif_time(), modified);
       attr["modified"] = new Variant(modified);
       vtime* accessed = new vtime;	

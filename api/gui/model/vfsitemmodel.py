@@ -779,9 +779,7 @@ class TreeModel(QStandardItemModel, EventHandler):
       # iter on the list until the qstandarditem associated with node 'i' is found
 
       found = False
-      for j in range(0, item.rowCount()): # find the node
-
-        # get node
+      for j in range(0, item.rowCount()): # find the node in the item children
         tmp_item = item.child(j)
         if tmp_item == None:
           continue

@@ -32,7 +32,7 @@ class CD(Script):
     if not node.hasChildren():
       val = Variant("Can't change current directory on file")
       val.thisown = False
-      self.res.add_const["error"] = val
+      self.res["error"] = val
       return 
     self.vfs.setcwd(node)
     val = Variant("change path to " + str(node.absolute()))

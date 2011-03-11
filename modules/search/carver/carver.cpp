@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -104,24 +104,18 @@ int		Carver::Read(char *buffer, unsigned int size)
 }
 
 
-void	needleToHex(unsigned char* needle, int size)
+std::string	Carver::needleToHexString(unsigned char* needle, int size)
 {
   int			count;
   int			i;
-  std::stringstream	res;
+  std::stringstream	ss;
 
-  count = 0;
   for (i = 0; i != size; i++)
     {
-      res << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(needle[i]);
-      if (count++ == 15)
-	{
-	  count = 0;
-	  res << std::endl;
-	}
-      else
-	res << " ";
+      ss << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(needle[i]);
+      ss << " ";
     }
+  return ss.str();
 }
 
 description*	Carver::createDescription(std::map<std::string, Variant*> ctx)
@@ -135,17 +129,13 @@ description*	Carver::createDescription(std::map<std::string, Variant*> ctx)
   cpattern = ctx["header"]->value<std::map<std::string, Variant*> >();
   descr->header = new pattern;
   descr->header->needle = (unsigned char*)(cpattern["needle"]->toCArray());
-  //std::cout << "header: " << cpattern["needle"]->toHexString() << std::endl;
   descr->header->size = cpattern["size"]->value<uint32_t>();
-  needleToHex(descr->header->needle, descr->header->size);
   descr->header->wildcard = cpattern["wildcard"]->value<char>();
 
   cpattern = ctx["footer"]->value<std::map<std::string, Variant*> >();
   descr->footer = new pattern;
   descr->footer->needle = (unsigned char*)(cpattern["needle"]->toCArray());
-  //std::cout << "footer: " << cpattern["needle"]->toHexString() << std::endl;
   descr->footer->size = cpattern["size"]->value<uint32_t>();
-  needleToHex(descr->footer->needle, descr->footer->size);
   descr->footer->wildcard = cpattern["wildcard"]->value<char>();
   descr->window = ctx["window"]->value<uint32_t>();
   descr->aligned = ctx["aligned"]->value<bool>();
@@ -205,6 +195,7 @@ void		Carver::mapper()
   event*	e1;
   uint64_t	total_headers;
   uint64_t	offpos;
+  std::stringstream	percent;
 
   e = new event;
   e1 = new event;
@@ -217,6 +208,9 @@ void		Carver::mapper()
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
     {
       offpos = this->tell();
+      percent.str("");
+      percent << ((offpos * 100) / this->inode->size()) << " %";
+      this->stateinfo = percent.str();
       //printf("%llu\n", (offpos * 100) / this->inode->size());
       for (i = 0; i != this->ctx.size(); i++)
 	{
@@ -365,6 +359,35 @@ unsigned int		Carver::createWithFooter(Node *parent, vector<uint64_t> *headers, 
   return total;
 }
 
+
+void		Carver::fillResult(context* ctx)
+{
+  std::stringstream	totalheaders;
+  std::stringstream	totalfooters;
+  std::map<std::string, Variant*>::iterator	mit;
+  std::list<Variant*>				vlistptr;
+  
+  totalheaders.str("");
+  totalheaders << "Header " << ctx->headers.size() << " (pattern " << this->needleToHexString(ctx->descr->header->needle, ctx->descr->header->size) << ") ";
+  if ((mit = this->res.find(std::string(ctx->descr->type))) != this->res.end())
+    {
+      mit->second->convert(typeId::List, &vlistptr);
+      totalheaders << ctx->headers.size() << " header(s) found";
+    }
+  else
+    {
+      std::list<Variant*>	vlist;
+      vlist.push_back(new Variant(totalheaders.str()));
+      this->res[std::string(ctx->descr->type)] = new Variant(vlist);
+      this->res[std::string(ctx->descr->type)]->convert(typeId::List, &vlistptr);
+      vlistptr.push_back(new Variant(totalheaders.str()));
+      delete this->res[std::string(ctx->descr->type)];
+      this->res[std::string(ctx->descr->type)] = new Variant(vlistptr);
+    }
+  std::cout << vlistptr.size() << std::endl;
+}
+
+
 int		Carver::createTree()
 {
   context	*ctx;
@@ -372,11 +395,8 @@ int		Carver::createTree()
   unsigned int	max;
   unsigned int	clen;
   unsigned int	i;
-  unsigned int	total;
-
 
   clen = this->ctx.size();
-  //this->Results = "";
   for (i = 0; i != clen; i++)
     {
       ctx = this->ctx[i];
@@ -389,12 +409,10 @@ int		Carver::createTree()
 	  else
 	    max = BUFFSIZE;
 	  if (ctx->footers.size() > 0)
-	    total = this->createWithFooter(parent, &(ctx->headers), &(ctx->footers), max);
+	    this->createWithFooter(parent, &(ctx->headers), &(ctx->footers), max);
 	  else
-	    total = this->createWithoutFooter(parent, &(ctx->headers), max);
-	  //memset(tmp, 0, 42);
-	  //sprintf(tmp, "%d", total);
-	  //this->Results += string(ctx->descr->type) + ":" + string(tmp) + " header(s) found\n";
+	    this->createWithoutFooter(parent, &(ctx->headers), max);
+	  //this->fillResult(ctx);
 	  this->registerTree(this->root, parent);
 	}
     }
