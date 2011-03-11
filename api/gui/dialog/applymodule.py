@@ -58,6 +58,9 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.nameModuleField.setText(nameModule)
         self.typeModuleField.setText(typeModule)
 
+        if not nodesSelected:
+            self.__nodesSelected = []
+
         self.conf = self.loader.get_conf(str(nameModule))
         try:
             self.textEdit.setText(self.conf.description)
