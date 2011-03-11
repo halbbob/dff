@@ -23,6 +23,24 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
         QTreeWidget.__init__(self, parent)
         self.setupUi(self)
 
+
+    def setItemText(self, item, vval):
+        if vval.type() == typeId.VTime:
+            vtime = vval.value()
+            item.setText(1, str(vtime.get_time()))
+        elif vval.type() in [typeId.Int16, typeId.UInt16, typeId.Int32, typeId.UInt32, typeId.Int64, typeId.UInt64]:
+            item.setText(1, vval.toString() + " - " + vval.toHexString())
+        elif vval.type() in [typeId.Char, typeId.String, typeId.CArray]:
+            val = vval.toString()
+            item.setText(1, str(val))
+        elif vval.type() == typeId.Node:
+            item.setText(1, str(vval.value().absolute()))
+        elif vval.type() == typeId.Path:
+            item.setText(1, str(vval.value().path))
+        else:
+            item.setText(1, str(vval.value()))
+
+
     def fillMap(self, parent, vmap):
         for key in vmap.iterkeys():
             item = QTreeWidgetItem(parent)
@@ -39,14 +57,8 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
                     expand = False
                 item.setText(1, "total items (" + str(size) + ")")
                 self.fillList(item, vlist)
-            elif vval.type() == typeId.VTime:
-                vtime = vval.value()
-                item.setText(1, str(vtime.get_time()))
-            elif vval.type() in [typeId.Char, typeId.Int16, typeId.UInt16, typeId.Int32, typeId.UInt32, typeId.Int64, typeId.UInt64]:
-                item.setText(1, vval.toString() + " - " + vval.toHexString())
             else:
-                val = vval.value()
-                item.setText(1, str(val))
+                self.setItemText(item, vval)
             if expand:
                 self.expandItem(item)
 
@@ -59,17 +71,10 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
             elif vval.type() == typeId.List:
                 vvlist = vval.value()
                 self.fillList(parent, vvlist)
-            elif vval.type == typeId.VTime:
-                vtime = vval.value()
-                item = QTreeWidgetItem(parent)
-                item.setText(1, str(vtime.get_time()))
-            elif vval.type() in [typeId.Char, typeId.Int16, typeId.UInt16, typeId.Int32, typeId.UInt32, typeId.Int64, typeId.UInt64]:
-                item = QTreeWidgetItem(parent)
-                item.setText(1, vval.toString() + " - " + vval.toHexString())
             else:
-                val = vval.value()
                 item = QTreeWidgetItem(parent)
-                item.setText(1, str(val))
+                self.setItemText(item, vval)
+
 
     def changeEvent(self, event):
         """ Search for a language change event
