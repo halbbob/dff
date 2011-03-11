@@ -14,4 +14,4 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-__all__ = ['carver']
+__all__ = ['carver', 'indexer']

@@ -19,7 +19,5 @@ set(ui_dialog_srcs
   preferences.py
 )
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/dialog.py ${CMAKE_CURRENT_BINARY_DIR}/dialog.py)
-
 install_file(ui_dialog ${ui_dialog_srcs})
 

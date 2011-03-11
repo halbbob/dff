@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -18,8 +18,9 @@
 #ifndef __CARVER_HPP__
 #define __CARVER_HPP__
 
+#include "mfso.hpp"
 #include "node.hpp"
-#include "DEventHandler.hpp"
+#include "eventhandler.hpp"
 #include "common.hpp"
 
 //Let the possibility to modify the matching footer or to dynamically set the window
@@ -38,14 +39,12 @@ public:
   virtual void	fileMapping(class FileMapping* fm);
 };
 
-class Carver: public mfso, public DEventHandler
+class Carver: public mfso, public EventHandler
 {
 private:
   Node			*inode;
   Node			*root;
   VFile			*ifile;
-  //FileHandler		*filehandler;
-  //fdmanager		*fdm;
   BoyerMoore		*bm;
   vector<context*>	ctx;
   unsigned int		maxNeedle;
@@ -60,14 +59,17 @@ private:
   int		        createTree();
   void			mapper();
   std::string		generateName(uint64_t start, uint64_t end);
+  description*		createDescription(std::map<std::string, Variant*>);
+  void			createContexts(std::list<Variant*> patterns);
+  void			fillResult(context* ctx);
+  std::string		needleToHexString(unsigned char* needle, int size);
 
 public:
   Carver();
   ~Carver();
   uint64_t		tell();
-  EXPORT string		process(list<description *> *d, uint64_t start, bool aligned);
-  virtual void          start(argument *arg);
-  virtual void		Event(DEvent *e);
+  virtual void          start(std::map<std::string, Variant*> args);
+  virtual void		Event(event* e);
   int			Read(char *buffer, unsigned int size);
 };
 

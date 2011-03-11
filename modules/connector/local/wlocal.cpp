@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -30,30 +30,28 @@ void				local::frec(const char *name, Node *rfv)
 	
   searchPath +=  "\\*";  
   
-  if ((hd = FindFirstFileA(searchPath.c_str(), &find)) != INVALID_HANDLE_VALUE) {
-    do {
-	  WLocalNode	*tmp; //= new Node;
-	  std::string	handle;
-	  
+  if ((hd = FindFirstFileA(searchPath.c_str(), &find)) != INVALID_HANDLE_VALUE) 
+  {
+    do 
+	{
+	  WLocalNode	*tmp;
+	 
 	  if (!strcmp(find.cFileName, ".") || !strcmp(find.cFileName, ".."))
-	    continue ;
+	    continue ;	  
 	  nname = name;
 	  nname += "\\";
 	  nname += find.cFileName;
-	  handle += nname;
 
-	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		// Create a virtual directory
-		tmp = new WLocalNode(find.cFileName, 0, rfv, this, WLocalNode::DIR);
-		tmp->setBasePath(this->basePath.c_str());
+	  if (find.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) 
+	  {
+		tmp = new WLocalNode(std::string(find.cFileName), 0, rfv, this, WLocalNode::DIR, nname);
 		this->frec((char *)nname.c_str(), tmp);
 	  }
-	  else {
-		// Create a virtual file
+	  else 
+	  {
 		sizeConverter.Low = find.nFileSizeLow;
 		sizeConverter.High = find.nFileSizeHigh;
-		tmp = new WLocalNode(find.cFileName, sizeConverter.ull, rfv, this, WLocalNode::FILE);
-		tmp->setBasePath(this->basePath.c_str());
+		tmp = new WLocalNode(std::string(find.cFileName), sizeConverter.ull, rfv, this, WLocalNode::FILE, nname);
 	  }
 	} while (FindNextFileA(hd, &find));
     
@@ -69,73 +67,89 @@ local::~local()
 {
 }
 
-void						local::start(argument *arg)
+void						local::start(std::map<std::string, Variant* > args)
 {
-  std::string			path;
-  Path				*lpath;
-  WIN32_FILE_ATTRIBUTE_DATA	info;
-  s_ull				sizeConverter;
+  std::list<Variant *>							paths;
+
   
-  try
-  {	 
-    arg->get("parent", &(this->parent));
-  }
-  catch (envError e)
+  if (args["parent"] == NULL)
   {
-    this->parent = VFS::Get().GetNode("/");
+	  throw (envError("local modules requires parent"));
   }
-  try 
+  else
   {
-    arg->get("path", &lpath);
-  } 
-  catch (envError e)
+      this->parent = args["parent"]->value<Node*>();
+  }
+  if (args["path"])
   {
-     res->add_const("error", "conf " + e.error);
-     return ;
+	  paths = args["path"]->value<std::list < Variant *> >();
+	  if (paths.size() == 0)
+		  throw (envError("local module requires at least one path parameter"));
   }
-  while (lpath->path.find('/') != std::string::npos) {
-	lpath->path[lpath->path.find('/')] = '\\';
+  else
+	  throw (envError("local modules requires path argument"));
+
+  std::list<Variant* >::iterator	path = paths.begin();
+  for  (; path != paths.end(); ++path)
+  {
+	  this->createPath(((*path)->value<Path*>())->path);
   }
-  if ((lpath->path.rfind('/') + 1) == lpath->path.length())
-    lpath->path.resize(lpath->path.rfind('/'));
-  if ((lpath->path.rfind('\\') + 1) == lpath->path.length())
-    lpath->path.resize(lpath->path.rfind('\\'));
-  path = lpath->path;
-  if (path.rfind("\\") <= path.size())
-    path = path.substr(path.rfind("\\") + 1);
+}
+
+std::string local::relativePath(std::string path)
+{
+  std::string relPath;
+
+  while (path.find('/') != std::string::npos) {
+	path[path.find('/')] = '\\';
+  }
+  if ((path.rfind('/') + 1) == path.length())
+    path.resize(path.rfind('/'));
+  if ((path.rfind('\\') + 1) == path.length())
+    path.resize(path.rfind('\\'));
+  relPath = path;
+  if (relPath.rfind("\\") <= relPath.size())
+    relPath = relPath.substr(relPath.rfind("\\") + 1);
   else 
-    path = path.substr(path.rfind("/") + 1);
-  if(!GetFileAttributesExA(lpath->path.c_str(), GetFileExInfoStandard, &info))
+	relPath = relPath.substr(relPath.rfind("/") + 1);
+
+  return relPath;
+}
+
+void	local::createPath(std::string origPath)
+{
+  WIN32_FILE_ATTRIBUTE_DATA	info;
+  s_ull						sizeConverter;
+
+  
+  if(!GetFileAttributesExA(origPath.c_str(), GetFileExInfoStandard, &info))
   {
-    res->add_const("error", string("error stating file:" + path)); 
+	res["error"] = new Variant(std::string("error stating file: " + origPath));
     return ;
   }
+
   if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-  {
-    // Create a virtual directory
-    this->__root = new WLocalNode(path, 0, NULL, this, WLocalNode::DIR);	
-    this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
-    this->__root->setBasePath(this->basePath.c_str());
-    //recurse
-    this->frec(lpath->path.c_str(), this->__root);
+  {	
+    WLocalNode* node = new WLocalNode(this->relativePath(origPath), 0, NULL, this, WLocalNode::DIR, origPath);	
+    this->frec(origPath.c_str(), node);
+	this->registerTree(this->parent, node);
   }
   else 
   {
-	// Create a virtual file
     sizeConverter.Low = info.nFileSizeLow;
     sizeConverter.High = info.nFileSizeHigh;
-    this->__root = new WLocalNode(path, sizeConverter.ull, NULL, this, WLocalNode::FILE);
-    this->basePath = lpath->path.substr(0, lpath->path.rfind('\\'));
-    this->__root->setBasePath(this->basePath.c_str());
+	WLocalNode* node = new WLocalNode(this->relativePath(origPath), sizeConverter.ull, NULL, this, WLocalNode::FILE, origPath);
+	this->registerTree(this->parent, node);
   }
-  this->registerTree(this->parent, this->__root);
+  
   return ;
 }
 
-int local::vopen(Node *node)
+int local::vopen(Node *wnode)
 {
+  WLocalNode*	node =	dynamic_cast<WLocalNode *>(wnode);
   if (node != NULL) {
-	std::string	filePath = this->basePath + "/" + node->absolute();
+	std::string	filePath = node->originalPath;
 	
     return ((int)CreateFileA(filePath.c_str(), GENERIC_READ, FILE_SHARE_READ,
 			     0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0));
@@ -160,10 +174,7 @@ int local::vclose(int fd)
 }
 
 uint64_t	local::vseek(int fd, uint64_t offset, int whence)
-{
-  PLONG		highSeek = NULL;
-  uint32_t	lowSeek;
-  
+{ 
   s_ull				sizeConverter;
   sizeConverter.ull = offset;	
   
@@ -186,8 +197,6 @@ uint64_t	local::vtell(int32_t fd)
 
 unsigned int local::status(void)
 {
-//status called
-
   return (nfd);
 }
 

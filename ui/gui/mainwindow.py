@@ -32,8 +32,8 @@ from api.gui.widget.dockwidget import DockWidget
 from api.gui.widget.nodebrowser import NodeBrowser
 from api.gui.dialog.applymodule import ApplyModule
 
-from ui.gui.configuration.conf import Conf
-from ui.gui.configuration.translator import Translator
+from ui.conf import Conf
+from ui.gui.translator import Translator
 from ui.gui.ide.ide import Ide
 
 from ui.gui.widget.taskmanager import Processus
@@ -48,16 +48,8 @@ from ui.gui.utils.menu import MenuTags
 from ui.gui.dialog.dialog import Dialog
 from ui.gui.resources.ui_mainwindow import Ui_MainWindow
 
-try:
-    from ui.gui.widget.help import Help
- # Documentation
-    try:
-        from api.settings import DOC_PATH
-    except:
-        DOC_PATH = "./ui/gui/help.qhc"
-        HELP = True
-except ImportError:
-    HELP = False
+# Documentation
+from ui.gui.widget.help import Help
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -74,13 +66,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	
 	self.initCallback()
 
-        if HELP:
-            self.toolbarList.append(["help"])
-        if HELP:
-            self.actionList.append(["help", "Help", self.addHelpWidget, ":help.png", "Open Help"])
 
         # Set up the user interface from Qt Designer
         self.setupUi(self)
+        self.translation()
 
         # Customization
         self.setWindowModality(QtCore.Qt.ApplicationModal)
@@ -184,15 +173,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.addDockWidgets(nb, 'nodeBrowser')
 
     def addHelpWidget(self):
-        path = DOC_PATH
+        conf = Conf()
+        path = conf.docPath
         file = QFile(path)
         if not file.exists(path):
-            if DOC_PATH:
-                dialog = QMessageBox.warning(self, "Error while loading help", QString(str(DOC_PATH) + ": No such file.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
+            if path:
+                dialog = QMessageBox.warning(self, self.errorLoadingHelp, QString(path) + ": " + self.notAnHelpFile)
             else:
-                dialog = QMessageBox.warning(self, "Error while loading help", QString("Documentation path not found.<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>."))
-            return
-
+                dialog = QMessageBox.warning(self, self.errorLoadingHelp, self.noSuchHelpFile)
+            return                
         self.addDockWidgets(Help(self, path=path), 'help')
 
     def addInterpreter(self):
@@ -383,8 +372,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         if event.type() == QEvent.LanguageChange:
             self.retranslateUi(self)
+            self.translation()
         else:
             QMainWindow.changeEvent(self, event)
+
+    def translation(self):
+        self.errorLoadingHelp = self.tr('Error while loading help')
+        self.onlineHelp = self.tr('<br>You can check on-line help at <a href=\"http://wiki.digital-forensic.org/\">http://wiki.digital-forensic.org</a>.')
+        self.notAnHelpFile = self.tr('Not an help file.') + self.onlineHelp
+        self.noSuchHelpFile = self.tr('Documentation path not found.') + self.onlineHelp
+
 
 class deviceNode(Node):
     def __init__(self, parent, name):

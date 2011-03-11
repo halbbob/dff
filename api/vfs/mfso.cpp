@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -56,9 +56,8 @@ int32_t 	mfso::vopen(Node *node)
     {
       try
 	{
-	  //Check if mapping of the node is already in the cache
 	  fi = new fdinfo;
-          fm = new FileMapping; //delete when ? 
+          fm = new FileMapping;
 	  node->fileMapping(fm);
 	  fi->offset = 0;
 	  fi->node = node;
@@ -206,13 +205,11 @@ uint64_t	mfso::vtell(int32_t fd)
     }
   catch(vfsError e)
     {
-	    //std::cout << "problem while getting fd information" << std::endl;
 	    //throw vfsError("mfso::vtell() throw\n" + e.error);
       return (uint64_t)-1;
     }
 }
 
-//need COW implementation to reflect forensically sound process
 int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 {
 	return 0;
@@ -234,7 +231,6 @@ int32_t 	mfso::vclose(int32_t fd)
   return 0;
 }
 
-//need same implementation of lseek syscall ?
 uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int32_t whence)
 {
   fdinfo*	fi;

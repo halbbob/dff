@@ -23,6 +23,8 @@
 #include "common.hpp"
 #if (defined(WIN64) || defined(WIN32))
 #include "wstdint.h"
+#include <time.h>
+#include <stdio.h>
 #else
 #include <stdint.h>
 #endif

@@ -23,36 +23,34 @@ class LS(Script):
     Script.__init__(self, "ls")
     self.vfs = vfs.vfs()
 
-  #def start(self, **kwargs):
-  #  print dir(self)
-  #  self.__dict__.update(kwargs)
-  #  print dir(self)
-
-
   def start(self, args):
     try:
-      self.nodes = list(lambda(node: node.value(), args["nodes"]))
-      print self.nodes
-    except KeyError:
-      self.nodes = self.vfs.getcwd()
-    try:
-      self.long = args["long"].value():
-    except KeyError:
-      self.long = False
-    try:
-      self.rec = args['recursive'].value()
-    except KeyError:
+      self.nodes = args["nodes"].value()
+    except IndexError:
+      self.nodes = [self.vfs.getcwd()]
+    if args.has_key('recursive'):
+      self.rec = True
+    else:
       self.rec = False
+    if args.has_key('long'):
+      self.long = True
+    else:
+      self.long = False
     self._res = self.launch()
 
-
-
   def launch(self):
-    for node in self.nodes:
-     if self.rec:
-       self.recurse(node)
-     else:
-       self.ls(node)
+    for vnode in self.nodes:
+      try:
+        node = vnode.value()
+      except AttributeError:
+        node = vnode
+      if self.rec:
+        self.recurse(node)
+      else:
+        if node.hasChildren():
+          children = node.children()
+          for child in children:
+            self.ls(child)
 
   def recurse(self, cur_node):
     if cur_node.hasChildren():
@@ -64,7 +62,7 @@ class LS(Script):
 
   def ls(self, node):
      buff = ""
-     print self.display_node(n)
+     print self.display_node(node)
 
   def display_node(self, node):
     if self.long:
@@ -87,6 +85,7 @@ class LS(Script):
      buff += "/"
     return buff
 
+
 class ls(Module):
   """List file and directory"""
   def __init__(self):
@@ -99,5 +98,5 @@ class ls(Module):
                           "input": Argument.Empty})
    self.conf.addArgument({"name": "recursive",
                           "description": "enables recursion on folders",
-                          "input": Argument.Empty)
+                          "input": Argument.Empty})
    self.tags = "builtins"

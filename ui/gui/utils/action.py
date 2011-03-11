@@ -23,7 +23,6 @@ class Action(QAction):
         self.__mainWindow = mainWindow
         self.type = type
         self.parent = parent
-        # if true return name of arg
         
         self.hasOneArg = Utils.hasOneNodeArg(text, type)
         if text <> 0 :
@@ -36,7 +35,7 @@ class Action(QAction):
         if self.hasOneArg and self.parent.callbackSelected :
             self.emit(SIGNAL("execModule"), self.text(), self.type, self.hasOneArg, self.parent.callbackSelected())
         else :
-	    try :
-              self.emit(SIGNAL("launchScript"), self.text(),  self.type, self.parent.callbackSelected())
-	    except TypeError:	
-              self.emit(SIGNAL("launchScript"), self.text(),  self.type, None)
+            try :
+                self.emit(SIGNAL("launchScript"), self.text(),  self.type, self.parent.callbackSelected())
+            except TypeError:	
+                self.emit(SIGNAL("launchScript"), self.text(),  self.type, None)

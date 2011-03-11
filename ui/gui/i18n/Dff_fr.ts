@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1" language="fr">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr">
 <context>
     <name>About</name>
     <message>
@@ -64,11 +65,6 @@
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../resources/devicesdialog.ui" line="45"/>
-        <source>Serial number</source>
-        <translation type="obsolete">Numéro de série</translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="38"/>
         <source>Select a local device to add in the Virtual File System</source>
         <translation>Ajoutez un périphérique dans le système de fichier virtuel</translation>
@@ -87,34 +83,6 @@
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="122"/>
         <source>Serial</source>
         <translation>Numéro de série</translation>
-    </message>
-</context>
-<context>
-    <name>Env</name>
-    <message>
-        <location filename="../resources/env.ui" line="20"/>
-        <source>Environment</source>
-        <translation type="obsolete">Environnement</translation>
-    </message>
-    <message>
-        <location filename="../resources/env.ui" line="31"/>
-        <source>Key</source>
-        <translation type="obsolete">Clé</translation>
-    </message>
-    <message>
-        <location filename="../resources/env.ui" line="36"/>
-        <source>Type</source>
-        <translation type="obsolete">Type</translation>
-    </message>
-    <message>
-        <location filename="../resources/env.ui" line="41"/>
-        <source>Value</source>
-        <translation type="obsolete">Valeur</translation>
-    </message>
-    <message>
-        <location filename="../resources/env.ui" line="46"/>
-        <source>From</source>
-        <translation type="obsolete">Émetteur</translation>
     </message>
 </context>
 <context>
@@ -546,6 +514,36 @@
         <source>DFF Documentation</source>
         <translation>Documentation de DFF</translation>
     </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="382"/>
+        <source>Help</source>
+        <translation>Aide</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="383"/>
+        <source>Open help</source>
+        <translation>Ouvrir l&apos;aide</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="384"/>
+        <source>Error while loading help</source>
+        <translation>Erreur durant le chargement de l&apos;aide</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="385"/>
+        <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
+        <translation>&lt;br&gt;Vous pouvez consulter l&apos;aide en ligne sur &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="386"/>
+        <source>Not an help file.</source>
+        <translation>N&apos;est pas un fichier d&apos;aide.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="387"/>
+        <source>Documentation path not found.</source>
+        <translation>Chemin non trouvé.</translation>
+    </message>
 </context>
 <context>
     <name>Modules</name>
@@ -636,11 +634,6 @@
         <translation>Afficher le moteur de recherche</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
-        <source>Active thumbnails</source>
-        <translation>Activer les imagettes</translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="183"/>
         <source>List</source>
         <translation>Liste</translation>
@@ -676,11 +669,6 @@
         <translation>Attributs</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="14"/>
-        <source>Node View Box</source>
-        <translation>Boîte à nœuds</translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
         <translation>Suivant</translation>
@@ -689,6 +677,11 @@
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
         <translation>Répertoire parent</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
+        <source>Activate thumbnails</source>
+        <translation>Activer les imagettes</translation>
     </message>
 </context>
 <context>
@@ -707,165 +700,190 @@
         <translation>Préférences</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="24"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="34"/>
         <source>Global</source>
         <translation>Globale</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="90"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="38"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="98"/>
         <source>History file full path:</source>
         <translation>Chemin du fichier d&apos;historique :</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
+        <location filename="../resources/preferences.ui" line="48"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="obsolete">...</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="115"/>
         <source>No history file</source>
         <translation>Pas de fichier d&apos;historique</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="80"/>
+        <location filename="../resources/preferences.ui" line="80"/>
         <source>Other settings</source>
-        <translation>Autre paramètres</translation>
+        <translation type="obsolete">Autre paramètres</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="88"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
         <source>No footprint</source>
         <translation>Aucune empreinte</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="137"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="160"/>
         <source>Language</source>
         <translation>Langage</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="143"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="166"/>
         <source>Interface language</source>
         <translation>Langue de l&apos;interface</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="174"/>
         <source>Use interface language:</source>
         <translation>Langue à utiliser :</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="219"/>
+        <source>Indexation</source>
+        <translation>Indexation</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="267"/>
+        <source>Index files location</source>
+        <translation>Emplacement des fichiers d&apos;index</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="275"/>
+        <source>Root index</source>
+        <translation>Index racine</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="350"/>
+        <source>Browse</source>
+        <translation>Parcourir</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="292"/>
+        <source>Index name</source>
+        <translation>Nom de l&apos;index</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="252"/>
+        <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
+        <translation>Sélectionner s&apos;il vous plaît l&apos;emplacement dans lequel vous souhaitez sauvegarder les fichier d&apos;index. Si ces répertoires n&apos;existent pas ils seront crées une fois les changements appliqués.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="40"/>
+        <source>Working environment</source>
+        <translation>Environement de travail</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
+        <source>DFF user directory:</source>
+        <translation>Répertoire utilisateur DFF :</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="328"/>
+        <source>Help and documentation</source>
+        <translation>Aide et documentation</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="340"/>
+        <source>Full path of the help and documentation file:</source>
+        <translation>Chemin complet du fichier d&apos;aide et de documentation :</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="334"/>
+        <source>Help and documentation settings</source>
+        <translation>Paramètres de l&apos;aide et de la documentation</translation>
     </message>
 </context>
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="24"/>
-        <source>Attribute</source>
-        <translation type="obsolete">Attribut</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="24"/>
-        <source>Value</source>
-        <translation type="obsolete">Valeur</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="116"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="117"/>
         <source>name</source>
         <translation>nom</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="233"/>
-        <source>type</source>
-        <translation type="obsolete">type</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
         <source>file</source>
         <translation>fichier</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
         <source>folder</source>
         <translation>répertoire</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
         <source>generated by</source>
         <translation>généré par</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
         <source>size</source>
         <translation>taille</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
         <source>relevant module(s)</source>
         <translation>module(s) conseillé(s)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="220"/>
-        <source>extended attributes</source>
-        <translation type="obsolete">attributs étendus</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="230"/>
-        <source>static attributes</source>
-        <translation type="obsolete">attributs statiques</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
         <source> with module(s) applied on it</source>
         <translation> avec modules appliqué dessus</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
         <source> empty</source>
         <translation> vide</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
         <source> deleted</source>
         <translation> effacé</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
         <source>children</source>
         <translation>fils</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
         <source>file(s)</source>
         <translation>fichier(s)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
         <source> totalizing </source>
         <translation> totalisant </translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
         <source> bytes</source>
         <translation> octets</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
         <source>folder(s)</source>
         <translation>répertoire(s)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="231"/>
-        <source>default timestamp</source>
-        <translation type="obsolete">dates par défaut</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="117"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
         <source>node type</source>
         <translation>type de nœud</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
         <source>attributes</source>
         <translation>attributs</translation>
     </message>
@@ -919,7 +937,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="217"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="836"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
@@ -927,37 +945,37 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="616"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="617"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="618"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Accessed time</source>
         <translation>Date d&apos;accès</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="619"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Changed time</source>
         <translation>Date de changement</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="620"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="567"/>
         <source>Modified time</source>
         <translation>Date de modification</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="621"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="568"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="622"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="569"/>
         <source>Deleted</source>
         <translation>Effacé</translation>
     </message>
@@ -998,11 +1016,6 @@
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../resources/applymodule.ui" line="52"/>
-        <source>Purpose</source>
-        <translation type="obsolete">But</translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="127"/>
         <source>Arguments</source>
         <translation>Arguments</translation>
@@ -1017,81 +1030,36 @@
         <source>Description</source>
         <translation>Description</translation>
     </message>
-    <message>
-        <location filename="../resources/applymodule.ui" line="127"/>
-        <source>Browse</source>
-        <translation type="obsolete">Parcourir</translation>
-    </message>
-    <message>
-        <location filename="../resources/applymodule.ui" line="118"/>
-        <source>Select evidence file</source>
-        <translation type="obsolete">Sélectionner un fichier</translation>
-    </message>
-    <message>
-        <location filename="../resources/applymodule.ui" line="121"/>
-        <source>There are missing arguments</source>
-        <translation type="obsolete">Arguments manquants</translation>
-    </message>
-    <message>
-        <location filename="../resources/applymodule.ui" line="124"/>
-        <source>This box is already open</source>
-        <translation type="obsolete">Cette fenêtre est déjà ouverte</translation>
-    </message>
 </context>
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="23"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="15"/>
         <source>Select evidence type</source>
         <translation>Sélectionnez le type de données</translation>
     </message>
     <message>
-        <location filename="../resources/evidencedialog.ui" line="42"/>
-        <source>Select data type to open in the VFS</source>
-        <translation type="obsolete">Sélectionnez le type de données à ouvrir dans le VFS</translation>
-    </message>
-    <message>
-        <location filename="../resources/evidencedialog.ui" line="53"/>
-        <source>Data type:</source>
-        <translation type="obsolete">Type de données :</translation>
-    </message>
-    <message>
-        <location filename="../resources/evidencedialog.ui" line="67"/>
-        <source>RAW files</source>
-        <translation type="obsolete">Fichiers brut (RAW)</translation>
-    </message>
-    <message>
-        <location filename="../resources/evidencedialog.ui" line="72"/>
-        <source>EWF files</source>
-        <translation type="obsolete">Fichiers EWF</translation>
-    </message>
-    <message>
-        <location filename="../resources/evidencedialog.ui" line="77"/>
-        <source>Local directory</source>
-        <translation type="obsolete">Répertoire local</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="113"/>
         <source>Add evidence directory</source>
         <translation>Ajouter un répertoire</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="156"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="118"/>
         <source>Add evidence files</source>
         <translation>Ajouter un ou plusieurs fichiers</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="78"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="48"/>
         <source>Open local files or directory</source>
         <translation>Ouvrir des fichiers ou répertoires locaux</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="98"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="65"/>
         <source>RAW format</source>
         <translation>Fichiers brut (RAW)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="114"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
         <source>EWF format</source>
         <translation>Fichiers EWF</translation>
     </message>
@@ -1099,12 +1067,12 @@
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="111"/>
         <source>Results</source>
         <translation>Résultats</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="113"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="112"/>
         <source>No results</source>
         <translation>Aucun résultat</translation>
     </message>

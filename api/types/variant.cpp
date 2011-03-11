@@ -16,24 +16,33 @@
 
 #include "variant.hpp"
 #include "typeinfo"
+#include "string.h"
+
+typeId*	typeId::Get()
+{
+	static typeId single;
+	return &single;
+}
+
 
 typeId::typeId()
 {
-  this->mapping.insert(std::pair<char*, uint8_t>( (char*)typeid(int16_t*).name(), typeId::Int16));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint16_t*).name(), typeId::UInt16));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int32_t*).name(), typeId::Int32));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint32_t*).name(), typeId::UInt32));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(int64_t*).name(), typeId::Int64));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(uint64_t*).name(), typeId::UInt64));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char*).name(), typeId::Char));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(char**).name(), typeId::CArray));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(void**).name(), typeId::VoidPtr));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::string *).name(), typeId::String));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class vtime**).name(), typeId::VTime));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Node**).name(), typeId::Node));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(class Path**).name(), typeId::Path));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::map<std::string, class Variant*> *).name(), typeId::Map));
-  this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::list<class Variant*> *).name(), typeId::List));
+  this->mapping.insert(std::pair<std::string, uint8_t>( typeid(int16_t*).name(), typeId::Int16));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint16_t*).name(), typeId::UInt16));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(int32_t*).name(), typeId::Int32));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint32_t*).name(), typeId::UInt32));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(int64_t*).name(), typeId::Int64));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint64_t*).name(), typeId::UInt64));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(char*).name(), typeId::Char));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(char**).name(), typeId::CArray));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(void**).name(), typeId::VoidPtr));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::string *).name(), typeId::String));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class vtime**).name(), typeId::VTime));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class Node**).name(), typeId::Node));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class Path * *).name(), typeId::Path));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(class Argument * *).name(), typeId::Argument));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::map<std::string, class Variant*> *).name(), typeId::Map));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::list<class Variant*> *).name(), typeId::List));
 
 
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Invalid, "Invalid"));
@@ -50,8 +59,8 @@ typeId::typeId()
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::VTime, "vtime*"));
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Node, "Node*"));
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Path, "Path*"));
+  this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::Argument, "Argument*"));
   this->rmapping.insert(std::pair<uint8_t, std::string>(typeId::VoidPtr, "void*"));
-
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::vector<class Variant*> *).name(), typeId::List));
   //this->mapping.insert(std::pair<char*, uint8_t>((char*)typeid(std::set<class Variant*> *).name(), typeId::List));
 }
@@ -60,6 +69,34 @@ typeId::~typeId()
 {
   //  delete this->mapping;
 }
+
+
+uint8_t	typeId::getType(std::string type)
+{
+  std::map<std::string, uint8_t>::iterator it;
+  
+  it = this->mapping.find(type);
+  if (it != this->mapping.end())
+    {
+      return it->second;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
+std::string	typeId::typeToName(uint8_t t)
+{
+  std::map<uint8_t, std::string>::iterator it;
+  
+  it = this->rmapping.find(t);
+  if (it != this->rmapping.end())
+    return it->second;
+  else
+    return "";
+}
+
 
 Variant::Variant()
 {
@@ -72,13 +109,13 @@ Variant::~Variant()
 
 Variant::Variant(std::string str)
 {
-  this->__data.ptr = (void*)(new std::string(str));
+  this->__data.str = new std::string(str);
   this->_type = typeId::String;
 }
 
 Variant::Variant(char *carray)
 {
-  this->__data.ptr = (void*)carray;
+  this->__data.str = new std::string(carray);
   this->_type = typeId::CArray;
 }
 
@@ -91,78 +128,98 @@ Variant::Variant(char c)
 Variant::Variant(int16_t s)
 {
   this->__data.s = s;
+  //std::cout << "Variant(int16_t) " << s << std::endl;
   this->_type = typeId::Int16;
 }
 
 Variant::Variant(uint16_t us)
 {
   this->__data.us = us;
+  //std::cout << "Variant(uint16_t) " << us << std::endl;
   this->_type = typeId::UInt16;
 }
 
 Variant::Variant(int32_t i)
 {
   this->__data.i = i;
+  //std::cout << "Variant(int32_t) " << i << std::endl;
   this->_type = typeId::Int32;
 }
 
 Variant::Variant(uint32_t ui)
 {
   this->__data.ui = ui;
+  //std::cout << "Variant(uint32_t) " << ui << std::endl;
   this->_type = typeId::UInt32;
 }
 
 Variant::Variant(int64_t ll)
 {
   this->__data.ll = ll;
+  //std::cout << "Variant(int64_t) " << ll << std::endl;
   this->_type = typeId::Int64;
 }
 
 Variant::Variant(uint64_t ull)
 {
   this->__data.ull = ull;
+  //std::cout << "Variant(uint64_t) " << ull << std::endl;
   this->_type = typeId::UInt64;
 }
 
 Variant::Variant(bool b)
 {
   this->__data.b = b;
+  //std::cout << "Variant(bool) " << b << std::endl;
   this->_type = typeId::Bool;
 }
 
 Variant::Variant(vtime *vt)
 {
   this->__data.ptr = (void*)vt;
+  //std::cout << "Variant(vtime)" << std::endl;
   this->_type = typeId::VTime;
 }
 
 Variant::Variant(class Node *node)
 {
   this->__data.ptr = node;
+  //std::cout << "Variant(Node*)" << std::endl;
   this->_type = typeId::Node;
 }
 
 Variant::Variant(Path *path)
 {
   this->__data.ptr = path;
+  //std::cout << "Variant(Path*)" << std::endl;
   this->_type = typeId::Path;
+}
+
+Variant::Variant(Argument *arg)
+{
+  this->__data.ptr = arg;
+  //std::cout << "Variant(Argument*)" << std::endl;
+  this->_type = typeId::Argument;
 }
 
 Variant::Variant(std::list<Variant*> l)
 {
   this->__data.ptr = (void*)new std::list<Variant*>(l);
+  //std::cout << "Variant(std::list<Variant*>)" << std::endl;
   this->_type = typeId::List;
 }
 
 Variant::Variant(std::map<std::string, Variant*> m)
 {
   this->__data.ptr = (void*)new std::map<std::string, Variant *>(m);
+  //std::cout << "Variant(std::map<std::string, Variant*>)" << std::endl;
   this->_type = typeId::Map;
 }
 
 Variant::Variant(void *user)
 {
   this->__data.ptr = (void*)user;
+  //std::cout << "Variant(void*)" << std::endl;
   this->_type = typeId::VoidPtr;
 }
 
@@ -185,33 +242,58 @@ std::string	Variant::toString() throw (std::string)
   else if (this->_type == typeId::Char)
     res << this->__data.c;
   else if (this->_type == typeId::CArray)
-    res << static_cast<char*>(this->__data.ptr);
+    res << *(this->__data.str);
   else if (this->_type == typeId::String)
-    res << *(static_cast<std::string*>(this->__data.ptr));
+    res << *(this->__data.str);
+  else if (this->_type == typeId::Path)
+    {
+      class Path*	p;
+      p = static_cast<class Path*>(this->__data.ptr);
+      res << p->path;
+    }
+  else if (this->_type == typeId::Bool)
+    {
+      if (this->__data.b)
+	res << "True";
+      else
+	res << "False";
+    }
   else
     throw std::string("Cannot convert type < " + this->typeName() + " > to < std::string >");
   return res.str();
 }
 
+#include <stdio.h>
+
 std::string	Variant::toHexString() throw (std::string)
 {
   std::stringstream	res;
   
-  res << std::hex << std::setiosflags (std::ios_base::showbase);
   if (this->_type == typeId::UInt16)
-    res << this->__data.us;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.us;
   else if (this->_type == typeId::UInt32)
-    res << this->__data.ui;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.ui;
   else if (this->_type == typeId::UInt64)
-    res << this->__data.ull;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.ull;
   else if (this->_type == typeId::Int16)
-    res << this->__data.s;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.s;
   else if (this->_type == typeId::Int32)
-    res << this->__data.i;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.i;
   else if (this->_type == typeId::Int64)
-    res << this->__data.ll;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.ll;
   else if (this->_type == typeId::Char)
-    res << this->__data.c;
+    res << "0x" << std::setw(2) << std::setfill('0') << std::hex << this->__data.c;
+  else if ((this->_type == typeId::CArray) || (this->_type == typeId::String))
+    {
+      std::string::iterator	it;
+      std::string		str = *(this->__data.str);
+
+      for (it = str.begin(); it != str.end(); it++)
+	{
+	  res << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(static_cast<unsigned char>(*it));
+	  res << " ";
+	}
+    }
   else
     throw std::string("Cannot represent type < " + this->typeName() + " > to an hexadecimal string");
   return res.str();
@@ -280,21 +362,15 @@ uint16_t	Variant::toUInt16() throw (std::string)
       err << "value [ " << this->__data.c;
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << cptr;
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < uint16_t >");
@@ -343,21 +419,15 @@ int16_t		Variant::toInt16() throw (std::string)
     res = static_cast<int16_t>(this->__data.c);
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
-      if (!(istr >> res))	
-	err << "value [ " << cptr;
+      std::istringstream istr(*(this->__data.str));
+      if (!(istr >> res))
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < int16_t >");
@@ -406,21 +476,15 @@ uint32_t	Variant::toUInt32() throw (std::string)
       err << "value [ " << this->__data.c;
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << cptr;
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < uint32_t >");
@@ -463,21 +527,15 @@ int32_t		Variant::toInt32() throw (std::string)
     res = static_cast<int32_t>(this->__data.c);
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << cptr;
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < int32_t >");
@@ -523,21 +581,15 @@ uint64_t	Variant::toUInt64() throw (std::string)
       err << "value [ " << this->__data.c;
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << cptr;
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < uint64_t >");
@@ -574,21 +626,15 @@ int64_t		Variant::toInt64() throw (std::string)
     res = static_cast<int64_t>(this->__data.c);
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << cptr;
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < int64_t >");
@@ -608,8 +654,9 @@ char*	Variant::toCArray() throw (std::string)
 
   try
     {
-      str = this->toString();
-      res = const_cast<char*>(str.c_str());
+      res = new char[this->__data.str->size() + 1];
+      memcpy(res, this->__data.str->c_str(), this->__data.str->size());
+      res[this->__data.str->size()] = '\0';
     }
   catch (std::string e)
     {
@@ -664,21 +711,15 @@ char	Variant::toChar() throw (std::string)
 
   else if (this->_type == typeId::CArray)
     {
-      char*	cptr;
-      
-      cptr = static_cast<char*>(this->__data.ptr);
-      std::istringstream istr(cptr);
-      if (!(istr >> res))	
-	err << "value [ " << cptr;
+      std::istringstream istr(*(this->__data.str));
+      if (!(istr >> res))
+	err << "value [ " << *(this->__data.str);
     }
   else if (this->_type == typeId::String)
     {
-      std::string	str;
-      
-      str = *(static_cast<std::string*>(this->__data.ptr));
-      std::istringstream istr(str);
+      std::istringstream istr(*(this->__data.str));
       if (!(istr >> res))
-	err << "value [ " << str;
+	err << "value [ " << *(this->__data.str);
     }
   else
     throw std::string("type < " + this->typeName() + " > cannot be converted to < char >");
@@ -711,7 +752,6 @@ std::string	Variant::typeName()
 
 bool	Variant::operator==(Variant* v)
 {
-  //std::cout << "Variant::operator==(Variant*)" << std::endl;
   std::stringstream	tmp;
 
   if (v == NULL)
@@ -733,8 +773,6 @@ bool	Variant::operator==(Variant* v)
 
       else if (this->_type == typeId::UInt16)
 	{
-	  //tmp << "this value: " << this->toUInt16() << " --- v value: " << v->toUInt16();
-	  //std::cout << tmp.str() << std::endl;
 	  return this->toUInt16() == v->toUInt16();
 	}
 
@@ -923,5 +961,5 @@ bool	Variant::operator<=(Variant* v)
   if (this->operator<(v) || this->operator==(v))
     return true;
   else
-    return false;  
+    return false;
 }

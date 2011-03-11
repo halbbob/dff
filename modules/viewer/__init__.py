@@ -12,4 +12,4 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-__all__ = ['viewerimage', 'cat', 'hexedit', 'bindiff', 'player', 'EXIF']
+__all__ = ['viewerimage', 'cat', 'hexedit', 'bindiff', 'player']

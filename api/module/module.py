@@ -23,7 +23,6 @@ import traceback
 
 class Module(object):
   def __init__(self, name, icl):
-    #self.env = env.env() 
     self.cl = icl
     self.name = name
     self.single = None

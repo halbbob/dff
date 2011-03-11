@@ -38,7 +38,6 @@ void	ExtfsSymLinkNode::fileMapping(FileMapping* fm)
   std::string	path;
   ExtfsNode *	n;
 
-  //  __offset = 0;
   if (!__offset)
     throw vfsError("Symbolic link size is NULL.");
 

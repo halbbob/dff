@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -393,10 +393,6 @@ std::vector<class Node*>	Node::children()
 
 bool		Node::addChild(class Node *child)
 {
-  if (0) {
-	// FIXME check if child already present
-	return false;
-  }
   child->setParent(this);
   child->__at = this->__childcount; 
   this->__children.push_back(child);
@@ -475,20 +471,14 @@ string Node::icon(void)
   }
 }
 
-Variant*	Node::dataType(/*uint32_t wait = 0*event callback*/) /*au lieux de void mettre type mime ou ...? */
+Variant*	Node::dataType(void) 
 {
   Variant*	types = NULL;
   std::map<std::string, Variant*>	attributes;
 
-//threader ? 
-//  if thread.wait(wait) 
-//{
+  class DataTypeManager*	typeDB = DataTypeManager::Get();
+  types = typeDB->type(this); 
 
-  class DataTypeManager&	typeDB = DataTypeManager::Get();
-  types = typeDB.type(this);  //dynamic type
- //}
-
-  //ret none if types    
   return types; 
 }
 
@@ -547,12 +537,6 @@ bool	Node::isCompatibleModule(string modname)
 	return true;
      }
    delete mods;
-//   if node.size() and modules["modname"].conf == data:
-// HASH prob because NONE 
-//XXX file me use reverse arg methode
-/*    std::string type = 
-    if node.dataType.find(modname)	
-      return true;*/
     return false;
 }
 

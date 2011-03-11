@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -179,30 +179,8 @@ void		FileMapping::allocChunck(uint64_t offset, uint64_t size, class Node* origi
   this->__prevChunck = c;
 }
 
-//XXX Do some sanity checks:
-// origin != NULL
-// originoffset < origin.size
-// originoffset + size < origin.size
-// 
-// Manage pushed chunck on the fly to check if current push is contiguous with prev chunck
-//  if (origin == prev_chunck->origin) and (originoffset == prev_chunck->offset + prev_chunck->size)
-//    prev_chunck->size += size
-// if origin and originoffset not provided, the chunck is seen as shadow:
-//  - reading on this kind of chunck will provide a buffer filled with 0
 void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
-	//if (origin != NULL)
-	//if (this->__prevChunck != NULL)
-	//if ((origin == this->__prevChunck->origin) && (originoffset == (this->__prevChunck->offset + this->__prevChunck->size)))
-	//{
-	//this->__prevChunck->size += size;
-	//this->__mappedFileSize += size;
-	//}
-	//else
-	//this->allocChunck(offset, size, origin, originoffset);
-	//else
-	//this->allocChunck(offset, size, origin, originoffset);
-	//else
     this->allocChunck(offset, size, origin, originoffset);
 }
 

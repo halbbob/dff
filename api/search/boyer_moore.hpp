@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -62,7 +62,7 @@ class BoyerMoore: public algorithm
   EXPORT virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen, unsigned int *count);
   EXPORT virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen);
   EXPORT unsigned char			*generateBcs(pattern *p);
-  EXPORT int				search(unsigned char *haystack, unsigned int len, pattern *p, unsigned char *bcs);
+  EXPORT int				search(unsigned char *haystack, unsigned int len, pattern *p, unsigned char *bcs, bool debug=false);
   EXPORT virtual bool			preprocess();
   EXPORT virtual bool			setNeedle(unsigned char *needle);
   EXPORT virtual bool			setNeedleSize(unsigned int size);

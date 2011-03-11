@@ -21,6 +21,7 @@
 #include <stdint.h>
 #else
 #include "wstdint.h"
+#pragma warning(disable: 4290)
 #endif
 
 #include <iostream>
@@ -32,22 +33,23 @@
 #include <map>
 #include <typeinfo>
 
+#include "path.hpp"
 #include "vtime.hpp"
 
 class typeId
 {
 private:
   
-  std::map<char*, uint8_t>		mapping;
+  std::map<std::string, uint8_t>	mapping;
   std::map<uint8_t, std::string>	rmapping;
   EXPORT typeId();
   EXPORT ~typeId();
   typeId&          operator=(typeId&);
   typeId(const typeId&);
-  //typeId(const typeId &);
-  //typeId	&operator=(const typeId &);
+  
   
 public:
+  EXPORT static typeId*	Get();
   enum Type
     {
       Invalid = 0,
@@ -68,42 +70,13 @@ public:
       VTime = 13,
       Node = 14,
       Path = 15,
+      Argument = 16,
       // user types
-      VoidPtr = 16
+      VoidPtr = 17
     };
 
-  static typeId   *Get()
-  {
-  /*
-    if (!_instance)
-      _instance = new typeId();
-    return _instance;
-	*/
-	static typeId single;
-	return &single;
-  }
-
-  EXPORT uint8_t	getType(char *type)
-  {
-    std::map<char*, uint8_t>::iterator it;
-    
-    it = this->mapping.find(type);
-    if (it != this->mapping.end())
-      return it->second;
-    else
-      return 0;
-  }
-
-  std::string	typeToName(uint8_t t)
-  {
-    std::map<uint8_t, std::string>::iterator it;
-    
-    it = this->rmapping.find(t);
-    if (it != this->rmapping.end())
-      return it->second;
-    else
-      return "";
-  }
+  EXPORT uint8_t	getType(std::string type);
+  EXPORT std::string	typeToName(uint8_t t);
 };
 
 
@@ -126,11 +99,12 @@ public:
   EXPORT Variant(vtime *vt);
   EXPORT Variant(class Node *node);
   EXPORT Variant(class Path *path);
+  EXPORT Variant(class Argument *argument);
   EXPORT Variant(std::list<class Variant*> l);
   EXPORT Variant(std::map<std::string, class Variant*> m);
   EXPORT Variant(void *user);
 
-  bool	convert(uint8_t itype, void *res)
+  EXPORT bool	convert(uint8_t itype, void *res)
   {
     bool	ret;
 
@@ -365,46 +339,50 @@ public:
     uint8_t	itype;
     T		t;
 
-    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+	itype = typeId::Get()->getType(typeid(static_cast<T*>(0)).name());
+
     if (itype != 0)
-      {
-	if (this->convert(itype, &t))
-	  return t;
-	else
-	  return T();
-      }
+    {
+	  if (this->convert(itype, &t))
+	    return t;
+	  else
+	    return T();
+    }
     else
+	{
       return T();
+	}
   }
 
-  std::string	toString() throw (std::string);
-  std::string	toHexString() throw (std::string);
-  std::string	toOctString() throw (std::string);
-  uint16_t	toUInt16() throw (std::string);
-  int16_t	toInt16() throw (std::string);
-  uint32_t	toUInt32() throw (std::string);
-  int32_t	toInt32() throw (std::string);
-  uint64_t	toUInt64() throw (std::string);
-  int64_t	toInt64() throw (std::string);
-  char*		toCArray() throw (std::string);
-  char		toChar() throw (std::string);
-  bool		toBool() throw (std::string);
-  uint8_t	type();
-  std::string	typeName();
+  EXPORT std::string	toString() throw (std::string);
+  EXPORT std::string	toHexString() throw (std::string);
+  EXPORT std::string	toOctString() throw (std::string);
+  EXPORT uint16_t	toUInt16() throw (std::string);
+  EXPORT int16_t	toInt16() throw (std::string);
+  EXPORT uint32_t	toUInt32() throw (std::string);
+  EXPORT int32_t	toInt32() throw (std::string);
+  EXPORT uint64_t	toUInt64() throw (std::string);
+  EXPORT int64_t	toInt64() throw (std::string);
+  EXPORT char*		toCArray() throw (std::string);
+  EXPORT char		toChar() throw (std::string);
+  EXPORT bool		toBool() throw (std::string);
+  EXPORT uint8_t	type();
+  EXPORT std::string	typeName();
 
 private:  
   uint8_t	_type;
 union Data
 {
-  bool b;
-  char c;
-  int16_t s;
-  uint16_t us;
-  int32_t i;
-  uint32_t ui;
-  int64_t ll;
-  uint64_t ull;
-  void *ptr;
+  bool		b;
+  char		c;
+  int16_t	s;
+  uint16_t	us;
+  int32_t	i;
+  uint32_t	ui;
+  int64_t	ll;
+  uint64_t	ull;
+  std::string	*str;
+  void		*ptr;
 } __data;
 
 };

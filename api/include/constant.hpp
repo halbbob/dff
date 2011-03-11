@@ -40,13 +40,13 @@ private:
   std::list<Variant*>	__values;
 
 public:
-  Constant(std::string name, uint8_t type, std::string description);
-  ~Constant();
-  std::string		name();
-  std::string		description();
-  uint8_t		type();
-  void			addValues(std::list<Variant*> values);
-  std::list<Variant*>	values();    
+  EXPORT Constant(std::string name, uint8_t type, std::string description);
+  EXPORT ~Constant();
+  EXPORT std::string		name();
+  EXPORT std::string		description();
+  EXPORT uint8_t		type();
+  EXPORT void			addValues(std::list<Variant*> values);
+  EXPORT std::list<Variant*>	values();    
 };
 
 #endif

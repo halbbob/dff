@@ -39,7 +39,6 @@ class Explorer(QTreeView):
         index = self.currentIndex()
         if index:
             localpath = osp.normpath(unicode(self.model.filePath(index)))
-#            print osp.isdir(localpath)
             if osp.isdir(localpath):
                 self.setExpanded(index, True)
             else:

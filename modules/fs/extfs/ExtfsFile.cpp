@@ -37,7 +37,6 @@ dff_ui64    ExtfsFile::seekCur(dff_ui64 offset, RegularFile * file,
 {
     if ((offset + this->_offset) >= file->getSize())
     {
-        //delete file;
         return -1;
     }
     this->_offset += offset;
@@ -49,7 +48,6 @@ dff_ui64    ExtfsFile::seekSet(dff_ui64 offset, RegularFile * file,
 {
     if (offset >= file->getSize())
     {
-       // delete file;
         return -1;
     }
     return offset;

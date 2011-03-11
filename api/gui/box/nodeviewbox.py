@@ -17,11 +17,10 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-#from api.gui.widget.nodefilterbox import NodeFilterBox
-
 from api.gui.model.vfsitemmodel import  VFSItemModel, HMODULE
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.vfs import vfs, Node, VLink
+from api.types.libtypes import  typeId
 from api.events.libevents import event
 from api.vfs import libvfs
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox

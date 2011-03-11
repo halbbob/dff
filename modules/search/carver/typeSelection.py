@@ -13,11 +13,6 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 
 
-from api.module.module import *
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
 wildcard = "?"
 
 art = [["\x4a\x47\x04\x0e", "\xcf\xc7\xcb", 150000],

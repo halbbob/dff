@@ -36,16 +36,6 @@
 #define NEEDMASK			0x0C00
 #define PARAMMASK			0x3000
 
-// #define OptionalSingleInputWithFixedParam		Optional|SingleInput|FixedParam
-// #define OptionalSingleInputWithCustomizableParam	Optional|SingleInput|CustomizableParam
-// #define RequiredSingleInputWithFixedParam		Required|SingleInput|FixedParam
-// #define RequiredSingleInputWithCustomizableParam	Required|SingleInput|CustomizableParam
-
-// #define OptionalListInputWithFixedParam			Optional|ListInput|FixedParam
-// #define OptionalListInputWithCustomizableParam		Optional|ListInput|CustomizableParam
-// #define RequiredListInputWithFixedParam			Required|ListInput|FixedParam
-// #define RequiredListInputWithCustomizableParam		Required|ListInput|CustomizableParam
-
 struct Parameter
   {
     enum types
@@ -66,6 +56,7 @@ private:
   bool				__paramslocked;
   int32_t			__minparams;
   int32_t			__maxparams;
+  std::list<class Argument*>	__subarguments;
   void				setParametersType(uint16_t t);
 
 public:
@@ -81,53 +72,30 @@ public:
   ~Argument();
 
 
+  void				addSubArgument(Argument* arg);
+
   void				addParameters(std::list<Variant*> params, uint16_t type, int32_t min = -1, int32_t max=-1);
 
   std::list<Variant*>		parameters();
-  //void				setName(std::string name);
+  uint32_t			parametersCount();
+
   std::string			name();
 
-  //void				setFlags(uint16_t flags);
   uint16_t			flags();
 
-  //void				setDescription(std::string description);
   std::string			description();
 
-  //void				setEnabled(bool enabled);
-  //bool				isEnabled();
 
-  //void				setType(uint16_t type);
   uint16_t			type();
 
-  //void				setInputType(uint16_t itype);
   uint16_t			inputType();
 
   uint16_t			parametersType();
   
-  //void				setRequirementType(uint16_t ntype);
   uint16_t			requirementType();
 
   int32_t			minimumParameters();
   int32_t			maximumParameters();
-  // void				setPreselectedParameters(std::list<Variant* >);
-  // std::list<Variant* >		preselectedParameters();
-
-  
-  //void				addPredefinedParameters(Variant *params);
-
-  //void				setPreselected();
-  //std::list<>			preselected();
-
-  // void				activateParameter(Variant* param);
-  // void				deactivateParameter(Variant* param);
-
-  // std::list<Variant*>		predefinedParameters();
-
-  // std::list<Variant*>		activatedParameters();
-  // std::list<Variant*>		deactivatedParameters();
-
-  //bool				isRequired();
-  //bool				isOptional();
 };
 
 #endif

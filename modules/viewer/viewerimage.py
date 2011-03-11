@@ -209,7 +209,6 @@ class ImageView(QWidget, Script):
     self.type = "imageview"
     self.icon = None
     self.vfs = vfs.vfs()
-    #self.ft = FILETYPE()
     self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.sceneWidth = 0
 
@@ -237,7 +236,7 @@ class ImageView(QWidget, Script):
         #XXX temporary patch for windows magic
         #self.ft.filetype(node)
 	return False
-        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX me pas tres verifier avec datatype fix vite fait
+        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX
       if  self.reg_viewer.search(str(type)):
            return True
     return False

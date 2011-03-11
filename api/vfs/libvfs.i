@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -800,34 +800,6 @@ namespace std
 %fragment(SWIG_Traits_frag(Variant));
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));
-
-/* %extend mfso */
-/* { */
-/*   PyObject*	start(PyObject* val) */
-/*   { */
-/*     PyObject*	resultobj = 0; */
-/*     Variant*	params; */
-/*     uint8_t	type; */
-
-    
-/*     SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-/*     SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-/*     type = self->type(); */
-/*     SWIG_PYTHON_THREAD_END_ALLOW; */
-/*     SWIG_PYTHON_THREAD_END_BLOCK; */
-/*     params = pyObjectToVariant(val, type); */
-/*     if (params != NULL) */
-/*       { */
-/*   	SWIG_PYTHON_THREAD_BEGIN_BLOCK; */
-/*   	SWIG_PYTHON_THREAD_BEGIN_ALLOW; */
-/*   	self->addPredefinedParameters(params); */
-/*   	SWIG_PYTHON_THREAD_END_ALLOW; */
-/*   	SWIG_PYTHON_THREAD_END_BLOCK; */
-/*   	resultobj = SWIG_Py_Void(); */
-/*   	return resultobj; */
-/*       } */
-/*   } */
-/* }; */
 
 %extend VFS
 {

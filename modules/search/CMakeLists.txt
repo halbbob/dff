@@ -14,10 +14,10 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 add_subdirectory (carver)
+add_subdirectory (indexer)
 
 set(search_srcs
   __init__.py
-#  find.py
 )
 
 install_file(search ${search_srcs})

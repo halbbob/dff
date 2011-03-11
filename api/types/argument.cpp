@@ -93,6 +93,11 @@ uint16_t			Argument::requirementType()
   return (this->__flags & 0x0c00);
 }
 
+void				Argument::addSubArgument(Argument* arg)
+{
+  this->__subarguments.push_back(arg);
+}
+
 void				Argument::addParameters(std::list<Variant*> params, uint16_t type, int32_t min, int32_t max)
 {
   if (!this->__paramslocked)
@@ -110,6 +115,11 @@ void				Argument::addParameters(std::list<Variant*> params, uint16_t type, int32
 std::list<Variant*>		Argument::parameters()
 {
   return this->__parameters;
+}
+
+uint32_t			Argument::parametersCount()
+{
+  return this->__parameters.size();
 }
 
 int32_t			Argument::minimumParameters()

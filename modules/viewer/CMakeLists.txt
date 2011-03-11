@@ -14,13 +14,13 @@
 
 add_subdirectory(hexedit)
 add_subdirectory(bindiff)
+add_subdirectory(timeline)
 
 set(viewer_srcs
   __init__.py
   cat.py
   viewerimage.py
   player.py
-  EXIF.py
 )
 
 install_file(viewer ${viewer_srcs})

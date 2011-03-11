@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -46,13 +46,13 @@ class LOCAL(Module):
   """Add file from your operating system to the VFS"""
   def __init__(self):
     Module.__init__(self, 'local', local)
-    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.Node, 
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
 	                   "name": "parent", 
 	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
-                           "parameters": {"type": Parameter.Editable,
+                       "parameters": {"type": Parameter.Editable,
                                           "predefined": [vfs.vfs().getnode("/")]}
                           })
-    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path, 
+    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path,  
 	                   "name": "path", 
 	                   "description": "Path to the file or directory on your operating system."})
     self.tags = "Connectors"

@@ -135,9 +135,7 @@ void		Extfs::launch(std::map<std::string, Variant*> args)
 void		Extfs::init(bool sb_check, uint64_t sb_force_addr, bool check_alloc)
 {
   __SB = new SuperBlock;
-  std::cout << "node name : " << __node->absolute() << std::endl;
   __vfile = __node->open();
-  std::cerr << "turewbtrhewj" << std::endl;
   __SB->init(__node->size(), __vfile, sb_check, sb_force_addr);
   __GD = new GroupDescriptor(__SB, __SB->block_size());
   __GD->init(__SB->block_size(), __vfile, __SB->group_number(), check_alloc);
@@ -168,7 +166,6 @@ void		Extfs::run(uint64_t root_i_nb)
 			 addr, root_i_nb);
   __add_meta_nodes();
   __reserved_inodes();
-  //  __root_dir->i_list()->clear();
   this->stateinfo = "Finished";
 }
 
@@ -188,11 +185,6 @@ class ExtfsNode *	Extfs::createVfsNode(Node * parent, std::string name,
   if ((inode->file_mode & __IFMT) == __IFLNK)
     {
       size = inode->lower_size;
-      /*
-	ExtfsSymLinkNode * node
-	= new ExtfsSymLinkNode(name, size, parent, this, id);
-	node->setLink();
-      */
       ExtfsNode * node = new ExtfsNode(name, 0, parent, this, id);
       return node;
     }

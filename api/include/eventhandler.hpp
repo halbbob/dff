@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -28,9 +28,9 @@
 #include <iomanip>
 #include <vector>
 
-typedef struct	s_event
+typedef struct
 {
-  enum type
+  enum etype
     {
       OPEN = 0,
       CLOSE = 1,
@@ -38,7 +38,7 @@ typedef struct	s_event
       WRITE = 3,
       SEEK = 4,
       OTHER = 5
-    };
+    } type;
   Variant*	value;
 }		event;
 

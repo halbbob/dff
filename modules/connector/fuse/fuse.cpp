@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -132,7 +132,6 @@ void fuse::start(std::map<std::string, Variant*> args)
  
   if (!tpath)
 	return ; 
-    //res->add_const("error", "conf " + e.error);
   
   argv = (char **)malloc(sizeof(char*) * 3); 
   *argv = (char *)"dff-fuse";
@@ -140,7 +139,6 @@ void fuse::start(std::map<std::string, Variant*> args)
   *(argv + 2) = (char *)"-d";
 //loop :(
   fuse_main(3, argv, &f_opers, 0); 
- // res->add_const("result", std::string("no problem")); 
   return ;
 }
 

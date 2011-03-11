@@ -200,7 +200,7 @@ class Ide(QWidget, Ui_Ide):
         if self.scripTab.count() > 0:
             index = self.scripTab.currentIndex()
             page = self.pages[index]
-            self.saveactBack()
+            self.save()
 
             path = page.getScriptPath()
             self.loader.do_load(str(path))

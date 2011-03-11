@@ -95,6 +95,8 @@ class Utils():
     def hasOneNodeArg(module, type):
         configs = ConfigManager.Get()
         mconf = configs.configByName(str(module))
+        if len(mconf.arguments()) > 1:
+            return None
         argsnode = mconf.argumentsByType(typeId.Node)
         required = mconf.argumentsByRequirementType(Argument.Required)
         if len(argsnode) == 0:

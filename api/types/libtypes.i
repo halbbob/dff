@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -45,7 +45,6 @@
 #include "confmanager.hpp"
 #include "path.hpp"
 #include "vtime.hpp"
-#include "Time.h"
   
 #ifndef WIN32
 #include <stdint.h>
@@ -73,7 +72,6 @@
 %include "../include/export.hpp"
 %include "../include/config.hpp"
 %include "../include/path.hpp"
-%include "../include/Time.h"
 %include "../include/vtime.hpp"
 %include "../include/confmanager.hpp"
 
@@ -86,19 +84,20 @@
   Variant.__origininit__ = Variant.__init__
   Variant.__init__ = Variant.__proxyinit__
   Variant.funcMapper = {typeId.Char: "_Variant__Char",
-                          typeId.Int16: "_Variant__Int16",
-                          typeId.UInt16: "_Variant__UInt16",
-                          typeId.Int32: "_Variant__Int32",
-                          typeId.UInt32: "_Variant__UInt32",
-                          typeId.Int64: "_Variant__Int64",
-                          typeId.UInt64: "_Variant__UInt64",
-                          typeId.String: "_Variant__String",
-                          typeId.CArray: "_Variant__CArray",
-			  typeId.Node: "_Variant__Node",
-			  typeId.Path: "_Variant__Path",
-                          typeId.VTime: "_Variant__VTime",
-		          typeId.List: "_Variant__VList",
-  		          typeId.Map: "_Variant__VMap"}
+			typeId.Int16: "_Variant__Int16",
+			typeId.UInt16: "_Variant__UInt16",
+			typeId.Int32: "_Variant__Int32",
+			typeId.UInt32: "_Variant__UInt32",
+			typeId.Int64: "_Variant__Int64",
+			typeId.UInt64: "_Variant__UInt64",
+			typeId.Bool: "_Variant__Bool",
+			typeId.String: "_Variant__String",
+			typeId.CArray: "_Variant__CArray",
+			typeId.Node: "_Variant__Node",
+			typeId.Path: "_Variant__Path",
+			typeId.VTime: "_Variant__VTime",
+			typeId.List: "_Variant__VList",
+			typeId.Map: "_Variant__VMap"}
 
 %}
 
@@ -109,6 +108,7 @@
 %template(__UInt32) Variant::value<uint32_t>;
 %template(__Int64) Variant::value<int64_t>;
 %template(__UInt64) Variant::value<uint64_t>;
+%template(__Bool) Variant::value<bool>;
 %template(__CArray) Variant::value<char *>;
 %template(__Node) Variant::value<Node*>;
 %template(__Path) Variant::value<Path*>;
@@ -145,7 +145,7 @@
 	    while ((i != lsize) && err.empty())
 	      {
 		item = PyList_GetItem(obj, i);
-		if ((v = new_Variant__SWIG_17(item, itype)) == NULL)
+		if ((v = new_Variant__SWIG_18(item, itype)) == NULL)
 		  err = "Constant < " + self->name() + "  >\n provided list of values must be of type < " + typeId::Get()->typeToName(itype) + " >";
 		else
 		  vlist.push_back(v);
@@ -268,17 +268,17 @@
     try
       {
 	predef_obj = Argument_validateParams(self, obj, &ptype, &min, &max);
-	//std::cout << "setted min: " << min << " setted max: " << max << std::endl;
 	SWIG_PYTHON_THREAD_BEGIN_BLOCK;
 	if (predef_obj != NULL)
 	  {
 	    itype = self->type();
 	    lsize = PyList_Size(predef_obj);
+	    i = 0;
 	    while ((i != lsize) && err.empty())
 	      {
 		item = PyList_GetItem(predef_obj, i);
-		//Maybe change this call with _wrap_new_Variant to not depend on swig overload method generation (at the moment it's SWIG_17 but could change if new Variant ctor implemented...). Then use Swig_ConvertPtr to get Variant from the returned PyObject.
-		if ((v = new_Variant__SWIG_17(item, itype)) == NULL)
+		//Maybe change this call with _wrap_new_Variant to not depend on swig overload method generation (at the moment it's SWIG_18 but could change if new Variant ctor implemented...). Then use Swig_ConvertPtr to get Variant from the returned PyObject.
+		if ((v = new_Variant__SWIG_18(item, itype)) == NULL)
 		  err = "Argument < " + self->name() + "  >\n predefined parameters must be of type < " + typeId::Get()->typeToName(self->type()) + " >";
 		else
 		  vlist.push_back(v);
@@ -333,7 +333,7 @@
       {
 	if ((arg->parametersType() == Parameter::NotEditable) && (!Config_matchNotEditable(self, arg->parameters(), obj)))
 	  throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
-	if (v = new_Variant__SWIG_17(obj, arg->type()))
+	if (v = new_Variant__SWIG_18(obj, arg->type()))
 	  {
 	    if (v == NULL)
 	      throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
@@ -420,7 +420,7 @@
       std::map<std::string, Variant*>	res;
       std::list<Argument*>		args;
       std::list<Argument*>::iterator	argit;
-      Variant*				v;
+     
       PyObject*				itemval;
       std::string			argname;
       uint16_t				itype;
@@ -455,14 +455,16 @@
 		  //std::cout << "current argument: " <<  argname << " argument type " << (*argit)->type() << " -- provided parameter type " << obj->ob_type->tp_name << std::endl;
 		  try
 		    {
+				Variant * v = new Variant;
 		      if (itype == Argument::Empty)
-			v = new_Variant__SWIG_17(itemval, typeId::Bool);
+			v = new_Variant__SWIG_18(itemval, typeId::Bool);
 		      else if (itype == Argument::Single)
 			v = Config_generateSingleInput(self, itemval, *argit);
 		      else if (itype == Argument::List)
 			v = Config_generateListInput(self, itemval, *argit);
 		      if (v != NULL)
-			res.insert(std::pair<std::string, Variant*>(argname, v));
+		      res[argname] = v;
+			//res.insert(std::pair<std::string, Variant*>(argname, v));
 		      else
 			err = "Argument < " + argname + " >\n" + "parameter provided is not valid (wrong type)";
 		    }
@@ -755,11 +757,27 @@
       Variant*	v = NULL;
       bool	err = true;
       int	ecode;
-      
+
+      if (obj == NULL)
+	throw(std::string("Provided PyObject is NULL"));
+
+      //std::cout << "Variant::Variant(PyObject*, uint8_t) -- PyObject type " << obj->ob_type->tp_name << std::endl;
+
       if (PyLong_Check(obj) || PyInt_Check(obj))
 	{
-	  //printf("Variant::Variant(PyObject* obj, uint8_t type) ---> obj == PyLong_Check || PyInt_Check provided\n");
-	  if (type == uint8_t(typeId::Int16))
+	  if (type == uint8_t(typeId::Bool))
+	    {
+	      bool	b;
+	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+	      int ecode = SWIG_AsVal_bool(obj, &b);
+	      SWIG_PYTHON_THREAD_END_BLOCK;
+	      if (SWIG_IsOK(ecode))
+		{
+		  v = new Variant(b);
+		  err = false;
+		}
+	    }
+	  else if (type == uint8_t(typeId::Int16))
 	    {
 	      int16_t	s;
 	      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -767,7 +785,7 @@
 	      SWIG_PYTHON_THREAD_END_BLOCK;
 	      if (SWIG_IsOK(ecode))
 		{
-		  v = new Variant(v);
+		  v = new Variant(s);
 		  err = false;
 		}
 	    }
@@ -868,13 +886,13 @@
 		}
 	      else if (type == typeId::CArray)
 		{
-		  v = new Variant(str.c_str());
+		  v = new Variant((char*)str.c_str());
 		  err = false;
 		}
 	      else if (type == typeId::Char)
 		{
 		  char	c;
-		  if (str.size() == 1)
+		  if ((str.size() == 1) || (str.size() == 0))
 		    {
 		      c = *(str.c_str());
 		      v = new Variant(c);
@@ -993,7 +1011,7 @@
 	  for (it = 0; it != size; it++)
 	    {
 	      item = PyList_GetItem(obj, it);
-	      if ((vitem = new_Variant__SWIG_17(item, type)) == NULL)
+	      if ((vitem = new_Variant__SWIG_18(item, type)) == NULL)
 	      	{
 	      	  lbreak = true;
 	      	  break;
@@ -1320,10 +1338,18 @@
         self.__origininit__(*args)
 
     def __repr__(self):
-        #if self.type() in [typeId.Char, typeId.CArray, typeId.String]:
-           #buff = "'" + str(self.value()) + "'"
-        #else:
-        buff = str(self.value())
+        if self.type() in [typeId.List, typeId.Map]:
+           return str(self.value())
+        elif self.type() in [typeId.Char, typeId.CArray, typeId.String]:
+           val = self.toString()
+           if val.isalnum():
+              buff = self.toString()
+           else:
+              buff = self.toHexString()
+        elif self.type() == typeId.Node:
+           buff = self.value().absolute()
+        else:
+           buff = self.toString()
         return buff
 
     def value(self):

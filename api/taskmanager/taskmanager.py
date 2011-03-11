@@ -16,17 +16,10 @@
 from api.events.libevents import EventHandler
 from api.taskmanager.scheduler import sched 
 from api.taskmanager.processus import *
-from api.types.libtypes import Variant, VMap, typeId, Argument, Parameter
+from api.types.libtypes import Variant, VMap, typeId, Argument, Parameter, ConfigManager
 from api.loader import *
 from api.exceptions.libexceptions import *
 import threading
-
-#class postProcess ? XXX
-#XXX results-> 
-# 10 fat modules applid
-# XXX node hashed
-#XXX node exif extracted ...
-# ....
 
 class TaskManager():
   class __TaskManager(EventHandler):
@@ -36,13 +29,10 @@ class TaskManager():
       self.sched = sched
       self.lprocessus = []
       self.npid = 0
-      #self.env = env.env() 
       self.VFS = VFS.Get()
       self.VFS.connection(self)
       self.modPP = []
-
-#ici add .......... list des post processing
-#penser a pouvoir afficher une conf graphique facile etc....
+      self.configManager = ConfigManager.Get()
 
     def addPostProcess(self, mod, args = None, exec_flags = None):
        self.modPP += [( mod, args, exec_flags)]
@@ -51,53 +41,34 @@ class TaskManager():
        self.modPP.remove( [( mod, args, exec_flags)] )
 
     def createProcessNode(self, mod, args, exec_flags, node):
-       #print args, exec_flags, node.absolute()
-       #print "Create post process"
-       #print node.absolute()
-       #print "is compatible"
-       #print node.isCompatibleModule(mod)
        if node.isCompatibleModule(mod):
-	 #print "post_process add task " + mod + " on node " + str(node.name())
+	 config = self.configManager.configByName(mod)	
          if args == None:
-           args = libenv.argument("post_process")
+           args = {}
          if exec_flags == None:
            exec_flags = ["console", "thread"]
-         args.add_node("file", node) #rajoute tjrs ds le meme args ....
-				     #XXX manque d autre arg genre fat ce plance pas 
-         self.add(mod, args, exec_flags)
+         args["file"] = node
+         arg = config.generate(args)
+         self.add(mod, arg, exec_flags)
 
     def postProcess(self, node, recursive = False):
-      #print self.modPP
       for (mod, args, exec_flags) in self.modPP:
         self.createProcessNode(mod, args, exec_flags, node)
-#	print node.absolute()
         if node.hasChildren():
 	  childrens = node.children() 
  	  for child in childrens:
-	  #for child in node.children(): #XXX fix me swig delete thread pb ou ds notre .i ...
-	    self.postProcess(child, True) #ok pour le rec mais ca va d abord faire le for donc appliquer tous les differents module de post processing sur un repertoire puis sur c fils, on peut prefere appliquer un module sur tous les fils puis apres les autre module sur tout les fils pour faire ca virer le for de la fonction a recurse ...
-      
+	    self.postProcess(child, True)      
 
     def Event(self, e):
-      #print "Get event"
-      #print e.value.absolute()
-      self.postProcess(e.value, True) #peut etre pas ici pour le recursif mais plus ds addpostproecss?
-      #XXX pusiqu on revois une list virtuel.... fo suivre les fils on peut pas lesavoir mais c comme sa donc fo faire un for ou rajouter une list ou specifier recursif au module attention au gros partage en couille quand il va avoir des modules sur le quel ca va etre reapplllliquer .............
-###donc le mieux recreer une list puisque on les a pu et par contre puisqu on a les list de node ds les modules -> passer cette list au modules batch qui prenne une list directe et font juste une instance ou alors les modules prenne qu une node mais c le taskmanager qui s en occupe a l ancinne mais essayer d avoir qu une instnace c mieux (et de update ....) -> c pas pres d etre finie ..........
-
-
-      #self.env = env.env() 
+      self.postProcess(e.value.value(), True) 
 
     def add(self, cmd, args, exec_flags):
       mod = self.loader.modules[cmd] 
       proc = None
-      #XXX Processus singleton c pas top  
       if "single" in mod.flags:
          for p in self.lprocessus:
            if p.mod == mod:
-	    #print "Found singleton processus"
 	    proc = p
-	    #proc.args = args #ben ouaip si non c tjrs le meme fichier
          if not proc:
            proc = Processus(mod, self.npid, None, exec_flags)
            self.lprocessus.append(proc)
@@ -109,7 +80,7 @@ class TaskManager():
       if not "thread" in exec_flags:
         try :
           if "gui" in proc.mod.flags and not "console" in proc.mod.flags:
-            #print "This script is gui only"
+            print "This script is gui only"
 	    self.lprocessus.remove(proc)
 	    proc.event.set()
 	    return proc

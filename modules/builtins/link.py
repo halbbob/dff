@@ -13,28 +13,31 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
-from api.vfs import *
 from api.module.module import *
 from api.exceptions.libexceptions import *
+from api.types.libtypes import Argument, typeId, Variant
 
 class LINK(Script):
   def __init__(self):
     Script.__init__(self, "link")
 
   def start(self, args):
-    dest = args.get_node("dest")
-    node = args.get_node("file")
-    if not node:
-      self.res.add_const("error", "Can't find file")
-      return	
-    self.vfs.link(node, dest) 
-    self.res.add_const("result",  "linked " + dest.path + "/" + node.name() + " created")
+    dest = args["dest"].value()
+    node = args["file"].value()
+    self.vfs.link(node, dest)
+    val = Variant(str("linked " + dest.path() + "/" + node.name() + " created").replace("//", "/"))
+    val.thisown = False
+    self.res["result"] = val
 
 
 class link(Module):
   def __init__(self):
    """Create a link to a file"""
    Module.__init__(self, "link", LINK)
-   self.conf.add("file", "node", False, "File to link to")
-   self.conf.add("dest", "node", False, "File pointing to the link")
+   self.conf.addArgument({"name": "file",
+                           "description": "File to link to",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+   self.conf.addArgument({"name": "dest",
+                           "description": "File pointing to the link",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
    self.tags = "builtins"

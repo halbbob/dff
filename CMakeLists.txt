@@ -193,6 +193,27 @@ else(PYTHON_QT4_RCC)
   message(SEND_ERROR "Python Qt4 resource compiler not found.")
 endif(PYTHON_QT4_RCC)
 
+## CLucene indexer library check
+find_library(CLUCENE_LIBRARY NAMES clucene)
+if(CLUCENE_LIBRARY)
+  message(STATUS "CLucene indexing library found: ${CLUCENE_LIBRARY}")
+else(CLUCENE_LIBRARY)
+  message(STATUS "CLucene indexing library not found.")
+endif(CLUCENE_LIBRARY)
+# Check for header, usually sits in /usr/lib on linux, strange !
+get_directory_property(cmake_include_directories INCLUDE_DIRECTORIES)
+find_path(CLUCENE_CONFIG_INCLUDE_PATH NAMES clucene-config.h ${cmake_include_directories})
+if(CLUCENE_CONFIG_INCLUDE_PATH)
+  message(STATUS "CLucene indexing library config header file found in common include directories.")
+else(CLUCENE_CONFIG_INCLUDE_PATH)
+  find_path(CLUCENE_CONFIG_INCLUDE_PATH NAMES CLucene/clucene-config.h PATHS /usr/lib /usr/local/lib)
+  if(CLUCENE_CONFIG_INCLUDE_PATH)
+    message(STATUS "CLucene indexing library config header file found in: ${CLUCENE_CONFIG_INCLUDE_PATH}/CLucene")
+    
+  else(CLUCENE_CONFIG_INCLUDE_PATH)
+    message(STATUS "CLucene indexing library config header file not found.")
+  endif(CLUCENE_CONFIG_INCLUDE_PATH)
+endif(CLUCENE_CONFIG_INCLUDE_PATH)
 
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
@@ -278,13 +299,12 @@ SET(CPACK_PACKAGE_VENDOR "ArxSys")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT")
 # In order to provide top-level setting of DFF version, three variables bellow
-# must be used in those three files :
-#  ui/gui/dialog/dialog.py
+# must be used in those two files :
 #  ui/gui/gui.py
 #  ui/ui.py
 # See corresponding CMakeLists.txt for CONFIGURE_FILE.
-SET(CPACK_PACKAGE_VERSION_MAJOR "0") 
-SET(CPACK_PACKAGE_VERSION_MINOR "9")
+SET(CPACK_PACKAGE_VERSION_MAJOR "1") 
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
@@ -304,7 +324,7 @@ set(API_TYPE_VERSION "1.0.0")
 set(API_VARIANT_VERSION "1.0.0")
 set(API_VFS_VERSION "2.7.0")
 set(API_DATATYPE_VERSION "1.0.0")
-# Premier commit de code sur le svn : 2007-12-17
+set(API_EVENT_VERSION "1.0.0")
 
 #### Project install for windows
 IF(WIN32 AND NOT UNIX)

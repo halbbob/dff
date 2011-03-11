@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -58,6 +58,10 @@
     {
       SWIG_exception(SWIG_RuntimeError, e.c_str());
     }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
+    }
   catch (Swig::DirectorException e)
     {
       SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -70,9 +74,7 @@
 {
   try
     {
-      SWIG_PYTHON_THREAD_BEGIN_ALLOW;
       $action
-      SWIG_PYTHON_THREAD_END_ALLOW;
     }
   catch (vfsError &e)
     {
@@ -88,6 +90,10 @@
   catch (std::string e)
     {
       SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
     }
   catch (Swig::DirectorException e)
     {
@@ -121,6 +127,10 @@
   catch (std::string e)
     {
       SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
     }
 }
 

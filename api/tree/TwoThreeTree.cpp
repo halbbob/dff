@@ -270,7 +270,6 @@ bool	TwoThreeTree::remove(uint32_t val)
   TwoThreeNode *	leaf_node;
   bool			empty = false;
 
- // std::cout << "removing " << val << std::endl;
   node = this->find(val);
   if (node)
     {
@@ -279,8 +278,6 @@ bool	TwoThreeTree::remove(uint32_t val)
       dump();
       if (!leaf_node)
 	{
-	
-		//std::cout << "done NULL " << val << std::endl;
 	  return false;
 	}
       if (leaf_node->leftVal() == val)
@@ -312,23 +309,19 @@ bool	TwoThreeTree::remove(uint32_t val)
 	    {
 	      delete __root;
 	      __root = node;
-	//      std::cout << "done root" << val << std::endl;
 	      return true;
 	    }
 	  else
 	    {
 	      bool	b = remove(leaf_node, val);
-	  //    std::cout << "done " << val << std::endl;
 	      return b;
 	    }
 	}
     }
   else
     {
-   //   std::cout << "done false" << val << std::endl;
       return false;
     }
-  //std::cout << "done end " << val << std::endl;
   return true;
 }
 
@@ -482,12 +475,10 @@ void	TwoThreeTree::redistribute(TwoThreeNode * node, TwoThreeNode * parent)
 	      delete parent->rightChild();
 	      parent->setRightChild(NULL);
 		
-	      std::cout << "red 2 nodes le ch" << std::endl;
 	      // parent->setRightVal(parent->rightChild()->leftVal());
 	      parent->leftChild()->setNodeType(THREE_NODE);
 	      if (!node->isLeaf())
 		{
-		  std::cout << "red 2 nodes le ch" << std::endl;
 		  parent->setRightChild(parent->rightChild()->rightChild());
 		  parent->setMiddleChild(parent->rightChild()->leftChild());
 		  parent->setLeftChild(node->leftChild());		  
@@ -519,7 +510,6 @@ void	TwoThreeTree::redistribute(TwoThreeNode * node, TwoThreeNode * parent)
 	    }
 	  else
 	    {
-	      std::cout << "red 2 nodes r child" << std::endl ; // HERE IS THE BUG
 	      parent->rightChild()->setLeftVal(parent->leftVal());
 	      parent->setLeftVal(parent->leftChild()->rightVal());
 	      parent->leftChild()->setNodeType(TWO_NODE);
@@ -573,21 +563,15 @@ void	TwoThreeTree::redistribute(TwoThreeNode * node, TwoThreeNode * parent)
 	      parent->rightChild()->setLeftVal(parent->rightChild()->rightVal());
 	    }
 	}
-      else
-	{
-	  std::cout << "trewtrewt" << std::endl;
-	}
     }
 }
 
 void	TwoThreeTree::merge(TwoThreeNode * node, TwoThreeNode * parent)
 {
-  std::cout << "merging"<< std::endl;
   if (parent->isTwoNode())
     {
       if (node == parent->rightChild())
 	{
-	  std::cout << "2 node right child" << std::endl;
 	  parent->leftChild()->setNodeType(THREE_NODE);
    	  parent->leftChild()->setRightVal(parent->leftVal());
 	  parent->leftChild()->setMiddleChild(parent->leftChild()->rightChild());
@@ -606,7 +590,6 @@ void	TwoThreeTree::merge(TwoThreeNode * node, TwoThreeNode * parent)
 	}
       else // if node == parent->leftChild()
 	{
-	  std::cout << "2 node left child." << std::endl;
 	  parent->rightChild()->setNodeType(THREE_NODE);
 	  parent->rightChild()->setRightVal(parent->rightChild()->leftVal());
 	  parent->rightChild()->setLeftVal(parent->leftVal());
@@ -621,7 +604,6 @@ void	TwoThreeTree::merge(TwoThreeNode * node, TwoThreeNode * parent)
     {
       if (node == parent->leftChild())
 	{
-	  std::cout << "3 node left child" << std::endl;
 	  parent->leftChild()->setLeftVal(parent->leftVal());
 	  parent->leftChild()->setRightVal(parent->middleChild()->leftVal());
 	  parent->leftChild()->setMiddleChild(parent->middleChild()->leftChild());
@@ -635,7 +617,6 @@ void	TwoThreeTree::merge(TwoThreeNode * node, TwoThreeNode * parent)
 	}
       else if (node == parent->middleChild())
 	{
-	  std::cout << "3 node mid  child" << std::endl;
 	  parent->leftChild()->setRightVal(parent->leftVal());
 	  parent->setLeftVal(parent->rightVal());
 	  parent->setNodeType(TWO_NODE);
@@ -648,7 +629,6 @@ void	TwoThreeTree::merge(TwoThreeNode * node, TwoThreeNode * parent)
 	}
       else
 	{
-	  std::cout << "3 node right child" << std::endl;
 	  parent->rightChild()->setLeftVal(parent->middleChild()->leftVal());
 	  parent->rightChild()->setRightVal(parent->rightVal());
 	  parent->setNodeType(TWO_NODE);

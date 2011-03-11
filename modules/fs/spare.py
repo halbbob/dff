@@ -38,7 +38,7 @@ class SpareNode(Node):
       fm.thisown = False
       voffset = 0
       offset = 0
-      if not self.invert: #XXX faire 2 node avec le clean + la spare a part ? 
+      if not self.invert:
         while voffset < self.ssize:
           fm.push(voffset, self.pageSize, self.nparent, offset)
           offset += (self.spareSize + self.pageSize)
@@ -100,25 +100,18 @@ or before applying a file system reconstruction modules."""
                             "name": "spare_size",
                             "description": "Spare size",
                             "parameters": {"type": Parameter.Editable,
-                                           "predefined": [8, 16, 24, 32]}
+                                           "predefined": [16, 8, 24, 32]}
                             })
      
      self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt32,
                             "name": "page_size",
                             "description": "Iterate on each page size",
                             "parameters": {"type": Parameter.Editable,
-                                           "predefined": [256, 512, 1024]}
+                                           "predefined": [512, 256, 1024]}
                             })
 
      self.conf.addArgument({"input": Argument.Empty,
                             "name": "dump_spare",
                             "description": "Create a node with only spares data"
                             })
-
-#     self.conf.add("node", "node", False, "Delete spare of this node.")
-#     self.conf.add("spare-size", "int", False, "size of a nand spare")
-#     self.conf.add_const("spare-size", 16)
-#     self.conf.add("page-size", "int", False, "size of a nand page")
-#     self.conf.add_const("page-size", 512)
-#     self.conf.add("invert", "bool", True, "Create a spare only node")
      self.tags = "Node"
