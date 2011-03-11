@@ -1342,10 +1342,11 @@
            return str(self.value())
         elif self.type() in [typeId.Char, typeId.CArray, typeId.String]:
            val = self.toString()
-           if val.isalnum():
-              buff = self.toString()
-           else:
-              buff = self.toHexString()
+           #if val.isalnum():
+              #buff = self.toString()
+           #else:
+              #buff = self.toHexString()
+           return val      
         elif self.type() == typeId.Node:
            buff = self.value().absolute()
         else:
