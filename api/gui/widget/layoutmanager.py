@@ -198,6 +198,8 @@ class layoutManager(QWidget):
                 if len(predefs) > 0:
                     w = QComboBox()
                     w.setEditable(editable)
+                    if typeid not in (typeId.String, typeId.Char, typeId.Node, typeId.Path):
+                        w.addItem("0")
                     for value in predefs:
                         w.addItem(value.toString())
                 else:
@@ -262,7 +264,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPathList(self, key, typeid, predefs):
+    def addPathList(self, key, typeid, predefs, selectednodes):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QVBoxLayout()
             listpathcontainer = QListWidget()
@@ -272,6 +274,11 @@ class layoutManager(QWidget):
                     return -1
                 for predef in predefs:
                     listpathcontainer.insertItem(listpathcontainer.count() + 1, str(predef))
+            if len(selectednodes) > 0:
+                if typeid == typeId.Node:
+                    for node in selectednodes:
+                        listpathcontainer.insertItem(listpathcontainer.count() + 1, node.absolute())           
+
             hbox = QHBoxLayout()
             buttonbox = QDialogButtonBox()
             if typeid == typeId.Path:
@@ -300,7 +307,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPath(self, key, typeid, predefs, editable=False):
+    def addPath(self, key, typeid, predefs, selectednodes, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             vbox = QVBoxLayout()
             if typeid == typeId.Path:
@@ -309,7 +316,7 @@ class layoutManager(QWidget):
                 combo.addItem(self.inputDirectory)
                 vbox.addWidget(combo)
             layout = QHBoxLayout()
-            if len(predefs) > 0:
+            if len(predefs) > 0 or len(selectednodes) > 0:
                 pathcontainer = QComboBox()
                 pathcontainer.setEditable(editable)
                 for value in predefs:
@@ -317,6 +324,9 @@ class layoutManager(QWidget):
                         pathcontainer.addItem(value.value().name())
                     else:
                         pathcontainer.addItem(value.toString())
+                if typeid == typeId.Node:
+                    for node in selectednodes:
+                        pathcontainer.addItem(node.absolute())
             else:
                 pathcontainer = QLineEdit()
                 pathcontainer.setReadOnly(not editable)

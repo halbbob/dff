@@ -22,6 +22,7 @@ set(ui_srcs
   history.py
   redirect.py
   ui.py
+  conf.py
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ui.py ${CMAKE_CURRENT_BINARY_DIR}/ui.py)

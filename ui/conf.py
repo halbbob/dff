@@ -21,14 +21,24 @@ class Conf():
         def __init__(self):
             """ Initial configuration
 
+            By default ; no footprint !
             FIXME based on an ini file, args provided, etc.
             """
             self.initLanguage()
 
-            # indexes configuration
-            self.root_index = QDir.homePath() + "/.dff_conf/indexes"
-            self.index_name = "default"
-            self.index_path = self.root_index + "/" + self.index_name
+            # Global settings
+            self.workingDir = QDir.homePath() + '/.dff'
+            self.historyFile = False
+            self.historyFileFullPath = self.workingDir + '/history'
+            self.noFootPrint = True
+            
+            # Indexes configuration
+            self.root_index = self.workingDir + '/indexes'
+            self.index_name = 'default'
+            self.index_path = self.root_index + '/' + self.index_name
+
+            # Help
+            self.docPath = sys.modules['ui.gui'].__path__[0] + '/ui/gui/help.qhc'
 
             dir = QDir(self.index_path)
             if not dir.exists():

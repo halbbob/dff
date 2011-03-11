@@ -19,7 +19,7 @@ from PyQt4.QtGui import QApplication, QSplashScreen, QPixmap
 from PyQt4.QtCore import Qt
 
 from mainwindow import MainWindow
-from configuration.translator import Translator
+from translator import Translator
 from api.loader.loader import loader
 
 # import Resource QT

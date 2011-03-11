@@ -17,8 +17,8 @@ from PyQt4.QtGui import QDialog, QFileDialog
 from PyQt4.QtCore import SIGNAL, QEvent, QString, QDir
 
 from ui.gui.resources.ui_preferences import Ui_PreferencesDialog
-from ui.gui.configuration.conf import Conf
-from ui.gui.configuration.translator import Translator
+from ui.conf import Conf
+from ui.gui.translator import Translator
 
 import os, sys
 
@@ -41,10 +41,19 @@ class Preferences(QDialog, Ui_PreferencesDialog):
       self.conf = Conf()
       self.translator = Translator()
 
+      # Activate preferences from conf values
+      self.noFootPrintCheckBox.setChecked(self.conf.noFootPrint)
+      self.footprintOrNo()
+
+      self.workingDirPath.setText(self.conf.workingDir)
+      self.historyLineEdit.setText(self.conf.historyFileFullPath)
+      self.docAndHelpFullPath.setText(self.conf.docPath)
+      
       # Populate languages comboBox with available languages, also set to current language
       self.langPopulate()
 
       # Signals handling
+      self.connect(self.noFootPrintCheckBox, SIGNAL("stateChanged(int)"), self.noFootPrintChanged)
       self.connect(self.noHistoryCheckBox, SIGNAL("stateChanged(int)"), self.historyStateChanged)
       self.connect(self.langComboBox, SIGNAL("currentIndexChanged (const QString&)"), self.langChanged)
 
@@ -55,7 +64,24 @@ class Preferences(QDialog, Ui_PreferencesDialog):
           self.app = parent.app
       else:
           self.app = None
-      
+
+    def footprintOrNo(self):
+        """
+        Enable or disable inputs which made changes on the system
+        """
+        # Working dir related
+        self.workingDirPath.setEnabled(not self.conf.noFootPrint)
+        self.workingDirBrowse.setEnabled(not self.conf.noFootPrint)
+        # History related
+        self.historyLineEdit.setEnabled(not self.conf.noFootPrint)
+        self.historyToolButton.setEnabled(not self.conf.noFootPrint)
+        self.noHistoryCheckBox.setEnabled(not self.conf.noFootPrint)
+        # Indexes related
+        self.root_index_line.setEnabled(not self.conf.noFootPrint)
+        self.root_index_button.setEnabled(not self.conf.noFootPrint)
+        self.index_name_line.setEnabled(not self.conf.noFootPrint)
+        self.index_name_button.setEnabled(not self.conf.noFootPrint)
+
     def init_index_pref(self):
         """
         Initialize the configuration of the indexation.
@@ -109,11 +135,14 @@ class Preferences(QDialog, Ui_PreferencesDialog):
                 i += 1
         self.langComboBox.setCurrentIndex(selected)
 
-
+    def noFootPrintChanged(self, state):
+        self.conf.noFootPrint = (state == 2)
+        self.footprintOrNo()
+        
     def historyStateChanged(self, state):
-      self.historyLabel.setEnabled((state == 0))
-      self.historyLineEdit.setEnabled((state == 0))
-      self.historyToolButton.setEnabled((state == 0))
+        self.historyLabel.setEnabled((state == 0))
+        self.historyLineEdit.setEnabled((state == 0))
+        self.historyToolButton.setEnabled((state == 0))
 
     def langChanged(self, text):
         """ Change interface language

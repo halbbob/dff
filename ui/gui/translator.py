@@ -16,7 +16,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import QTranslator
-from conf import Conf
+from ui.conf import Conf
 
 class Translator():
     """ This singleton class handle Qt and DFF translations

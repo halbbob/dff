@@ -177,7 +177,7 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     layout = QHBoxLayout()
     layout.setMargin(0)
     self.manager = layoutManager()
-    self.manager.addPathList("local", typeId.Path, [])
+    self.manager.addPathList("local", typeId.Path, [], [])
     layout.addWidget(self.manager)
     self.pathselector.setLayout(layout)
 

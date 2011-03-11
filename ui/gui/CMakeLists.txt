@@ -14,7 +14,6 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 add_subdirectory(resources)
-add_subdirectory(configuration)
 add_subdirectory(i18n)
 add_subdirectory(ide)
 add_subdirectory(utils)
@@ -25,6 +24,7 @@ set(gui_srcs
   __init__.py
   gui.py
   mainwindow.py
+  translator.py
 )
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/gui.py ${CMAKE_CURRENT_BINARY_DIR}/gui.py)

@@ -21,7 +21,7 @@ from console.console import console
 from gui.gui import *
 from redirect import RedirectIO
 
-from gui.configuration.conf import Conf
+from conf import Conf
 
 class ui():  
   def __init__(self, type, debug = False, verbosity = 0):
