@@ -113,10 +113,13 @@ public:
 //set icon
 };
 
-//class PffUnallocatedPageBlocks : public PffUnallocatedPageBlocks
-//{
-//public:
-//EXPORT			PffUnallocatedPageBlocks(std::string name, Node* parent, fso* fsobj);
-//}
+class PffNodeUnallocatedPageBlocks : public Node
+{
+public:
+ EXPORT			PffNodeUnallocatedPageBlocks(std::string name, Node* parent, fso* fsobj, libpff_error_t**, libpff_file_t**);
+ virtual void		fileMapping(FileMapping* fm);
+ libpff_error_t**	pff_error;
+ libpff_file_t**	pff_file;
+};
 
 #endif

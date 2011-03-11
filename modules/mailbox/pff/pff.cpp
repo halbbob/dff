@@ -41,6 +41,7 @@ void pff::start(std::map<std::string, Variant*> args)
     this->__fdm = new FdManager;
     this->initialize(this->parent->absolute());
     this->info();
+    this->create_unallocated();
     this->create_item();
   }
   catch (vfsError e)
@@ -78,6 +79,14 @@ int32_t pff:get_root_folder(libpff_file_t* file, libpff_item_t **root_folder, li
   if ((libpff_file_get_root_folder(file, root_folder, error))
 }
 */
+
+void	pff::create_unallocated(void)
+{
+//XXX create with mailbox parent ?
+   cout << "create unalocated pages block as a single node" << endl;
+   new PffNodeUnallocatedPageBlocks(std::string("unallocated page blocks"), this->parent, this, &(this->pff_error), &(this->pff_file));
+
+}
 
 
 void pff::create_item()

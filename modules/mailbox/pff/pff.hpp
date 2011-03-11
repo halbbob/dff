@@ -40,6 +40,7 @@ public:
   void		        info_message_store();
   void		        info_unallocated_blocks();
   void		        create_item();
+  void			create_unallocated();
   void		        export_sub_items(libpff_item_t* item, Node* parent);
   int 		        export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent);
   int 		        export_email(libpff_item_t* item, int item_index,  Node* parent);

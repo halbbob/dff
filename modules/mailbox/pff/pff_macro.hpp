@@ -31,5 +31,4 @@ struct libpff_macro32_t
   const char* 		message;
 } typedef libpff_macro32_s;
 
-
 #endif
