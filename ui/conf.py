@@ -14,44 +14,92 @@
 # 
 
 import sys
+from os import access, R_OK
+from os.path import exists, expanduser, normpath
 from PyQt4.QtCore import QDir
+import ConfigParser
 
 class Conf():
     class __Conf():
-        def __init__(self):
+        def __init__(self, confPath):
             """ Initial configuration
 
             By default ; no footprint !
-            FIXME based on an ini file, args provided, etc.
             """
             self.initLanguage()
 
+            homeDir = normpath(expanduser('~') + '/')
+            
             # Global settings
-            self.workingDir = QDir.homePath() + '/.dff'
-            self.historyFile = False
-            self.historyFileFullPath = self.workingDir + '/history'
+            self.workingDir = normpath(homeDir + '/.dff_conf/')
+            self.noHistoryFile = False
+
+            # DFF < 1.0 history file was saved in ~/.dff_history
+            if exists(normpath(homeDir + '/.dff_history')):
+                self.historyFileFullPath = normpath(homeDir + '/.dff_history')
+            else:
+                self.historyFileFullPath = normpath(self.workingDir + '/history')
             self.noFootPrint = True
             
             # Indexes configuration
-            self.root_index = self.workingDir + '/indexes'
+            self.root_index = normpath(self.workingDir + '/indexes/')
             self.index_name = 'default'
-            self.index_path = self.root_index + '/' + self.index_name
+            self.index_path = normpath(self.root_index + '/' + self.index_name)
 
             # Help
-            self.docPath = sys.modules['ui.gui'].__path__[0] + '/ui/gui/help.qhc'
+            self.docPath = normpath(sys.modules['ui.gui'].__path__[0] + '/help.qhc')
 
-            dir = QDir(self.index_path)
-            if not dir.exists():
-                dir.mkpath(self.index_path)
+            # Try reading config file, overwrite default values above if found
+            if confPath:
+                self.configFile = normpath(confPath)
+            else:
+                self.configFile = normpath(self.workingDir + '/config.cfg')
+            if access(self.configFile, R_OK):
+                self.read()
+
 
         def initLanguage(self):
             self.language = "en"
+
+        def save(self):
+            if self.noFootPrint:
+                return
+            config = ConfigParser.RawConfigParser()
+            config.add_section('Global')
+            config.set('Global', 'nofootprint', self.noFootPrint)
+            config.set('Global', 'workingdir', self.workingDir)
+            config.set('Global', 'nohistoryfile', self.noHistoryFile)
+            config.set('Global', 'historyfilefullpath', self.historyFileFullPath)
+            config.add_section('Language')
+            config.set('Language', 'use', self.language)
+            config.add_section('Index')
+            config.set('Index', 'rootindex', self.root_index)
+            config.set('Index', 'indexname', self.index_name)
+            config.set('Index', 'indexpath', self.index_path)
+            config.add_section('Help')
+            config.set('Help', 'helppath', self.docPath)
+            with open(self.configFile, 'wb') as configfile:
+                config.write(configfile)
+
+        def read(self):
+            config = ConfigParser.RawConfigParser()
+            config.read(self.configFile)
+            self.noFootPrint = config.getboolean('Global', 'nofootprint')
+            self.workingDir = config.get('Global', 'workingdir')
+            self.noHistoryFile = config.getboolean('Global', 'nohistoryfile')
+            self.historyFileFullPath = config.get('Global', 'historyfilefullpath')
+            self.language = config.get('Language', 'use')
+            self.root_index = config.get('Index', 'rootindex')
+            self.index_name = config.get('Index', 'indexname')
+            self.index_path = config.get('Index', 'indexpath')
+            self.docPath = config.get('Help', 'helppath')
+
             
     __instance = None
     
-    def __init__(self):
+    def __init__(self, confPath = ''):
         if Conf.__instance is None:
-            Conf.__instance = Conf.__Conf()
+            Conf.__instance = Conf.__Conf(confPath)
 
     def __setattr__(self, attr, value):
 	setattr(self.__instance, attr, value)

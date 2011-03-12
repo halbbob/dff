@@ -26,6 +26,7 @@ SOURCES         += ../../../api/gui/model/vfsitemmodel.py
 SOURCES         += ../../../api/gui/widget/propertytable.py
 SOURCES         += ../../../ui/gui/widget/taskmanager.py
 SOURCES         += ../../../ui/gui/mainwindow.py
+SOURCES         += ../../../ui/gui/dialog/preferences.py
 
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts

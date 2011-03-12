@@ -45,16 +45,17 @@ class Dialog(QObject):
     pref = Preferences(self.parent)
     ret = pref.exec_()
     if ret:
-      pref.conf.root_index = pref.root_index_line.text()
-      pref.conf.index_name = pref.index_name_line.text()
-      pref.conf.index_path = pref.conf.root_index + "/" + pref.conf.index_name
+      pass
+#      pref.conf.root_index = pref.root_index_line.text()
+#      pref.conf.index_name = pref.index_name_line.text()
+#      pref.conf.index_path = pref.conf.root_index + "/" + pref.conf.index_name
 
-      root_index_dir = QDir(pref.conf.root_index)
-      if not root_index_dir.exists():
-        root_index_dir.mkpath(pref.conf.root_index)
-      default_index_dir = QDir(pref.conf.index_path)
-      if not default_index_dir.exists():
-        default_index_dir.mkpath(pref.conf.index_path)
+#      root_index_dir = QDir(pref.conf.root_index)
+#      if not root_index_dir.exists():
+#        root_index_dir.mkpath(pref.conf.root_index)
+#@      default_index_dir = QDir(pref.conf.index_path)
+ #     if not default_index_dir.exists():
+ #       default_index_dir.mkpath(pref.conf.index_path)
 
   def addDevices(self):
        """Open a device list dialog"""
