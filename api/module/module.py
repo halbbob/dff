@@ -26,6 +26,7 @@ class Module(object):
     self.cl = icl
     self.name = name
     self.single = None
+    self.icon = None
     try :
      if issubclass(self.cl, Script):
        self.conf = libtypes.Config(name)

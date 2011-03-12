@@ -23,3 +23,4 @@ class Script(object):
         self.vfs = vfs.vfs()
 	self.stateinfo = ""
         self.res = VMap()
+	self.icon = None
