@@ -115,11 +115,13 @@ public:
 
 class PffNodeUnallocatedPageBlocks : public Node
 {
-public:
- EXPORT			PffNodeUnallocatedPageBlocks(std::string name, Node* parent, fso* fsobj, libpff_error_t**, libpff_file_t**);
- virtual void		fileMapping(FileMapping* fm);
+private:
+ Node*			root;
  libpff_error_t**	pff_error;
  libpff_file_t**	pff_file;
+public:
+ EXPORT			PffNodeUnallocatedPageBlocks(std::string name, Node* parent, mfso* fsobj, Node* root, libpff_error_t**, libpff_file_t**);
+ virtual void		fileMapping(FileMapping* fm);
 };
 
 #endif

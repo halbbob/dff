@@ -84,7 +84,7 @@ void	pff::create_unallocated(void)
 {
 //XXX create with mailbox parent ?
    cout << "create unalocated pages block as a single node" << endl;
-   new PffNodeUnallocatedPageBlocks(std::string("unallocated page blocks"), this->parent, this, &(this->pff_error), &(this->pff_file));
+   new PffNodeUnallocatedPageBlocks(std::string("unallocated page blocks"), this->parent, this, this->parent, &(this->pff_error), &(this->pff_file));
 
 }
 

@@ -16,22 +16,19 @@
 
 #include "pff.hpp"
 
-PffNodeUnallocatedPageBlocks::PffNodeUnallocatedPageBlocks(std::string name, Node *parent, fso* fsobj, libpff_error_t** error, libpff_file_t** file) : Node(name, 0, parent, fsobj)
+
+/*concatenate all unallocated page blocks*/
+PffNodeUnallocatedPageBlocks::PffNodeUnallocatedPageBlocks(std::string name, Node *parent, mfso* fsobj, Node* root, libpff_error_t** error, libpff_file_t** file) : Node(name, 0, parent, fsobj)
 {
   //this->setFile();
-  this->pff_file = file;
-  this->pff_error = error;
-
-//XXX set Size 
-}
-
-void	PffNodeUnallocatedPageBlocks::fileMapping(FileMapping* fm)
-{
-
   off64_t offset                   = 0;
   size64_t size                    = 0;
   int number_of_unallocated_blocks = 0;
   int block_iterator               = 0;
+  uint64_t  node_size		   = 0;
+
+  this->pff_file = file;
+  this->pff_error = error;
 
   if (libpff_file_get_number_of_unallocated_blocks(*(this->pff_file), LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, &number_of_unallocated_blocks, this->pff_error) != 1)
     throw vfsError(std::string("unable to retrieve number of unallocated page blocks."));
@@ -42,8 +39,36 @@ void	PffNodeUnallocatedPageBlocks::fileMapping(FileMapping* fm)
      for (block_iterator = 0; block_iterator < number_of_unallocated_blocks; block_iterator++)
      {
 	if (libpff_file_get_unallocated_block(*(this->pff_file), LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, block_iterator, &offset, &size, this->pff_error) == 1)
-	  printf("%016llx - %016llx size : %lld\n", offset, offset + size, size);	
+	{
+	  node_size += size;	
+	}
+     }
+  } 
+  this->setSize(node_size);
+}
+
+void	PffNodeUnallocatedPageBlocks::fileMapping(FileMapping* fm)
+{
+
+  off64_t offset                   = 0;
+  size64_t size                    = 0;
+  int number_of_unallocated_blocks = 0;
+  int block_iterator               = 0;
+  uint64_t voffset		   = 0;
+
+  cout << "file mapping " << endl;
+  if (libpff_file_get_number_of_unallocated_blocks(*(this->pff_file), LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, &number_of_unallocated_blocks, this->pff_error) != 1)
+    throw vfsError(std::string("unable to retrieve number of unallocated page blocks."));
+
+  if (number_of_unallocated_blocks > 0)
+  {
+     for (block_iterator = 0; block_iterator < number_of_unallocated_blocks; block_iterator++)
+     {
+	if (libpff_file_get_unallocated_block(*(this->pff_file), LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, block_iterator, &offset, &size, this->pff_error) == 1)
+	{
+	  fm->push(voffset, size, this->root, offset);
+	  voffset += size;	
+	}
      }
   }
-//  fm->push(voffset, size, parent, offset);
 }
