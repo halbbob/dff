@@ -358,3 +358,4 @@ class viewerimage(Module):
  	                   "description": "managed mime type",
  	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap"]})
     self.tags = "Viewers"
+    self.icon = ":lphoto"

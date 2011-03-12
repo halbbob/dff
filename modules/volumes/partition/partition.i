@@ -49,4 +49,5 @@ class PARTITION(Module):
  	                   "description": "managed mime type",
  	                   "values": ["partition"]})
     self.tags = "Volumes"
+    self.icon = ":disksfilesystems"
 %}

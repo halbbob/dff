@@ -186,3 +186,4 @@ class player(Module):
                           "type": typeId.String,
                           "description": "managed mime type",
                           "values": ["video"]})
+   self.icon = ":multimedia"

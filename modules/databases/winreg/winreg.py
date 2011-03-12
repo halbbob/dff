@@ -47,3 +47,4 @@ class winreg(Module):
  	                   "description": "managed mime type",
  	                   "values": ["registry file"]})
     self.tags = "Databases"
+    self.icon = ":database"

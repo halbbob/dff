@@ -47,6 +47,7 @@ class Volatility(mfso):
       self.connections = True
     if args.has_key("openfiles"):
       self.openfiles = True
+    print self.meta
     self.root = Node("volatility")
     self.root.__disown__()
     self.op = op(self.node)
@@ -98,3 +99,4 @@ class volatility(Module):
                           "description": "List opened connection per processus",
                           "input": Argument.Empty})
    self.tags = "Volatile memory"
+   self.icon = ":dev_ram.png"

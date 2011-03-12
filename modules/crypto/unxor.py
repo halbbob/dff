@@ -71,3 +71,4 @@ ex: unxor /myfile key"""
                            "description": "key to unxor",
                            "input": Argument.Required|Argument.Single|typeId.String})
     self.tags = "Crypto"
+    self.icon = ":unlock"

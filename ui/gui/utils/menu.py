@@ -59,7 +59,7 @@ class MenuModules(QMenu):
 	     m = modules[mod]
 	     try :
 	       if m.tags == self.tags:
-                 actions.append(Action(self, self.__mainWindow, mod, self.tags))
+                 actions.append(Action(self, self.__mainWindow, mod, self.tags, m.icon))
              except AttributeError, e:
 		print e
 		pass

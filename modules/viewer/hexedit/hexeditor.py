@@ -74,5 +74,5 @@ class hexeditor(Module):
                            "name": "file",
                            "description": "File to display as hexadecimal"})
     self.tags = "Viewers"
-
+    self.icon = ":hexedit.png"
 

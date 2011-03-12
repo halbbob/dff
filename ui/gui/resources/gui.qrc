@@ -95,6 +95,21 @@
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>
 
+    <file alias="editcut">icons/actions/editcut.png</file>
+    <file alias="encrypted">icons/actions/encrypted.png</file>
+    <file alias="database">icons/app/database.png</file>
+    <file alias="index">icons/app/krdc.png</file>
+    <file alias="stats">icons/app/stats.png</file>
+    <file alias="chart">icons/app/kchart.png</file>
+    <file alias="text">icons/app/kedit.png</file>
+    <file alias="multimedia">icons/app/multimedia.png</file>
+    <file alias="lphoto">icons/app/lphoto.png</file>
+    <file alias="date">icons/app/date.png</file>
+    <file alias="disksfilesystems">icons/app/disksfilesystems.png</file>
+    <file alias="unlock">icons/actions/unlock.png</file>
+    <file alias="zip">icons/mime/zip.png</file>
+
+
     <file alias="green_configure.png">icons/app/agt_utilities.png</file>
     <file alias="autostart.png">icons/app/autostart.png</file>
     <file alias="bug.png">icons/app/bug.png</file>

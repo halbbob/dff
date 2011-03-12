@@ -248,3 +248,4 @@ class extract(Module):
                            "description": "Extract recursivly each files in all sub-directories",
                            "input": Argument.Empty})
     self.tags = "Node"
+    self.icon = ":extract.png"
