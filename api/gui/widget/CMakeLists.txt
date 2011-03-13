@@ -25,6 +25,7 @@ set(apiguiwidget_srcs
   resulttable.py
   textedit.py
   devicesdialog.py
+  completer.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

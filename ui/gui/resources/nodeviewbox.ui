@@ -174,7 +174,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="pathedit"/>
+    <layout class="QVBoxLayout" name="pathedit">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+    </layout>
    </item>
    <item>
     <widget class="QComboBox" name="viewbox">

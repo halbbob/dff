@@ -134,6 +134,7 @@ class TypeWorker(QThread):
 typeWorker = TypeWorker()
 typeWorker.start()
 
+
 class VFSItemModel(QAbstractItemModel, EventHandler):
   """
   The VFSItemModel, inheriting QAbstractItemModel, is used by views of the node browser.
@@ -832,3 +833,33 @@ class TreeModel(QStandardItemModel, EventHandler):
     Used for translating the framework.
     """
     self.nameTr = self.tr('Name')
+
+
+class CompleterModel(VFSItemModel):
+    def __init__(self):
+        VFSItemModel.__init__(self)
+        self.__absolute = False
+        self.currentPath = ""
+
+
+    def setCurrentPath(self, path):
+      self.currentPath = path
+      
+
+    def data(self, index, role):
+        if not index.isValid():
+          return QVariant()
+        if index.row() > len(self.node_list) or index.row() < 0:
+          return QVariant()
+        node = self.node_list[index.row()]
+        column = index.column()
+        if role == Qt.DisplayRole and index.column() == 0:
+          if self.currentPath != "":
+            res = node.absolute()[len(self.currentPath):]
+          else:
+            res = node.absolute()
+          return QVariant(res)
+        if role == Qt.DecorationRole and column == HNAME:
+          return QVariant(QIcon(node.icon()))
+        else:
+          return QVariant()
