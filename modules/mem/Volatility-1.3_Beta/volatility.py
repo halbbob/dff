@@ -47,7 +47,6 @@ class Volatility(mfso):
       self.connections = True
     if args.has_key("openfiles"):
       self.openfiles = True
-    print self.meta
     self.root = Node("volatility")
     self.root.__disown__()
     self.op = op(self.node)
