@@ -20,7 +20,6 @@ from cmd import *
 from api.manager.manager import ApiManager
 from api.taskmanager.taskmanager import *
 from api.types.libtypes import ConfigManager
-from ui.conf import Conf
 
 import threading
 from ui.console.complete_raw_input import complete_raw_input
@@ -37,7 +36,6 @@ class console(Cmd):
         self.cm = ConfigManager.Get()
         self.DEBUG = DEBUG
         self.VERBOSITY = VERBOSITY
-        self.conf = Conf()
         self.history = history()
         self.api = ApiManager()
         self.vfs = self.api.vfs()
@@ -96,10 +94,9 @@ class console(Cmd):
             for command in commands:
                 cmds = self.completion.lp.makeCommands(command)
                 for cmd in cmds:
-                    if cmd[1] == None and cmd[3] != "":
+                    if len(cmd[3]):
                         noerror = False
-                        print "module " + cmd[0]
-                        print "\t" + cmd[3]
+                        print cmd[3]
                     else:
                         exec_type = ["console"]
                         cname = cmd[0]
@@ -120,9 +117,7 @@ class console(Cmd):
                             print "module " + cmd[0]
                             print "\t" + str(error)
                     self.proc = None
-            if noerror and not self.conf.noHistoryFile:
-                if self.history.path != self.conf.historyFileFullPath:
-                    self.history.load()
+            if noerror:
                 self.history.add(line.strip())
         except:
             exc_type, exc_value, exc_traceback = sys.exc_info()

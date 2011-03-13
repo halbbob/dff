@@ -37,6 +37,7 @@ class Context():
         self.currentStrScope = 0
         self.paramsplit = re.compile('(?<!\\\)\,')
         self.badargs = []
+        self.tokens = []
 
 
     def debug(self, dbg):
@@ -106,8 +107,7 @@ class Context():
                 dbg += "\n      " + argname + " --> " + str(command[argname])
         self.debug(dbg)
         return command
-                
-    
+
 
     def dump(self):
         buff = "\n ==== Context.dump() ===="
@@ -265,6 +265,7 @@ class Context():
         dbg = "\n ==== Context.addToken() ===="
         dbg += "\n    token: " + token
         dbg += "\n    curpos: " + str(curpos)
+        self.tokens.append(token)
         self.debug(dbg)
         if self.config == None:
             if curpos != -1:
@@ -340,7 +341,9 @@ class LineParser():
                 try:
                     commands.append((context.config.origin(), context.makeArguments(), context.threaded, ""))
                 except (KeyError, ValueError) as error:
-                    commands.append((context.config.origin(), None, context.threaded, str(error)))
+                    commands.append((context.config.origin(), None, context.threaded, "module < " + context.config.origin() + " >\n" + str(error)))
+            elif len(context.tokens) != 0:
+                commands.append((None, None, None, str("module < "+ context.tokens[0] + " > does not exist")))
         if self.DEBUG and self.VERBOSITY:
             dbg += "\n    stacked commands:"
             for command in commands:
@@ -412,6 +415,7 @@ class LineParser():
             elif self.begidx == len(line):
                 self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
                 self.scopeCtx = self.ctxpos
+
 
             if self.DEBUG and self.VERBOSITY > 0:
                 dbg += "\n    current context: "
