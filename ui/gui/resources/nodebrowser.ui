@@ -61,6 +61,11 @@
     <string>Extract</string>
    </property>
   </action>
+  <action name="actionRelevant_module">
+   <property name="text">
+    <string>Relevant module</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="gui.qrc"/>

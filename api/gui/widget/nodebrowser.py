@@ -33,7 +33,7 @@ from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView,
 from api.gui.widget.propertytable import PropertyTable
 from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
 
-from ui.gui.utils.menu import MenuTags
+from ui.gui.utils.menu import MenuTags, MenuRelevant
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
 
 modulePriority = {} 
@@ -234,6 +234,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
          if self.nodeViewBox.propertyTable.isVisible():
             self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
+       self.menuRelevant = MenuRelevant(self, self.parent, node)
        if node.hasChildren() or node.isDir():
          self.actionOpen_in_new_tab.setEnabled(True)
        else:
@@ -314,6 +315,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      self.connect(self.actionOpen, SIGNAL("triggered()"), self.openDefault)
      self.submenuFile.addAction(self.actionOpen_in_new_tab)
      self.connect(self.actionOpen_in_new_tab, SIGNAL("triggered()"), self.openAsNewTab)
+     self.submenuRelevant = self.submenuFile.addMenu(self.actionRelevant_module.icon(), self.actionRelevant_module.text())
      self.menu = {}
      self.menuModule = self.submenuFile.addMenu(self.actionOpen_with.icon(), self.actionOpen_with.text())
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
