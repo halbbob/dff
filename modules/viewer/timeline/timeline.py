@@ -413,3 +413,4 @@ class timeline(Module):
                            "description": "Text file to display",
                            "input": Argument.Required|Argument.Single|typeId.Node})
     self.tags = 'Statistics'
+    self.icon = ":date"

@@ -79,8 +79,8 @@ class Volatility(mfso):
 
 
 class volatility(Module):
+  """Analyse a windows-xp ram dump"""
   def __init__(self):
-   """Analyse a windows-xp ram dump"""
    Module.__init__(self, "volatility", Volatility)
    self.conf.addArgument({"name": "file",
                           "description": "Dump to analyse", 
@@ -98,3 +98,4 @@ class volatility(Module):
                           "description": "List opened connection per processus",
                           "input": Argument.Empty})
    self.tags = "Volatile memory"
+   self.icon = ":dev_ram.png"

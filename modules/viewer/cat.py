@@ -79,4 +79,5 @@ ex:cat /myfile.txt"""
  	                   "description": "managed mime type",
  	                   "values": ["HTML", "ASCII", "XML", "text"]})
     self.tags = "Viewers"
-    self.flags = ["console", "gui"]	
+    self.flags = ["console", "gui"]
+    self.icon = ":text"	

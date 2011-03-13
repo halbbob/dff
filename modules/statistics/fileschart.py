@@ -155,5 +155,5 @@ ex: statistics /mydump/"""
                            "description": "Directory or files used to render chart",
                            "input": Argument.Required|Argument.List|typeId.Node})
     self.tags = "Statistics"
-
+    self.icon = ":chart"
 

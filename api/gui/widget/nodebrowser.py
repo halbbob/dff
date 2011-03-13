@@ -21,8 +21,9 @@ from api.vfs import *
 from api.vfs.libvfs import VFS
 from api.events.libevents import EventHandler
 from api.loader import loader
-from api.taskmanager.taskmanager import *
+from api.taskmanager.taskmanager import TaskManager 
 from api.types import libtypes
+from api.types.libtypes import typeId, Variant
 
 from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
@@ -34,6 +35,8 @@ from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
 
 from ui.gui.utils.menu import MenuTags
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
+
+modulePriority = {} 
 
 class SimpleNodeBrowser(QWidget):
   def __init__(self, parent, view = NodeThumbsView):
@@ -269,8 +272,25 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        node = self.currentNode()
        if not node:
 	 return
-     try:
-       mod = node.compatibleModules()[0]
+     mods = node.compatibleModules()
+     if len(mods):
+       for mod in mods:
+          if "Viewers" in self.lmodules[mod].tags:
+	    break
+       try:
+         priority = modulePriority[mod] #XXX put in conf
+       except KeyError:
+         modulePriority[mod] = 0
+         priority = 0
+       if not priority: 
+        #XXX translate
+         mbox = QMessageBox(QMessageBox.Question, self.tr("Apply module"), self.tr("Do you want to apply module ") + str(mod) + self.tr(" on this node ?"), QMessageBox.Yes | QMessageBox.No, self)
+         mbox.addButton(self.tr("Always"), QMessageBox.AcceptRole)
+	 reply = mbox.exec_() 
+         if reply == QMessageBox.No:
+           return		
+         elif reply == QMessageBox.AcceptRole:
+	   modulePriority[mod] = 1 
        if self.lmodules[mod]:
          conf = self.lmodules[mod].conf
          arguments = conf.arguments()
@@ -280,7 +300,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
              marg[argument.name()] = node
          args = conf.generate(marg)
          self.taskmanager.add(mod, args, ["thread", "gui"])       
-     except (IndexError, RuntimeError):
+	 return
+     else:
        conf = self.lmodules["hexadecimal"].conf
        args = conf.generate({"file": node})
        self.taskmanager.add("hexadecimal", args, ["thread", "gui"])

@@ -230,3 +230,4 @@ This version of unzip store all data in RAM so don't decompress huge file."""
  	                   "description": "managed mime type",
  	                   "values": ["Zip"]})
     self.tags = "Archives"
+    self.icon = ":zip"
