@@ -79,8 +79,10 @@ Options:
      self.verbosity = 0
 # Configuration
      self.main()
-     self.conf = Conf(self.confPath)
+     #self.conf = Conf(self.confPath)
+     self.conf = Conf()
   
+
    def main(self):
     """Check command line argument"""
     try:
