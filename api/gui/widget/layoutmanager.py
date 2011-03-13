@@ -26,71 +26,7 @@ from api.types.libtypes import typeId
 from api.gui.widget.nodeview import NodeTableView, NodeLinkTreeView
 from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
-
-
-class CompleterModel(VFSItemModel):
-    def __init__(self, parent=None):
-        VFSItemModel.__init__(self, parent)
-
-
-    def data(self, index, role):
-        if not index.isValid():
-            return QVariant()
-        if index.row() > len(self.node_list) or index.row() < 0:
-            return QVariant()
-        node = self.node_list[index.row()]
-        column = index.column()
-        if role == Qt.DisplayRole and index.column() == 0:
-            if node.isDir() or node.hasChildren():
-                return QVariant(node.absolute() + "/")
-            else:
-                return QVariant(node.absolute())
-        else:
-            return QVariant()
-
-
-class kompleter(QCompleter):
-    def __init__(self, parent=None):
-        QCompleter.__init__(self, parent)
-        self.setCompletionMode(QCompleter.PopupCompletion)
-        self.setCompletionRole(Qt.DisplayRole)
-        self.setCaseSensitivity(Qt.CaseInsensitive)
-        self.VFS = VFS.Get()
-        self.vfs = vfs.vfs()
-        self.__model = CompleterModel(self)
-        self.__model.setRootPath(self.vfs.getnode("/"))
-        self.setModel(self.__model)
-        QObject.connect(self, SIGNAL("activated(const QString &)"), self.updatePath)
-        #QObject.connect(self, SIGNAL("highlighted(const QString &)"), self.updatePath)
-        #QObject.connect(self.parent(), SIGNAL("textChanged(const QString &)"), self.updatePath)
-
-
-    def updatePath(self, path):
-        path = str(path)
-        if path[:-1] != "/":
-            idx = path.rfind("/")
-            if idx != -1:
-                path = path[:idx]
-            else:
-                path = "/"
-        print path
-        node = self.vfs.getnode(str(path))
-        self.__model.setRootPath(node)
-
-
-    #def splitPath(self, path):
-    #    return path.split('/')
-
-
-    #def pathFromIndex(self, index):
-    #    node = self.VFS.getNodeFromPointer(index.internalId())
-    #    if node != None:
-    #        abspath = str(node.absolute())
-    #        #if node.hasChildren() or node.isDir():
-    #        #    abspath += "/"
-    #        return QString(abspath)
-    #    else:
-    #        return QString()
+from api.gui.widget.completer import CompleterWidget
 
 
 class NavigationBar(QWidget, Ui_NodeViewBox):
@@ -116,9 +52,9 @@ class NavigationBar(QWidget, Ui_NodeViewBox):
         self.connect(self.top, SIGNAL("clicked()"), self.moveToTop)
         self.connect(self.root, SIGNAL("clicked()"), self.goHome)
         self.currentNode = self.vfs.getnode("/")
-        self.completer = kompleter(self.pathedit)
-        self.pathedit.setText("/")
-        self.pathedit.setCompleter(self.completer)
+        self.completerWidget = CompleterWidget()
+        self.pathedit.addWidget(self.completerWidget)
+        self.completerWidget.setText("/")
 
 
     def updateCurrentPath(self, node):
@@ -129,12 +65,6 @@ class NavigationBar(QWidget, Ui_NodeViewBox):
                 self.history.append(str(node.absolute()))
         self.currentPathId = len(self.history) - 1
         self.changeNavigationState()
-        if path != "/":
-            path += "/"
-        self.pathedit.setCompleter(None)
-        self.pathedit.clear()
-        self.pathedit.insert(path[1:])
-        self.pathedit.setCompleter(self.completer)
 
 
     def moveToTop(self):
@@ -151,10 +81,6 @@ class NavigationBar(QWidget, Ui_NodeViewBox):
             self.currentNode = self.vfs.getnode(path)
             self.emit(SIGNAL("pathChanged"), self.currentNode)
             self.changeNavigationState()
-            self.pathedit.setCompleter(None)
-            self.pathedit.clear()
-            self.pathedit.insert(path[1:])
-            self.pathedit.setCompleter(self.completer)
 
 
     def moveToNext(self):
@@ -164,10 +90,6 @@ class NavigationBar(QWidget, Ui_NodeViewBox):
             self.currentNode = self.vfs.getnode(path)
             self.emit(SIGNAL("pathChanged"), self.currentNode)
             self.changeNavigationState()
-            self.pathedit.setCompleter(None)
-            self.pathedit.clear()
-            self.pathedit.insert(path[1:])
-            self.pathedit.setCompleter(self.completer)
 
 
     def setPrevDropButton(self):
@@ -475,7 +397,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPathList(self, key, typeid, predefs):
+    def addPathList(self, key, typeid, predefs, l = None):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QVBoxLayout()
             listpathcontainer = QListWidget()
@@ -513,7 +435,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPath(self, key, typeid, predefs, editable=False):
+    def addPath(self, key, typeid, predefs, nodeselected, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             vbox = QVBoxLayout()
             if typeid == typeId.Path:
