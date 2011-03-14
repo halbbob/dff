@@ -198,8 +198,6 @@ class layoutManager(QWidget):
                 if len(predefs) > 0:
                     w = QComboBox()
                     w.setEditable(editable)
-                    if typeid not in (typeId.String, typeId.Char, typeId.Node, typeId.Path):
-                        w.addItem("0")
                     for value in predefs:
                         w.addItem(value.toString())
                 else:

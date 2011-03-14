@@ -29,7 +29,7 @@ class SMS(Script):
    def start(self, args): 
       try :
          node = args["file"].value()
-         self.unpack(args)
+         self.unpack(node)
          if args.has_key("header"):
             res = self.header()
          else:
@@ -41,7 +41,7 @@ class SMS(Script):
          pass
       
 
-   def unpack(self, args):
+   def unpack(self, node):
       self.vfs = vfs.vfs()
       f = node.open()
       buff = f.read()
