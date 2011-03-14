@@ -198,8 +198,6 @@ class layoutManager(QWidget):
                 if len(predefs) > 0:
                     w = QComboBox()
                     w.setEditable(editable)
-                    if typeid not in (typeId.String, typeId.Char, typeId.Node, typeId.Path):
-                        w.addItem("0")
                     for value in predefs:
                         w.addItem(value.toString())
                 else:
@@ -254,7 +252,6 @@ class layoutManager(QWidget):
     def addListArgument(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key) == types.StringType:
             w = multipleListWidget(self, typeid, predefs, editable)
-#            self.layout.addRow(w)
             if not self.displaykey:
                 self.layout.addRow(w)
             else:
@@ -534,7 +531,7 @@ class addLocalPathButton(QPushButton):
                         item = QListWidgetItem(str(name), self.container)
                 elif isinstance(self.container, QLineEdit):
                     sFileName = QFileDialog.getOpenFileName(self.parent, title, os.path.expanduser('~'))
-
+                    self.container.clear()
                     self.container.insert(sFileName)
                 else:
                     return -1
@@ -566,6 +563,7 @@ class addLocalPathButton(QPushButton):
                 if iReturn :
                     node = BrowseVFSDialog.getSelectedNode()
                     if node:
+                        self.container.clear()
                         self.container.insert(node.absolute())
 
 
