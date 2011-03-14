@@ -274,6 +274,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        if not node:
 	 return
      mods = node.compatibleModules()
+     mods.reverse()	
      if len(mods):
        for mod in mods:
           if "Viewers" in self.lmodules[mod].tags:
