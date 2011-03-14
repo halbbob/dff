@@ -534,7 +534,7 @@ class addLocalPathButton(QPushButton):
                         item = QListWidgetItem(str(name), self.container)
                 elif isinstance(self.container, QLineEdit):
                     sFileName = QFileDialog.getOpenFileName(self.parent, title, os.path.expanduser('~'))
-
+                    self.container.clear()
                     self.container.insert(sFileName)
                 else:
                     return -1
@@ -566,6 +566,7 @@ class addLocalPathButton(QPushButton):
                 if iReturn :
                     node = BrowseVFSDialog.getSelectedNode()
                     if node:
+                        self.container.clear()
                         self.container.insert(node.absolute())
 
 
