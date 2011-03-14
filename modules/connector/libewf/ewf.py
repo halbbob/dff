@@ -106,7 +106,7 @@ class EWF(fso):
     libewf.libewf_get_media_size(handle, size_p)
     self.ssize = size_p.contents.value
     fi = fdinfo()
-    fi.id = long(handle)
+    fi.id = handle
     fi.thisown = False
     fi.node = node
     fi.offset = 0
