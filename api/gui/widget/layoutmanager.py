@@ -252,7 +252,6 @@ class layoutManager(QWidget):
     def addListArgument(self, key, typeid, predefs, editable=False):
         if not self.overwriteKeys(key) and type(key) == types.StringType:
             w = multipleListWidget(self, typeid, predefs, editable)
-#            self.layout.addRow(w)
             if not self.displaykey:
                 self.layout.addRow(w)
             else:
