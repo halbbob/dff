@@ -23,140 +23,9 @@ import types
 from api.vfs import *
 from api.vfs.libvfs import VFS
 from api.types.libtypes import typeId
+from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.widget.nodeview import NodeTableView, NodeLinkTreeView
 from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
-from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
-from api.gui.widget.completer import CompleterWidget
-
-
-class NavigationBar(QWidget, Ui_NodeViewBox):
-    def __init__(self, parent=None):
-        QWidget.__init__(self)
-        self.vfs = vfs.vfs()
-        self.setupUi(self)
-        self.button = {}
-        self.history = []
-        self.history.append("/")
-        self.viewbox.hide()
-        self.attrSelect.hide()
-        self.addToBookmark.hide()
-        self.checkboxAttribute.hide()
-        self.search.hide()
-        self.imagethumb.hide()
-        self.thumbSize.hide()
-        self.currentPathId = -1
-        self.connect(self.previous, SIGNAL("clicked()"), self.moveToPrevious)
-        self.setPrevDropButton()
-        self.connect(self.next, SIGNAL("clicked()"), self.moveToNext)
-        self.setNextDropButton()
-        self.connect(self.top, SIGNAL("clicked()"), self.moveToTop)
-        self.connect(self.root, SIGNAL("clicked()"), self.goHome)
-        self.currentNode = self.vfs.getnode("/")
-        self.completerWidget = CompleterWidget()
-        self.pathedit.addWidget(self.completerWidget)
-        self.completerWidget.setText("/")
-
-
-    def updateCurrentPath(self, node):
-        self.currentNode = node
-        path = node.absolute()
-        if len(self.history) > 0 and  self.history[len(self.history) - 1] != path:
-            if not self.pathInHistory(path, self.history):
-                self.history.append(str(node.absolute()))
-        self.currentPathId = len(self.history) - 1
-        self.changeNavigationState()
-
-
-    def moveToTop(self):
-        if self.currentNode != None:
-            self.currentNode = self.currentNode.parent()
-            self.emit(SIGNAL("pathChanged"), self.currentNode)
-            self.changeNavigationState()
-        
-
-    def moveToPrevious(self):
-        if self.currentPathId > 0:
-            self.currentPathId = self.currentPathId - 1
-            path = self.history[self.currentPathId]
-            self.currentNode = self.vfs.getnode(path)
-            self.emit(SIGNAL("pathChanged"), self.currentNode)
-            self.changeNavigationState()
-
-
-    def moveToNext(self):
-        if self.currentPathId < len(self.history) - 1:
-            self.currentPathId = self.currentPathId + 1
-            path = self.history[self.currentPathId]
-            self.currentNode = self.vfs.getnode(path)
-            self.emit(SIGNAL("pathChanged"), self.currentNode)
-            self.changeNavigationState()
-
-
-    def setPrevDropButton(self):
-        self.prevdrop.setFixedSize(QSize(16, 16))
-        self.prevmenu = QMenu()
-        self.prevdrop.setMenu(self.prevmenu)
-        self.connect(self.prevmenu, SIGNAL("triggered(QAction*)"), self.prevMenuTriggered)
-
-
-    def setPrevMenu(self):
-        self.prevmenu.clear()
-        h = self.history[:self.currentPathId]
-        for path in h:
-            self.prevmenu.addAction(path)
-
-
-    def prevMenuTriggered(self, action):
-        self.currentNode = self.vfs.getnode(str(action.text()))
-        self.emit(SIGNAL("pathChanged"), self.currentNode)
-
-
-    def setNextDropButton(self):
-        self.nextdrop.setFixedSize(QSize(16, 16))
-        self.nextmenu = QMenu()
-        self.nextdrop.setMenu(self.nextmenu)
-        self.connect(self.nextmenu, SIGNAL("triggered(QAction*)"), self.nextMenuTriggered)
-
-
-    def setNextMenu(self):
-        self.nextmenu.clear()
-        h = self.history[self.currentPathId+1:]
-        for path in h:
-            self.nextmenu.addAction(path)
-
-
-    def pathInHistory(self, path, hlist):
-        for p in hlist:
-            if p == path:
-                return True
-        return False
-
-
-    def nextMenuTriggered(self, action):
-        self.currentNode = self.vfs.getnode(str(action.text()))
-        self.emit(SIGNAL("pathChanged"), self.currentNode)
-
-
-    def goHome(self):
-        self.currentNode = self.vfs.getnode("/")
-        self.emit(SIGNAL("pathChanged"), self.currentNode)
-
-
-    def changeNavigationState(self):
-        self.setPrevMenu()
-        self.setNextMenu()
-        if self.currentPathId > 0:
-            self.previous.setEnabled(True)
-            self.prevdrop.setEnabled(True)
-        else:
-            self.previous.setEnabled(False)
-            self.prevdrop.setEnabled(False)
-        if self.currentPathId < len(self.history) - 1:
-            self.next.setEnabled(True)
-            self.nextdrop.setEnabled(True)
-        else:
-            self.next.setEnabled(False)
-            self.nextdrop.setEnabled(False)
 
 
 class DialogNodeBrowser(QDialog):
@@ -172,14 +41,12 @@ class DialogNodeBrowser(QDialog):
 
 
     def createLayout(self):
-        self.navBar = NavigationBar(self)
         self.baseLayout = QVBoxLayout(self)
         self.baseLayout.setMargin(0)
         self.baseLayout.setSpacing(0)
         self.splitterLayout = QSplitter(self)
         self.splitterLayout.setMinimumWidth(640)
-        self.baseLayout.addWidget(self.navBar)
-        self.baseLayout.addWidget(self.splitterLayout)
+        self.baseLayout.insertWidget(0, self.splitterLayout, 1)
         self.setLayout(self.baseLayout)
 
 
@@ -188,9 +55,7 @@ class DialogNodeBrowser(QDialog):
         self.tableModel = VFSItemModel(self)
         self.treeModel.setRootPath(self.vfs.getnode("/"))
         self.tableModel.setRootPath(self.vfs.getnode("/"))
-        self.tableModel.connect(self.navBar, SIGNAL("pathChanged"), self.tableModel.setRootPath)
-
-
+    
   
     def createViews(self):
         self.treeView = NodeLinkTreeView(self)
@@ -206,15 +71,15 @@ class DialogNodeBrowser(QDialog):
 
 
     def nodeTreeClicked(self, mouseButton, node, index = None):
-        self.treeView.model().setRootPath(node)
-        
+        self.treeView.model().setRootPath(node) 
+
 
     def nodeDoubleClicked(self, mouseButton, node, index = None):
         if node == None:
             return
         if node.hasChildren() or node.isDir():
             self.tableView.model().setRootPath(node)
-            self.navBar.updateCurrentPath(node)
+            
 
 
     def createButtons(self):
@@ -333,6 +198,8 @@ class layoutManager(QWidget):
                 if len(predefs) > 0:
                     w = QComboBox()
                     w.setEditable(editable)
+                    if typeid not in (typeId.String, typeId.Char, typeId.Node, typeId.Path):
+                        w.addItem("0")
                     for value in predefs:
                         w.addItem(value.toString())
                 else:
@@ -397,7 +264,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPathList(self, key, typeid, predefs, l = None):
+    def addPathList(self, key, typeid, predefs, selectednodes):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             layout = QVBoxLayout()
             listpathcontainer = QListWidget()
@@ -407,6 +274,11 @@ class layoutManager(QWidget):
                     return -1
                 for predef in predefs:
                     listpathcontainer.insertItem(listpathcontainer.count() + 1, str(predef))
+            if len(selectednodes) > 0:
+                if typeid == typeId.Node:
+                    for node in selectednodes:
+                        listpathcontainer.insertItem(listpathcontainer.count() + 1, node.absolute())           
+
             hbox = QHBoxLayout()
             buttonbox = QDialogButtonBox()
             if typeid == typeId.Path:
@@ -435,7 +307,7 @@ class layoutManager(QWidget):
         else:
             return -1
 
-    def addPath(self, key, typeid, predefs, nodeselected, editable=False):
+    def addPath(self, key, typeid, predefs, selectednodes, editable=False):
         if not self.overwriteKeys(key) and type(key).__name__=='str':
             vbox = QVBoxLayout()
             if typeid == typeId.Path:
@@ -444,7 +316,7 @@ class layoutManager(QWidget):
                 combo.addItem(self.inputDirectory)
                 vbox.addWidget(combo)
             layout = QHBoxLayout()
-            if len(predefs) > 0:
+            if len(predefs) > 0 or len(selectednodes) > 0:
                 pathcontainer = QComboBox()
                 pathcontainer.setEditable(editable)
                 for value in predefs:
@@ -452,6 +324,9 @@ class layoutManager(QWidget):
                         pathcontainer.addItem(value.value().name())
                     else:
                         pathcontainer.addItem(value.toString())
+                if typeid == typeId.Node:
+                    for node in selectednodes:
+                        pathcontainer.addItem(node.absolute())
             else:
                 pathcontainer = QLineEdit()
                 pathcontainer.setReadOnly(not editable)
