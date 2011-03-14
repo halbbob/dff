@@ -100,6 +100,7 @@ class Dialog(QObject):
           else:
             module = "ewf"
             args["files"] = paths
+	    args["parent"] = self.vfs.getnode('/Logical files')
           self.conf = self.loader.get_conf(str(module))
           try:
             genargs = self.conf.generate(args)
