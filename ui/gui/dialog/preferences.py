@@ -22,7 +22,7 @@ from ui.gui.translator import Translator
 
 import sys
 from os import listdir, access, makedirs, R_OK, W_OK
-from os.path import normpath
+from os.path import normpath, dirname
 
 class Preferences(QDialog, Ui_PreferencesDialog):
     def __init__(self, parent = None):
@@ -90,7 +90,7 @@ class Preferences(QDialog, Ui_PreferencesDialog):
       self.connect(self.buttonBox, SIGNAL("rejected()"), self.clear)
       
     def validate(self):
-        if not access(self.tWorkPath, R_OK):
+        if not self.tNoFootPrint and not access(self.tWorkPath, R_OK):
             if QMessageBox.question(self, self.createDirTitle, self.createDirTitle + ':<br>' + self.tWorkPath + '?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.No:
                 return
             else:
@@ -102,7 +102,7 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.conf.workingDir = self.tWorkPath
         if self.tNoFootPrint != self.conf.noFootPrint:
             self.conf.noFootPrint = self.tNoFootPrint
-        if not access(self.tIndexPath, R_OK):
+        if not self.tNoFootPrint and not access(self.tIndexPath, R_OK):
             if QMessageBox.question(self, self.createDirTitle, self.createDirTitle + ':<br>' + self.tIndexPath + '?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.No:
                 return
             else:
@@ -115,9 +115,9 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.conf.index_name = self.tIndexName
         self.conf.index_path = self.tIndexPath
         self.conf.noHistoryFile = self.tNoHistoryFile
-        if self.tHistoryFileFullPath != self.conf.historyFileFullPath and access(self.tHistoryFileFullPath, W_OK):
-            self.conf.historyFileFullPatt = self.tHistoryFileFullPath
-        elif not access(self.tHistoryFileFullPath, W_OK):
+        if (not self.tNoHistoryFile and not self.tNoFootPrint) and self.tHistoryFileFullPath != self.conf.historyFileFullPath and access(dirname(self.tHistoryFileFullPath), W_OK):
+            self.conf.historyFileFullPath = self.tHistoryFileFullPath
+        elif (not self.tNoHistoryFile and not self.tNoFootPrint) and not access(dirname(self.tHistoryFileFullPath), W_OK):
             QMessageBox.warning(self, self.histWriteFail, self.histWriteFail + ':<br>' + self.tHistoryFileFullPath)
             return
         self.conf.save()
