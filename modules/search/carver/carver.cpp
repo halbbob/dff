@@ -78,6 +78,8 @@ void		Carver::Event(event* e)
 
 void		Carver::start(std::map<std::string, Variant*> args)
 {
+  event*	e1;
+
   this->inode = args["file"]->value<Node*>();
   this->ifile = this->inode->open();
   this->createContexts(args["patterns"]->value< std::list<Variant*> >());
@@ -86,6 +88,10 @@ void		Carver::start(std::map<std::string, Variant*> args)
   this->ifile->seek(args["start-offset"]->value<uint64_t>(), 0);
   this->mapper();
   this->registerTree(this->inode, this->root);
+  e1 = new event;
+  e1->type = event::OTHER;
+  e1->value = new Variant(std::string("terminated"));
+  this->notify(e1);
 }
 
 int		Carver::Read(char *buffer, unsigned int size)

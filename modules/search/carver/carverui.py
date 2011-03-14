@@ -25,10 +25,6 @@ import string
 
 import time
 
-from predef import predefPattern
-from userdef import userPattern
-
-
 class CarverUi(Script):
     def __init__(self):
         Script.__init__(self, "carverui")
