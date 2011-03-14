@@ -30,14 +30,14 @@ class history():
         if self.wfile:
           self.wfile.close()
         try:
-          if not self.conf.noHistoryFile:
+          if not self.conf.noHistoryFile and not self.conf.noFootPrint:
             self.rfile = open(self.path, 'r')
             self.wfile = open(self.path, 'a')
             self.hist = self.rfile.readlines()
             self.rfile.close()
 	  self.current = len(self.hist)
         except IOError:
-          if not self.conf.noHistoryFile:
+          if not self.conf.noHistoryFile and not self.conf.noFootPrint:
             self.wfile = open(self.path, 'a')
         return
 
@@ -60,13 +60,13 @@ class history():
 	return cmd.strip('\n')
 
     def save(self):
-        if not self.conf.noHistoryFile:
+        if not self.conf.noHistoryFile and not self.conf.noFootPrint:
           self.wfile.close()
 
     def add(self, cmd):
         try: 
           self.hist += [ cmd ]
-          if not self.conf.noHistoryFile:
+          if not self.conf.noHistoryFile and not self.conf.noFootPrint:
             self.wfile.write(cmd + "\n")
             self.wfile.flush()
         except IOError:
@@ -75,7 +75,7 @@ class history():
 
     def clear(self):
         self.hist = []
-        if not self.conf.noHistoryFile:
+        if not self.conf.noHistoryFile and not self.conf.noFootPrint:
           self.wfile.close()
           self.wfile = open(self.path, 'w')
 
