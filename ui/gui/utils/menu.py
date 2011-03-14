@@ -25,13 +25,16 @@ class MenuRelevant(QMenu):
   def __init__(self, parent, mainWindow, node = None, selectItem = None):
        QMenu.__init__(self, mainWindow)
        self.loader = loader.loader()
-       self.callbackSelected = selectItem
+       self.callbackSelected = self.selectNode
        self.parent = parent
        self.mainWindow = mainWindow
        self.node = node
        self.Load()
        actions = []
  
+  def selectNode(self):
+     return [self.node]
+
   def Load(self):   
        self.listMenuAction = []
        actions = []
