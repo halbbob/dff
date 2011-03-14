@@ -152,14 +152,6 @@ else(NOT PYTHON_QT4_PATH)
   message(STATUS "Python QT4 libraries bindings found: ${PYTHON_QT4_PATH}")
 endif(NOT PYTHON_QT4_PATH)
 
-## QScintilla python bindings check, for IDE
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from PyQt4 import Qsci; print Qsci.__file__" OUTPUT_VARIABLE PYTHON_QT4_QSCI_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-if(NOT PYTHON_QT4_QSCI_PATH)
-  message(STATUS "Python QScintilla bindings not found. Not needed at build step but mandatory to start DFF.")
-else(NOT PYTHON_QT4_QSCI_PATH)
-  message(STATUS "Python QScintilla library bindings found: ${PYTHON_QT4_QSCI_PATH}")
-endif(NOT PYTHON_QT4_QSCI_PATH)
-
 ## PyQt linguist transalation updater check, to create or update translation
 ## files
 find_program(PYTHON_QT4_LANGUAGE NAMES pylupdate4 PATHS	${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
@@ -433,9 +425,9 @@ ELSE(WIN32 AND NOT UNIX)
 ENDIF(WIN32 AND NOT UNIX)
 
 # Debian deb dependencies
-#  python${PYTHON_VERSION} (>=${PYTHON_VERSION}.0), python-qt4 (>= 4.4.0), python-qscintilla2 (>= 2.2), python-magic (>= 4.26)
+#  python${PYTHON_VERSION} (>=${PYTHON_VERSION}.0), python-qt4 (>= 4.4.0), python-magic (>= 4.26)
 # RedHat rpm dependencies
-#  python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, qscintilla-python >= 2.2, python-magic >= 4.26
+#  python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, python-magic >= 4.26
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
   DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}

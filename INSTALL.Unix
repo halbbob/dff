@@ -36,7 +36,7 @@ packaging system.
 
 ## Run dependencies (if you need the gui)
 - PyQt4 (python-qt4)
-- Python QScintilla bindings (python-qscintilla2)
+- Python magic bindings (python-magic)
 
 ### Building and installing
 
