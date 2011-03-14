@@ -25,13 +25,16 @@ class MenuRelevant(QMenu):
   def __init__(self, parent, mainWindow, node = None, selectItem = None):
        QMenu.__init__(self, mainWindow)
        self.loader = loader.loader()
-       self.callbackSelected = selectItem
+       self.callbackSelected = self.selectNode
        self.parent = parent
        self.mainWindow = mainWindow
        self.node = node
        self.Load()
        actions = []
  
+  def selectNode(self):
+     return [self.node]
+
   def Load(self):   
        self.listMenuAction = []
        actions = []
@@ -39,16 +42,19 @@ class MenuRelevant(QMenu):
        if self.node:      
 	 modules = self.node.compatibleModules()
 	 if len(modules):
+	   self.parent.submenuRelevant.setEnabled(True)
 	   for modname in modules:
 		module = self.loader.modules[modname]
                 self.parent.submenuRelevant.addAction(Action(self, self.mainWindow,  modname, module.tags, module.icon))
-         for i in range(0,  len(actions)) :
-            if actions[i].hasOneArg :
+           for i in range(0,  len(actions)) :
+              if actions[i].hasOneArg :
                 self.addAction(actions[i])
-         self.addSeparator()
-         for i in range(0,  len(actions)) :
-            if not actions[i].hasOneArg :
+           self.addSeparator()
+           for i in range(0,  len(actions)) :
+              if not actions[i].hasOneArg :
                 self.addAction(actions[i])
+           return 
+       self.parent.submenuRelevant.setEnabled(False)
 
 class MenuTags():
    def __init__(self, parent, mainWindow, selectItem = None):
