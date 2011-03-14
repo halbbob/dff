@@ -23,6 +23,7 @@ SOURCES         += ../../../ui/gui/ide/ide.py
 SOURCES         += ../../../ui/gui/ide/idewizard.py
 SOURCES         += ../../../api/gui/dialog/extractor.py
 SOURCES         += ../../../api/gui/model/vfsitemmodel.py
+SOURCES 	+= ../../../api/gui/widget/nodebrowser.py
 SOURCES         += ../../../api/gui/widget/propertytable.py
 SOURCES         += ../../../ui/gui/widget/taskmanager.py
 SOURCES         += ../../../ui/gui/mainwindow.py

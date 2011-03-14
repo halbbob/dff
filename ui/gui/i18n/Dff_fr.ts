@@ -225,7 +225,7 @@
         <translation>Nouveau fichier vide</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="60"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="63"/>
         <source>Generate skeleton</source>
         <translation>Générer un squelette</translation>
     </message>
@@ -235,37 +235,37 @@
         <translation>Ouvrir un fichier</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="78"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="87"/>
         <source>Save</source>
         <translation>Sauvegarder</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="87"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="99"/>
         <source>Save as</source>
         <translation>Sauvegarder sous</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="96"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="111"/>
         <source>Load</source>
         <translation>Charger</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="105"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="123"/>
         <source>Undo</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="114"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="135"/>
         <source>Redo</source>
         <translation>Rétablir</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="123"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="147"/>
         <source>Comment</source>
         <translation>Commenter</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="132"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="159"/>
         <source>Uncomment</source>
         <translation>Décommenter</translation>
     </message>
@@ -409,7 +409,7 @@
         <translation>Fichier</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="133"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="139"/>
         <source>Exit</source>
         <translation>Quitter</translation>
     </message>
@@ -424,7 +424,7 @@
         <translation>Ouvrir un ou plusieurs fichier(s)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="124"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="127"/>
         <source>Open local device</source>
         <translation>Ouvrir un périphérique local</translation>
     </message>
@@ -449,7 +449,7 @@
         <translation>IDE</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="142"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="151"/>
         <source>Preferences</source>
         <translation>Préférences</translation>
     </message>
@@ -464,28 +464,28 @@
         <translation>Vue</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="163"/>
         <source>Maximize</source>
         <translation>Maximizer</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="160"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="175"/>
         <source>Fullscreen mode</source>
         <translation>Mode plein écran</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="178"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="199"/>
         <source>Shell</source>
         <translation>Ligne de commande</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="187"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="211"/>
         <source>Python interpreter</source>
         <translation>Interpréteur Python
 </translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="169"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="187"/>
         <source>Browser</source>
         <translation>Navigateur</translation>
     </message>
@@ -495,7 +495,7 @@
         <translation>Charger un module</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="205"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="235"/>
         <source>Open</source>
         <translation>Ouvrir</translation>
     </message>
@@ -510,7 +510,7 @@
         <translation>À propos de DFF ...</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="196"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="223"/>
         <source>DFF Documentation</source>
         <translation>Documentation de DFF</translation>
     </message>
@@ -581,17 +581,17 @@
         <translation>Ouvrir</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="43"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="46"/>
         <source>Open with</source>
         <translation>Ouvrir avec</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="52"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="58"/>
         <source>Hex viewer</source>
         <translation>Visualiseur hexadécimal</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="61"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="70"/>
         <source>Extract</source>
         <translation>Extraire</translation>
     </message>
@@ -599,6 +599,31 @@
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="14"/>
         <source>Browser</source>
         <translation>Navigateur</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="78"/>
+        <source>Relevant module</source>
+        <translation>Module conseillé</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
+        <source>Apply module</source>
+        <translation>Application de module</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
+        <source>Do you want to apply module </source>
+        <translation>Voulez-vous appliquer le module</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
+        <source> on this node ?</source>
+        <translation>sur ce noeud ?</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="290"/>
+        <source>Always</source>
+        <translation>Toujours</translation>
     </message>
 </context>
 <context>
@@ -614,47 +639,47 @@
         <translation>Revenir à la racine</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="247"/>
         <source>Add to bookmarks</source>
         <translation>Ajouter aux favoris</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="269"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="273"/>
         <source>Display search engine</source>
         <translation>Afficher le moteur de recherche</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="183"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
         <source>List</source>
         <translation>Liste</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="192"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
         <source>Icons</source>
         <translation>Icônes</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="201"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="205"/>
         <source>Tree</source>
         <translation>Arbre</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="322"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="326"/>
         <source>Small</source>
         <translation>Petit</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="327"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="331"/>
         <source>Medium</source>
         <translation>Moyen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="332"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="336"/>
         <source>Large</source>
         <translation>Grand</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="230"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="234"/>
         <source>Attributes</source>
         <translation>Attributs</translation>
     </message>
@@ -669,7 +694,7 @@
         <translation>Répertoire parent</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="302"/>
         <source>Activate thumbnails</source>
         <translation>Activer les imagettes</translation>
     </message>
@@ -960,7 +985,7 @@
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="834"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="850"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
@@ -968,37 +993,37 @@
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="579"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="580"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="581"/>
         <source>Accessed time</source>
         <translation>Date d&apos;accès</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="582"/>
         <source>Changed time</source>
         <translation>Date de changement</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="567"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="583"/>
         <source>Modified time</source>
         <translation>Date de modification</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="568"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="584"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="569"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="585"/>
         <source>Deleted</source>
         <translation>Effacé</translation>
     </message>

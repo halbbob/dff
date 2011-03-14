@@ -114,8 +114,10 @@ class ApplyModule(QDialog, Ui_applyModule):
         if warguments:
             vlayout.addWidget(warguments, 2)        
             self.valueArgs[arg.name()] = warguments
-        self.stackedargs.addWidget(warg)
+        else:
+            self.valueArgs[arg.name()] = winfo
         warg.setLayout(vlayout)
+        self.stackedargs.addWidget(warg)
         argitem = QListWidgetItem(str(arg.name()), self.listargs)
 
     def getWidgetFromType(self, arg):

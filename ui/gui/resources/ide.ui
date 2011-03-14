@@ -50,6 +50,9 @@
    <property name="text">
     <string>New empty file</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="newact">
    <property name="icon">
@@ -58,6 +61,9 @@
    </property>
    <property name="text">
     <string>Generate skeleton</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="openact">
@@ -68,6 +74,9 @@
    <property name="text">
     <string>Open file</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="saveact">
    <property name="icon">
@@ -76,6 +85,9 @@
    </property>
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="saveasact">
@@ -86,6 +98,9 @@
    <property name="text">
     <string>Save as</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="runact">
    <property name="icon">
@@ -94,6 +109,9 @@
    </property>
    <property name="text">
     <string>Load</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="undoact">
@@ -104,6 +122,9 @@
    <property name="text">
     <string>Undo</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="redoact">
    <property name="icon">
@@ -112,6 +133,9 @@
    </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="commentact">
@@ -122,6 +146,9 @@
    <property name="text">
     <string>Comment</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="uncommentact">
    <property name="icon">
@@ -130,6 +157,9 @@
    </property>
    <property name="text">
     <string>Uncomment</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>

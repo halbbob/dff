@@ -69,17 +69,23 @@ class Spare(mfso):
       self.__disown__()
  
    def start(self, args):
-      self.parent = args.get_node("node")
-      self.spareSize = args.get_int("spare-size")
-      self.pageSize = args.get_int("page-size")
-      try :
-        self.invert = args.get_bool("invert")
-      except KeyError:
-        self.invert = False
-      if self.pageSize == None or self.pageSize < 0:
-        self.pageSize = 512
-      if self.spareSize == None or self.spareSize == -1:
-        self.spareSize = 16
+      self.invert = None
+      try:
+        self.parent = args['node'].value()
+      except IndexError:
+        return 
+      try: 
+        self.spareSize = args["spare-size"].value()
+      except IndexError:
+	self.spareSize = 16
+      try:
+        self.pageSize = args["page-size"].value()
+      except IndexError:
+	self.pageSize = 512
+      try:
+	self.invert = args["dump_spare"]
+      except IndexError:
+	pass	
       self.nosparenode = SpareNode(self, self.parent, "no-spare", self.pageSize, self.spareSize, None, False) 
       if self.invert: 
         self.sparenode = SpareNode(self, self.parent, "spare", self.pageSize, self.spareSize, self.parent, True)  

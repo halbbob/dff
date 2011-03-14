@@ -190,6 +190,9 @@ class pixelView(QGraphicsView):
 
         try:
             self.buff = self.file.read(self.w * hei * 4)
+	    if len(self.buff) < (self.w * hei * 4):
+	      leak = (self.w *hei * 4) - len(self.buff) 	
+	      self.buff += leak* '\x00'
         #Create image with current format
             if self.format == 0:
                 image = QImage(self.buff, self.w, hei, self.w, self.iformat)
@@ -211,7 +214,7 @@ class pixelView(QGraphicsView):
             if self.scale > 1:
                 self.scalePixmap(self.scale)
         except vfsError, e:
-            print e.error
+            pass 
 
     def move(self, pad, dir):
         #dir: 0 DOWN | 1 UP

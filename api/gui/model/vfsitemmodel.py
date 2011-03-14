@@ -20,7 +20,7 @@ from PyQt4 import QtCore
 
 import re
 
-from api.types.libtypes import Variant
+from api.types.libtypes import Variant, vtime
 from api.vfs.libvfs import VFS
 from api.events.libevents import EventHandler
 
@@ -499,6 +499,21 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     """
     return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )
 
+  def dataTypeByKey(self, stype, node):
+    try:
+	return node.dataType().value()[str(stype)].value()
+    except IndexError:
+	return None	
+
+  def fsoAttributesByKey(self, stype, node):
+    try:
+       val = node.fsoAttributes()[stype]
+       if isinstance(val.value(), vtime):
+	 return val.value().get_time()
+       return val
+    except IndexError:
+       return Variant()
+
   def sort(self, column, order):
     """
     \reimp
@@ -549,11 +564,11 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     elif column - 2 >= len(self.header_list): # sorting on the mime type
       type = self.type_list[column - 2 - len(self.header_list)]
       self.node_list = sorted(children_list, \
-                                key=lambda Node: Node.dataType().value()[str(type)].value(), \
+                                key= lambda Node: self.dataTypeByKey(str(type), Node), \
                                 reverse=Reverse)
     else: # sort on an extended attribute.
       self.node_list = sorted(children_list, \
-                              key=lambda Node: Node.dynamicAttributes(str(self.header_list[column - 2])), \
+                              key=lambda Node: self.fsoAttributesByKey(str(self.header_list[column - 2]), Node), \
                               reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
 
