@@ -30,7 +30,6 @@ class MergeNode(Node):
       offset = 0
       for f in self.files:
          node = f.value()
-         print offset, node.size(), node.absolute()
          fm.push(offset, node.size(), node, 0)
          offset += node.size()
       
@@ -68,7 +67,6 @@ class MERGE(mfso):
        size = 0
        for f in self.files:
           size += f.value().size()
-       print size
        self.merge_node = MergeNode(name, size, None, self, self.files)
        self.merge_node.__disown__()
        self.registerTree(parent, self.merge_node)
