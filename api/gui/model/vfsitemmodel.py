@@ -626,7 +626,8 @@ class TreeModel(QStandardItemModel, EventHandler):
       node_item.setData(QVariant(long(i.this)), Qt.UserRole + 1)
       node_item.setData(QVariant(False), Qt.UserRole + 2)
       item_list.append(node_item)
-    self.root_item.appendRows(item_list)
+    if len(item_list):
+      self.root_item.appendRows(item_list)
 
     if event:
       self.VFS.connection(self)

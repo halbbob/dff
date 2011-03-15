@@ -87,12 +87,6 @@ class Processus(Script):
          self.res["error"] = Variant(res)
          self.state = "fail"
          return
-    try :
-       if self.AddNodes():
-         self.state = "wait"
-	 return 
-    except AttributeError:
-	pass
     if "gui" in self.exec_flags and "gui" in self.mod.flags:
       self.state = "wait"
     else:
