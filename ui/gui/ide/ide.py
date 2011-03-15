@@ -54,6 +54,13 @@ class Ide(QWidget, Ui_Ide):
         self.commentact.connect(self.commentact,  SIGNAL("triggered()"), self.comment)
         self.uncommentact.connect(self.uncommentact,  SIGNAL("triggered()"), self.uncomment)
 
+        # save on CTRL + S
+        self.seq = QKeySequence(Qt.CTRL + Qt.Key_S)
+        self.ctrl_s_save = QShortcut(self)
+        self.ctrl_s_save.setContext(Qt.WindowShortcut)
+        self.ctrl_s_save.setKey(self.seq)
+        self.ctrl_s_save.connect(self.ctrl_s_save, SIGNAL("activated()"), self.save)
+
     def addMainMenuActions(self):
         self.mainWindow.menuIDE.addSeparator()
         self.mainWindow.menuIDE.addAction(self.newemptyact)
