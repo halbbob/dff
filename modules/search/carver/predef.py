@@ -39,7 +39,8 @@ class RootCheckBox(QCheckBox):
     def updateChildren(self):
         state = self.checkState()
         for child in self.children:
-            child.setCheckState(state)
+            if child.isEnabled():
+                child.setCheckState(state)
 
 
     def update(self, val):
@@ -83,6 +84,7 @@ class PredefinedTree(QTreeWidget):
                 rCheckBox.addChild(checkBox)
                 rCheckBox.connect(checkBox, SIGNAL("stateChanged(int)"), rCheckBox.update)
                 self.setItemWidget(filetypeItem, 1, checkBox)
+        self.resizeColumnToContents(0)
 
 
     def setCheckStateOfChildren(self, item, column, checked):
@@ -103,8 +105,10 @@ class PredefinedTree(QTreeWidget):
             if item.child(i).checkState(column) == Qt.Checked:
                 checked += 1
         if checked == 0:
+            self.itemWidget(item, 1).setEnabled(False)
             item.setCheckState(0, Qt.Unchecked)
         elif item.checkState(column) == Qt.Unchecked:
+            self.itemWidget(item, 1).setEnabled(True)
             item.setCheckState(0, Qt.Checked)
 
 
