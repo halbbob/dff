@@ -78,7 +78,7 @@ class HASH(Script):
 	try:
           algorithms = args["algorithm"].value()
         except IndexError:
-	  algorithms = ["md5"]
+	  algorithms = [Variant("md5")]
         node = args["file"].value()
         for algo in algorithms:
 	    algo = algo.value()
@@ -133,5 +133,5 @@ class hash(Module):
                                "parameters": {"type": Parameter.NotEditable,
                                               "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
                                })
-        self.flags = "single"
+        self.flags = ["single", "generic"]
         self.tags = "Hash"

@@ -89,5 +89,5 @@ class metaexif(Module):
  	                   "type": typeId.String,
  	                   "description": "managed mime type",
  	                   "values": ["jpeg", "TIFF"]})
-    self.flags = "single"
+    self.flags = ["single"]
     self.tags = "Metadata"

@@ -54,6 +54,14 @@ class Ide(QWidget, Ui_Ide):
         self.commentact.connect(self.commentact,  SIGNAL("triggered()"), self.comment)
         self.uncommentact.connect(self.uncommentact,  SIGNAL("triggered()"), self.uncomment)
 
+        # save on CTRL + S
+        self.seq = QKeySequence(Qt.CTRL + Qt.Key_S)
+        self.ctrl_s_save = QShortcut(self)
+        self.ctrl_s_save.setContext(Qt.WindowShortcut)
+        self.ctrl_s_save.setKey(self.seq)
+        self.ctrl_s_save.connect(self.ctrl_s_save, SIGNAL("activated()"), self.save)
+        #self.ctrl_s_save.connect(self.ctrl_s_save, SIGNAL("activatedAmbiguously()"), self.save)
+
     def addMainMenuActions(self):
         self.mainWindow.menuIDE.addSeparator()
         self.mainWindow.menuIDE.addAction(self.newemptyact)
@@ -173,13 +181,14 @@ class Ide(QWidget, Ui_Ide):
             page.setScriptPath(sFileName)
             self.scripTab.addTab(page,  scriptname)
             self.buttonCloseTab.setEnabled(True)
+            self.refreshToolbar()
             file.close
     
     def save(self):
         index = self.scripTab.currentIndex()
         page = self.pages[index]
         path = page.getScriptPath()
-        if not path.isEmpty():
+        if path != "":
             file = open(path,  "w")
             file.write(page.toPlainText())
             file.close()
