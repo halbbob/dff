@@ -78,7 +78,7 @@ class HASH(Script):
 	try:
           algorithms = args["algorithm"].value()
         except IndexError:
-	  algorithms = ["md5"]
+	  algorithms = [Variant("md5")]
         node = args["file"].value()
         for algo in algorithms:
 	    algo = algo.value()
