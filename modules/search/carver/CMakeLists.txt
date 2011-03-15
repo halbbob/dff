@@ -44,6 +44,7 @@ set(carver_files
   carverui.py
   predef.py
   userdef.py
+  process.py
   typeSelection.py
   utils.py
 )

@@ -112,6 +112,9 @@ class PropertyTable(VariantTreeWidget):
     if self.isVisible():
       self.fillBase(node)
       self.fillAttributes(node)
+      self.resizeColumnToContents(0)
+      self.resizeColumnToContents(1)
+
 
   def translation(self):
     self.nameText = self.tr('name')

@@ -114,6 +114,9 @@
    <property name="text">
     <string>Open evidence file(s)</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionOpen_device">
    <property name="icon">
@@ -122,6 +125,9 @@
    </property>
    <property name="text">
     <string>Open local device</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionExit">
@@ -132,6 +138,9 @@
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionPreferences">
    <property name="icon">
@@ -140,6 +149,9 @@
    </property>
    <property name="text">
     <string>Preferences</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionMaximize">
@@ -150,6 +162,9 @@
    <property name="text">
     <string>Maximize</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionFullscreen_mode">
    <property name="icon">
@@ -158,6 +173,9 @@
    </property>
    <property name="text">
     <string>Fullscreen mode</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionNodeBrowser">
@@ -168,6 +186,9 @@
    <property name="text">
     <string>Browser</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionShell">
    <property name="icon">
@@ -176,6 +197,9 @@
    </property>
    <property name="text">
     <string>Shell</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionPython_interpreter">
@@ -186,6 +210,9 @@
    <property name="text">
     <string>Python interpreter</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionHelp">
    <property name="icon">
@@ -195,6 +222,9 @@
    <property name="text">
     <string>DFF Documentation</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actionIdeOpen">
    <property name="icon">
@@ -203,6 +233,9 @@
    </property>
    <property name="text">
     <string>Open</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>

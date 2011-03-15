@@ -78,7 +78,7 @@ class HASH(Script):
 	try:
           algorithms = args["algorithm"].value()
         except IndexError:
-	  algorithms = ["md5"]
+	  algorithms = [Variant("md5")]
         node = args["file"].value()
         for algo in algorithms:
 	    algo = algo.value()
@@ -89,7 +89,9 @@ class HASH(Script):
                 self.attributeHash.setHash(node, algo, hash)
                 node.registerAttributes(self.attributeHash)
             else:
-                self.res["error"] = Variant(str(algo + " hashing failed on " + node.absolute()))
+                err = Variant(str(algo + " hashing failed on " + node.absolute()))
+                err.thisown = False
+                self.res["error"] = err
 
 
     def hashCalc(self, node, algorithm):
@@ -131,5 +133,5 @@ class hash(Module):
                                "parameters": {"type": Parameter.NotEditable,
                                               "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
                                })
-        self.flags = "single"
+        self.flags = ["single", "generic"]
         self.tags = "Hash"

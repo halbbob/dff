@@ -65,19 +65,24 @@ class EWF(fso):
     self.fdm = FdManager()
 
   def start(self, args):
-    efile = args['files'].value().path
-    if efile[-4] == ".":
-      efile = efile[:-2]
-    self.files = glob(efile + '*')
-    self.files.sort()
-    filesok = ()
-    for efile in self.files:
+    efiles = args['files'].value() 
+    try :
+	self.root = args["parent"].value()
+    except IndexError:
+	self.root = self.vfs.getnode('/')
+    self.files = []
+    for efile in efiles:
+      efile = efile.value().path	
       try:	
 	if libewf.libewf_check_file_signature(efile) == 1:
-          filesok += (efile,)
+          self.files += (efile,)
+	else:
+	   err = Variant(str("file " + str(efile) + " is not a ewf file."))
+	   err.thisown = False
+	   self.res["error"] = err
+	   return
       except WindowsError:
 	   pass
-    self.files = filesok
     self.volume_array = c_char_p * len(self.files)
     self.ghandle = libewf.libewf_open(self.volume_array(*self.files), c_int(len(self.files)), c_int(1))
     if self.ghandle == 0:
@@ -85,7 +90,6 @@ class EWF(fso):
     size_p = pointer(c_ulonglong(0))
     libewf.libewf_get_media_size(self.ghandle, size_p)
     self.ssize = size_p.contents.value
-    self.root = self.vfs.getnode('/')
     name = create_string_buffer(1024) 
  
     libewf.libewf_parse_header_values(self.ghandle, c_int(4))
@@ -171,5 +175,8 @@ class ewf(Module):
        raise Exception('loading modules', 'ewf') 
     self.conf.addArgument({"name": "files",
                            "description": "First EWF file to open",
-                           "input": Argument.Required|Argument.Single|typeId.Path})
+                           "input": Argument.Required|Argument.List|typeId.Path})
+    self.conf.addArgument({"name": "parent",
+			   "description" : "Path where ewf will be created",
+			   "input": Argument.Optional|Argument.Single|typeId.Node})
     self.tags = "Connectors"

@@ -65,7 +65,7 @@ set(resources_srcs
   ui_nodebrowser.py
   ui_nodefilterbox.py
   ui_nodeviewbox.py
-  ui_output.ui
+  ui_output.py
   ui_preferences.py
   ui_varianttreewidget.py
   ui_shell.py

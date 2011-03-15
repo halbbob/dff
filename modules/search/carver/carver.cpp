@@ -78,6 +78,8 @@ void		Carver::Event(event* e)
 
 void		Carver::start(std::map<std::string, Variant*> args)
 {
+  event*	e1;
+
   this->inode = args["file"]->value<Node*>();
   this->ifile = this->inode->open();
   this->createContexts(args["patterns"]->value< std::list<Variant*> >());
@@ -86,6 +88,10 @@ void		Carver::start(std::map<std::string, Variant*> args)
   this->ifile->seek(args["start-offset"]->value<uint64_t>(), 0);
   this->mapper();
   this->registerTree(this->inode, this->root);
+  e1 = new event;
+  e1->type = event::OTHER;
+  e1->value = new Variant(std::string("terminated"));
+  this->notify(e1);
 }
 
 int		Carver::Read(char *buffer, unsigned int size)
@@ -98,7 +104,6 @@ int		Carver::Read(char *buffer, unsigned int size)
     }
   catch (vfsError e)
     {
-      printf("error --> %llu\n", this->ifile->tell());
       return -1;
     }
 }
@@ -211,7 +216,6 @@ void		Carver::mapper()
       percent.str("");
       percent << ((offpos * 100) / this->inode->size()) << " %";
       this->stateinfo = percent.str();
-      //printf("%llu\n", (offpos * 100) / this->inode->size());
       for (i = 0; i != this->ctx.size(); i++)
 	{
 	  offset = this->bm->search((unsigned char*)buffer, bytes_read, this->ctx[i]->descr->header, this->ctx[i]->headerBcs);
@@ -288,7 +292,7 @@ void		Carver::createNode(Node *parent, uint64_t start, uint64_t end)
   cn->setOrigin(this->inode);
 }
 
-unsigned int		Carver::createWithoutFooter(Node *parent, vector<uint64_t> *headers, unsigned int max)
+unsigned int		Carver::createWithoutFooter(Node *parent, vector<uint64_t> *headers, unsigned int max, bool aligned)
 {
   unsigned int	i;
   unsigned int	hlen;
@@ -298,7 +302,7 @@ unsigned int		Carver::createWithoutFooter(Node *parent, vector<uint64_t> *header
   total = 0;
   for (i = 0; i != hlen; i++)
     {
-      if (this->aligned)
+      if (aligned)
 	{
 	  if (((*headers)[i] % 512) == 0)
 	    this->createNode(parent, (*headers)[i], (*headers)[i] + (uint64_t)max);
@@ -313,7 +317,7 @@ unsigned int		Carver::createWithoutFooter(Node *parent, vector<uint64_t> *header
   return total;
 }
 
-unsigned int		Carver::createWithFooter(Node *parent, vector<uint64_t> *headers, vector<uint64_t> *footers, unsigned int max)
+unsigned int		Carver::createWithFooter(Node *parent, vector<uint64_t> *headers, vector<uint64_t> *footers, unsigned int max, bool aligned)
 {
   unsigned int	i;
   unsigned int	j;
@@ -336,7 +340,7 @@ unsigned int		Carver::createWithFooter(Node *parent, vector<uint64_t> *headers, 
 	  else
 	    j++;
 	}
-      if (this->aligned)
+      if (aligned)
 	{
 	  if (((*headers)[i] % 512) == 0)
 	    {
@@ -409,9 +413,9 @@ int		Carver::createTree()
 	  else
 	    max = BUFFSIZE;
 	  if (ctx->footers.size() > 0)
-	    this->createWithFooter(parent, &(ctx->headers), &(ctx->footers), max);
+	    this->createWithFooter(parent, &(ctx->headers), &(ctx->footers), max, ctx->descr->aligned);
 	  else
-	    this->createWithoutFooter(parent, &(ctx->headers), max);
+	    this->createWithoutFooter(parent, &(ctx->headers), max, ctx->descr->aligned);
 	  //this->fillResult(ctx);
 	  this->registerTree(this->root, parent);
 	}

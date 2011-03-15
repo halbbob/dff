@@ -16,7 +16,6 @@ set(widget_srcs
   __init__.py
   help.py
   taskmanager.py
-  env.py
   modules.py
   interpreter.py
   shell.py

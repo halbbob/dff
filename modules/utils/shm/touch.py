@@ -29,9 +29,13 @@ class TOUCH(Script):
     def start(self, arg):
       fname = arg["filename"].value()
       if self.touch(fname):
-        self.res["result"] = "SHM create file " + fname
+        val = Variant("SHM create file " + fname)
+        val.thisown = False
+        self.res["result"] = val
       else:
-        self.res["error"] = "Can't find path"
+        err = Variant("Can't find path")
+        err.thisown = False
+        self.res["error"] = err 
 
     def touch(self, fname):
       plist = fname.split('/')
