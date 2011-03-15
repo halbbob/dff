@@ -167,14 +167,15 @@ void	Inode::init()
     {
       // initialisation of extents
       _head = (ext4_extents_header *)&block_pointers()[0];
-      for (int i = 0; i < _head->max_entries; ++i)
-	{
-	  // one extent occupies 3 block pointers (12 bytes)
-	  ext4_extent * extent
-	    = (ext4_extent *)&block_pointers()[3 + (i * 3)];
-	  _blk_nb_l[i] = extent->length;
-	  _blk_nb += extent->length;
-	}
+      if (_head->magic == 0xF30A)
+	for (int i = 0; (i < 4) && (i < _head->max_entries); ++i)
+	  {
+	    // one extent occupies 3 block pointers (12 bytes)
+	    ext4_extent * extent
+	      = (ext4_extent *)&block_pointers()[3 + (i * 3)];
+	    _blk_nb_l[i] = extent->length;
+	    _blk_nb += extent->length;
+	  }
     }
 }
 

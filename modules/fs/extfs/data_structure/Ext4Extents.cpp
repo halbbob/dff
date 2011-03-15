@@ -62,6 +62,8 @@ ext4_extents_header *	Ext4Extents::read_header(uint8_t * block)
 
   if (block)
     header = (ext4_extents_header *)block;
+  if (header->magic != 0xF30A)
+    return NULL;
   return header;
 }
 
@@ -73,6 +75,10 @@ void			Ext4Extents::read_indexes(ext4_extents_header * header,
   uint8_t *		current_block;
   ext4_extents_header *	current_header;
 
+  if (!header)
+    return ;
+  if (header->magic != 0xF30A)
+    return ;
   for (int i = 0; i < header->entries; ++i)
     {
       idx = (ext4_extents_index *)(block + i * sizeof(ext4_extents_index));
@@ -96,6 +102,10 @@ void		Ext4Extents::read_extents(ext4_extents_header * header,
 {
   uint64_t	b_size;
 
+  if (!header)
+    return ;
+  if (header->magic != 0xF30A)
+    return ;
   for (int i = 0; i < header->entries; ++i)
     {
       ext4_extent * extent
@@ -160,7 +170,9 @@ uint64_t	Ext4Extents::calc_size(Inode * inode)
   __block_size = inode->SB()->block_size();
   __node = inode->extfs()->node();
   __extfs = inode->extfs();
-  if (!inode->extent_header()->depth)
+  if (!inode->extent_header())
+    __c_size = 0;
+  else if (!inode->extent_header()->depth)
     read_extents_x(inode->extent_header(),
 		 (uint8_t *)&inode->block_pointers()[3]);
   else
@@ -173,7 +185,11 @@ void		Ext4Extents::read_extents_x(ext4_extents_header * header,
 					    uint8_t * block)
 {
   uint64_t	b_size;
-  
+
+  if (!header)
+    return ;
+  if (header->magic != 0xF30A)
+    return ;
   for (int i = 0; i < header->entries; ++i)
     {
       ext4_extent * extent
