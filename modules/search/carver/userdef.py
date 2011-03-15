@@ -238,7 +238,6 @@ class PatternsTable(QWidget):
                 selected[filetype].append(True)
             else:
                 selected[filetype].append(False)
-        print selected
         return selected
 
 

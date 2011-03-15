@@ -13,91 +13,101 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-
 from api.vfs import *
+from api.loader import *
 from api.module.module import *
 from api.module.script import *
-from api.loader import *
-from api.env import *
+from api.loader.loader import loader
+from api.types.libtypes import Variant, Argument, typeId, Parameter, ConfigManager
 
-class MAN(QWidget, Script):
+
+class MAN(Script):
     def __init__(self):
         Script.__init__(self, "man")
         self.type = "man"
-        self.loader = loader.loader()
-        self.lmodules = self.loader.modules
+        self.loader = loader()
+        self.cm = ConfigManager.Get()
 
 
-    def get_val(self, arg):
-        val = ""
-
-        if arg.type == "string":
-            val = arg.get_string()
-        elif arg.type == "int":
-            val = str(arg.get_int())
-        elif i.type == "node" and i.get_node() :
-            val = arg.get_node().absolute()
-        return val
-
-    def start(self, args):        
-        self.module = args.get_string("module")
-        if self.module in self.lmodules:
-            mod = self.lmodules[self.module]
-            conf = mod.conf
-            cdl = mod.conf.descr_l
-            cvl = mod.conf.val_l
-            self.fres = "NAME\n\t"
-            self.fres += self.module + " - " + conf.description + "\n\n"
-            self.fres += "SYNOPSIS\n"
-            self.fres += "\t" + self.module + "[OPTION]...\n\n"
-            self.fres += "DESCRIPTION\n"
-            for arg in cdl:
-                self.fres += "\n\t"
-                self.fres += "--" + arg.name + "  ( type: " + arg.type
-                if arg.optional:
-                    self.fres += ", optional )"
+    def show_config(self, modname):
+        conf = self.cm.configByName(modname)
+        lconf = self.loader.get_conf(modname)
+        if conf == None:
+            return "no module <" + modname + "> found"
+        res = "\nhelp for module <" + modname + ">:\n"
+        if lconf != None and len(lconf.description):
+            res += "Description:\n\t" + lconf.description
+        arguments = conf.arguments()
+        for argument in arguments:
+            res += "\nArgument: " + str(argument.name())
+            res += "\n\tdescription: " + str(argument.description()) 
+            if argument.inputType() == Argument.Empty:
+                res += "\n\tno input parameters\n"
+            else:
+                res += "\n\ttype: " + str(typeId.Get().typeToName(argument.type()))
+                res += "\n\trequirement: "
+                if argument.requirementType() == Argument.Optional:
+                    res += "optional"
                 else:
-                    self.fres += ", required )"
-                self.fres += "\n\t\t" + arg.description
-                if cvl.size() > 0:
-                    first = True
-                    init = False
-                    for val in cvl:
-                        if val.name == arg.name:
-                            fval = self.get_val(val)
-                            if fval != "":
-                                if init == False:
-                                    init = True
-                                    self.fres += "\n\t\tpredefined value(s): " + fval
-                                else:
-                                    self.fres += ", " + fval
-                self.fres += "\n"
-        else:
-            self.fres = "no entry for module: " + self.module
-
-
-    def g_display(self):
-        QWidget.__init__(self, None)
-        hbox = QHboxLayout()
-        self.setLayout(hbox)
-        
-
-    def updateWidget(self):
-        pass
-
+                    res += "mandatory"
+                res += "\n\tinput parameters: "
+                if argument.parametersType() == Parameter.NotEditable:
+                    res += "not editable "
+                else:
+                    res += "editable "
+                if argument.inputType() == Argument.List:
+                    res += "list"
+                else:
+                    res += "single"
+                pcount = argument.parametersCount()
+                if pcount != 0:
+                    parameters = argument.parameters()
+                    res += "\n\tpredefined parameters: "
+                    for parameter in parameters:
+                        if argument.type() == typeId.Node:
+                            res += str(parameter.value().absolute())
+                        else:
+                            res += parameter.toString()
+                        pcount -= 1
+                        if pcount != 0:
+                            res += ", "
+                res += "\n"
+        constants = conf.constants()
+        if len(constants) > 0:
+            for constant in constants:
+                res += "\nConstant: " + str(constant.name())
+                res += "\n\tdescription: " + str(constant.description())
+                res += "\n\ttype: " + str(typeId.Get().typeToName(constant.type()))
+                cvalues = constant.values()
+                cvallen = len(cvalues)
+                if cvallen > 0:
+                    res += "\n\tvalues: "
+                    for cvalue in cvalues:
+                        if cvalue.type() == typeId.Node:
+                            res += str(cvalue.value().absolute())
+                        else:
+                            res += cvalue.toString()
+                        cvallen -= 1
+                        if cvallen != 0:
+                            res += ", "
+                res += "\n"
+        return res
 
     def c_display(self):
-        print self.fres
-        pass
+        print self.info
+
+
+    def start(self, args):        
+        self.info = ""
+        module = args["module"].value()
+        self.info = self.show_config(module)
 
 
 class man(Module):
+    """Displays help on other module"""
     def __init__(self):
         Module.__init__(self, "man", MAN)
-        self.conf.description = "man display help on other module"
-        self.conf.add("module", "string", False, "corresponds to the module you want help")
+        self.conf.addArgument({"name": "module", 
+                               "input": Argument.Single|Argument.Required|typeId.String,
+                               "description": "module for which to print help"})
         self.tags = "builtins"

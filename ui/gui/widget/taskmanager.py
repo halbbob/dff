@@ -103,17 +103,18 @@ class procMB(QDialog):
             self.treeargs = VariantTreeWidget(self)
             self.treeargs.fillMap(self.treeargs, args)
             self.tabwidget.addTab(self.treeargs, self.argname)
+            for i in [0, 1]:
+                self.treeargs.resizeColumnToContents(i)
         if len(res) > 0:
             self.treeres = VariantTreeWidget(self)
             self.treeres.fillMap(self.treeres, res)
             self.tabwidget.addTab(self.treeres, self.resname)
+            for i in [0, 1]:
+                self.treeres.resizeColumnToContents(i)
         else:
             label = QLabel(self.noResult)
             label.setAlignment(Qt.AlignCenter)
             self.tabwidget.addTab(label, self.resname)
-        for i in [0, 1]:
-            self.treeres.resizeColumnToContents(i)
-            self.treeargs.resizeColumnToContents(i)
         self.box.addLayout(self.dialogButtonsLayout)
             
 

@@ -35,7 +35,7 @@ class EXTRACT(Script):
       if path[-1] != "/":
         path += "/"
       if args.has_key('recursive'):
-        recursive = True
+        recursive = args["recursive"].value()
       else:
         recursive = False
       self.extractNodes(nodes, path, recursive)
@@ -104,21 +104,25 @@ class EXTRACT(Script):
       node = vnode.value()
       syspath = self.path + node.name()
       if not self.recursive:
-        if node.isFile():
+        if node.size():
           self.extractFile(node, syspath)
-        elif node.hasChildren():
+        elif node.hasChildren() or node.isDir():
           self.makeFolder(node, syspath)
+        else:
+          self.extractFile(node, syspath)
       else:
-        if node.isFile():
+        if node.size():
           if node.hasChildren():
             self.extractFile(node, syspath + ".bin")
             self.makeFolder(node, syspath)
             self.recurse(node.children(), node.name() + "/")
           else:
             self.extractFile(node, syspath)
-        if node.hasChildren():
+        elif node.hasChildren() or node.isDir():
           self.makeFolder(node, syspath)
           self.recurse(node.children(), node.name() + "/")
+        else:
+          self.extractFile(node, syspath)
 
 
   def extractedItemsCount(self, nodes):
@@ -127,31 +131,35 @@ class EXTRACT(Script):
         node = vnode.value()
       except AttributeError:
         node = vnode
-      if node.isFile():
+      if node.size():
         self.total_files += 1
         if node.hasChildren() and self.recursive:
           self.total_folders += 1
           self.extractedItemsCount(node.children())
-      if node.hasChildren():
+      elif node.hasChildren() or node.isDir():
         self.total_folders += 1
         if node.hasChildren() and self.recursive:
           self.extractedItemsCount(node.children())
+      else:
+        self.total_files += 1
 
 
   def recurse(self, nodes, vpath):
     recnodes = []
     for node in nodes:
       syspath = self.path + vpath + node.name()
-      if node.isFile():
+      if node.size():
         if node.hasChildren():
           self.extractFile(node, syspath + ".bin")
           if self.makeFolder(node, syspath):
             recnodes.append(node)
         else:
           self.extractFile(node, syspath)
-      if node.hasChildren():
+      elif node.hasChildren() or node.isDir():
         if self.makeFolder(node, syspath):
           recnodes.append(node)
+      else:
+        self.extractFile(node, syspath)
 
     for recnode in recnodes:
       self.recurse(recnode.children(), vpath + recnode.name() + "/")
@@ -182,15 +190,17 @@ class EXTRACT(Script):
 
   def countOmmited(self, nodes):
     for node in nodes:
-      if node.isFile():
+      if node.size():
         self.ommited_files += 1
         if node.hasChildren() and self.recursive:
           self.ommited_folders += 1
           self.countOmmited(node.children())
-      if node.hasChildren():
+      elif node.hasChildren() or node.isDir():
         self.ommited_folders += 1
         if node.hasChildren() and self.recursive:
-          self.countOmmited(node.children())      
+          self.countOmmited(node.children())
+      else:
+        self.ommited_files += 1
 
 
   def makeFolder(self, node, syspath):

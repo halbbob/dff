@@ -304,10 +304,26 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
          self.taskmanager.add(mod, args, ["thread", "gui"])       
 	 return
      else:
-       conf = self.lmodules["hexadecimal"].conf
-       args = conf.generate({"file": node})
-       self.taskmanager.add("hexadecimal", args, ["thread", "gui"])
+       errnodes = ""
+       if node.size():
+         conf = self.lmodules["hexadecimal"].conf
+         try:
+           arg = conf.generate({"file": node})
+           self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
+         except RuntimeError:
+           errnodes += node.absolute() + "\n"
+       else:
+         errnodes += node.absolute() + "\n"
+       if len(errnodes):
+         msg = QMessageBox(self)
+         msg.setWindowTitle(self.tr("Empty files"))
+         msg.setText(self.tr("the following nodes could not be opened with HexEdit because they are either empty or folders\n"))
+         msg.setIcon(QMessageBox.Warning)
+         msg.setDetailedText(errnodes)
+         msg.setStandardButtons(QMessageBox.Ok)
+         ret = msg.exec_()
  
+
   def createSubMenu(self):
      self.extractor = Extractor(self.parent)
      self.connect(self.extractor, SIGNAL("filled"), self.launchExtract)
@@ -333,28 +349,43 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def launchHexedit(self):
      nodes = self.currentNodes()
+     conf = self.loader.get_conf("hexadecimal")
+     errnodes = ""
      for node in nodes:
-       conf = self.loader.get_conf("hexadecimal")
-       try:
-         arg = conf.generate({"file": node})
-         self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
-       except RuntimeError:
-         pass
+       if node.size():
+         try:
+           arg = conf.generate({"file": node})
+           self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
+         except RuntimeError:
+           errnodes += node.absolute() + "\n"
+       else:
+         errnodes += node.absolute() + "\n"
+     if len(errnodes):
+       msg = QMessageBox(self)
+       msg.setWindowTitle(self.tr("Empty files"))
+       msg.setText(self.tr("the following nodes could not be opened with HexEdit because they are either empty or folders\n"))
+       msg.setIcon(QMessageBox.Warning)
+       msg.setDetailedText(errnodes)
+       msg.setStandardButtons(QMessageBox.Ok)
+       ret = msg.exec_()
+
 
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())
 
   def launchExtract(self):
      res = self.extractor.getArgs()
-     arg = libtypes.Arguments("gui_input")
-     lnodes.thisown = 0
-     for node in res["nodes"]:
-        lnodes.append(node)
-     arg.thisown = 0
-     arg.add_path("syspath", str(res["path"]))
-     arg.add_lnode("files", lnodes)
-     arg.add_bool("recursive", int(res["recurse"]))
-     self.taskmanager.add("extract", arg, ["thread", "gui"])
+     args = {}
+     args["files"] = res["nodes"]
+     args["syspath"] = str(res["path"])
+     args["recursive"] = res["recurse"]
+     conf = self.loader.get_conf("extract")
+     try:
+       margs = conf.generate(args)
+       self.taskmanager.add("extract", margs, ["thread", "gui"])
+     except RuntimeError:
+       pass
+
 
   def changeEvent(self, event):
     """ Search for a language change event
