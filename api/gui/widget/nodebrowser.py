@@ -365,6 +365,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     if event.type() == QEvent.LanguageChange:
       self.retranslateUi(self)
       self.menuModule.setTitle(self.actionOpen_with.text())
+      self.submenuRelevant.setTitle(self.actionRelevant_module.text())
       self.model.translation()
       self.treeModel.translation()
     else:
