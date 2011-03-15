@@ -18,10 +18,13 @@ set(apiguiwidget_srcs
   __init__.py
   dockwidget.py
   nodebrowser.py
+  layoutmanager.py
   nodeview.py
+  varianttreewidget.py
   propertytable.py
   textedit.py
   devicesdialog.py
+  completer.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

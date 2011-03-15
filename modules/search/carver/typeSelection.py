@@ -13,11 +13,6 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 
 
-from api.module.module import *
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
 wildcard = "?"
 
 art = [["\x4a\x47\x04\x0e", "\xcf\xc7\xcb", 150000],
@@ -97,7 +92,8 @@ java = [["\xca\xfe\xba\xbe", "", 1000000]]
 max = [["\x56\x69\x47\x46\x6b\x1a\x00\x00\x00\x00", "\x00\x00\x05\x80\x00\x00", 1000000]]
 
 
-filetypes = {"application/images": {"art": art, "gif": gif, "jpg": jpg, "png": png, "bmp": bmp, "tif": tif},
+filetypes = {"application/images": {"art": art, "gif": gif, "jpg": jpg, "png": png, 
+"bmp": bmp, "tif": tif},
              "application/videos": {"avi": avi, "mov": mov, "mpg": mpg}, 
              "application/animation": {"fws": fws},
              "application/document": {"doc": doc, "pdf": pdf, "txt": txt, "wpc": wpc, "pdf": pdf, "htm": htm},

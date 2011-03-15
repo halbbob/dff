@@ -20,8 +20,6 @@
 
 InodeStructure::InodeStructure()
 {
-  /*  this->__inode = new inodes_t;
-      this->__inode_array = (uint8_t *)this->__inode; */
 }
 
 InodeStructure::~InodeStructure()

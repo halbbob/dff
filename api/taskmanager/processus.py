@@ -16,9 +16,10 @@
 from api.module.module import *
 from api.vfs.libvfs import *
 from api.taskmanager.scheduler import *
-from api.type.libtype import *
+from api.types import libtypes
+from api.types.libtypes import *
 from api.vfs import *
-from api.env.env import env
+from ui.console.utils import VariantTreePrinter
 import threading
 
 import time
@@ -34,17 +35,17 @@ class Processus(Script):
     self.args = args
     self.stream = Queue()
     self.event = threading.Event()
-    self.env = env()
+    self.vtreeprinter = VariantTreePrinter()
     self.timestart = 0
     self.timeend = 0
 
   def launch(self, args):
     self.state = "exec"
-    #self.exec_flags = []
     self.timestart = time.time()
     try :
-      self.args = args  #temporaire pour non singleton
-      self.start(args)  #self.args += args -> pour les singletons garder une liste des args ?
+      self.args = args 
+      args.thisown = False 
+      self.start(args) 
       try :
         if "gui" in self.exec_flags:
           if "gui" in self.mod.flags:
@@ -64,11 +65,10 @@ class Processus(Script):
 	self.result()
 
   def result(self):
-     try :
-       for type, name, val in self.env.get_val_map(self.res.val_m):
-	     print name + ":" +"\n"  + val
-     except AttributeError, e:
-       pass
+    if self.res and len(self.res):
+      buff = self.vtreeprinter.fillMap(0, self.res)
+      print buff
+
 
   def error(self, trace = None):
     if trace:
@@ -83,15 +83,12 @@ class Processus(Script):
 	 err_trace =  traceback.format_tb(err_traceback)
          for err in err_trace:
            res += err
-         self.res.add_const("error", res)
+         print res
+         verr = Variant(res)
+         verr.thisown = False
+         self.res["error"] = verr
          self.state = "fail"
          return
-    try :
-       if self.AddNodes():
-         self.state = "wait"
-	 return 
-    except AttributeError:
-	pass
     if "gui" in self.exec_flags and "gui" in self.mod.flags:
       self.state = "wait"
     else:

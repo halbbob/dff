@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -21,31 +21,39 @@
 %include "std_map.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
-#include "../include/export.hpp"
+#include "variant.hpp"
+#include "vtime.hpp"
+#include "fso.hpp"
+#include "mfso.hpp"
+#include "node.hpp"
+#include "vlink.hpp"
+#include "vfile.hpp"
 #include "local.hpp"
 %}
 
-%include "../include/export.hpp"
+%import "../../../api/vfs/libvfs.i"
+
 %include "local.hpp"
 
-
-namespace std
-{
-  %template(ListString)         list<string>;
-};
 
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import *
+from api.vfs import vfs
 class LOCAL(Module):
   """Add file from your operating system to the VFS"""
   def __init__(self):
     Module.__init__(self, 'local', local)
-    self.conf.add("parent", "node", True, "The file will be added as son of this node or as the root node by default.")
-    self.conf.add("path", "path", False, "Path to the file or directory on your operating system.")
-  # self.conf.add("size", "uint64", True, "Force size of the file.")
+    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
+	                   "name": "parent", 
+	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
+                       "parameters": {"type": Parameter.Editable,
+                                          "predefined": [vfs.vfs().getnode("/")]}
+                          })
+    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path,  
+	                   "name": "path", 
+	                   "description": "Path to the file or directory on your operating system."})
     self.tags = "Connectors"
 %}

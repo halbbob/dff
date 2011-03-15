@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -17,22 +17,22 @@
 #ifndef __LOCAL_HH__
 #define __LOCAL_HH__
 
-#include "mfso.hpp"
+
+#include "fso.hpp"
+#include "node.hpp"
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <list>
 #include <vector>
-#include "type.hpp"
+#include "variant.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
+#include "path.hpp"
 #ifdef WIN32
 #include "wlocalnode.hpp"
 #else
 #include "ulocalnode.hpp"
 #endif
-
-using namespace std;
 
 class local : public fso
 {
@@ -41,6 +41,8 @@ private:
   std::string	basePath;
   int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
+  void		createTree(std::list<Variant *>);
+
 #ifndef WIN32
   class ULocalNode*	__root; 
 #else
@@ -48,21 +50,22 @@ private:
 #endif
 
 public:
-  std::vector<string>	lpath;
 #ifndef WIN32
-  void				iterdir(std::string path, Node* parent);
+  void			iterdir(std::string path, Node* parent);
 #else
-  void 		frec(const char *, Node *rfv);
+  std::string		relativePath(std::string path);
+  void			createPath(std::string origPath);
+  void 			frec(const char *, Node *rfv);
 #endif
   local();
   ~local();
-  int32_t	vopen(Node* handle);
-  int32_t 	vread(int fd, void *buff, unsigned int size);
-  int32_t 	vclose(int fd);
-  uint64_t 	vseek(int fd, uint64_t offset, int whence);
-  int32_t	vwrite(int fd, void *buff, unsigned int size) { return 0; };
-  uint32_t	status(void);
-  uint64_t	vtell(int32_t fd);
-  virtual void	start(argument* ar);
+  int32_t		vopen(Node* handle);
+  int32_t 		vread(int fd, void *buff, unsigned int size);
+  int32_t 		vclose(int fd);
+  uint64_t 		vseek(int fd, uint64_t offset, int whence);
+  int32_t		vwrite(int fd, void *buff, unsigned int size) { return 0; };
+  uint32_t		status(void);
+  uint64_t		vtell(int32_t fd);
+  virtual void	start(std::map<std::string, Variant* > args);
 };
 #endif

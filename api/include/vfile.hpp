@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -14,10 +14,9 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-#ifndef __VPATH_HH__
-#define __VPATH_HH__
+#ifndef __VFILE_HH__
+#define __VFILE_HH__
 
-#include "mfso.hpp"
 #include <stdlib.h> 
 #include <string>
 #include <string.h>
@@ -26,8 +25,8 @@
 #else
 #include "wstdint.h"
 #endif
+#include "fso.hpp"
 #include "node.hpp"
-#include "type.hpp"
 #include "export.hpp"
 #include "search.hpp"
 
@@ -63,12 +62,8 @@ public:
   EXPORT int32_t	write(std::string buff);
   EXPORT int32_t	write(char *buff, uint32_t size);
   EXPORT int32_t 	close(void);
-
-//   EXPORT void		enableIORecord();
-//   EXPORT void		disableIORecord();
   EXPORT list<uint64_t>	*search(char *needle, uint32_t len, char wildcard, uint64_t start = 0, uint64_t window = (uint64_t)-1, uint32_t count = (uint32_t)-1);
   EXPORT uint64_t	find(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
-  //EXPORT uint64_t	rfind(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
   EXPORT uint32_t	count(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
   EXPORT int32_t	dfileno();
   EXPORT uint64_t 	tell();

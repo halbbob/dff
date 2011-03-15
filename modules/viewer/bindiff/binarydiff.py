@@ -22,6 +22,8 @@ from api.module.module import *
 from PyQt4.QtCore import QSize, SIGNAL
 from PyQt4.QtGui import QWidget, QVBoxLayout, QIcon
 
+from api.types.libtypes import Argument, typeId
+
 from BDiff import BDiff
 
 class binDiff(QWidget, Script):
@@ -46,10 +48,13 @@ class binDiff(QWidget, Script):
         self.vlayout = QVBoxLayout(self)
         self.widget = BDiff(self)
         self.vlayout.addWidget(self.widget)
-        node1 = self.args.get_node("file1")
-        node2 = self.args.get_node("file2")
-        self.name = "binDiff " + str(node1.name()) + " | " + str(node2.name())
-        self.widget.init(node1, node2)
+        try:
+            node1 = self.args["file1"].value()
+            node2 = self.args["file2"].value()
+            self.name = "binDiff " + str(node1.name()) + " | " + str(node2.name())
+            self.widget.init(node1, node2)
+        except:
+            pass
         
     def updateWidget(self):
         pass
@@ -63,7 +68,11 @@ class binDiff(QWidget, Script):
 class binarydiff(Module):
   def __init__(self):
     Module.__init__(self, "diff", binDiff)
-    self.conf.add("file1", "node")
-    self.conf.add("file2", "node")
+    self.conf.addArgument({"name": "file1",
+                           "description": "first file",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "file2",
+                           "description": "second file",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
     self.tags = "Viewers"
 

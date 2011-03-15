@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -393,10 +393,6 @@ std::vector<class Node*>	Node::children()
 
 bool		Node::addChild(class Node *child)
 {
-  if (0) {
-	// FIXME check if child already present
-	return false;
-  }
   child->setParent(this);
   child->__at = this->__childcount; 
   this->__children.push_back(child);
@@ -475,47 +471,57 @@ string Node::icon(void)
   }
 }
 
-Variant*	Node::dataType(/*uint32_t wait = 0*event callback*/) /*au lieux de void mettre type mime ou ...? */
+Variant*	Node::dataType(void) 
 {
   Variant*	types = NULL;
   std::map<std::string, Variant*>	attributes;
 
-//threader ? 
-//  if thread.wait(wait) 
-//{
+  class DataTypeManager*	typeDB = DataTypeManager::Get();
+  types = typeDB->type(this); 
 
-  class DataTypeManager&	typeDB = DataTypeManager::Get();
-  types = typeDB.type(this);  //dynamic type
- //}
-
-  //ret none if types    
   return types; 
+}
+
+bool		Node::constantValuesMatch(Constant* constant, Attributes vars)
+{
+  list<Variant*>		values;
+  list<Variant*>::iterator	value;
+  Attributes::iterator		var;
+  bool				match;
+
+  match = false;
+  if ((constant != NULL) && (constant->type() == typeId::String))
+    {
+      values = constant->values();
+      for (value = values.begin(); value != values.end(); value++)
+	for (var = vars.begin(); var != vars.end(); var++)
+	  if ((var->second->type() == typeId::String) && (var->second->value<std::string>().find((*value)->toString()) != -1))
+	    match = true;
+    }
+  return match;
 }
 
 std::list<std::string>*		Node::compatibleModules(void)
 {
-   class env*	environ    = env::Get();
-   v_key*  keys  	   = environ->vars_db["mime-type"];
-   list<class v_val*> vals = keys->val_l;  
-   list<std::string > *res = new list<std::string>(); 
-   std::list<class v_val*>::iterator val;
-   Attributes::iterator var;
+  ConfigManager*				cm;
+  std::map<std::string, Constant*>		constants;
+  std::map<std::string, Constant*>::iterator	constant;
+  list<std::string>*				res;
+  Attributes					vars;
 
-   for (val = vals.begin(); val != vals.end(); val++)
-   {
-     if ((*val)->type == "string")
-     {
-       Attributes 	vars = this->dataType()->value<Attributes >();
-       for (var = vars.begin(); var != vars.end(); var++)
-       { 
-         if (((*var).second)->value<std::string>().find((*val)->get_string()) != -1)
-         {
-           res->push_back((*val)->from);
-	   //delete (*var);
-         }
-       }
-     }
-   }
+  res = new list<std::string>();
+  cm = ConfigManager::Get();
+  if (cm != NULL)
+    {
+      constants = cm->constantsByName("mime-type");
+      if (constants.size() > 0)
+	{
+	  vars = this->dataType()->value<Attributes >();
+	  for (constant = constants.begin(); constant != constants.end(); constant++)
+	    if (this->constantValuesMatch(constant->second, vars))
+	      res->push_back(constant->first);
+	}
+    }
   return res;
 }
 
@@ -531,12 +537,6 @@ bool	Node::isCompatibleModule(string modname)
 	return true;
      }
    delete mods;
-//   if node.size() and modules["modname"].conf == data:
-// HASH prob because NONE 
-//XXX file me use reverse arg methode
-/*    std::string type = 
-    if node.dataType.find(modname)	
-      return true;*/
     return false;
 }
 

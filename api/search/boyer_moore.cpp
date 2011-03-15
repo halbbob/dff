@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -114,7 +114,7 @@ unsigned char			*BoyerMoore::generateBcs(pattern *p)
   return bcs;
 }
 
-int	BoyerMoore::search(unsigned char *haystack, unsigned int hslen, pattern *p, unsigned char *bcs)
+int	BoyerMoore::search(unsigned char *haystack, unsigned int hslen, pattern *p, unsigned char *bcs, bool debug)
 {
   unsigned int	hspos;
   int		ndpos;
@@ -125,13 +125,23 @@ int	BoyerMoore::search(unsigned char *haystack, unsigned int hslen, pattern *p, 
   while (hspos <= (hslen - p->size))
     {
       for (ndpos = p->size - 1; ndpos != -1; ndpos--)
-	if (this->charMatch(p->needle[ndpos], haystack[hspos+ndpos], p->wildcard) == 0)
-	  break;
+	{
+	  if (debug)
+	    {
+	      printf("hslen: %d -- ndpos: %d -- hspos: %d\n", hslen, ndpos, hspos);
+	      printf("needle: %x -- haystack: %x\n", p->needle[ndpos], haystack[hspos+ndpos]);
+	    }
+	  if (this->charMatch(p->needle[ndpos], haystack[hspos+ndpos], p->wildcard) == 0)
+	    {
+	      break;
+	    }
+	}
       if (ndpos == -1)
 	return hspos;
       else
 	{
-	  //printf("hslen: %d -- hspos - ndpos: %d - %d = %d\n", hslen, hspos, ndpos, hspos-ndpos);
+	  if (debug)
+	    printf("HERE\n");
 	  shift = bcs[(unsigned char)haystack[hspos + ndpos]] - p->size + 1 + ndpos;
 	  if (shift <= 0)
 	    shift = 1;

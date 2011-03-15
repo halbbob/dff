@@ -17,9 +17,11 @@ from PyQt4.QtGui import QCheckBox
 from PyQt4.QtCore import QObject, QSize, Qt, SIGNAL
 
 class checkBoxWidget(QCheckBox):
-    def __init__(self, parent, widget):
+    def __init__(self, parent, info, widget, label):
         QCheckBox.__init__(self)
+        self.__info = info
         self.__widget = widget
+        self.setText(label)
         self.stateChangedWidget(Qt.Unchecked)
         self.initCallback()
     
@@ -28,7 +30,11 @@ class checkBoxWidget(QCheckBox):
     
     def stateChangedWidget(self,  state):
         if state == Qt.Checked :
-            self.__widget.setEnabled(1)
+            if self.__widget:
+                self.__widget.setEnabled(1)
+            self.__info.setEnabled(1)
         else :
-            self.__widget.setEnabled(0)
+            if self.__widget:
+                self.__widget.setEnabled(0)
+            self.__info.setEnabled(0)
         

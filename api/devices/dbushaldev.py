@@ -68,16 +68,16 @@ class DBusHalDevice(Device):
   
   ##def blockMajor(self):
    #return self.ddev.GetProperty('block.major') 
-#
+
   #def blockMinor(self):
     #return self.ddev.GetProperty('block.minor')
-#
+
   #def isVolume(self):
     #return self.ddev.GetProperty('block.is_volume')
-#
+
   #def noPartitions(self):
     #return self.ddev.GetProperty('block.no_partitions')
- # 
+ 
   #def haveScanned(self):
     #return self.ddev.GetProperty('block.have_scanned')
 

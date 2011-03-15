@@ -29,12 +29,18 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
-
+#include "variant.hpp"
+#include "vtime.hpp"
+#include "mfso.hpp"
+#include "node.hpp"
+#include "vfile.hpp"
+#include "vlink.hpp"
 #include "extfs.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
+
 %include "extfs.hpp"
 
 /*
@@ -45,31 +51,56 @@ namespace std
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import Argument, typeId, Parameter
+
 class EXTFS(Module):
   """ This module parses extented file system and try to recover deleted data."""
   def __init__(self):
 
     Module.__init__(self, 'extfs', Extfs)
-    self.conf.add("parent", "node", False, "The file will be added as son.")
 
-    self.conf.add("parse_fs", "bool", True, "Running the driver")
-    self.conf.add("ils", "string", True, "List inodes")
-    self.conf.add("blk", "string", True, "Block allocation status")
-    self.conf.add("SB_check", "bool", True, "check superblock validity")
-    self.conf.add("fsstat", "bool", True, "File system statistic.")
-    self.conf.add("istat", "string", True, "Inode statistics")
-    self.conf.add("jstat", "string", True, "journal statistics")
-    self.conf.add("i_orphans", "string", True, "Parse orphan inodes")
-    self.conf.add("SB_addr", "string", True, "Super block address specified manualy")
-    self.conf.add("root_inode", "string", True, "Root inode number")
-
-    self.conf.add_const("mime-type", "ext2")
-    self.conf.add_const("mime-type", "ext3")
-    self.conf.add_const("mime-type", "ext4")
-    #self.conf.add_const("parse_fs", True)
-    self.conf.add_const("SB_check", False)
-    self.conf.add_const("SB_addr", 1024)
-    self.conf.add_const("root_inode", 2)
-    self.conf.add_const("fsstat", False)
+    self.conf.addArgument({"name": "file",
+                           "description": "file containing an EXT file system",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "blockpointers",
+                           "description": "Add block pointer as extfs extended attributes",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "ils",
+                           "description": "List inodes",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "blk",
+                           "description": "Block allocation status",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "fsstat",
+                           "description": "File system statistic",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "istat",
+                           "description": "Inode statistics",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "jstat",
+                           "description": "journal statistics",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "SB_check",
+                           "description": "check superblock validity",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "i_orphans",
+                           "description": "Parse orphan inodes",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name": "root_inode",
+	                   "description": "Root inode number",
+                           "input": Argument.Optional|Argument.Single|typeId.UInt64,
+                           "parameters": {"type": Parameter.Editable,
+                                          "predefined": [2]}
+                           })
+    self.conf.addArgument({"name": "SB_addr",
+                           "description": "Super block address specified manualy",
+                           "input": Argument.Optional|Argument.Single|typeId.UInt64,
+                           "parameters": {"type": Parameter.Editable,
+                                          "predefined": [1024]}
+                           })
+    self.conf.addConstant({"name": "mime-type", 
+                           "type": typeId.String,
+                           "description": "managed mime type",
+	                   "values": ["ext2", "ext3", "ext4"]})
     self.tags = "File systems"
 %}

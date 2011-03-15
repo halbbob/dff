@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -17,6 +17,8 @@
 #ifndef __PARTITION_HPP__
 #define __PARTITION_HPP__
 
+#include <map>
+#include "variant.hpp"
 #include "mfso.hpp"
 #include "vfile.hpp"
 
@@ -45,7 +47,7 @@ public:
   Partition();
   ~Partition();
 
-  virtual void		start(argument* arg);
+  virtual void		start(std::map<std::string, Variant*> args);
 };
 
 #endif

@@ -19,7 +19,7 @@ from PyQt4.QtGui import QApplication, QSplashScreen, QPixmap
 from PyQt4.QtCore import Qt
 
 from mainwindow import MainWindow
-from configuration.translator import Translator
+from translator import Translator
 from api.loader.loader import loader
 
 # import Resource QT
@@ -36,7 +36,7 @@ class gui():
         self.app.installTranslator(self.translator.getGeneric())
         self.app.installTranslator(self.translator.getDFF())
         self.app.setApplicationName("Digital Forensics Framework")
-        self.app.setApplicationVersion("0.9.0")
+        self.app.setApplicationVersion("${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
         pixmap = QPixmap(":splash.png")
         self.splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
         self.splash.setMask(pixmap.mask()) 

@@ -27,6 +27,7 @@ set(builtins_srcs
   open.py
   show_cwd.py
   show_db.py
+  __init__.py
 )
 
 install_file(builtins ${builtins_srcs})

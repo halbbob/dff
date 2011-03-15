@@ -20,24 +20,27 @@ from PyQt4.QtGui import *
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import Argument, typeId
 
 class CAT(QTextEdit, Script):
   def __init__(self):
     Script.__init__(self, "cat")
     self.vfs = vfs.vfs()
-    self.env = env.env()
     self.type = "cat"
     self.icon = None
   
   def start(self, args):
     self.args = args
-    self.node = args.get_node("file")
-    self.cat(self.node)
+    try:
+      self.node = args["file"].value()
+      self.cat(self.node)
+    except:
+      pass
 
   def g_display(self):
     QTextEdit.__init__(self, None)
     self.setReadOnly(1)
-    self.append(self.buff)
+    self.append(QString.fromUtf8(self.buff))
 
   def updateWidget(self):
 	pass
@@ -68,10 +71,13 @@ class cat(Module):
 ex:cat /myfile.txt"""
   def __init__(self):
     Module.__init__(self, "text", CAT)
-    self.conf.add("file", "node", False, "File to display content")
-    self.conf.add_const("mime-type", "HTML")
-    self.conf.add_const("mime-type", "ASCII")
-    self.conf.add_const("mime-type", "XML")
-    self.conf.add_const("mime-type", "text")
+    self.conf.addArgument({"name": "file",
+                           "description": "Text file to display",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["HTML", "ASCII", "XML", "text"]})
     self.tags = "Viewers"
-    self.flags = ["console", "gui"]	
+    self.flags = ["console", "gui"]
+    self.icon = ":text"	

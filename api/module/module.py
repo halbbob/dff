@@ -16,20 +16,20 @@
 from api.module.script import *
 from api.exceptions.libexceptions import *
 from api.vfs import *
-from api.env import *
+from api.types import libtypes
 from api.vfs.libvfs import *
 import sys
 import traceback
 
 class Module(object):
   def __init__(self, name, icl):
-    self.env = env.env() 
     self.cl = icl
     self.name = name
     self.single = None
+    self.icon = None
     try :
      if issubclass(self.cl, Script):
-       self.conf = self.env.libenv.config(name)
+       self.conf = libtypes.Config(name)
        if self.__doc__:
 	   self.conf.description = self.__doc__
        self.getflags()
@@ -37,7 +37,7 @@ class Module(object):
 	pass
     try :
       if issubclass(self.cl, mfso) or issubclass(self.cl, fso):
-        self.conf = self.env.libenv.config(name)
+        self.conf = libtypes.Config(name)
         if self.__doc__:
 	   self.conf.description = self.__doc__
         self.getflags()

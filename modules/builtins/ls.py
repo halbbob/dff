@@ -16,6 +16,7 @@
 from api.vfs import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import typeId, Argument
 
 class LS(Script):
   def __init__(self) :
@@ -23,27 +24,33 @@ class LS(Script):
     self.vfs = vfs.vfs()
 
   def start(self, args):
-    try :
-      self.node = args.get_node('node')
-    except KeyError:
-      self.node = None
-    try :
-      self.long = args.get_bool('long')
-    except KeyError:
-      self.long = None
-    try :
-      self.rec = args.get_bool('recursive')
-    except KeyError:
-      self.rec = None
-    if self.node == None:
-      self.node = self.vfs.getcwd()
+    try:
+      self.nodes = args["nodes"].value()
+    except IndexError:
+      self.nodes = [self.vfs.getcwd()]
+    if args.has_key('recursive'):
+      self.rec = True
+    else:
+      self.rec = False
+    if args.has_key('long'):
+      self.long = True
+    else:
+      self.long = False
     self._res = self.launch()
 
   def launch(self):
-     if self.rec:
-       self.recurse(self.node)
-     else :
-       self.ls(self.node)
+    for vnode in self.nodes:
+      try:
+        node = vnode.value()
+      except AttributeError:
+        node = vnode
+      if self.rec:
+        self.recurse(node)
+      else:
+        if node.hasChildren():
+          children = node.children()
+          for child in children:
+            self.ls(child)
 
   def recurse(self, cur_node):
     if cur_node.hasChildren():
@@ -55,10 +62,7 @@ class LS(Script):
 
   def ls(self, node):
      buff = ""
-     next = node.children()
-     for n in next:
-       print self.display_node(n)
-       #self.display_node(n)
+     print self.display_node(node)
 
   def display_node(self, node):
     if self.long:
@@ -81,11 +85,18 @@ class LS(Script):
      buff += "/"
     return buff
 
+
 class ls(Module):
   """List file and directory"""
   def __init__(self):
    Module.__init__(self, "ls", LS)
-   self.conf.add("node", "node", True, "Directory to list")
-   self.conf.add("long", "bool", True, "Display size of files")
-   self.conf.add("recursive", "bool", True, "Recurse in sub-directory")
+   self.conf.addArgument({"name": "nodes",
+                          "description": "files to list",
+                          "input": Argument.List|Argument.Optional|typeId.Node})
+   self.conf.addArgument({"name": "long",
+                          "description": "Display more information for each files",
+                          "input": Argument.Empty})
+   self.conf.addArgument({"name": "recursive",
+                          "description": "enables recursion on folders",
+                          "input": Argument.Empty})
    self.tags = "builtins"

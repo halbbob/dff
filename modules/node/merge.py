@@ -17,49 +17,37 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-from api.env.libenv import *
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import Variant, VList, VMap, Argument, Parameter, typeId
 from api.vfs.libvfs import *
-from modules.fs.spare import SpareNode
 
 class MergeNode(Node):
-   def __init__(self, name, size, parent, mfso, file1, file2):
-      Node.__init__(self, name, file1.size() + file2.size(), parent, mfso)
-      self.file1 = file1
-      self.file2 = file2
+   def __init__(self, name, size, parent, mfso, files):
+      Node.__init__(self, name, size, parent, mfso)
+      self.files = files
       self.__disown__()
 
    def fileMapping(self, fm):
-      fm.push(0, self.file1.size(), self.file1, 0)
-      fm.push(self.file1.size(), self.file2.size(), self.file2, 0)
+      offset = 0
+      for f in self.files:
+         node = f.value()
+         fm.push(offset, node.size(), node, 0)
+         offset += node.size()
       
    def _attributes(self):
+      i = 1
       attr = VMap()
-      f1_size = Variant(self.file1.size())
-      f2_size = Variant(self.file2.size())
-      f1_name = Variant(self.file1.name())
-      f2_name = Variant(self.file2.name())
       attr.thisown = False
-      f1_size.thisown = False
-      f2_size.thisown = False
-      f1_name.thisown = False
-      f2_name.thisown = False
-      attr["1st file name"] = f1_name
-      attr["2nd file name"] = f2_name
-      attr["1st file size"] = f1_size
-      attr["2nd file size"] = f2_size
-      return attr 
-
-#      fatstart = Variant(self.partTable.start)
-#      fatstart.thisown = False
-#      attr.push("partition start", fatstart)
-#      blocksize = Variant(self.partTable.blocksize)
-#      blocksize.thisown = False
-#      attr.push("blocksize", blocksize)
-#      size = Variant(self.partTable.size)
-#      size.thisown = False
-#      attr.push("size in block", size)
- 
+      vlist = VList()
+      vlist.thisown = False
+      for f in self.files:
+         node = f.value()
+         cattr = Variant(node.absolute())
+         cattr.thisown = False
+         vlist.append(cattr)
+      vvlist = Variant(vlist)
+      vvlist.thisown = False
+      attr["concatanated files (ordered)"] = vvlist
+      return attr
 
 class MERGE(mfso):
     def __init__(self):
@@ -67,18 +55,40 @@ class MERGE(mfso):
        self.__disown__()
 
     def start(self, args):
-       self.file1 = args.get_node('file1')
-       self.file2 = args.get_node('file2')
-       name = self.file1.name() + "-" + self.file2.name()
-       size = self.file1.size() + self.file2.size()
-       self.merge_node = MergeNode(name, size, None, self, self.file1, self.file2)
+       self.files = args['files'].value()
+       if args.has_key("output"):
+          name = args["output"]
+       else:
+          name = self.files[0].value().name() + "..." + self.files[len(self.files) - 1].value().name()
+       if args.has_key("parent"):
+          parent = args["parent"].value()
+       else:
+          parent = self.files[0].value().parent()
+       size = 0
+       for f in self.files:
+          size += f.value().size()
+       self.merge_node = MergeNode(name, size, None, self, self.files)
        self.merge_node.__disown__()
-       self.registerTree(self.file1.parent(), self.merge_node)
+       self.registerTree(parent, self.merge_node)
+
 
 class merge(Module):
   """This module is designed to concat 2 files."""
   def __init__(self):
     Module.__init__(self, "merge", MERGE)
-    self.conf.add("file1", "node", False, "first file")
-    self.conf.add("file2", "node", False, "second file")
+    self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Node,
+                           "name": "files",
+                           "description": "these files will be concatenated in the order they are provided",
+                           "parameters": {"type": Parameter.Editable,
+                                          "minimum": 2,
+                                          "maximum": 10}
+                           })
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.String,
+                           "name": "output",
+                           "description": "the name of file corresponding to the concatenation"
+                           })
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.Node,
+                           "name": "parent",
+                           "description": "parent of the resulting output file (default will be basefile)"
+                           })
     self.tags = "Node"

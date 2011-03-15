@@ -16,26 +16,35 @@
 from api.vfs import *
 from api.module.module import *
 from api.exceptions.libexceptions import *
+from api.types.libtypes import Variant, Argument, typeId
 
 class CD(Script):
   def __init__(self):
     Script.__init__(self, "cd")
 
   def start(self, args):
-    node = args.get_node("dir")
+    node = args["dir"].value()
     if not node:
-      self.res.add_const("error", "Can't find file")
-      return	
+      val = Variant("Can't find file")
+      val.thisown = False
+      self.res["error"] = val
+      return
     if not node.hasChildren():
-      self.res.add_const("error", "Can't change current directory on file")
+      val = Variant("Can't change current directory on file")
+      val.thisown = False
+      self.res["error"] = val
       return 
     self.vfs.setcwd(node)
-    self.res.add_const("result",  "change path to " + node.absolute())
+    val = Variant("change path to " + str(node.absolute()))
+    val.thisown = False
+    self.res["result"] = val
 
 
 class cd(Module):
   """Change current directory"""
   def __init__(self):
    Module.__init__(self, "cd", CD)
-   self.conf.add("dir", "node", False, "Directory to go in")
+   self.conf.addArgument({"name": "dir",
+                          "description": "Directory to go in",
+                          "input": Argument.Single|Argument.Optional|typeId.Node})
    self.tags = "builtins"

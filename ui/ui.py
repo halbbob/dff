@@ -21,12 +21,13 @@ from console.console import console
 from gui.gui import *
 from redirect import RedirectIO
 
-from gui.configuration.conf import Conf
+from conf import Conf
 
 class ui():  
-  def __init__(self, type, debug = False):
+  def __init__(self, type, debug = False, verbosity = 0):
    self.debug = debug
    self.type = type
+   self.verbosity = verbosity
    RedirectIO(None, self.debug)
    self.modPath = sys.path[0] + "/modules/"
 
@@ -43,16 +44,16 @@ class ui():
       self.c.cmdloop()
      except AttributeError:
        loader().do_load(self.modPath)
-       self.c = console()
+       self.c = console(DEBUG = self.debug, VERBOSITY = self.verbosity)
        self.c.cmdloop()
 
-  def cmd(self, command):
+  def cmd(self, command, wait=False):
     try :
-     self.c.onecmd(command) 
+     self.c.onecmd(command)
     except AttributeError:
      loader().do_load(self.modPath)
-     self.c = console()
-     self.c.onecmd(command) 
+     self.c = console(DEBUG = self.debug, VERBOSITY = self.verbosity)
+     self.c.onecmd(command, wait)
 
 class usage():
    PROGRAM_USAGE = """DFF\nDigital Forensic Framework\n
@@ -63,39 +64,48 @@ Options:
   -t      --test=NAME	             start a specific test
   -l      --language=LANG            use LANG as interface language
   -h      --help                     display this help message
-  -d 	  --debug		     redirect IO to system console
+  -d      --debug                    redirect IO to system console
+          --verbosity=LEVEL          set verbosity level when debugging [0-3]
+  -c      --config=FILEPATH          use config file from FILEPATH
 """
-   VERSION = "0.9.0"
+   VERSION = "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
 
    def __init__(self, argv):
      self.argv = argv
      self.graphical = 0
-     self.test = ""
+     self.test = ''
+     self.confPath = ''
      self.debug = False
+     self.verbosity = 0
 # Configuration
-     self.conf = Conf()
      self.main()
+     self.conf = Conf(self.confPath)
   
+
    def main(self):
     """Check command line argument"""
     try:
-        opts, args = getopt.getopt(self.argv, "vgdhtl:", [ "version", "graphical",  "debug", "help", "test=", "language="])
+        opts, args = getopt.getopt(self.argv, "vgdht:l:c:", [ "version", "graphical",  "debug", "help", "test=", "language=", "verbosity=", "config="])
     except getopt.GetoptError:
         self.usage()
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            self.usage()
+          self.usage()
         elif opt in ("-g", "--graphical"):
-            self.graphical = 1
+          self.graphical = 1
         elif opt in ("-t", "--test"):
-            self.test = arg
+          self.test = arg
         elif opt in ("-l", "--language"):
-            self.conf.setLanguage(arg[:2])
+          self.conf.setLanguage(arg[:2])
         elif opt in ("-v", "--version"):
-            print "dff version " + self.VERSION
-            sys.exit(1)
+          print "dff version " + self.VERSION
+          sys.exit(1)
         elif opt in ("-d", "--debug"):
-            self.debug = True
+          self.debug = True
+        elif opt == "--verbosity":
+          self.verbosity = int(arg)
+        elif opt in ("-c", "--config"):
+          self.confPath = str(arg)
     return
 
    def usage(self):

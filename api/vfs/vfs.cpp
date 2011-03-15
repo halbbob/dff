@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -15,6 +15,12 @@
  */
 
 #include "vfs.hpp"
+
+VFS&	VFS::Get()
+{ 
+    static VFS single; 
+    return single; 
+}
 
 VFS::VFS()
 {
@@ -26,7 +32,7 @@ VFS::~VFS()
 {
 }
 
-void	VFS::Event(DEvent *e)
+void	VFS::Event(event *e)
 {
 }
 
@@ -93,13 +99,10 @@ Node* VFS::GetNode(string path)
   return (tmp);
 }
 
-
-void	VFS::AddNode(Node *parent, Node* head) /* peut m ettre un s du coup mouahhaha
-ou alors chopper une lsite ce qui evite les for ....... koi ct comme ca avant ????
-*/
+void	VFS::AddNode(Node *parent, Node* head)
 {
    parent->addChild(head);
- 
-   DEvent* e = new DEvent(head);
+   event* e = new event;
+   e->value = new Variant(head);
    this->notify(e);
 }

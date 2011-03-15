@@ -17,8 +17,7 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-from api.env.libenv import *
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import Variant, VMap, Argument, typeId, Parameter
 from api.vfs.libvfs import *
 from modules.fs.spare import SpareNode
 
@@ -397,30 +396,34 @@ class K800I(mfso):
        self.__disown__()
 
     def start(self, args):
-       self.nor = args.get_node('nor')
-       self.nand = args.get_node('nand')
-       self.spareSize = args.get_int("spare-size")
-       self.pageSize = args.get_int("page-size")
-       if self.pageSize == None or self.pageSize < 0:
-         self.pageSize = 512
-       if self.spareSize == None or self.spareSize < 0:
-         self.spareSize = 16
+      try:
+        self.nor = args['nor'].value()
+        self.nand = args['nand'].value()
+      except IndexError:
+        return 
+      try: 
+        self.spareSize = args["spare-size"].value()
+      except IndexError:
+	self.spareSize = 16
+      try:
+        self.pageSize = args["page-size"].value()
+      except IndexError:
+	self.pageSize = 512
+      self.k800n = Node("k800")
+      self.k800n.__disown__()
+      self.boot = SEBootBlock(self.nor, self.pageSize) 
+      self.blockSize = self.boot.blockSize
+      self.nandClean = SpareNode(self, self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
+      self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
+      self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot) 
+      self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
+      self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
+      self.tables = Tables(self.fullFs, self.blockSize)
+      self.virtual = VirtualMap(self, self.k800n, self.fullFs, self.tables, "virtual", self.blockSize)
 
-       self.k800n = Node("k800")
-       self.k800n.__disown__()
-       self.boot = SEBootBlock(self.nor, self.pageSize) 
-       self.blockSize = self.boot.blockSize
-       self.nandClean = SpareNode(self, self.nand, "nandfs", self.pageSize, self.spareSize, self.k800n)
-       self.norFs = NorFs(self, self.k800n,  self.nor, "norfs", self.boot)
-       self.fullFs = FullFs(self, self.k800n, self.norFs, self.nandClean, "fullfs", self.boot) 
-       self.gdfs = GDFS(self, self.k800n, self.nor, "gdfs", self.boot)
-       self.firmware = Firmware(self, self.k800n,  self.nor, "firmware", self.boot.norfsoffset)
-       self.tables = Tables(self.fullFs, self.blockSize)
-       self.virtual = VirtualMap(self, self.k800n, self.fullFs, self.tables, "virtual", self.blockSize)
-
-       self.separt =  SEPartitionBlock(self.virtual, self.boot.partitionblock, self.blockSize)
-       self.createPart()
-       self.registerTree(self.nand, self.k800n) 
+      self.separt =  SEPartitionBlock(self.virtual, self.boot.partitionblock, self.blockSize)
+      self.createPart()
+      self.registerTree(self.nand, self.k800n)
 
     def createPart(self):
       for part in self.separt.partTable:
@@ -431,10 +434,22 @@ class K800i(Module):
   """This modules permit to browse the content of a K800i phones."""
   def __init__(self):
     Module.__init__(self, "k800i", K800I)
-    self.conf.add("nor", "node", False, "K800i nor dump")
-    self.conf.add("nand", "node", False, "K800i nand dump")
-    self.conf.add("spare-size", "int", False, "Size of nand spare")
-    self.conf.add_const("spare-size", 16)
-    self.conf.add("page-size", "int", False, "Size of nand page")
-    self.conf.add_const("page-size", 512)
+    self.conf.addArgument({"name": "nor",
+                           "description": "K800i nor dump",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "nand",
+                           "description": "K800i nand dump",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "spare-size",
+                           "description": "size of nand spare",
+                           "input": Argument.Optional|Argument.Single|typeId.UInt32,
+                           "parameters": {"type": Parameter.Editable,
+                                          "predefined": [16, 8, 32, 64]}
+                           })
+    self.conf.addArgument({"name": "page-size",
+                           "description": "size of nand page",
+                           "input": Argument.Optional|Argument.Single|typeId.UInt32,
+                           "parameters": {"type": Parameter.Editable,
+                                          "predefined": [512, 256, 1024, 2048, 4096]}
+                           })
     self.tags = "Mobile"

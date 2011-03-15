@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -17,28 +17,15 @@
 #ifndef __COMMON_HPP__
 #define __COMMON_HPP__
 
-#include <iostream>
-#include <iomanip>
 #include <stdio.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <wchar.h>
 #include <map>
 #include <vector>
-#include <queue>
-#include <stack>
 
-#include "type.hpp"
-#include "vfs.hpp"
-#include "conf.hpp"
 #include "search.hpp"
 #include "pattern.hpp"
 #include "boyer_moore.hpp"
-
-using namespace std;
-
-typedef unsigned long long dff_ui64;
 
 typedef struct	description
 {
@@ -54,8 +41,8 @@ typedef struct		s_context
   description		*descr;
   unsigned char		*headerBcs;
   unsigned char		*footerBcs;
-  vector<uint64_t>	headers;
-  vector<uint64_t>	footers;
+  std::vector<uint64_t>	headers;
+  std::vector<uint64_t>	footers;
 }			context;
 
 #endif

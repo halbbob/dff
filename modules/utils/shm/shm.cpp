@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -45,28 +45,24 @@ Shm::~Shm()
 {
 }
 
-void	Shm::start(argument* arg)
+void	Shm::start(std::map<std::string, Variant*> args)
 {
+  std::map<std::string, Variant*>::iterator it;
   Node*		parent;
-  string	filename;
+  std::string	filename;
   Node*		node;
 
-  try
-    {
-      arg->get("parent", &parent);
-      arg->get("filename", &filename);
-      node = this->addnode(parent, filename);
-      string n = "file " + node->absolute() + " created\n";
-      res->add_const("result", n);
-    }
-  catch (vfsError e)
-    {
-      throw vfsError("[SHM] start() error\n" + e.error);
-    }
-  catch (envError e)
-    {
-      throw envError("[SHM] start() error with provided arguments\n" + e.error);
-    }
+  if ((it = args.find("parent")) != args.end())
+    parent = it->second->value<Node*>();
+  else
+    throw vfsError("shm requires < parent > argument");
+  if ((it = args.find("filename")) != args.end())
+    filename = it->second->value<std::string>();
+  else
+    throw vfsError("shm requires < filename > argument");
+  node = this->addnode(parent, filename);
+  string n = "file " + node->absolute() + " created\n";
+  this->res["result"] = new Variant(n);
   return ;
 }
 

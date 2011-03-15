@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -21,13 +21,9 @@ from PyQt4.QtWebKit import QWebView, QWebPage, QWebFrame
 from PyQt4.QtHelp import QHelpEngine
 
 from api.loader import *
-from api.env import *
 from api.taskmanager.taskmanager import *
 
 from ui.gui.utils.utils import Utils
-from ui.gui.widget.stdio import IO 
-
-from ui.redirect import RedirectIO
 
 class Help(QDockWidget):
     def __init__(self, parent=None, path=None):

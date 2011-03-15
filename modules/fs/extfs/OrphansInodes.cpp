@@ -55,16 +55,7 @@ void		OrphansInodes::load(class Extfs * extfs)
 	  extfs->vfile()->seek(addr);
 	  extfs->vfile()->read(tab, extfs->SB()->inodes_struct_size());
 	  inode->init();
-	  /*
-	    if (inode->isAllocated(i, extfs->vfile()))
-	    {
-	    Node * node
-	    = new ExtfsRawDataNode(oss.str(),
-	    extfs->SB()->inodes_struct_size(),
-	    extfs->orphans(), extfs, addr);
-	    }
-	    else
-	  */
+
 	  if (inode->block_pointers()[0] 
 	      || inode->simple_indirect_block_pointer()
 	      || inode->double_indirect_block_pointer()
@@ -92,7 +83,7 @@ void		OrphansInodes::load(class Extfs * extfs)
 		    size += extfs->SB()->block_size();
 	      ExtfsNode * node = NULL;
 	      node = new ExtfsNode(oss.str() + std::string("_content"),
-				   size, extfs->orphans(), extfs, addr);
+				   size, extfs->orphans(), extfs, addr, false, extfs->addBlockPointers);
 	    }
 	  if (extfs->SB()->inodes_struct_size() > sizeof(inodes_t))
 	    {

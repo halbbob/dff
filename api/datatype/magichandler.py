@@ -1,5 +1,5 @@
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009-2010 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
 # at the top of the source tree.
@@ -19,9 +19,8 @@ try:
 except:
   import magic
 from api.vfs import *
-from api.env import *
 from api.exceptions.libexceptions import *
-from api.variant.libvariant import Variant
+from api.types.libtypes import Variant
 from api.vfs.libvfs import *
 import os
 from libdatatype import DataTypeManager, DataTypeHandler
@@ -31,7 +30,6 @@ class MagicHandler(DataTypeHandler):
      DataTypeHandler.__init__(self, name)
      self.__disown__()
      self.vfs = vfs.vfs()
-     self.env = env.env()
      self.mime = magic.open(mtype)
      if os.name == "nt":
        import sys
@@ -49,15 +47,16 @@ class MagicHandler(DataTypeHandler):
         buff = f.read(0x2000)
         f.close()
         filemime = self.mime.buffer(buff)
-        #vfilemime = Variant(filemime)
-        #vfilemime.thisown = False
         return filemime
     except IOError, e:
-	#return Variant("None")
 	return "None"
-#	print "magic handler error reading node " + node.absolute()
 
- 
-magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")
-magicTypeHandler = MagicHandler(magic.MAGIC_NONE, "magic") 
+try:
+  magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")
+except AttributeError:
+  magicMimeHandler = MagicHandler(magic.MIME, "magic mime")
+try:
+  magicTypeHandler = MagicHandler(magic.MAGIC_NONE, "magic") 
+except AttributeError:
+  magicTypeHandler = MagicHandler(magic.NONE, "magic")
 

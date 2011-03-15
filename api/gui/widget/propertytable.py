@@ -14,18 +14,13 @@
 #
 
 from PyQt4.QtCore import Qt, QString, QEvent
-from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem#, QHeaderView 
-#from api.vfs.libvfs import Attributes
+from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem
+from api.gui.widget.varianttreewidget import VariantTreeWidget
 
-from ui.gui.resources.ui_propertytable import Ui_PropertyTable
-
-class PropertyTable(QTreeWidget, Ui_PropertyTable):
+class PropertyTable(VariantTreeWidget):
   def __init__(self, parent):
-    QTreeWidget.__init__(self)
-
-    self.setupUi(self)
+    VariantTreeWidget.__init__(self, parent)
     self.node = None
-
     self.translation()
 
   def fillBase(self, node):
@@ -44,7 +39,7 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
       typestr += self.fileText
       if node.hasChildren():
         typestr += self.modAppliedText
-      self.fillCompatModule(node)
+    self.fillCompatModule(node)
     if node.hasChildren():
       self.fillChildren(node)
         
@@ -100,57 +95,13 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     self.expandItem(itemChildren)    
     
   def fillAttributes(self, node):
-    map = node.attributes()
-    map.thisown = False
-    if len(map) > 0:
-      itemExtendedAttr = QTreeWidgetItem(self)
-      itemExtendedAttr.setText(0, self.attributeText)
-      for key, value in map.iteritems():
-        item = QTreeWidgetItem(itemExtendedAttr)
-        item.setText(0, str(key))
-        if str(type(value)).find("Variant") != -1:
-          if str(type(value.value())).find("VMap") != -1:
-            self.fillMap(item, value.value())
-          elif str(type(value.value())).find("VList") != -1:
-            self.fillList(item, value.value())
-          elif str(value).find("vtime") != -1:
-            item.setText(1, str(value.value().get_time()))
-          else:
-            item.setText(1, str(value))
-        else:
-          if str(value).find("vtime") != -1:
-            item.setText(1, str(value.value().get_time()))
-          else:
-            item.setText(1, str(value))
-      self.expandItem(itemExtendedAttr)
-
-  def fillMap(self, parent, map):
-    for key, value in map.iteritems():
-      item = QTreeWidgetItem(parent)
-      item.setText(0, str(key))
-      if str(type(value)).find("Variant") != -1:
-        if str(type(value.value())).find("VMap") != -1:
-          self.fillMap(item, value.value())
-        elif str(type(value.value())).find("VList") != -1:
-          self.fillList(item, value.value())
-        elif str(value).find("vtime") != -1:
-          item.setText(1, str(value.value().get_time()))
-        else:
-          item.setText(1, str(value))
-      else:
-        if str(value).find("vtime") != -1:
-          item.setText(1, str(value.value().get_time()))
-        else:
-          item.setText(1, str(value))
-        
-
-  def fillList(self, parent, list):
-    for i in list:
-      item = QTreeWidgetItem(parent)
-      if str(i).find("vtime") != -1:
-        item.setText(1, str(i.value().get_time()))
-      else:
-        item.setText(1, str(i))
+    vmap = node.attributes()
+    if vmap:
+      if len(vmap) > 0:
+        itemExtendedAttr = QTreeWidgetItem(self)
+        itemExtendedAttr.setText(0, self.attributeText)
+        self.fillMap(itemExtendedAttr, vmap)
+        self.expandItem(itemExtendedAttr)
 
 
   def fill(self, node = None):
@@ -161,6 +112,9 @@ class PropertyTable(QTreeWidget, Ui_PropertyTable):
     if self.isVisible():
       self.fillBase(node)
       self.fillAttributes(node)
+      self.resizeColumnToContents(0)
+      self.resizeColumnToContents(1)
+
 
   def translation(self):
     self.nameText = self.tr('name')

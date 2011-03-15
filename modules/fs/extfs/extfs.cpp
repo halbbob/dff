@@ -21,7 +21,7 @@
 #include <memory>
 
 #include "extfs.hpp"
-#include "include/Option.h"
+//#include "include/Option.h"
 #include "include/ExtfsNode.h"
 #include "include/ExtfsRawDataNode.h"
 #include "include/ExtfsSymLinkNode.h"
@@ -46,11 +46,11 @@ Extfs::~Extfs()
   delete __root_dir;
 }
 
-void    Extfs::start(argument * arg)
+void    Extfs::start(std::map<std::string, Variant*> args)
 {
   try
     {
-      launch(arg);
+      launch(args);
     }
   catch (envError & e)
     {
@@ -61,7 +61,7 @@ void    Extfs::start(argument * arg)
     {
       std::cerr << "Extfs::start() :  vfsError exeption caught :"
 		<< std::endl << "\t -> " << e.error << std::endl;
-      throw e;
+
     }
   catch (std::exception & e)
     {
@@ -75,63 +75,75 @@ void    Extfs::start(argument * arg)
     }
 }
 
-void		Extfs::launch(argument * arg)
+void		Extfs::launch(std::map<std::string, Variant*> args)
 {
   bool		sb_check = false;
-  std::string	sb_force_addr("1024");
-  bool		run_driver;
-  std::string	check_alloc("");
+  uint64_t	sb_force_addr;
+  bool		run_driver = true;
+  bool		check_alloc;
   uint64_t	root_i_nb = ROOT_INODE;
-  Option *	opt;
+  std::map<std::string, Variant*>::iterator it;
 
   // get arguments, initialize and run.
-  arg_get(arg, "parent", &__node);
-  arg_get(arg, "SB_addr", &sb_force_addr);
-  arg_get(arg, "SB_check", &sb_check);
-  //  arg_get(arg, "check_alloc", &check_alloc);
-  //  sb_check = !sb_check;
+  if ((it = args.find("file")) != args.end())
+    this->__node = it->second->value<Node*>();
+  else
+    throw (std::string("Extfs::launch(): no parent provided"));
+
+  if ((it = args.find("SB_addr")) != args.end())
+    sb_force_addr = it->second->value<uint64_t>();
+  else
+    sb_force_addr = 1024;
 
   // initialization
-  this->init((sb_check ? "yes" : "no"),
-	     (sb_force_addr.empty() ? "1024" : sb_force_addr), check_alloc);
-  opt = new Option(arg, __SB, __vfile, __GD);
-  opt->parse(this);
+  this->init(sb_check, sb_force_addr, check_alloc);
+  /*  opt = new Option(arg, __SB, __vfile, __GD);
+      opt->parse(this); */
 
-  // parsing file system
-  arg_get(arg, "parse_fs", &run_driver);
+  // parsing file system ?
+  if ((it = args.find("parse_fs")) != args.end())
+    run_driver = it->second->value<bool>();
+  else
+    run_driver = true;
+
+   if ((it = args.find("blockpointers")) != args.end())
+    this->addBlockPointers = it->second->value<bool>();
+  else
+    this->addBlockPointers = false;
+
   if (run_driver)
     {
-      std::string	orphans("");
+      bool		orphans;
       std::string	root_inode("");
 
-      arg_get(arg, "i_orphans", &orphans);
-      arg_get(arg, "root_inode", &root_inode);
-      if (!root_inode.empty())
-	{
-	  std::istringstream	iss(root_inode);
-	  iss >> root_i_nb;
-	}
+      if ((it = args.find("i_orphans")) != args.end())
+	orphans = true;
+      else
+	orphans = false;
+
+      if ((it = args.find("root_inode")) != args.end())
+	root_i_nb = it->second->value<uint64_t>();
+      else
+	root_i_nb = ROOT_INODE;
+
       run(root_i_nb);
 
       /* parse orphans inode (i.e. inodes which are not part of the file system
 	 content) */
-      if (!(orphans.empty()) && (orphans == "yes"))
+      if (orphans)
 	__orphan_inodes();
       __root_dir->clean();
       this->registerTree(__node, __first_node);
     }
 }
 
-void		Extfs::init(const std::string & sb_check,
-			    const std::string & sb_force_addr,
-			    const std::string & check_alloc)
+void		Extfs::init(bool sb_check, uint64_t sb_force_addr, bool check_alloc)
 {
   __SB = new SuperBlock;
   __vfile = __node->open();
-  __SB->init(__node->size(), __vfile, NULL, sb_check, sb_force_addr);
+  __SB->init(__node->size(), __vfile, sb_check, sb_force_addr);
   __GD = new GroupDescriptor(__SB, __SB->block_size());
-  __GD->init(__SB->block_size(), __vfile, __SB->group_number(),
-	     (!check_alloc.empty() && check_alloc == "yes"));
+  __GD->init(__SB->block_size(), __vfile, __SB->group_number(), check_alloc);
   __alloc_inode = __SB->inodesNumber() - __SB->u_inodes_number();
   __nb_parsed_inode = 0;
 }
@@ -147,19 +159,18 @@ void		Extfs::run(uint64_t root_i_nb)
   __root_dir->dir_init();
   __root_dir->i_list()->insert(root_i_nb);
   __root_dir->read(addr, &inode);
-  __first_node = new ExtfsNode("Extfs", 0, NULL, this, 0, true);
-  __fs_node = new ExtfsNode("File system", 0, __first_node, this, addr);
+  __first_node = new ExtfsNode("Extfs", 0, NULL, this, 0, true, this->addBlockPointers);
+  __fs_node = new ExtfsNode("File system", 0, __first_node, this, addr, false, this->addBlockPointers);
   __fs_node->set_i_nb(root_i_nb);
-  __metadata_node = new ExtfsNode("Metadata", 0, __first_node, this, 0);
+  __metadata_node = new ExtfsNode("Metadata", 0, __first_node, this, 0, false, this->addBlockPointers);
   __suspiscious_i = new ExtfsNode("Suspiscious inodes", 0, __first_node,
-				  this, 0);
+				  this, 0, false, this->addBlockPointers);
   __suspiscious_dir = new ExtfsNode("Suspiscious directory", 0, __first_node,
-				    this, 0);
+				    this, 0, false, this->addBlockPointers);
   __root_dir->dirContent(__fs_node, (inodes_t *)__root_dir->inode(),
 			 addr, root_i_nb);
   __add_meta_nodes();
   __reserved_inodes();
-  //  __root_dir->i_list()->clear();
   this->stateinfo = "Finished";
 }
 
@@ -179,22 +190,17 @@ class ExtfsNode *	Extfs::createVfsNode(Node * parent, std::string name,
   if ((inode->file_mode & __IFMT) == __IFLNK)
     {
       size = inode->lower_size;
-      /*
-	ExtfsSymLinkNode * node
-	= new ExtfsSymLinkNode(name, size, parent, this, id);
-	node->setLink();
-      */
-      ExtfsNode * node = new ExtfsNode(name, 0, parent, this, id);
+      ExtfsNode * node = new ExtfsNode(name, 0, parent, this, id, false, this->addBlockPointers);
       return node;
     }
   else if (id && ((inode->file_mode & __IFMT) == __IFREG))
     {
       size = inode->lower_size;
-      ExtfsNode * node = new ExtfsNode(name, size, parent, this, id);
+      ExtfsNode * node = new ExtfsNode(name, size, parent, this, id, false, this->addBlockPointers);
       node->setFile();
       return node;
     }
-  ExtfsNode * node = new ExtfsNode(name, size, parent, this, id);
+  ExtfsNode * node = new ExtfsNode(name, size, parent, this, id, false, this->addBlockPointers);
   return node;
 }
 
@@ -239,7 +245,7 @@ void		Extfs::__reserved_inodes()
   inodes_t *	inode_s = new inodes_t;	
 
   __first_inodes_nodes = new ExtfsNode("Reserved inodes", 0, __first_node,
-				       this, 0);
+				       this, 0, false, this->addBlockPointers);
   inode->setInode(inode_s);
   for (unsigned int i = 1; i < __SB->f_non_r_inodes(); ++i)
     if ((i != ROOT_INODE) && (i != __SB->journal_inode()))
@@ -287,22 +293,6 @@ void			Extfs::__add_meta_nodes()
 void	Extfs::__orphan_inodes()
 {
   OrphansInodes *	orphans_i = new OrphansInodes(__root_dir->i_list());
-  this->__orphans_i = new ExtfsNode("Orphans inodes", 0, __first_node, this, 0);
+  this->__orphans_i = new ExtfsNode("Orphans inodes", 0, __first_node, this, 0, false, this->addBlockPointers);
   orphans_i->load(this);
-}
-
-template <typename T>
-void        Extfs::arg_get(argument * all_args, const std::string & name, T arg)
-{
-  try
-    {
-      all_args->get(name, arg);
-    }
-  catch (vfsError & e)
-    {
-      std::cerr << "Could not load " << name << " parameter" << std::endl;
-    } 
-  catch (...)
-    {
-    }
 }

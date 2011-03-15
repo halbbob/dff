@@ -1,6 +1,6 @@
-.TH DFF "1" "October 2010" "dff version 0.8" "User Commands"
+.TH DFF "1" "February 2011" "dff version 0.9" "User Commands"
 .SH NAME
-dff \- A powerfull, efficient and modular digital forensics tool.
+dff \- A powerful, efficient and modular digital forensics tool.
 .SH SYNOPSIS
 .B dff
 [\fIoptions\fR]
@@ -21,22 +21,21 @@ launch graphical interface
 start a specific test
 .TP
 \fB\-l\fR      \fB\-\-language\fR=\fILANG\fR
-use LANG as interface language, available: es, en, fr.
+use \fILANG\fR as interface language, available: es, en, fr.
 .TP
 \fB\-h\fR,     \fB\-\-help\fR
 display this help message
 .TP
 \fB\-d\fR,     \fB\-\-debug\fR
 redirect IO to system console
+.TP
+        \fB\-\-verbose\fR=\fILEVEL\fR
+set verbosity level when debugging, available \fILEVEL\fR: 0 to 3
+.TP
+\fB\-c\fR,     \fB\-\-config=\fIFILEPATH\fR
+use config file from given \fIFILEPATH\fR
 .SH "SEE ALSO"
-The full documentation for
-.B dff
-is maintained as a Texinfo manual.  If the
-.B info
-and
-.B dff
-programs are properly installed at your site, the command
-.IP
-.B info dff
-.PP
-should give you access to the complete manual.
+Project's wiki with up-to-date documentation for \fBdff\fR
+is provided at this url: \fIhttp://wiki.digital-forensic.org/\fR.
+.TP
+Embeded help is also available through the \fIHelp\fR menu in \fBdff\fR.

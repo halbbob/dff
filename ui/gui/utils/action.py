@@ -13,17 +13,18 @@
 #  Francois Percot <percot@gmail.com>
 # 
 
-from PyQt4.QtGui import QAction
+from PyQt4.QtGui import QAction, QIcon
 from PyQt4.QtCore import SIGNAL
 from utils import Utils
 
 class Action(QAction):
-    def __init__(self, parent, mainWindow, text, type):
+    def __init__(self, parent, mainWindow, text, type, icon = None):
         super(Action, self).__init__(mainWindow)
         self.__mainWindow = mainWindow
         self.type = type
         self.parent = parent
-        # if true return name of arg
+        if icon:
+          self.setIcon(QIcon(icon))
         self.hasOneArg = Utils.hasOneNodeArg(text, type)
         if text <> 0 :
             self.setText(str(text))
@@ -35,7 +36,7 @@ class Action(QAction):
         if self.hasOneArg and self.parent.callbackSelected :
             self.emit(SIGNAL("execModule"), self.text(), self.type, self.hasOneArg, self.parent.callbackSelected())
         else :
-	    try :
-              self.emit(SIGNAL("launchScript"), self.text(),  self.type, self.parent.callbackSelected())
-	    except TypeError:	
-              self.emit(SIGNAL("launchScript"), self.text(),  self.type, None)
+            try :
+                self.emit(SIGNAL("launchScript"), self.text(),  self.type, self.parent.callbackSelected())
+            except TypeError:	
+                self.emit(SIGNAL("launchScript"), self.text(),  self.type, None)

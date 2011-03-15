@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -23,24 +23,39 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
+#include "variant.hpp"
+#include "vtime.hpp"
+#include "node.hpp"
+#include "vlink.hpp"
+#include "vfile.hpp"
+#include "mfso.hpp"
 #include "fatfs.hpp"
 %}
+
+%import "../../../api/vfs/libvfs.i"
 
 %include "fatfs.hpp"
 
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import Argument, typeId
+
 class FATFS(Module):
   """This module create the tree contained in a fat file system, for normal and deleted files."""
   def __init__(self):
     Module.__init__(self, 'fatfs', Fatfs)
-    self.conf.add("file", "node", False, "Node containing a FAT file system")
-    self.conf.add("meta_carve", "bool", True, "carve directory entries in unallocated clusters (more accurate but slower)")
-    self.conf.add_const("mime-type", "FAT")
+    self.conf.addArgument({"name": "file",
+                           "description": "file containing a FAT file system",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "meta_carve",
+                           "description": "carve directory entries in unallocated clusters (more accurate but slower)",
+                           "input": Argument.Empty})
+    self.conf.addConstant({"name": "mime-type", 
+                           "type": typeId.String,
+                           "description": "managed mime type",
+                           "values": ["FAT"]})
     self.tags = "File systems"
 %}
 

@@ -12,21 +12,18 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-from typeSelection import *
-
+from PyQt4.QtGui import QWidget, QGroupBox, QGridLayout, QLabel, QComboBox, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QIcon, QMessageBox, QHBoxLayout, QCheckBox
+from PyQt4.Qt import SIGNAL
+from modules.search.carver.utils import QSpinBox
 import string
+
+from process import CarvingProcess
 
 import time
 
-class userPattern(QGroupBox):
+class PatternsTable(QWidget):
     def __init__(self):
-        QGroupBox.__init__(self, "User defined patterns")
-        self.setCheckable(True)
-        self.setChecked(False)
+        QWidget.__init__(self)
         self.grid = QGridLayout()
         self.setLayout(self.grid)
         self.patternArea()
@@ -55,6 +52,8 @@ class userPattern(QGroupBox):
         self.wildcard.setMaxLength(1)
         self.filetypeLabel = QLabel("File type")
         self.filetype = QLineEdit()
+        self.alignedLabel = QLabel("block aligned")
+        self.aligned = QCheckBox()
         self.windowLabel = QLabel("Window size")
         self.window = QSpinBox()
         self.window.setSuffix(" bytes")
@@ -70,20 +69,23 @@ class userPattern(QGroupBox):
         self.createPattern("Footer", 3)
         self.grid.addWidget(self.windowLabel, 4, 0)
         self.grid.addWidget(self.window, 4, 1)
-        self.grid.addWidget(self.addEntry, 5, 1)
+        self.grid.addWidget(self.alignedLabel, 5, 0)
+        self.grid.addWidget(self.aligned, 5, 1)
+        self.grid.addWidget(self.addEntry, 6, 1)
+
 
     def patternTable(self):
         self.patterns = QTableWidget()
         self.patterns.setShowGrid(False)
-        self.patterns.setColumnCount(5)
-        self.patterns.setHorizontalHeaderLabels(["Filetype", "Wildcard", "Header", "Footer", "Window"])
+        self.patterns.setColumnCount(6)
+        self.patterns.setHorizontalHeaderLabels(["Filetype", "Wildcard", "Header", "Footer", "Window", "Block aligned"])
         self.patterns.horizontalHeader().setStretchLastSection(True)
         self.connect(self.patterns.verticalHeader(), SIGNAL("sectionClicked(int)"), self.patterns.removeRow)
-        self.grid.addWidget(self.patterns, 6, 0, 1, 3)
+        self.grid.addWidget(self.patterns, 7, 0, 1, 3)
         
 
     def warning(self, msg):
-        msgBox = QMessageBox()
+        msgBox = QMessageBox(self)
         msgBox.setText(msg)
         msgBox.setIcon(QMessageBox.Warning)
         msgBox.exec_()
@@ -98,6 +100,10 @@ class userPattern(QGroupBox):
                 if i not in string.letters:
                     msg = "Type's characters must be in the following set\n\n" + string.letters
                     break
+            rowCount = self.patterns.rowCount()
+            for row in range(0, rowCount):
+                if str(self.patterns.item(row, 0).text()) == kwargs["type"]:
+                    msg = "Type <" + kwargs["type"] + " > already defined"
         if msg != "":
             self.warning(msg)
             return False
@@ -133,6 +139,7 @@ class userPattern(QGroupBox):
         footer = str(self.footerEntry.text())
         footerType = str(self.footerType.currentText())
         window = self.window.text()
+        aligned = self.aligned.isChecked()
 
         #Validate most of provided items
         kwargs = {"type": filetype, "header": header, "headerType": headerType, 
@@ -146,6 +153,7 @@ class userPattern(QGroupBox):
         headerItem = QTableWidgetItem(header + " (" + headerType[0:3] + ")")
         footerItem = QTableWidgetItem(footer + " (" + footerType[0:3] + ")")
         windowItem = QTableWidgetItem(window)
+        alignedItem = QTableWidgetItem(str(aligned))
         self.patterns.insertRow(self.patterns.rowCount())
         vertHeader = QTableWidgetItem(QIcon(":closetab.png"), "")
         row = self.patterns.rowCount() - 1
@@ -155,6 +163,7 @@ class userPattern(QGroupBox):
         self.patterns.setItem(row, 2, headerItem)
         self.patterns.setItem(row, 3, footerItem)
         self.patterns.setItem(row, 4, windowItem)
+        self.patterns.setItem(row, 5, alignedItem)
         self.patterns.resizeRowToContents(row)
 
         
@@ -211,24 +220,32 @@ class userPattern(QGroupBox):
                 pattern = self.toHex(pattern, wildcard)
         return pattern
 
-    def itemToFileDescr(self, row):
-        fd = file_description()
-        fd.type = str(self.patterns.item(row, 0).text())
-        fd.wildcard = str(self.patterns.item(row, 1).text())
-        header = self.textToPattern(str(self.patterns.item(row, 2).text()), fd.wildcard)
-        fd.header = header
-        fd.header_size = len(header)
-        footer = self.textToPattern(str(self.patterns.item(row, 3).text()), fd.wildcard)
-        fd.footer = footer
-        fd.footer_size = len(footer)
-        fd.window = int(self.patterns.item(row, 4).text().replace(" bytes", ""))
-        return fd
 
-    def getChecked(self):
-        entries = []
-        if self.isChecked():
-            rowCount = self.patterns.rowCount()
-            for row in range(0, rowCount):
-                entries.append(self.itemToFileDescr(row))
-        return entries
+    def selectedItems(self):
+        selected = {}
+        rowCount = self.patterns.rowCount()
+        for row in range(0, rowCount):
+            filetype = str(self.patterns.item(row, 0).text())
+            wildcard = str(self.patterns.item(row, 1).text())
+            selected[filetype] = []
+            pattern = []
+            pattern.append(self.textToPattern(str(self.patterns.item(row, 2).text()), wildcard))
+            pattern.append(self.textToPattern(str(self.patterns.item(row, 3).text()), wildcard))
+            pattern.append(int(self.patterns.item(row, 4).text().replace(" bytes", "")))
+            selected[filetype].append([pattern])
+            selected[filetype].append(wildcard)
+            if self.patterns.item(row, 5).text() == "True":
+                selected[filetype].append(True)
+            else:
+                selected[filetype].append(False)
+        return selected
 
+
+class UserPatterns(QWidget):
+    def __init__(self, vnode):
+        QWidget.__init__(self)
+        self.baseLayout = QHBoxLayout(self)
+        self.table = PatternsTable()
+        self.cprocess = CarvingProcess(self.table, vnode)
+        self.baseLayout.addWidget(self.table)
+        self.baseLayout.addWidget(self.cprocess)

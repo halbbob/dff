@@ -128,14 +128,15 @@ Attributes	BlockPointerAttributes::attributes(Node* node)
 
 
 ExtfsNode::ExtfsNode(std::string name, uint64_t size, Node* parent,
-		     Extfs * fsobj, uint64_t inode_addr, bool is_root)
+		     Extfs * fsobj, uint64_t inode_addr, bool is_root, bool add_attribute_blocks)
   : Node (name, size, parent, fsobj)
 {
   this->__inode_addr = inode_addr;
   this->__extfs = fsobj;
   this->__i_nb = 0;
   this->__is_root = is_root;
-  this->registerAttributes(fsobj->attributeHandler);
+  if (add_attribute_blocks)
+    this->registerAttributes(fsobj->attributeHandler);
 }
 
 ExtfsNode::~ExtfsNode()
@@ -242,7 +243,7 @@ Attributes 	ExtfsNode::_attributes()
     {
       MfsoAttrib * c_attr = new MfsoAttrib;
       c_attr->setAttrs(inode, &attr, this->__i_nb, this->__inode_addr);
-      vtime* modified = new vtime;	
+      vtime* modified = new vtime;
       c_attr->vtime_from_timestamp(inode->modif_time(), modified);
       attr["modified"] = new Variant(modified);
       vtime* accessed = new vtime;	

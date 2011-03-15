@@ -17,6 +17,7 @@ import os
 from api.vfs import *
 from api.module.script import *
 from api.exceptions.libexceptions import *
+from api.types.libtypes import Argument, typeId, Variant
 from api.module.module import *
 import time
 import traceback
@@ -28,25 +29,20 @@ class EXTRACT(Script):
 
 
   def start(self, args):
-    nodes = args.get_lnode('files')
-    path = args.get_path('syspath').path
-    if path[-1] != "/":
-      path += "/"
-    try :
-      recursive = args.get_bool('recursive')
+    try:
+      nodes = args['files'].value()
+      path = args['syspath'].value().path
+      if path[-1] != "/":
+        path += "/"
+      if args.has_key('recursive'):
+        recursive = args["recursive"].value()
+      else:
+        recursive = False
+      self.extractNodes(nodes, path, recursive)
+      self.createReport()
     except KeyError:
-      recursive = None
-    #for node in self.nodes:
-    #  if node.isFile():
-    #    self.total += 1
-    #  if self.rec and self.hasChildren():
-    #    self.total += self.totalFiles(node.children())
-    #for node in self.nodes:
-    #  self.launch(node)
-    self.extractNodes(nodes, path, recursive)
-    self.createReport()
-
-
+      pass
+    
   def initContext(self, nodes, path, recursive):
     self.path = path
     self.recursive = recursive
@@ -68,12 +64,10 @@ class EXTRACT(Script):
     if self.total_files > 0:
       percent = (float(self.extracted_files) * 100) / self.total_files
       stats += "extracted file(s):   " + str(self.extracted_files) + "/" + str(self.total_files) + " (" + str(round(percent, 2)) + "%)\n"
-      #self.res.add_const("file(s) extracted successfully", "\n" + self.log["files"]["ok"])
 
     if self.total_folders > 0:
       percent = (float(self.extracted_folders) * 100) / self.total_folders
       stats += "extracted folder(s): " + str(self.extracted_folders) + "/" + str(self.total_folders) + " (" + str(round(percent, 2)) + "%)\n" 
-      #self.res.add_const("folder(s) extracted successfully", "\n" + self.log["folders"]["ok"])
 
     if self.ommited_files > 0:
       percent = (float(self.ommited_files) * 100) / self.total_files
@@ -86,66 +80,86 @@ class EXTRACT(Script):
     if self.files_errors > 0:
       percent = (float(self.files_errors) * 100) / self.total_files
       stats += "file(s) error:       " + str(self.files_errors) + "/" + str(self.total_files) + " (" + str(round(percent, 2)) + "%)\n"
-      self.res.add_const("file(s) errors", "\n" + self.log["files"]["nok"])
+      val = Variant(self.log["files"]["nok"])
+      val.thisown = False
+      self.res["file(s) errors"] = val
+
 
     if self.folders_errors > 0:
       percent = (float(self.folders_errors) * 100) / self.total_folders
       stats += "folder(s) error:     " + str(self.folders_errors) + "/" + str(self.total_folders) + " (" + str(round(percent, 2)) + "%)\n"
-      self.res.add_const("folder(s) errors", "\n" + self.log["folders"]["nok"])
+      val = Variant(self.log["folders"]["nok"])
+      val.thisown = False      
+      self.res["folder(s) errors"] = val
 
     if len(stats):
-      self.res.add_const("statistics", "\n" + stats)
+      v = Variant(stats)
+      v.thisown = False
+      self.res["statistics"] = v
 
 
   def extractNodes(self, nodes, path, recursive):
     self.initContext(nodes, path, recursive)
-    for node in nodes:
+    for vnode in nodes:
+      node = vnode.value()
       syspath = self.path + node.name()
       if not self.recursive:
-        if node.isFile():
+        if node.size():
           self.extractFile(node, syspath)
-        elif node.hasChildren():
+        elif node.hasChildren() or node.isDir():
           self.makeFolder(node, syspath)
+        else:
+          self.extractFile(node, syspath)
       else:
-        if node.isFile():
+        if node.size():
           if node.hasChildren():
             self.extractFile(node, syspath + ".bin")
             self.makeFolder(node, syspath)
             self.recurse(node.children(), node.name() + "/")
           else:
             self.extractFile(node, syspath)
-        if node.hasChildren():
+        elif node.hasChildren() or node.isDir():
           self.makeFolder(node, syspath)
           self.recurse(node.children(), node.name() + "/")
+        else:
+          self.extractFile(node, syspath)
 
 
   def extractedItemsCount(self, nodes):
-    for node in nodes:
-      if node.isFile():
+    for vnode in nodes:
+      try:
+        node = vnode.value()
+      except AttributeError:
+        node = vnode
+      if node.size():
         self.total_files += 1
         if node.hasChildren() and self.recursive:
           self.total_folders += 1
           self.extractedItemsCount(node.children())
-      if node.hasChildren():
+      elif node.hasChildren() or node.isDir():
         self.total_folders += 1
         if node.hasChildren() and self.recursive:
           self.extractedItemsCount(node.children())
+      else:
+        self.total_files += 1
 
 
   def recurse(self, nodes, vpath):
     recnodes = []
     for node in nodes:
       syspath = self.path + vpath + node.name()
-      if node.isFile():
+      if node.size():
         if node.hasChildren():
           self.extractFile(node, syspath + ".bin")
           if self.makeFolder(node, syspath):
             recnodes.append(node)
         else:
           self.extractFile(node, syspath)
-      if node.hasChildren():
+      elif node.hasChildren() or node.isDir():
         if self.makeFolder(node, syspath):
           recnodes.append(node)
+      else:
+        self.extractFile(node, syspath)
 
     for recnode in recnodes:
       self.recurse(recnode.children(), vpath + recnode.name() + "/")
@@ -176,15 +190,17 @@ class EXTRACT(Script):
 
   def countOmmited(self, nodes):
     for node in nodes:
-      if node.isFile():
+      if node.size():
         self.ommited_files += 1
         if node.hasChildren() and self.recursive:
           self.ommited_folders += 1
           self.countOmmited(node.children())
-      if node.hasChildren():
+      elif node.hasChildren() or node.isDir():
         self.ommited_folders += 1
         if node.hasChildren() and self.recursive:
-          self.countOmmited(node.children())      
+          self.countOmmited(node.children())
+      else:
+        self.ommited_files += 1
 
 
   def makeFolder(self, node, syspath):
@@ -232,7 +248,14 @@ class extract(Module):
   """Extract file in your operating system file system."""
   def __init__(self):
     Module.__init__(self, "extract", EXTRACT)
-    self.conf.add("files", "lnode", False, "Files or directories list to extract.")
-    self.conf.add("syspath", "path", False, "Local file system path where to extract files.") 
-    self.conf.add("recursive", "bool", True, "Extract recursivly each files in all in sub-directories.")
+    self.conf.addArgument({"name": "files",
+                           "description": "Files or directories list to extract",
+                           "input": Argument.Required|Argument.List|typeId.Node})
+    self.conf.addArgument({"name": "syspath",
+                           "description": "Local file system path where files will be extracted",
+                           "input": Argument.Required|Argument.Single|typeId.Path})
+    self.conf.addArgument({"name": "recursive",
+                           "description": "Extract recursivly each files in all sub-directories",
+                           "input": Argument.Empty})
     self.tags = "Node"
+    self.icon = ":extract.png"

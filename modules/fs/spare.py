@@ -17,9 +17,8 @@ from struct import unpack
 
 from api.vfs import *
 from api.module.module import *
-from api.env.libenv import *
-from api.variant.libvariant import Variant, VMap
-from api.vfs.libvfs import *
+from api.types.libtypes import Variant, VMap, Parameter, Argument, typeId
+from api.vfs.libvfs import AttributesHandler
 
 class SpareNode(Node):
    def __init__(self, mfso, parent, name, pageSize = 512, spareSize = 16, lparent = None, invert = False):
@@ -39,7 +38,7 @@ class SpareNode(Node):
       fm.thisown = False
       voffset = 0
       offset = 0
-      if not self.invert: #XXX faire 2 node avec le clean + la spare a part ? 
+      if not self.invert:
         while voffset < self.ssize:
           fm.push(voffset, self.pageSize, self.nparent, offset)
           offset += (self.spareSize + self.pageSize)
@@ -70,17 +69,23 @@ class Spare(mfso):
       self.__disown__()
  
    def start(self, args):
-      self.parent = args.get_node("node")
-      self.spareSize = args.get_int("spare-size")
-      self.pageSize = args.get_int("page-size")
-      try :
-        self.invert = args.get_bool("invert")
-      except KeyError:
-        self.invert = False
-      if self.pageSize == None or self.pageSize < 0:
-        self.pageSize = 512
-      if self.spareSize == None or self.spareSize == -1:
-        self.spareSize = 16
+      self.invert = None
+      try:
+        self.parent = args['node'].value()
+      except IndexError:
+        return 
+      try: 
+        self.spareSize = args["spare-size"].value()
+      except IndexError:
+	self.spareSize = 16
+      try:
+        self.pageSize = args["page-size"].value()
+      except IndexError:
+	self.pageSize = 512
+      try:
+	self.invert = args["dump_spare"]
+      except IndexError:
+	pass	
       self.nosparenode = SpareNode(self, self.parent, "no-spare", self.pageSize, self.spareSize, None, False) 
       if self.invert: 
         self.sparenode = SpareNode(self, self.parent, "spare", self.pageSize, self.spareSize, self.parent, True)  
@@ -92,10 +97,27 @@ This could be usefull for recovering more data when carving a dump with slack,
 or before applying a file system reconstruction modules."""
   def __init__(self):
      Module.__init__(self, 'spare', Spare)
-     self.conf.add("node", "node", False, "Delete spare of this node.")
-     self.conf.add("spare-size", "int", False, "size of a nand spare")
-     self.conf.add_const("spare-size", 16)
-     self.conf.add("page-size", "int", False, "size of a nand page")
-     self.conf.add_const("page-size", 512)
-     self.conf.add("invert", "bool", True, "Create a spare only node")
+     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node,
+                            "name": "node",
+                            "description": "Delete spare areas in this node"
+                            })
+     
+     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt16,
+                            "name": "spare_size",
+                            "description": "Spare size",
+                            "parameters": {"type": Parameter.Editable,
+                                           "predefined": [16, 8, 24, 32]}
+                            })
+     
+     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt32,
+                            "name": "page_size",
+                            "description": "Iterate on each page size",
+                            "parameters": {"type": Parameter.Editable,
+                                           "predefined": [512, 256, 1024]}
+                            })
+
+     self.conf.addArgument({"input": Argument.Empty,
+                            "name": "dump_spare",
+                            "description": "Create a node with only spares data"
+                            })
      self.tags = "Node"

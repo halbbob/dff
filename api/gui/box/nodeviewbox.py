@@ -17,13 +17,12 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-#from api.gui.widget.nodefilterbox import NodeFilterBox
-
-from api.gui.model.vfsitemmodel import  VFSItemModel, HMODULE
 from api.gui.widget.propertytable import PropertyTable
-from api.vfs.vfs import vfs, Node, DEvent, VLink
+from api.gui.widget.completer import CompleterWidget
+from api.vfs.vfs import vfs, Node, VLink
+from api.types.libtypes import  typeId
+from api.events.libevents import event
 from api.vfs import libvfs
-from api.variant.libvariant import typeId
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
 from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
@@ -41,6 +40,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.history.append("/")
     self.currentPathId = -1
 
+    self.model = self.parent.model
+    self.connect(self.model, SIGNAL("rootPathChanged"), self.rootpathchanged)
+
     self.bookmarkCategories = []
     self.bookmarkNode = self.vfs.getnode('/Bookmarks/')
 
@@ -52,8 +54,10 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.setNextDropButton()
     self.parent.connect(self.top, SIGNAL("clicked()"), self.moveToTop)
     self.parent.connect(self.root, SIGNAL("clicked()"), self.goHome)
-    
-    self.createPathEdit()
+
+    self.completerWidget = CompleterWidget()
+    self.pathedit.addWidget(self.completerWidget)
+
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
     self.createCheckBoxAttribute()
@@ -66,6 +70,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
     self.tableActivated()
+
+
 
   def viewboxChanged(self, index):
     if index == 0:
@@ -119,7 +125,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
 
   def goHome(self):
-     self.parent.model.setRootPath(self.vfs.getnode("/"))    
+     self.parent.model.setRootPath(self.vfs.getnode("/"))
+
 
   def createCheckBoxAttribute(self):
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
@@ -149,10 +156,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       node = self.vfs.getnode(path)
       self.parent.model.setRootPath(node, 1)
       self.changeNavigationState()
-      self.pathedit.setCompleter(None)
-      self.pathedit.clear()
-      self.pathedit.insert(path[1:])
-      self.pathedit.setCompleter(self.completer)
+      #self.pathedit.insert(path[1:])
+      #self.pathedit.setCompleter(self.completer)
 
   def moveToNext(self):
     if self.currentPathId < len(self.history) - 1:
@@ -161,10 +166,10 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       node = self.vfs.getnode(path)
       self.parent.model.setRootPath(node, 1)
       self.changeNavigationState()
-      self.pathedit.setCompleter(None)
-      self.pathedit.clear()
-      self.pathedit.insert(path[1:])
-      self.pathedit.setCompleter(self.completer)
+      #self.pathedit.setCompleter(None)
+      #self.pathedit.clear()
+      #self.pathedit.insert(path[1:])
+      #self.pathedit.setCompleter(self.completer)
  
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
@@ -202,29 +207,17 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      else:
        self.parent.nodeFilterBox.setVisible(True) 
 
-  def createPathEdit(self):
-    self.treemodel = self.parent.treeModel
-    self.model = self.parent.model
-
-    self.connect(self.model, SIGNAL("rootPathChanged"), self.rootpathchanged)
-    
-    self.completer = kompleter(self.pathedit, self.treemodel, self.model)
-    self.pathedit.setCompleter(self.completer)
 
   def rootpathchanged(self, node):
     path = node.absolute()
+    self.completerWidget.pathChanged(node.absolute())
     if len(self.history) > 0 and  self.history[len(self.history) - 1] != path:
       if not self.pathInHistory(path, self.history):
         self.history.append(str(node.absolute()))
 
     self.currentPathId = len(self.history) - 1
     self.changeNavigationState()
-    if path != "/":
-      path += "/"
-    self.pathedit.setCompleter(None)
-    self.pathedit.clear()
-    self.pathedit.insert(path[1:])
-    self.pathedit.setCompleter(self.completer)
+
 
   def changeNavigationState(self):
     self.setPrevMenu()
@@ -266,7 +259,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 	    c = VLink(child, n)
 	    c.__disown__()
       self.parent.model.checkedNodes.clear()	
-      e = DEvent()
+      e = event()
       self.VFS.notify(e)
 
   def attrSelectView(self):
@@ -381,17 +374,20 @@ class attrDialog(QDialog, Ui_SelectAttr):
         self.selectedTypes.addItem(i)
       except:  
         self.types.addItem(i)
-
-    attrs = node.attributes()[module.name].value()
-    attrs.thisown = False
-    for j in model.header_list:
-      self.selectedAttrs.addItem(j)
-    for i in attrs:
-      if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
-        try:
-          model.header_list.index(i)
-        except:
-          self.allAttrs.addItem(i)
+    
+    try :
+      attrs = node.attributes()[module.name].value()
+      attrs.thisown = False
+      for j in model.header_list:
+        self.selectedAttrs.addItem(j)
+      for i in attrs:
+        if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
+          try:
+            model.header_list.index(i)
+          except:
+            self.allAttrs.addItem(i)
+    except IndexError:
+	pass
     model.header_list = []
     model.type_list = []
       
@@ -494,30 +490,3 @@ class bookmarkDialog(QDialog, Ui_AddBookmark):
       self.retranslateUi(self)
     else:
       QDialog.changeEvent(self, event)
-        
-class kompleter(QCompleter):
-    def __init__(self, parent, treemodel, model):
-      QCompleter.__init__(self, treemodel) 
-      self.init(parent, model, treemodel)
-
-    def init(self, parent, model, treemodel):
-      self.parent = parent
-      self.model = model
-      self.treemodel = treemodel
-      
-      self.setModel(self.treemodel)
-      self.setCompletionMode(QCompleter.PopupCompletion)
-      self.setCompletionRole(Qt.DisplayRole)
-      self.setCaseSensitivity(Qt.CaseInsensitive)
-
-    def splitPath(self, path):
-      return path.split('/')
-
-    def pathFromIndex(self, modelindex, node = None):
-      if modelindex != None:
-        node = self.treemodel.VFS.getNodeFromPointer(modelindex.internalId())
-      
-        abspath = node.absolute()
-        self.model.setRootPath(node, 1)
-        abspath += "/"
-        return QString(abspath[1:])

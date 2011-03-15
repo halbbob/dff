@@ -17,35 +17,37 @@ from api.vfs import *
 from api.module.module import *
 from api.taskmanager.taskmanager import *
 from api.module.script import *
+from ui.console.utils import VariantTreePrinter
+from api.types.libtypes import Argument, typeId
 
 class FG(Script):
   def __init__(self):
     Script.__init__(self, "fg")
     self.tm = TaskManager()
-    	
-  def start(self, args):	
+    self.vtreeprinter = VariantTreePrinter()
+	
+  def start(self, args):
     self.lprocessus = self.tm.lprocessus
-    jobs = args.get_int("pid")
+    jobs = args["pid"].value()
     for proc in self.lprocessus:
       if jobs == proc.pid:
-       print "Displaying processus: " + str(proc.pid) + " name:" + str(proc.name) + " state:" + str(proc.state) + "\n"
-       try :
+        print "Displaying processus: " + str(proc.pid) + " name: " + str(proc.name) + " state: " + str(proc.state) + "\n"
+        try :
 	  text = self.lprocessus[jobs].stream.get(0)
 	  while text:
 	    print text
 	    text = self.lprocessus[jobs].stream.get(0)
-       except Empty:
-	 pass
-       try :
-	 for type, name, val in self.env.get_val_map(proc.res.val_m):
-	     print name + ":" + "\n" + val
-       except AttributeError:
-	  pass
+        except Empty:
+          pass
+        print self.vtreeprinter.fillMap(0, proc.res)
+       
 
 class fg(Module):
   """Switch to a process in background"""
   def __init__(self):
    Module.__init__(self, "fg", FG)
-   self.conf.add("pid", "int", False, "Process id (use jobs to list process id)")
+   self.conf.addArgument({"name": "pid",
+                          "description": "Process id (use jobs to list process id)",
+                          "input": Argument.Single|Argument.Required|typeId.UInt32})
    self.tags = "builtins"
    self.flags = ["console"]

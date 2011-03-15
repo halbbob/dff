@@ -9,7 +9,6 @@ include_directories(${CMAKE_HOME_DIRECTORY}/api/tree)
 
 set(extfs_srcs
   extfs.cpp
-  CustomAttrib.cpp
   Directory.cpp
   SymLink.cpp
   Journal.cpp
@@ -28,7 +27,6 @@ set(extfs_srcs
   ExtfsShiftNode.cpp
   BlkList.cpp
   DirLs.cpp
-  Option.cpp
   MfsoAttrib.cpp
   OrphansInodes.cpp
   data_structure/InodeStructure.cpp
@@ -44,7 +42,7 @@ set(extfs_srcs
 
 SET_SOURCE_FILES_PROPERTIES(extfs.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(EXTFS python extfs.i ${extfs_srcs})
-SWIG_LINK_LIBRARIES(EXTFS ${PYTHON_LIBRARIES} _libvariant _libexceptions _libtype _libvfs _libenv _libtree)
+SWIG_LINK_LIBRARIES(EXTFS ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs _libtree)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_EXTFS_REAL_NAME} PROPERTIES

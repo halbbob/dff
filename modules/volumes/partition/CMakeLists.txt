@@ -27,7 +27,7 @@ set(partition_srcs
 
 SET_SOURCE_FILES_PROPERTIES(partition.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(PARTITION python partition.i ${partition_srcs})
-SWIG_LINK_LIBRARIES(PARTITION ${PYTHON_LIBRARIES} _libexceptions _libvariant _libtype _libvfs _libenv)
+SWIG_LINK_LIBRARIES(PARTITION ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_PARTITION_REAL_NAME} PROPERTIES

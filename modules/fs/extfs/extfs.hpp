@@ -24,9 +24,9 @@
 #include <memory>
 #include <typeinfo>
 
-#include "type.hpp"
+#include "variant.hpp"
 #include "vfs.hpp"
-#include "conf.hpp"
+#include "mfso.hpp"
 #include "include/ExtfsNode.h"
 #include "data_structure/includes/GroupDescriptor.h"
 #include "data_structure/includes/extfs_struct/inodes.h"
@@ -58,13 +58,13 @@ public:
 
     \param arg the arguments of extfs
   */
-  virtual void		start(argument *arg);
+  virtual void		start(std::map<std::string, Variant*> args);
 
   /*! \brief Lauch the driver.
     In this method all the options are parsed and the proper method called.
     \param arg arguments passed to the driver
   */
-  void			launch(argument *arg);
+  void			launch(std::map<std::string, Variant*> args);
 
   /*! \brief Initialize the driver.
     
@@ -80,9 +80,8 @@ public:
     vfile.
     \param check_alloc check allocation status
   */
-  void			init(const std::string & sb_check,
-			     const std::string & sb_force_addr,
-			     const std::string & check_alloc);
+  void			init(bool sb_check, uint64_t sb_force_addr,
+			     bool check_alloc);
 
   /*! \brief Run driver.
     \param root_i_nb the number of the root inode.
@@ -147,25 +146,12 @@ public:
   */
   ExtfsNode *		suspiscious_dir() const;
 
-  /*! \brief Get arguments.
-    
-    Get the different arguments from the argument * and catch the exception if
-    there is no such argument. This method is templated because arguments can
-    be from different types.
-    
-    \param all_args the list of all arguments
-    \param name the name of the argument we want to get.\
-    \param arg the ponter to the variable in which we want to store the
-    argument we just got.
-  */
-  template <typename T>
-  void	arg_get(argument * all_args, const std::string & name, T arg);
-
   uint32_t     nb_parsed_inode() const { return __nb_parsed_inode; }
   void	       for_aiur() { __nb_parsed_inode++; }
   uint32_t	alloc_inode() { return __alloc_inode; }
 
 
+  bool				addBlockPointers;
   BlockPointerAttributes*	attributeHandler;
 private:
   void		__reserved_inodes();

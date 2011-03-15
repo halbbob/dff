@@ -69,11 +69,5 @@ dff_ui64    RegularFile::goToBlock(uint32 block_number)
         std::cout << "double block addr : " << addr << std::endl;
         return addr;
     }
- /*   else if (0)
-    {
-    }
-    else if (0)
-    {
-    } */
     return -1;
 }

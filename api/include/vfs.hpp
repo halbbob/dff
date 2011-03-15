@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -19,14 +19,18 @@
 // The Virtual File System (VFS) is a central point of the framework.
 // It permits to register nodes and browse them.
 
-#ifndef __VFS_HH__
-#define __VFS_HH__
+#ifndef __VFS_HPP__
+#define __VFS_HPP__
 
-#include "vfile.hpp"
+#ifndef WIN32
+  #include <stdint.h>
+#else
+  #include "wstdint.h"
+#endif
+
+#include "eventhandler.hpp"
 #include "export.hpp"
 #include "exceptions.hpp"
-#include "type.hpp"
-#include "DEventHandler.hpp"
 #include "node.hpp"
 
 #include <vector>
@@ -34,7 +38,7 @@
 #include <list>
 #include <set>
 
-class VFS: public DEventHandler
+class VFS: public EventHandler
 {  
 private:
   EXPORT 	        VFS();
@@ -47,13 +51,9 @@ public:
   Node*		        root;
   set<Node*>            Tree;
 
-  static VFS&   Get() 
-  { 
-    static VFS single; 
-    return single; 
-  }
+  EXPORT static VFS&   Get();
 
-  EXPORT virtual void	Event(DEvent *e);
+  EXPORT virtual void	Event(event *e);
   EXPORT set<Node*>*    GetTree(void);
   EXPORT void 	        cd(Node *);
   EXPORT Node* 	        GetCWD(void);

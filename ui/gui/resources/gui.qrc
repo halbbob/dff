@@ -95,6 +95,21 @@
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>
 
+    <file alias="editcut">icons/actions/editcut.png</file>
+    <file alias="encrypted">icons/actions/encrypted.png</file>
+    <file alias="database">icons/app/database.png</file>
+    <file alias="index">icons/app/krdc.png</file>
+    <file alias="stats">icons/app/stats.png</file>
+    <file alias="chart">icons/app/kchart.png</file>
+    <file alias="text">icons/app/kedit.png</file>
+    <file alias="multimedia">icons/app/multimedia.png</file>
+    <file alias="lphoto">icons/app/lphoto.png</file>
+    <file alias="date">icons/app/date.png</file>
+    <file alias="disksfilesystems">icons/app/disksfilesystems.png</file>
+    <file alias="unlock">icons/actions/unlock.png</file>
+    <file alias="zip">icons/mime/zip.png</file>
+
+
     <file alias="green_configure.png">icons/app/agt_utilities.png</file>
     <file alias="autostart.png">icons/app/autostart.png</file>
     <file alias="bug.png">icons/app/bug.png</file>
@@ -108,6 +123,26 @@
     <file alias="uncomment.png">icons/actions/uncomment.png</file>
     <file alias="run.png">icons/actions/agt_runit.png</file>
     <file alias="ide.png">icons/app/ksnake.png</file>
+    <file alias="index_search.png">icons/app/index_search.png</file>
+    <file alias="index_search_64x64.png">icons/app/index_search_64x64.png</file>
+
+    <file alias="folder_inbox">icons/mailbox/folder_inbox.png</file>
+    <file alias="folder_sent_mail">icons/mailbox/folder_sent_mail.png</file>
+    <file alias="folder_outbox">icons/mailbox/folder_outbox.png</file>
+    <file alias="mail_find">icons/mailbox/mail_find.png</file>
+    <file alias="date">icons/mailbox/date.png</file>
+    <file alias="mail_reply">icons/mailbox/mail_reply.png</file>
+    <file alias="mail_delete">icons/mailbox/mail_delete.png</file> 
+    <file alias="mail_generic">icons/mailbox/mail_generic.png</file>
+    <file alias="mail_replayall">icons/mailbox/mail_replayall.png</file> 
+    <file alias="queue">icons/mailbox/queue.png</file>
+    <file alias="mail_new">icons/mailbox/mail_new.png</file> 
+    <file alias="mail_forward">icons/mailbox/mail_forward.png</file>
+    <file alias="mail_replay">icons/mailbox/mail_replay.png</file> 
+    <file alias="mai_get">icons/mailbox/mail_get.png</file>
+    <file alias="mail_post_to">icons/mailbox/mail_post_to.png</file> 
+    <file alias="mail_replyall">icons/mailbox/mail_replyall.png</file>
+    <file alias="mail_send">icons/mailbox/mail_send.png</file>
 
 
 </qresource>

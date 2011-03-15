@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -99,15 +99,16 @@ private:
   bool				mbrBadMagic;
   uint32_t			ebr_base;
   uint32_t			partnum;
-
+  std::map<std::string, Variant*>	res;
   dos_pte*			toPte(uint8_t* buff);
-  void				createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base=0);
+  DosPartitionNode*				createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base=0);
 
 public:
   DosPartition();
   ~DosPartition();
+  Attributes		result();
   void			open(VFile* vfile, uint64_t offset, Node* root, Partition* fsobj, Node* origin);
-  void			readEbr(uint32_t cur, uint32_t shift=0);
+  void			readEbr(std::list<Variant* >* vlist, uint32_t cur, uint32_t shift=0);
   void			readMbr(uint64_t offset);
 };
 

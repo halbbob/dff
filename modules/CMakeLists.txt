@@ -30,6 +30,8 @@ add_subdirectory (node)
 add_subdirectory (connector)
 add_subdirectory (hash)
 add_subdirectory (metadata)
+add_subdirectory (test)
+add_subdirectory (databases)
 
 set(module_srcs
   __init__.py

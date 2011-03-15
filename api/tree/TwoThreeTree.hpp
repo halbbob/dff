@@ -17,12 +17,12 @@
 
 #ifndef __TWOTHREETREE_HPP__
 #define __TWOTHREETREE_HPP__
-#include "type.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else
 #include "wstdint.h"
 #endif
+#include "export.hpp"
 #include <stddef.h>
 #include <string>
 #include <vector>

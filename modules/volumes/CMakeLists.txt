@@ -13,6 +13,7 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 
 add_subdirectory(partition)
+add_subdirectory(vmware)
 
 set(volumes_srcs
   __init__.py

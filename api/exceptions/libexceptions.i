@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -54,6 +54,47 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
     }
+  catch (std::string e)
+    {
+      SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
+    }
+  catch (Swig::DirectorException e)
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      SWIG_fail;
+      SWIG_PYTHON_THREAD_END_BLOCK;
+    }
+}
+
+%exception notify
+{
+  try
+    {
+      $action
+    }
+  catch (vfsError &e)
+    {
+      SWIG_exception(SWIG_IOError, e.error.c_str());
+    }
+  catch (envError &e)
+    {
+      SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+      PyErr_SetString(PyExc_KeyError, e.error.c_str());
+      SWIG_PYTHON_THREAD_END_BLOCK;
+      return NULL;
+    }
+  catch (std::string e)
+    {
+      SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
+    }
   catch (Swig::DirectorException e)
     {
       SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -83,9 +124,13 @@
       SWIG_PYTHON_THREAD_END_BLOCK;
       return NULL;
     }
-  catch (const std::exception &e)
+  catch (std::string e)
     {
-      SWIG_exception(SWIG_RuntimeError, e.what());
+      SWIG_exception(SWIG_RuntimeError, e.c_str());
+    }
+  catch (char const* cstr)
+    {
+      SWIG_exception(SWIG_RuntimeError, cstr);
     }
 }
 

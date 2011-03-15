@@ -21,6 +21,7 @@ from distutils.version import StrictVersion
 
 from api.module.module import *
 from stat import *
+from api.types.libtypes import ConfigManager
 
 __module_prepend__ = '__dff_module_'
 __module_append__ = '_version__'
@@ -206,7 +207,7 @@ class loader():
               module = sys.modules[modname]
               del module
 
-            file, pathname, description = imp.find_module(modname)
+            file, pathname, description = imp.find_module(modname, [os.path.dirname(module_path)])
             try:
                module = imp.load_module(modname, file, pathname, description)
                cl = getattr(module, modname)
@@ -215,12 +216,14 @@ class loader():
 #               self.pprint("loading " + modname + " from " + pathname +  " [OK]")
                self.pprint('[OK]\tloading ' + modname + ' ' + status) 
                sys.modules[modname] = module
+               self.cm.registerConf(mod.conf)
             except:
                print('[ERROR]\tloading ' + modname + ' from ' + pathname)
                exc_type, exc_value, exc_traceback = sys.exc_info()
                traceback.print_exception(exc_type, exc_value, exc_traceback, None, sys.stdout)
 
         def __init__(self):
+            self.cm = ConfigManager.Get()
             self.cmodules = {}
             self.scripts = {}
             self.builtins = {}

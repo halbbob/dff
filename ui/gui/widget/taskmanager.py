@@ -14,15 +14,12 @@
 #  Jeremy MOUNIER <jmo@digital-forensic.org>
 #
 
-
-from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QMessageBox
+import time
+from datetime import datetime
+from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QVBoxLayout, QHBoxLayout, QDialogButtonBox
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
-
-#from api.loader import *
-from api.env import *
-from api.taskmanager.taskmanager import *
-
-from ui.gui.utils.utils import Utils
+from api.taskmanager.taskmanager import TaskManager
+from api.gui.widget.varianttreewidget import VariantTreeWidget
 from ui.gui.resources.ui_taskmanager import Ui_TaskManager
 
 class Processus(QTreeWidget, Ui_TaskManager):
@@ -30,12 +27,9 @@ class Processus(QTreeWidget, Ui_TaskManager):
         super(QTreeWidget, self).__init__()
         self.setupUi(self)
         self.__mainWindow = parent        
-
         self.name = "Task manager"
         self.tm = TaskManager()
-
         self.initTreeProcess()
-
         
     def initTreeProcess(self):
  	self.connect(self, SIGNAL("itemDoubleClicked(QTreeWidgetItem*,int)"), self.procClicked)
@@ -60,12 +54,13 @@ class Processus(QTreeWidget, Ui_TaskManager):
             item.setText(2, str(proc.state))
           if item.text(3) != str(proc.stateinfo):
 	    item.setText(3, str(proc.stateinfo))
-	  #if not proc.timeend:
-	    #ctime = time.time() - proc.timestart 
-	    #item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
-	  #else:
-	    #ctime = proc.timeend - proc.timestart
-	    #item.setText(4, "%.2d:%.2d:%.2d" % ( (ctime / (60*60)) ,  (ctime / 60) , (ctime % 60)) )
+          stime = datetime.fromtimestamp(proc.timestart)
+          if proc.timeend:
+	    etime = datetime.fromtimestamp(proc.timeend)
+          else:
+	    etime = datetime.fromtimestamp(time.time())
+	  delta = etime - stime
+	  item.setText(4, str(delta))
 
     def deleteInfoProcess(self):
         self.clear()
@@ -82,22 +77,49 @@ class Processus(QTreeWidget, Ui_TaskManager):
             QTreeWidget.changeEvent(self, event)
 
 
-class procMB(QMessageBox):
-  def __init__(self, parent, mainWindow, pid):
-   QMessageBox.__init__(self, parent)
-   self.setWindowTitle("Results")
-   self.tm = TaskManager()
-   self.pid = pid
-   self.env = env.env()
-   res = ""
-   for proc in self.tm.lprocessus:
-     if str(proc.pid) == self.pid:
-	try :
-          for type, name, val in self.env.get_val_map(proc.res.val_m):
-	        res += name + ": " + val + "\n"
-        except AttributeError:
-              pass
-        mainWindow.emit(SIGNAL("strResultView"), proc)
-   if res == "":
-      res = "No result"		
-   self.setText(res)
+class procMB(QDialog):
+    def __init__(self, parent, mainWindow, pid):
+        QDialog.__init__(self, parent)
+        self.translation()
+        self.setWindowTitle(self.nameTitle)
+        self.tm = TaskManager()
+        self.pid = pid
+        res = {}
+        self.tabwidget = QTabWidget(self)
+        for proc in self.tm.lprocessus:
+            if str(proc.pid) == self.pid:
+                res = proc.res
+                args = proc.args
+        self.box = QVBoxLayout()
+        self.setLayout(self.box)
+        self.box.addWidget(self.tabwidget)
+        self.dialogButtonsLayout = QHBoxLayout()
+        self.dialogButtonsBox = QDialogButtonBox()
+        self.dialogButtonsBox.setStandardButtons(QDialogButtonBox.Ok)
+        self.connect(self.dialogButtonsBox, SIGNAL("accepted()"), self.accept)
+        self.dialogButtonsLayout.addWidget(self.dialogButtonsBox)
+        self.setMinimumSize(800, 600)
+        if len(args) > 0:
+            self.treeargs = VariantTreeWidget(self)
+            self.treeargs.fillMap(self.treeargs, args)
+            self.tabwidget.addTab(self.treeargs, self.argname)
+            for i in [0, 1]:
+                self.treeargs.resizeColumnToContents(i)
+        if len(res) > 0:
+            self.treeres = VariantTreeWidget(self)
+            self.treeres.fillMap(self.treeres, res)
+            self.tabwidget.addTab(self.treeres, self.resname)
+            for i in [0, 1]:
+                self.treeres.resizeColumnToContents(i)
+        else:
+            label = QLabel(self.noResult)
+            label.setAlignment(Qt.AlignCenter)
+            self.tabwidget.addTab(label, self.resname)
+        self.box.addLayout(self.dialogButtonsLayout)
+            
+
+    def translation(self):
+        self.argname = self.tr("Provided Arguments")
+        self.resname = self.tr("Results")
+        self.nameTitle = self.tr('Processus Information')
+        self.noResult = self.tr("No results")

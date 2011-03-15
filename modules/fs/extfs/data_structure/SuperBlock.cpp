@@ -31,20 +31,19 @@ SuperBlock::~SuperBlock()
 {
 }
 
-void    SuperBlock::init(uint64_t fs_size, VFile * vfile, results * res,
-                         const std::string & sb_check,
-                         const std::string & sb_force_addr)
+void    SuperBlock::init(uint64_t fs_size, VFile * vfile, bool sb_check,
+                         uint64_t sb_force_addr)
 {
   //seek and read boot code : 1024 bytes
   read(vfile, __BOOT_CODE_SIZE);
 
-  if (sb_force_addr != "1024")
+  if (sb_force_addr != 1024)
     force_addr(vfile, sb_force_addr);
 
   // check the super block validity
-  if (!sanity_check(fs_size) || (sb_check == "yes"))
+  if (!sanity_check(fs_size) || sb_check)
     {
-      if (sb_check == "yes")
+      if (sb_check)
 	{
 	  std::cerr << "The superblock signature doesn't match 0x53ef. "
 	    "Trying to locate a backup..." << std::endl;
@@ -62,12 +61,9 @@ void    SuperBlock::init(uint64_t fs_size, VFile * vfile, results * res,
     }
 }
 
-void    SuperBlock::force_addr(VFile * vfile, const std::string & addr)
+void    SuperBlock::force_addr(VFile * vfile, uint64_t addr)
 {
-  // convert string to uint64_t
-   std::istringstream iss(addr);
-  iss >> _offset;
-
+  _offset = addr;
   /*
     seek and read to the super block at _offset, or throw if an exception is
     caught

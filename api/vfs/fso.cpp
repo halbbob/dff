@@ -5,37 +5,37 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
  * 
  * Author(s):
  *  Frederic Baguelin <fba@digital-forensic.org>
- *  Solal Jacob <sja@digital-forensic.org>
  */
 
 #include "fso.hpp"
 
-fso::fso()
+fso::fso(std::string name)
 {
- getpyfunc = NULL;
- getcbfunc = NULL;
+  this->name = name;
+  this->stateinfo = "";
 }
 
 fso::~fso()
 {
-
 }
 
-void fso::SetCallBack(CBGETFUNC cbfunc, void *pyfunc)
+std::list<Node *>	fso::updateQueue()
 {
-  getpyfunc = pyfunc;
-  getcbfunc = cbfunc;
+  return this->__update_queue;
 }
 
-PyObject* fso::__getstate__(void)
+void	fso::registerTree(Node* parent, Node* head)
 {
-  if (getpyfunc && getcbfunc)
-    return  (*getcbfunc)(getpyfunc);
+  event*  e = new event;
+  e->value = new Variant(head);
+
+  parent->addChild(head);
+  VFS::Get().notify(e);
 }

@@ -21,6 +21,7 @@ from api.vfs import *
 from api.module.module import *
 from api.module.script import *
 from modules.metadata.metaexif import EXIF
+from api.types.libtypes import Argument, typeId
 
 import sys
 import time
@@ -33,7 +34,7 @@ class LoadedImage(QLabel):
     self.baseImage = QImage()
     self.matrix = QMatrix()
     self.zoomer = 1
-    self.maxsize = 1024*10*10*10*5
+    self.maxsize = 1024*10*10*10*25
     self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored);
     self.setAlignment(Qt.AlignCenter)
     #self.setScaledContents(True);
@@ -208,20 +209,22 @@ class ImageView(QWidget, Script):
     self.type = "imageview"
     self.icon = None
     self.vfs = vfs.vfs()
-    #self.ft = FILETYPE()
     self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
     self.sceneWidth = 0
 
 
   def start(self, args):
     self.images = []
-    node = args.get_node("file")
-    children = node.parent().children()
-    for child in children:
-      if self.isImage(child):
-        self.images.append(child)
-        if child.name() == node.name():
-          self.curIdx = len(self.images) - 1
+    try:
+      node = args["file"].value()
+      children = node.parent().children()
+      for child in children:
+        if self.isImage(child):
+          self.images.append(child)
+          if child.name() == node.name():
+            self.curIdx = len(self.images) - 1
+    except KeyError:
+      pass
 
   def isImage(self, node):
     if node.size() != 0:
@@ -233,7 +236,7 @@ class ImageView(QWidget, Script):
         #XXX temporary patch for windows magic
         #self.ft.filetype(node)
 	return False
-        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX me pas tres verifier avec datatype fix vite fait
+        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX
       if  self.reg_viewer.search(str(type)):
            return True
     return False
@@ -347,9 +350,12 @@ class viewerimage(Module):
   """Display content of graphic file"""
   def __init__(self):
     Module.__init__(self, "pictures", ImageView)
-    self.conf.add("file", "node", False, "File to display")
-    self.conf.add_const("mime-type", "JPEG")
-    self.conf.add_const("mime-type", "GIF")
-    self.conf.add_const("mime-type", "PNG")
-    self.conf.add_const("mime-type", "PC bitmap")
+    self.conf.addArgument({"name": "file",
+                           "description": "Picture file to display",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap"]})
     self.tags = "Viewers"
+    self.icon = ":lphoto"

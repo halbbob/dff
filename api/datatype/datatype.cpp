@@ -1,11 +1,11 @@
 /*
  * DFF -- An Open Source Digital Forensics Framework
- * Copyright (C) 2009-2010 ArxSys
+ * Copyright (C) 2009-2011 ArxSys
  * This program is free software, distributed under the terms of
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -15,6 +15,12 @@
  */
 
 #include "datatype.hpp"
+
+DataTypeManager* 	DataTypeManager::Get()
+{
+  static DataTypeManager single;
+  return &single;
+}
 
 DataTypeManager::DataTypeManager()
 {
@@ -30,12 +36,6 @@ bool		DataTypeManager::registerHandler(DataTypeHandler* handler)
   this->handlers.push_back(handler);
   return true;
 }
-
-/*registerSubHandler("jpeg", jpegchecker)
-{
-  if type == jpeg:
-    return true / false -> type broken
-}*/
 
 Variant*	DataTypeManager::type(Node* node)
 {
@@ -79,10 +79,10 @@ std::map<std::string, uint32_t>&	DataTypeManager::foundTypes()
 
 DataTypeHandler::DataTypeHandler(std::string hname)
 {
-  DataTypeManager& 	dataTypeManager =  DataTypeManager::Get();
+  DataTypeManager* 	dataTypeManager =  DataTypeManager::Get();
 
   this->name = hname;
-  dataTypeManager.registerHandler(this);
+  dataTypeManager->registerHandler(this);
 }
 
 DataTypeHandler::~DataTypeHandler()

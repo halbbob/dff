@@ -201,7 +201,7 @@ void    Directory::dirContent(Node * parent, inodes_t * inode, uint64_t a,
       oss << i_nb;
       node = new ExtfsNode(oss.str(), this->lower_size(),
 			   _extfs->suspiscious_dir(),
-			   _extfs, i_addr);
+			   _extfs, i_addr, false, _extfs->addBlockPointers);
     }
 }
 

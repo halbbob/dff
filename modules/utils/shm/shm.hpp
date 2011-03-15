@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -27,11 +27,11 @@
 #include <list>
 #include <vector>
 #include <map>
+#include "variant.hpp"
 #include "exceptions.hpp"
-#include "type.hpp"
 #include "vfs.hpp"
 #include "vfile.hpp"
-#include "conf.hpp"
+#include "vlink.hpp"
 #include "node.hpp"
 
 class ShmNode: public Node
@@ -55,7 +55,7 @@ public:
   Shm();
   ~Shm();
   Node*			addnode(Node* parent, string filename);
-  virtual void		start(argument* arg);
+  virtual void		start(std::map<std::string, Variant*> args);
   virtual int32_t	vopen(Node* node);
   virtual int32_t	vread(int32_t fd, void *buff, uint32_t size);
   virtual int32_t	vwrite(int32_t fd, void *buff, uint32_t size);

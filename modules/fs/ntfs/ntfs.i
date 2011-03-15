@@ -24,29 +24,41 @@
 %include "std_vector.i"
 %include "windows.i"
 
-%import "../../../api/vfs/libvfs.i"
-
 %{
-
+#include "variant.hpp"
+#include "vtime.hpp"
+#include "node.hpp"
+#include "vlink.hpp"
+#include "vfile.hpp"
+#include "mfso.hpp"
 #include "ntfs.hpp"
 %}
-%include "ntfs.hpp"
 
-/*
-namespace std
-{
-}; */
+%import "../../../api/vfs/libvfs.i"
+
+%include "ntfs.hpp"
 
 %pythoncode
 %{
 from api.module.module import *
+from api.types.libtypes import Argument, typeId
+
 class NTFS(Module):
   def __init__(self):
     Module.__init__(self, 'ntfs', Ntfs)
-    self.conf.add("parent", "node", False, "File to search NTFS file system in")
-    self.conf.add("mftdecode", "int", True, "Only try to decode mft at this offset")
-    self.conf.add("indexdecode", "int", True, "Only try to decode index records at this offset")
-    self.conf.add_const("mime-type", "NTFS")
+    self.conf.addArgument({"name": "file",
+                           "description": "file containing a NTFS file system",
+                           "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "mftdecode",
+	                   "description": "Only try to decode mft at this offset",
+                           "input": Argument.Optional|Argument.Single|typeId.UInt64})
+    self.conf.addArgument({"name": "indexdecode",
+	                   "description": "Only try to decode index records at this offset",
+                           "input": Argument.Optional|Argument.Single|typeId.UInt64})
+    self.conf.addConstant({"name": "mime-type", 
+                           "type": typeId.String,
+                           "description": "managed mime type",
+                           "values": ["NTFS"]})
     self.conf.description = "Creates a tree from a NTFS file system, for regular and deleted/orphan files.\nIt also provides human-readable dump of MFT or Indexex entries."
     self.tags = "File systems"
 %}

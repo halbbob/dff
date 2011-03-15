@@ -15,11 +15,11 @@
 
 from api.module.module import Module
 from api.module.script import Script
-from api.vfs.libvfs import FdManager, fdinfo, Node, fso
+from api.vfs.libvfs import VFS, FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
-from api.type.libtype import vtime
-from api.variant.libvariant import Variant, VMap
+from api.types.libtypes import vtime, Variant, VMap, Argument, typeId
+from api.events.libevents import event
 
 import traceback
 import mzipfile
@@ -79,6 +79,7 @@ class UNZIP(fso):
   def __init__(self):
     fso.__init__(self, "unzip")
     self.name = "unzip"
+    self.VFS = VFS.Get()
     self.vfs = vfs.vfs()
     self.fdm = FdManager()
     self.origin = None
@@ -88,12 +89,8 @@ class UNZIP(fso):
 
 
   def start(self, args):
-    try:
-      origin = args.get_node('file')
-      self.makeZipTree(origin)
-    except (envError, vfsError):
-      formatted_lines = traceback.format_exc().splitlines()
-      self.res.add_const("error", formatted_lines[-1])
+    origin = args['file'].value()
+    self.makeZipTree(origin)
 
   
   def makeZipTree(self, origin):
@@ -114,7 +111,9 @@ class UNZIP(fso):
       attr = self.zipcontent.getinfo(zipfile)
       node = ZipNode(filename, attr.file_size, parent, self, zipfile)
       node.__disown__()
-
+    e = event()
+    e.value = Variant(self.origin)
+    self.VFS.notify(e)
 
   def makeDirs(self, folders):
     sfolders = folders.split("/")
@@ -225,6 +224,13 @@ class unzip(Module):
 This version of unzip store all data in RAM so don't decompress huge file."""
   def __init__(self):
     Module.__init__(self, "unzip", UNZIP)
-    self.conf.add('file', 'node', False, "File to decompress.")
-    self.conf.add_const('mime-type', 'Zip')
+    self.conf.addArgument({"name": "file",
+                           "input": Argument.Required|Argument.Single|typeId.Node,
+                           "description": "zip file to decompress"
+                           })
+    self.conf.addConstant({"name": "mime-type", 
+ 	                   "type": typeId.String,
+ 	                   "description": "managed mime type",
+ 	                   "values": ["Zip"]})
     self.tags = "Archives"
+    self.icon = ":zip"

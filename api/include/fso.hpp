@@ -5,70 +5,60 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Baguelin <fba@digital-forensic.org>
  */
 
-#ifndef __FSO_HH__
-#define __FSO_HH__
-#include <Python.h>
+#ifndef __FSO_HPP__
+#define __FSO_HPP__
 
+#ifndef WIN32
+  #include <stdint.h>
+#else
+  #include "wstdint.h"
+#endif
+
+#include <string.h>
 #include <iostream>
 #include <stdio.h>
 #include <list>
 #include <map>
 #include <vector>
 
-#include "export.hpp"
-#include "type.hpp"
+#include "variant.hpp"
 #include "vfs.hpp"
-#include "argument.hpp"
-#include "results.hpp"
+#include "node.hpp"
 
-using namespace std;
-
-typedef PyObject* (*CBGETFUNC) (void *);
-typedef void (*CBSETFUNC) (void *, PyObject*);
+typedef std::map<std::string, Variant* > RunTimeArguments; 
 
 class fso
 {
-//private:
+private:
+  std::list<class Node *>	__update_queue;
 public:
-//virer sa
-  unsigned int		NodeDirNumbers;	
-  unsigned int		NodeFileNumbers;
-//bouger ds une classe a part
-  argument*		arg;
-  results*		res;
-  string 		name;
-  string		stateinfo;
-  list<Node*>		nl;
+  std::map<std::string, Variant* > res;
+  std::string			stateinfo;
+  std::string			name;
 
-  EXPORT 		fso();
-  EXPORT virtual 	~fso();
-
-
-  PyObject*             __getstate__(void);
-  void*                 getpyfunc;
-  CBGETFUNC             getcbfunc;
-
-
-  void                  SetCallBack(CBGETFUNC func, void* data);
-  virtual void		start(argument* args) = 0;
-  virtual int 		vopen(Handle *handle) = 0;
-  virtual int 		vread(int fd, void *buff, unsigned int size) = 0;
-  virtual int 		vwrite(int fd, void *buff, unsigned int size) = 0;
-  virtual int 		vclose(int fd) = 0; 
-  virtual dff_ui64	vseek(int fd, dff_ui64 offset, int whence) = 0;
-  virtual unsigned int	status(void) = 0;
+  EXPORT fso(std::string name);
+  EXPORT virtual ~fso();
+  EXPORT virtual void		start(std::map<std::string, Variant*> args) = 0;
+  EXPORT virtual int32_t 	vopen(class Node *n) = 0;
+  EXPORT virtual int32_t 	vread(int32_t fd, void *rbuff, uint32_t size) = 0;
+  EXPORT virtual int32_t 	vwrite(int32_t fd, void *wbuff, uint32_t size) = 0;
+  EXPORT virtual int32_t 	vclose(int32_t fd) = 0;
+  EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence) = 0;
+  EXPORT virtual uint32_t	status(void) = 0;
+  EXPORT virtual uint64_t	vtell(int32_t fd) = 0;
+  EXPORT virtual void		setVerbose(bool verbose){}
+  EXPORT virtual bool		verbose() { return false; }
+  EXPORT std::list<Node *>	updateQueue();
+  EXPORT void			registerTree(Node* parent, Node* head);
 };
-
-typedef class fso* create_t(void);
-typedef void  destroy_t(void);
 
 #endif

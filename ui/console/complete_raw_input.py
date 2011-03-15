@@ -184,7 +184,6 @@ class complete_raw_input():
     self.cursor = 0
     c = self.get_char()			  
     if c == 'z':
-	print "BACKGROUNDING THIS FUCKING SHELL !!!!" 
 	return "signal get"
     return  "loop"
 
@@ -198,8 +197,21 @@ class complete_raw_input():
     while c != self.eol:
        if c:
          if c == self.completekey:
-	   lstrip = self.line[:self.cursor]
-           text = lstrip.split(' ')[-1]
+           spaceidx = self.line[:self.cursor].rfind(" ")
+           if spaceidx != -1:
+             text = self.line[spaceidx+1:self.cursor]
+           else:
+             text = self.line[:self.cursor]
+           i = 0
+           skey = 0
+           kshell = False
+           while i != len(text):
+             if text[i] in [";", "<", ">", "&", "|"]:
+               kshell = True
+               skey = i
+             i += 1
+           if kshell:
+             text = text[skey+1:]
            matches = self.complete_func(self.line, self.cursor)
            self.insert_comp(text, matches)
          else:

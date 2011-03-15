@@ -17,51 +17,21 @@
 #ifndef __NODE_HPP__
 #define __NODE_HPP__
 
-#include "mfso.hpp"
 #include <string>
 #include <map>
 #include <vector>
 #include <set>
 #include <iostream>
 #include <sys/types.h>
+#include "fso.hpp"
 #include "export.hpp"
+#include "filemapping.hpp"
 #include "vfile.hpp"
 #include "variant.hpp"
+#include "confmanager.hpp"
 #include "vtime.hpp"
 #include "exceptions.hpp"
 #include "datatype.hpp"
-
-typedef struct
-{
-  uint64_t      offset;
-  uint64_t      size;
-  class Node*   origin;
-  uint64_t	originoffset;
-}               chunck;
-
-class FileMapping
-{
-private:
-  std::vector<chunck *> __chuncks;
-  uint64_t		__mappedFileSize;
-  chunck*		__prevChunck;
-  void			allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset);
-public:
-  EXPORT FileMapping();
-  EXPORT ~FileMapping();
-  EXPORT uint64_t		mappedFileSize();
-  EXPORT uint32_t		chunckCount();
-  EXPORT chunck*		firstChunck();
-  EXPORT chunck*		lastChunck();
-  EXPORT chunck*		chunckFromIdx(uint32_t idx);
-  EXPORT chunck*		chunckFromOffset(uint64_t offset);
-  EXPORT uint32_t		chunckIdxFromOffset(uint64_t offset, uint32_t begidx=0);
-  EXPORT std::vector<chunck *>	chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset);
-  EXPORT std::vector<chunck *>	chuncksFromIdxRange(uint32_t begidx, uint32_t endidx);
-  EXPORT std::vector<chunck *>	chuncks();
-  EXPORT void			push(uint64_t offset, uint64_t size, class Node* origin=NULL, uint64_t originoffset=0);
-};
-
 
 typedef std::map<std::string, class Variant* > Attributes; 
 
@@ -83,13 +53,8 @@ public:
 class Node
 {
 protected:
-  //uint64_t                    offset;
-
-  //XXX parent could be a list of Node. 
-  //    Ex: Raid reconstruction based on two nodes which
-  //    are aggregated to only one Node
   class Node*				__parent;
-  std::set<AttributesHandler*>		__attributesHandlers; //XXX set pour pas avoir de doublon 
+  std::set<AttributesHandler*>		__attributesHandlers; 
   std::vector<class Node *>		__children;
   uint32_t				__childcount;
   std::string				__name;
@@ -97,11 +62,12 @@ protected:
   class fso*				__fsobj;
   uint64_t				__common_attributes;
   //unsigned char			__checkState;
-  uint32_t				__id; //FIX for local and mfso / fso mess in reimplation of vopen 
+  uint32_t				__id; 
   EXPORT virtual Attributes		_attributes();
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
   EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
   EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
+  EXPORT bool				constantValuesMatch(Constant* constant, Attributes vars);
 public:
   EXPORT 				Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
   EXPORT 				Node();
@@ -168,44 +134,5 @@ public:
   VfsRoot(std::string name);
   ~VfsRoot();
 };
-
-class VLink : public Node
-{
-private :
-  Node* 			__linkedNode;
-public :
-
-  EXPORT uint32_t			id();
-  EXPORT void				fileMapping(FileMapping *);
-  EXPORT uint64_t			size();
-
-  EXPORT std::string			linkPath();
-  EXPORT std::string			linkName();
-  EXPORT std::string			linkAbsolute();
-
-  EXPORT bool				isFile();
-  EXPORT bool				isDir();
-  EXPORT bool				isLink();
-  EXPORT bool				isVDir();
-  EXPORT bool				isDeleted();
-
-  EXPORT class fso*			fsobj();
-  EXPORT class VFile*			open();
-
-  EXPORT VLink(Node *linkedNode, Node* parent, std::string newname = "");
-  EXPORT ~VLink();
-  EXPORT Node*				linkParent();
-  EXPORT std::vector<class Node*>	linkChildren();
-  EXPORT bool				linkHasChildren();
-  EXPORT uint32_t			linkChildCount();
-  EXPORT Node*				linkNode();
-
-  EXPORT Variant*			dataType(void); 
-  EXPORT Attributes*			attributes(void);	
-  EXPORT std::string			icon(void);
-  EXPORT std::list<std::string>*	compatibleModules(void);
-  EXPORT bool				isCompatibleModule(std::string);
-};
-
 
 #endif

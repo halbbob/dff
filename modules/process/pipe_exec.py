@@ -16,15 +16,20 @@
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
+from api.types.libtypes import typeId, Argument
 from subprocess import *
 
 class PIPE_EXEC(Script):
   def __init__(self):
+     Script.__init__(self, "pipe_exec")
      self.vfs = vfs.vfs()
 
   def start(self, args):
-     cmd = args.get_string("command")
-     node = args.get_node("file")
+     try:
+       cmd = args["command"].value()
+       node = args["file"].value()
+     except IndexError :
+	raise envError("pipe_exec need command and file value.")
      file = node.open()
      buff = file.read()
      file.close()
@@ -32,9 +37,14 @@ class PIPE_EXEC(Script):
 
 class pipe_exec(Module):
   """open a file and pipe it to an external command
-ex: exec_pipe /file.txt less"""
+ex: exec_pipe /file.txt less
+Take care this use as many ram as the file size, must be used for test purpose only."""
   def __init__(self):
    Module.__init__(self, "pipe_exec", PIPE_EXEC)
-   self.conf.add("file", "node", False, "File to pipe.")
-   self.conf.add("command", "string", False, "External command line to execute")
-   self.tags = "process"	
+   self.conf.addArgument({"name":"file",
+			  "description":"File to pipe.",
+			  "input": Argument.Required|Argument.Single|typeId.Node})
+   self.conf.addArgument({"name":"command",
+			  "description":"External command line to execute.",
+			  "input": Argument.Required|Argument.Single|typeId.String})
+   self.tags = "builtins"	

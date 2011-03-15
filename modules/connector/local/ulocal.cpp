@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -47,15 +47,13 @@ void local::iterdir(std::string dir, Node *parent)
 	    {
 	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
 		{
-		  tmp = new ULocalNode(dp->d_name, 0, parent, this, ULocalNode::DIR, lpath.size());
-                  lpath.push_back(upath);
+		  tmp = new ULocalNode(dp->d_name, 0, parent, this, ULocalNode::DIR,  upath);
 		  total++;
 		  this->iterdir(upath, tmp);
 		}
 	      else
 		{
-		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this, ULocalNode::FILE, lpath.size());
- 		  lpath.push_back(upath);
+		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this, ULocalNode::FILE, upath);
 		  total++;
 		}
 	    }
@@ -73,69 +71,64 @@ local::~local()
 {
 }
 
-void local::start(argument* arg)
+void	local::createTree(std::list<Variant *> vl)
 {
-  string 	name;
-  Path		*tpath;
-  struct stat 	stbuff;
-  uint64_t  	size = 0;
+  std::list<Variant* >::iterator	it;
+  Path*					tpath;
+  string				name;
+  struct stat				stbuff;
+  uint64_t				size = 0;
 
-  nfd = 0;
-  try 
+  for (it = vl.begin(); it != vl.end(); it++)
     {
-      arg->get("parent", &(this->parent));
-    }
-  catch (envError e)
-    {
-      this->parent = VFS::Get().GetNode("/");
-    }
-  try 
-    { 
-      arg->get("path", &tpath);
-    }
-  catch (envError e)
-    {
-      //res->add_const("error", "conf " + e.error);
-      return ;
-      
-    }
-  try
-    {
-       arg->get("size", &size);
-    }
-  catch (envError e)
-    { 
-    }
-
-    
- 
-
-  if ((tpath->path.rfind('/') + 1) == tpath->path.length())
-    tpath->path.resize(tpath->path.rfind('/'));
-  name = tpath->path.substr(tpath->path.rfind("/") + 1);
-  this->basePath = tpath->path.substr(0, tpath->path.rfind('/'));
-  if (stat(tpath->path.c_str(), &stbuff) == -1)
-  {
-    //res->add_const("error", "stat: " + std::string(strerror(errno)));    	
-    return ;
-  }
-  if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-    {
-      this->__root = new ULocalNode(name, 0, NULL, this, ULocalNode::DIR, lpath.size());
-      lpath.push_back(tpath->path);
-      
-      this->iterdir(tpath->path, this->__root);
-    }
-  else
-    {
-      if (size)
-        this->__root = new ULocalNode(name, size, NULL, this, ULocalNode::FILE, lpath.size());
+      tpath = (*it)->value<Path*>();
+      if ((tpath->path.rfind('/') + 1) == tpath->path.length())
+	tpath->path.resize(tpath->path.rfind('/'));
+      name = tpath->path.substr(tpath->path.rfind("/") + 1);
+      this->basePath = tpath->path.substr(0, tpath->path.rfind('/'));
+      if (stat(tpath->path.c_str(), &stbuff) == -1)
+	{
+	  return ;
+	}
+      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
+	{
+	  Node *dir = new ULocalNode(name, 0, NULL, this, ULocalNode::DIR, tpath->path);
+	  this->iterdir(tpath->path, dir);
+	  this->registerTree(this->parent, dir);
+	}
       else
-        this->__root = new ULocalNode(name, stbuff.st_size, NULL, this, ULocalNode::FILE, lpath.size());
-      lpath.push_back(tpath->path);
-      //this->__root->setRealPath(&(this->basePath));
+	{
+	  Node *f;
+	  if (size)
+	    {
+	      f = new ULocalNode(name, size, NULL, this, ULocalNode::FILE,  tpath->path);
+	      this->registerTree(this->parent, f);
+	    }
+	  else
+	    {
+	      f = new ULocalNode(name, stbuff.st_size, NULL, this, ULocalNode::FILE, tpath->path);
+	      this->registerTree(this->parent, f);
+	    }
+	}
     }
-  this->registerTree(this->parent, this->__root);
+}
+
+void local::start(std::map<std::string, Variant* > args)
+{
+  std::map<std::string, Variant* >::iterator	argit;
+
+  this->nfd = 0;
+  if ((argit = args.find("parent")) != args.end())
+    this->parent = argit->second->value<Node*>();
+  else
+    this->parent = VFS::Get().GetNode("/");
+  if ((argit = args.find("path")) != args.end())
+    if (argit->second != NULL)
+      this->createTree(argit->second->value<std::list<Variant* > >());
+    else
+      throw(envError("local module requires at least one path parameter"));
+  else
+    throw(envError("local module requires path argument"));
   return ;
 }
 
@@ -144,8 +137,11 @@ int local::vopen(Node *node)
   int n;
   struct stat 	stbuff;
   std::string	file;
+  ULocalNode*	unode = dynamic_cast<ULocalNode* >(node);
 
-  file = lpath[node->id()];
+  if (unode == NULL)
+   return (0);
+  file = unode->originalPath; 
 #if defined(__FreeBSD__)
   if ((n = open(file.c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)

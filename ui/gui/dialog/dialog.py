@@ -16,7 +16,7 @@
 import os
 
 from PyQt4.QtGui import QFileDialog, QMessageBox, QInputDialog, QDialog, QDialogButtonBox, QComboBox, QPushButton, QFormLayout, QHBoxLayout, QPixmap, QLabel, QApplication
-from PyQt4.QtCore import QObject, QString, SIGNAL, SLOT, Qt, QEvent
+from PyQt4.QtCore import QObject, QString, SIGNAL, SLOT, Qt, QEvent, QDir
 
 from api.taskmanager import *
 from api.taskmanager.taskmanager import * 
@@ -24,6 +24,8 @@ from api.loader import *
 from api.vfs import vfs
 from api.devices.devices import Devices
 from api.gui.widget.devicesdialog import DevicesDialog
+from api.gui.widget.layoutmanager import *
+from api.types.libtypes import typeId
 
 from ui.gui.dialog.preferences import Preferences
 from ui.gui.resources.ui_about import Ui_About
@@ -33,7 +35,6 @@ class Dialog(QObject):
   def __init__(self, parent):
      QObject.__init__(self)
      self.parent = parent 
-     self.env = env.env()
      self.vfs = vfs.vfs()
      self.taskmanager = TaskManager()
      self.loader = loader.loader()
@@ -42,57 +43,90 @@ class Dialog(QObject):
     """Open a preferences dialog"""
     
     pref = Preferences(self.parent)
-    pref.exec_()
+    ret = pref.exec_()
+    if ret:
+      pass
+#      pref.conf.root_index = pref.root_index_line.text()
+#      pref.conf.index_name = pref.index_name_line.text()
+#      pref.conf.index_path = pref.conf.root_index + "/" + pref.conf.index_name
+
+#      root_index_dir = QDir(pref.conf.root_index)
+#      if not root_index_dir.exists():
+#        root_index_dir.mkpath(pref.conf.root_index)
+#@      default_index_dir = QDir(pref.conf.index_path)
+ #     if not default_index_dir.exists():
+ #       default_index_dir.mkpath(pref.conf.index_path)
 
   def addDevices(self):
        """Open a device list dialog"""
        dev = DevicesDialog(self.parent)
        if dev.exec_():
 	 if dev.selectedDevice:
-           arg = self.env.libenv.argument("gui_input")
-           arg.thisown = 0
-	   arg.add_path("path", str(dev.selectedDevice.blockDevice()))
-           arg.add_node("parent", self.vfs.getnode("/Local devices"))
-           arg.add_uint64("size", long(dev.selectedDevice.size())) 
+           args = {}
+	   args["path"] = str(dev.selectedDevice.blockDevice())
+	   args["parent"] = self.vfs.getnode("/Local devices")
+	   args["size"] = long(dev.selectedDevice.size())
 	   exec_type = ["thread", "gui"]
-           if os.name == "nt":
-             arg.add_string("name", str(dev.selectedDevice.model()))
-             self.taskmanager.add("windevices", arg, exec_type)	
-           else:	   
-             self.taskmanager.add("local", arg, exec_type)
+	   try:
+             if os.name == "nt":
+	       args["name"] = str(dev.selectedDevice.model())
+             conf = self.loader.get_conf(str("devices"))
+             genargs = conf.generate(args)
+             self.taskmanager.add("devices", genargs, exec_type)	
+           except RuntimeError:
+             err_type, err_value, err_traceback = sys.exc_info()
+             err_trace =  traceback.format_tb(err_traceback)
+             err_typeval = traceback.format_exception_only(err_type, err_value)
+             terr = QString()
+             detailerr = QString()
+             for err in err_trace:
+               detailerr.append(err)
+               for errw in err_typeval:
+                 terr.append(errw)
+                 detailerr.append(err)
+             self.messageBox(terr, detailerr)
 
   def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """
         edialog = evidenceDialog(self.parent)
         ir = edialog.exec_()
         if ir > 0:
-          dtype = edialog.comboformat.itemData(edialog.comboformat.currentIndex()).toString()
-          # RAW files # EWF files # Local directory
-          if dtype == 'dir':
-            sFiles = QFileDialog.getExistingDirectory(self.parent, edialog.actionAdd_evidence_directory.text(), os.path.expanduser('~'))
-          elif dtype == 'ewf' or dtype == 'raw':
-            sFiles = QFileDialog.getOpenFileNames(self.parent, edialog.actionAdd_evidence_files.text(),  os.path.expanduser('~'))
+          args = {}
+          paths = edialog.manager.get("local")
+          if edialog.rawcheck.isChecked():
+            module = "local"
+            args["path"] = paths
+	    args["parent"] = self.vfs.getnode('/Logical files')
+          else:
+            module = "ewf"
+            args["files"] = paths
+	    args["parent"] = self.vfs.getnode('/Logical files')
+          self.conf = self.loader.get_conf(str(module))
+          try:
+            genargs = self.conf.generate(args)
+            self.taskmanager.add(str(module), genargs, ["thread", "gui"])
+          except RuntimeError:
+            err_type, err_value, err_traceback = sys.exc_info()
+            err_trace =  traceback.format_tb(err_traceback)
+            err_typeval = traceback.format_exception_only(err_type, err_value)
+            terr = QString()
+            detailerr = QString()
+            for err in err_trace:
+              detailerr.append(err)
+              for errw in err_typeval:
+                terr.append(errw)
+                detailerr.append(err)
+            self.messageBox(terr, detailerr)
 
-          if len(sFiles) > 0:
-            if dtype != 'dir':
-              for name in sFiles:
-                arg = self.env.libenv.argument("gui_input")
-                arg.thisown = 0
-                exec_type = ["thread", "gui"]
-                if dtype == 'ewf':
-                  arg.add_path("file", str(name.toUtf8()))
-                  self.taskmanager.add("ewf", arg, exec_type)
-                else:
-                  arg.add_path("path", str(name.toUtf8()))
-                  arg.add_node("parent", self.vfs.getnode("/Logical files"))
-                  self.taskmanager.add("local", arg, exec_type)
-            else:
-              arg = self.env.libenv.argument("gui_input")
-              arg.thisown = 0
-              exec_type = ["thread", "gui"]
-              arg.add_path("path", str(sFiles.toUtf8()))
-              arg.add_node("parent", self.vfs.getnode("/Logical files"))
-              self.taskmanager.add("local", arg, exec_type)
+  def messageBox(self, coretxt, detail):
+    msg = QMessageBox()
+    msg.setWindowTitle("Error in configuration")
+    msg.setText("An error was detected in the configuration")
+    msg.setInformativeText(coretxt)
+    msg.setIcon(QMessageBox.Critical)
+    msg.setDetailedText(detail)
+    msg.setStandardButtons(QMessageBox.Ok)
+    ret = msg.exec_()
  
   def loadDriver(self):
         sFileName = QFileDialog.getOpenFileName(self.parent, self.parent.actionLoadModule.toolTip(), os.path.expanduser('~'),  "Modules(*.py)")
@@ -131,22 +165,23 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     self.loader = loader.loader()
     self.createShape()
 
-
   def createShape(self):
     """ Removes EWF if not in modules
 
     Set itemData for easy access without taking care of text (can be
     translated).
     TODO Futur : Get all DFF connectors
-    """
-    
-    # 
-    self.comboformat.setItemData(0, QString('raw'))
-    self.comboformat.setItemData(1, QString('ewf'))
-    self.comboformat.setItemData(2, QString('dir'))
-    
+    """    
+
     if "ewf" not in self.loader.modules:
-      self.comboformat.removeItem(1)
+      self.ewfcheck.setEnabled(False)
+    self.rawcheck.setChecked(True)
+    layout = QHBoxLayout()
+    layout.setMargin(0)
+    self.manager = layoutManager()
+    self.manager.addPathList("local", typeId.Path, [], [])
+    layout.addWidget(self.manager)
+    self.pathselector.setLayout(layout)
 
   def changeEvent(self, event):
     """ Search for a language change event

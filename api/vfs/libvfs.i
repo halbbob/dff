@@ -5,7 +5,7 @@
  * the GNU General Public License Version 2. See the LICENSE file
  * at the top of the source tree.
  *  
- * See http: *www.digital-forensic.org for more information about this
+ * See http://www.digital-forensic.org for more information about this
  * project. Please do not directly contact any of the maintainers of
  * DFF for assistance; the project provides a web site, mailing lists
  * and IRC channels for your use.
@@ -675,6 +675,7 @@ Open the node and return a pointer to a VFile instance
 "
         Push the fdinfo `fi` into the list of opened file descriptors.
 "
+#pragma SWIG nowarn=473
 
 %include "std_string.i"
 %include "std_list.i"
@@ -689,12 +690,10 @@ Open the node and return a pointer to a VFile instance
 #endif
 %include "windows.i"
 
-
 %feature("director") fso;
 %feature("director") mfso;
 %feature("director") Node;
 %feature("director") VLink;
-%feature("director") DEventHandler;
 %feature("director") AttributesHandler;
 
 %newobject Node::open();
@@ -724,7 +723,7 @@ Open the node and return a pointer to a VFile instance
     }
 }
 
-%feature("director:except") Link 
+%feature("director:except") VLink 
 {
     if ($error != NULL)
     {
@@ -734,6 +733,11 @@ Open the node and return a pointer to a VFile instance
 
 %import "../exceptions/libexceptions.i"
 
+%typemap(directorargin) (int32_t fd, void *rbuff, uint32_t size)
+{
+  memcpy((char *)rbuff, PyString_AsString($input) , PyString_Size($input));
+  return PyString_Size($input);
+}
 
 %typemap(directorargout) (int32_t fd, void *rbuff, uint32_t size)
 {
@@ -750,24 +754,35 @@ Open the node and return a pointer to a VFile instance
 }
 
 %{
-  #include "DEventHandler.hpp"
-  #include "exceptions.hpp"
-  #include "export.hpp"
-  #include "vfs.hpp"
-  #include "node.hpp"
-  #include "mfso.hpp"
-  #include "vfile.hpp"
-  //  #include "../include/variant.hpp"
+
+#include "eventhandler.hpp"
+#include "vfs.hpp"
+#include "exceptions.hpp"
+#include "fdmanager.hpp"
+#include "filemapping.hpp"
+#include "export.hpp"
+#include "fso.hpp"
+#include "mfso.hpp"
+#include "node.hpp"
+#include "vlink.hpp"
+#include "vfile.hpp"
+#include "variant.hpp"
+#include "vtime.hpp"
+#include "path.hpp"
 %}
 
-%include "../include/DEventHandler.hpp"
-%include "../include/export.hpp"
-%include "../include/exceptions.hpp"
+%import "../events/libevents.i"
+
 %include "../include/vfs.hpp"
-%include "../include/node.hpp"
+%include "../include/export.hpp"
+%include "../include/fdmanager.hpp"
+%include "../include/filemapping.hpp"
+%include "../include/exceptions.hpp"
+%include "../include/fso.hpp"
 %include "../include/mfso.hpp"
+%include "../include/node.hpp"
+%include "../include/vlink.hpp"
 %include "../include/vfile.hpp"
- //%include "../include/variant.hpp"
 
 namespace std
 {
@@ -775,20 +790,20 @@ namespace std
   %template(ListNode)   list<Node*>;
   %template(SetNode)    set<Node *>;
   %template(VectChunck)  vector<chunck *>;
-  %template(ListString)  list<std::string>;
-#ifdef 64_BITS
-  %template(Listui64)	list<unsigned long int>;
-#else
   %template(Listui64)	list<uint64_t>;
-#endif
-  //%template(MapTime)	map<string, vtime*>;
-//  %template(MapAttributes) map<std::string, Variant*>;
+  %template(ListString) list<std::string>;
+  %template(MapTime)	map<string, vtime*>;
+  /* %template(MapAttributes) map<std::string, Variant*>; */
 };
 
+%traits_swigtype(Variant);
+%fragment(SWIG_Traits_frag(Variant));
+%traits_swigtype(vtime);
+%fragment(SWIG_Traits_frag(vtime));
 
 %extend VFS
 {
-#ifdef 64_BITS
+#ifdef SWIGWORDSIZE64
   PyObject* getNodeFromPointer(unsigned long pnode)
   {
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;

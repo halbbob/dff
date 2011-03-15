@@ -14,21 +14,35 @@
 # 
 
 from api.vfs import *
-from api.env import *
 from api.loader import *
 from api.module.module import *
 from api.module.script import *
+from api.types.libtypes import Variant, typeId, Argument
+from ui.console.utils import VariantTreePrinter
 
 class FILEINFO(Script): 
   def __init__(self):
       Script.__init__(self, "fileinfo")
+      self.vtreeprinter = VariantTreePrinter()
+
 
   def start(self, args):
     buff = ""
-    node = args.get_node("file")
+    node = args["file"].value()
+    if args.has_key("max-items"):
+      self.vtreeprinter.setMaxItemListToExpand(args["max-items"].value())
+    else:
+      self.vtreeprinter.setMaxItemListToExpand(-1)
+    if args.has_key("max-depth"):
+      self.vtreeprinter.setMaxDepth(args["max-depth"].value())
+    else:
+      self.vtreeprinter.setMaxDepth(-1)
     buff += self.fillBase(node)
-    buff += self.fillAttributes(node) 
-    self.res.add_const("result", buff)
+    buff += self.fillAttributes(node)
+    vbuff = Variant(buff)
+    vbuff.thisown = False
+    self.res["result"] = vbuff
+
 
   def fillBase(self, node):
     buff = ""
@@ -36,7 +50,7 @@ class FILEINFO(Script):
     fsobjname = ""
     if fsobj != None:
       fsobjname = fsobj.name
-    buff += "name :\t\t\t" + str(node.name()) + "\n"
+    buff += "name :\t\t" + str(node.name()) + "\n"
     buff += "node type :\t\t" 
     if node.isFile():
       buff += "file"
@@ -48,7 +62,7 @@ class FILEINFO(Script):
         buff += " " + "empty"
     if node.isDeleted():
       buff += " " + "deleted"
-    buff += "\n"    
+    buff += "\n"
 
     buff += self.fillCompatModule(node)
     if node.hasChildren():
@@ -62,6 +76,7 @@ class FILEINFO(Script):
     buff += "\n"
     return buff
 
+
   def fillCompatModule(self, node):
     buff = ""
     l = node.compatibleModules()
@@ -71,6 +86,7 @@ class FILEINFO(Script):
         buff += str(i) + " " 
     buff += "\n"
     return buff
+
 
   def fillChildren(self, node): 
     buff = "children\t\t"
@@ -92,69 +108,26 @@ class FILEINFO(Script):
       buff += str(dircount) + "\n"
     return buff
 
+
   def fillAttributes(self, node):
     buff = ""
-    map = node.attributes()
-    map.thisown = False
-    if len(map) > 0:
-      buff += "attributes:\n"
-      for key, value in map.iteritems():
-        buff +=  str(key) + " :\t\t\t"
-        if str(type(value)).find("Variant") != -1:
-          if str(type(value.value())).find("VMap") != -1:
-	    buff += "\n"
-            buff += self.fillMap(value.value())
-          elif str(type(value.value())).find("VList") != -1:
-            buff += "\n"
-            buff += self.fillList(value.value())
-          elif str(value).find("vtime") != -1:
-            buff += (value.value().get_time()) +"\n"
-          else:
-            buff += str(value) +"\n"
-        else:
-          if str(value).find("vtime") != -1:
-            buff += str(value.value().get_time()) + "\n"
-          else:
-            buff += str(value) + "\n"
+    vmap = node.attributes()
+    if len(vmap) > 0:
+      buff = self.vtreeprinter.fillMap(1, vmap, "attributes:\n")
     return buff
 
-  def fillMap(self, map):
-    buff = ""
-    for key, value in map.iteritems():
-      buff += str(key) + " :\t\t"
-      if len(key) < 6:
-	 buff += "\t"
-      if str(type(value)).find("Variant") != -1:
-        if str(type(value.value())).find("VMap") != -1:
-          buff += self.fillMap(value.value())
-	  buff += "\n"
-        elif str(type(value.value())).find("VList") != -1:
-	  buff += "\n"
-          buff += self.fillList(value.value())
-        elif str(value).find("vtime") != -1:
-          buff += str(value.value().get_time())
-        else:
-          buff += str(value)
-      else:
-        if str(value).find("vtime") != -1:
-          buff += str(value.value().get_time())
-        else:
-          buff += str(value)
-      buff += "\n"
-    return buff
-
-  def fillList(self, list):
-    buff = "\t\t\t"
-    for i in list:
-      if str(i).find("vtime") != -1:
-        buff += str(i.value().get_time()) + "\n\t\t\t"
-      else:
-        buff += str(i) + "\n\t\t\t"
-    return buff
 
 class fileinfo(Module):
   """Display file attribute informations. (size, MAC time, ...)"""
   def __init__(self):
     Module.__init__(self, "fileinfo",  FILEINFO)
-    self.conf.add("file", "node", False, "File where info is searched.")
+    self.conf.addArgument({"name": "file",
+                           "input": Argument.Single|Argument.Required|typeId.Node,
+                           "description": "File for which metadata will be shown"})
+    self.conf.addArgument({"name": "max-items",
+                           "input": Argument.Single|Argument.Optional|typeId.UInt64,
+                           "description": "sets max items to expand in list (useful with large list)"})
+    self.conf.addArgument({"name": "max-depth",
+                           "input": Argument.Single|Argument.Optional|typeId.UInt64,
+                           "description": "sets max depth on variant tree"})
     self.tags = "builtins"

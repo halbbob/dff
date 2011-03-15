@@ -17,6 +17,8 @@
 #ifndef __FATFS_HPP__
 #define __FATFS_HPP__
 
+#include <map>
+#include "variant.hpp"
 #include "mfso.hpp"
 #include "bootsector.hpp"
 #include "fat.hpp"
@@ -35,8 +37,8 @@ public:
   class BootSector*	bs;
   class FileAllocationTable*	fat;
   VFile*		vfile;
-  virtual void		start(argument *arg);
-  void			setContext(argument* arg);
+  virtual void		start(std::map<std::string, Variant*> args);
+  void			setContext(std::map<std::string, Variant*> args) throw (std::string);
   void			process();
 };
 

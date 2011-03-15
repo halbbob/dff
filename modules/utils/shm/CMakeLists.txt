@@ -28,7 +28,7 @@ set(shm_srcs
 
 SET_SOURCE_FILES_PROPERTIES(shm.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(SHM python shm.i ${shm_srcs})
-SWIG_LINK_LIBRARIES(SHM ${PYTHON_LIBRARIES} _libexceptions _libtype _libvfs _libenv)
+SWIG_LINK_LIBRARIES(SHM ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
 
 set(shm_files
   __init__.py

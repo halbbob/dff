@@ -14,63 +14,146 @@
 # 
 
 from api.vfs import *
-from api.env import *
 from api.module.script import *
 from api.loader import *
 from api.module.module import *
 from api.taskmanager.taskmanager import *
+from api.types.libtypes import Parameter, Variant, Argument, typeId, ConfigManager
+from datetime import timedelta, datetime
+from ui.console.utils import VariantTreePrinter
 
-class INFO(Script):
+class INFO(Script, VariantTreePrinter):
   def __init__(self):
     Script.__init__(self, "info")
+    VariantTreePrinter.__init__(self)
     self.loader = loader.loader()
     self.tm = TaskManager()
-    self.lproc = self.tm.lprocessus
-    self.env = env.env()
+    self.cm = ConfigManager.Get()
 
-  def show_config(self, conf):
-    dlist = conf.descr_l
-    res = ""
-    for i in dlist:
-     if len(i.description):
-       res += "\n\t" + i.type + "\t" + i.name  +  " (" + i.description  + ")"
-     else:
-       res += "\n\t" + i.type + "\t" + i.name
-    for type, name, val, _from in self.env.get_val_list(conf.val_l):
-      res += "\n\t" + type + "\t" + name + "=" + val
+  def show_config(self, modname):
+    conf = self.cm.configByName(modname)
+    res = "\n\tConfig:"
+    arguments = conf.arguments()
+    for argument in arguments:
+      res += "\n\t\tname: " + str(argument.name())
+      res += "\n\t\tdescription: " + str(argument.description()) 
+      if argument.inputType() == Argument.Empty:
+        res += "\n\t\tno input parameters"
+      else:
+        res += "\n\t\ttype: " + str(typeId.Get().typeToName(argument.type()))
+        res += "\n\t\trequirement: "
+        if argument.requirementType() == Argument.Optional:
+          res += "optional"
+        else:
+          res += "mandatory"
+        res += "\n\t\tinput parameters: "
+        if argument.parametersType() == Parameter.NotEditable:
+          res += "not editable "
+        else:
+          res += "editable "
+        if argument.inputType() == Argument.List:
+          res += "list"
+        else:
+          res += "single"
+      pcount = argument.parametersCount()
+      if pcount != 0:
+        parameters = argument.parameters()
+        res += "\n\t\tpredefined parameters: "
+        for parameter in parameters:
+          if argument.type() == typeId.Node:
+            res += str(parameter.value().absolute())
+          else:
+            res += parameter.toString()
+          pcount -= 1
+          if pcount != 0:
+            res += ", "
+      res += "\n"
+    constants = conf.constants()
+    if len(constants) > 0:
+      res += "\n\tConstant: \t"
+      for constant in constants:
+        res += "\n\t\tname: " + str(constant.name())
+        res += "\n\t\tdescription: " + str(constant.description())
+        res += "\n\t\ttype: " + str(typeId.Get().typeToName(constant.type()))
+        cvalues = constant.values()
+        cvallen = len(cvalues)
+        if cvallen > 0:
+          res += "\n\t\tvalues: "
+          for cvalue in cvalues:
+            if cvalue.type() == typeId.Node:
+              res += str(cvalue.value().absolute())
+            else:
+              res += cvalue.toString()
+            cvallen -= 1
+            if cvallen != 0:
+              res += ", "
+        res += "\n"
     return res
 
-  def show_arg(self, arg):
+
+  def show_arg(self, args):
     res = ""
-    for type, name, val in self.env.get_val_map(arg.val_m):
-      res += "\n\t" + type + "\t" + name + "=" + val
+    if len(args):
+      res += "\n\n\t\tArguments: \t"
+      for argname in args.keys():
+        res += "\n\t\t\tname: " + argname
+        res += "\n\t\t\tparameters: "
+        val = args[argname]
+        if val.type() == typeId.List:
+          vlist = val.value()
+          vlen = len(vlist)
+          for item in vlist:
+            if item.type == typeId.Node:
+              res += str(val.value().absolute())
+            else:
+              res += item.toString()
+            vlen -= 1
+            if vlen != 0:
+              res += ", "
+        elif val.type() == typeId.Node:
+          res += str(val.value().absolute())
     return res
 
-  def show_res(self, result):
-    res = ""
-    for type, name, val in self.env.get_val_map(result.val_m):
-      res += "\n\t" + type + "\t" + name + "=" + val
+
+  def show_res(self, results):
+    res = self.fillMap(3, results, "\n\n\t\tResults:")
     return res
-  
+
   def c_display(self):
      print self.info  
 
-  def getmodinfo(self, mname):
-     self.info +=  "\n" +  mname + "\n\tConfig: \t" + self.show_config(self.modl[mname].conf)
-     for proc in self.lproc:
-       if proc.mod.name == mname:
-     	  self.info += "\n\tArguments: \t" + self.show_arg(proc.args)
-          self.info += "\n\tResults: \t" + self.show_res(proc.res)
+  def getmodinfo(self, modname):
+    conf = self.cm.configByName(modname)
+    if conf == None:
+      return
+    self.lproc = self.tm.lprocessus
+    self.info +=  "\n" +  modname + self.show_config(modname)
+    for proc in self.lproc:
+      if proc.mod.name == modname:
+        self.info += "\n\tProcessus " + str(proc.pid)
+        stime = datetime.fromtimestamp(proc.timestart)
+        self.info += "\n\t\texecution started at : " + str(stime)
+        if proc.timeend:
+          etime = datetime.fromtimestamp(proc.timeend)
+          self.info += "\n\t\texecution finished at : " + str(etime)
+        else:
+          etime = datetime.fromtimestamp(time.time())
+        delta = etime - stime
+        self.info += "\n\t\texecution time: " + str(delta)
+        self.info += self.show_arg(proc.args)
+        self.info += self.show_res(proc.res)
  
   def start(self, args):
-    self.modl = self.loader.modules
     self.info = ""
-    mname = args.get_string('modules')	
-    if mname != '':
-      self.getmodinfo(mname)
-    else:	
-      for mname in self.modl:
-	 self.getmodinfo(mname)
+    if args.has_key("modules"):
+      modnames = args['modules'].value()
+      for modname in modnames:
+        self.getmodinfo(modname.value())
+    else:
+      self.modules = self.loader.modules
+      for modname in self.modules:
+        self.getmodinfo(modname)
+
 
 class info(Module):
   """Show info on loaded drivers: configuration, arguments, results
@@ -78,4 +161,6 @@ class info(Module):
   def __init__(self):
     Module.__init__(self, "info", INFO)
     self.tags = "builtins"
-    self.conf.add("modules", "string", True, "Display only info on the selected module") 
+    self.conf.addArgument({"name": "modules",
+                           "description": "Display information concerning provided modules",
+                           "input": Argument.Optional|Argument.List|typeId.String})

@@ -36,5 +36,4 @@ void	ExtfsShiftNode::fileMapping(FileMapping* fm)
 
   fs_size = __extfs->SB()->block_size() * __extfs->SB()->blocks_number();
   offset = __extfs->SB()->offset() - __BOOT_CODE_SIZE;
-  //  fm->push(0, fs_size, __extfs->node1(), offset);
 }

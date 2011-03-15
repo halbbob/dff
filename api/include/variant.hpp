@@ -17,33 +17,39 @@
 #ifndef __VARIANT_HPP__
 #define __VARIANT_HPP__
 
-//#include "node.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else
 #include "wstdint.h"
+#pragma warning(disable: 4290)
 #endif
+
 #include <iostream>
+#include <sstream>
+#include <string> 
+#include <iomanip>
+
 #include <list>
 #include <map>
 #include <typeinfo>
+
+#include "path.hpp"
 #include "vtime.hpp"
 
 class typeId
 {
 private:
   
-  //static typeId			*_instance;
-  std::map<char*, uint8_t>	mapping;
-
+  std::map<std::string, uint8_t>	mapping;
+  std::map<uint8_t, std::string>	rmapping;
   EXPORT typeId();
   EXPORT ~typeId();
   typeId&          operator=(typeId&);
   typeId(const typeId&);
-  //typeId(const typeId &);
-  //typeId	&operator=(const typeId &);
+  
   
 public:
+  EXPORT static typeId*	Get();
   enum Type
     {
       Invalid = 0,
@@ -63,31 +69,14 @@ public:
       // dff types
       VTime = 13,
       Node = 14,
+      Path = 15,
+      Argument = 16,
       // user types
-      VoidStar = 15
+      VoidPtr = 17
     };
 
-  static typeId   *Get()
-  {
-  /*
-    if (!_instance)
-      _instance = new typeId();
-    return _instance;
-	*/
-	static typeId single;
-	return &single;
-  }
-
-  EXPORT uint8_t	getType(char *type)
-  {
-    std::map<char*, uint8_t>::iterator it;
-    
-    it = this->mapping.find(type);
-    if (it != this->mapping.end())
-      return it->second;
-    else
-      return 0;
-  }
+  EXPORT uint8_t	getType(std::string type);
+  EXPORT std::string	typeToName(uint8_t t);
 };
 
 
@@ -106,206 +95,243 @@ public:
   EXPORT Variant(int32_t i);
   EXPORT Variant(int64_t ull);
   EXPORT Variant(uint64_t ll);
-  // EXPORT Variant(bool b);
+  EXPORT Variant(bool b);
   EXPORT Variant(vtime *vt);
   EXPORT Variant(class Node *node);
+  EXPORT Variant(class Path *path);
+  EXPORT Variant(class Argument *argument);
   EXPORT Variant(std::list<class Variant*> l);
   EXPORT Variant(std::map<std::string, class Variant*> m);
   EXPORT Variant(void *user);
 
-
-  bool	convert(uint8_t itype, void *res)
+  EXPORT bool	convert(uint8_t itype, void *res)
   {
-    switch (itype)
+    bool	ret;
+
+    try
       {
-      case uint8_t(typeId::Int16):
-	{
-	  int16_t *s = static_cast<int16_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Int16:
-	      {
-		*s = this->__data.us;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::UInt16):
-	{
-	  uint16_t *s = static_cast<uint16_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::UInt16:
-	      {
-		*s = this->__data.s;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Int32):
-	{
-	  int32_t *s = static_cast<int32_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Int32:
-	      {
-		*s = this->__data.i;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::UInt32):
-	{
-	  uint32_t *s = static_cast<uint32_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::UInt32:
-	      {
-		*s = this->__data.ui;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Int64):
-	{
-	  int64_t *s = static_cast<int64_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Int64:
-	      {
-		*s = this->__data.ll;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::UInt64):
-	{
-	  uint64_t *s = static_cast<uint64_t*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::UInt64:
-	      {
-		*s = this->__data.ull;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Char):
-	{
-	  char *s = static_cast<char*>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::Char:
-	      {
-		*s = this->__data.c;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::CArray):
-	{
-	  char **s = static_cast<char**>(res);
-	  switch (this->_type)
-	    {
-	    case typeId::CArray:
-	      {
-		*s = (char*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::String):
-      {
-	  std::string *str = static_cast<std::string*>(res);
-          switch (this->_type)
-	    {
-	    case typeId::String:
-	      {
-		*str = ((std::string*)(this->__data.ptr))->c_str();
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::Node):
-      {
-	  class Node **n = static_cast<Node**>(res);
-          switch (this->_type)
-	    {
-	    case typeId::Node:
-	      {
-		*n = (Node*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
-	}
-      case uint8_t(typeId::VTime):
-      {
-	  vtime **vt = static_cast<vtime**>(res);
-          switch (this->_type)
-	    {
-	    case typeId::VTime:
-	      {
-		*vt = (vtime*)this->__data.ptr;
-		return true;
-	      }
-	    default:
-	      return false;
-	    }
+	ret = false;
+	if (itype == typeId::Int16)
+	  {
+	    int16_t *s = static_cast<int16_t*>(res);
+	    *s = this->toInt16();
+	    ret = true;
+	  }
+	else if (itype == typeId::UInt16)
+	  {
+	    uint16_t *us = static_cast<uint16_t*>(res);
+	    *us = this->toUInt16();
+	    ret = true;
+	  }
+	else if (itype == typeId::Int32)
+	  {
+	    int32_t *i = static_cast<int32_t*>(res);
+	    *i = this->toInt32();
+	    ret = true;
+	  }
+	else if (itype == typeId::UInt32)
+	  {
+	    uint32_t *ui = static_cast<uint32_t*>(res);
+	    *ui = this->toUInt32();
+	    ret = true;
+	  }
+	else if (itype == typeId::Int64)
+	  {
+	    int64_t *ll = static_cast<int64_t*>(res);
+	    *ll = this->toInt64();
+	    ret = true;
+	  }
+	else if (itype == typeId::UInt64)
+	  {
+	    uint64_t *ull = static_cast<uint64_t*>(res);
+	    *ull = this->toUInt64();
+	    ret = true;
+	  }
+	else if (itype == typeId::Char)
+	  {
+	    char *c = static_cast<char*>(res);
+	    *c = this->toChar();
+	    ret = true;
+	  }
+	else if (itype == typeId::CArray)
+	  {
+	    char **cstr = static_cast<char**>(res);
+	    *cstr = this->toCArray();
+	    ret = true;
+	  }
+	else if (itype == typeId::String)
+	  {
+	    std::string *str = static_cast<std::string*>(res);
+	    *str = this->toString();
+	    ret = true;
+	  }
+	else if ((itype == typeId::Node) && (this->_type == typeId::Node))
+	  {
+	    class Node **n = static_cast<class Node**>(res);
+	    *n = (class Node*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::Path) && (this->_type == typeId::Path))
+	  {
+	    class Path **p = static_cast<Path**>(res);
+	    *p = (Path*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::Bool) && (this->_type == typeId::Bool))
+	  {
+	    bool	*b = static_cast<bool*>(res);
+	    *b = this->__data.b;
+	    ret = true;
+	  }
+	else if ((itype == typeId::VTime) && (this->_type == typeId::VTime))
+	  {
+	    vtime **vt = static_cast<vtime**>(res);
+	    *vt = (vtime*)this->__data.ptr;
+	    ret = true;
+	  }
+	else if ((itype == typeId::List) && (this->_type == typeId::List))
+	  {
+	    std::list<Variant*> *l = static_cast<std::list<Variant*>*>(res);
+	    *l = *((std::list<Variant*>*)this->__data.ptr);
+	    ret = true;
+	  }
+	else if ((itype == typeId::Map) && (this->_type == typeId::Map))
+	  {
+	    std::map<std::string, Variant*> *m = static_cast<std::map<std::string, Variant*>*>(res);
+	    *m = *((std::map<std::string, Variant*>*)this->__data.ptr);
+	    ret = true;
+	  }
+	else
+	  ret = false;
+	return ret;
       }
-      case uint8_t(typeId::List):
+    catch (std::string e)
       {
-	std::list<Variant*> *l = static_cast<std::list<Variant*>*>(res);
-	switch (this->_type)
-	  {
-	  case typeId::List:
-	    {
-	      *l = *((std::list<Variant*>*)this->__data.ptr);
-	      return true;
-	    }
-	  default:
-	    return false;
-	  }
-	}
-      case uint8_t(typeId::Map):
-      {
-	std::map<std::string, Variant*> *m = static_cast<std::map<std::string, Variant*>*>(res);
-	switch (this->_type)
-	  {
-	  case typeId::Map:
-	    {
-	      *m = *((std::map<std::string, Variant*>*)this->__data.ptr);
-	      return true;
-	    }
-	  default:
-	    return false;
-	  }
-	}
-      default:
 	return false;
       }
   }
 
+  template<typename T>
+  bool operator==(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
 
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine == val);
+	else
+	  return false;
+      }
+    else
+      return false;
+  }
+
+  template<typename T>
+  bool operator!=(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine != val);
+	else
+	  return true;
+      }
+    else
+      return true;
+  }
+
+  template<typename T>
+  bool operator>(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine > val);
+	else
+	  return true;
+      }
+    else
+      return true;
+  }
+
+  template<typename T>
+  bool operator>=(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine >= val);
+	else
+	  return true;
+      }
+    else
+      return true;
+  }
+
+  template<typename T>
+  bool operator<(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine < val);
+	else
+	  return false;
+      }
+    else
+      return false;
+  }
+
+  template<typename T>
+  bool operator<=(T val)
+  {
+    std::string type;
+    uint8_t	itype;
+    T		mine;
+
+    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+    if (itype != 0)
+      {
+	if (this->convert(itype, &mine))
+	  return (mine <= val);
+	else
+	  return false;
+      }
+    else
+      return false;
+  }
+
+  bool	operator==(Variant* v);
+  bool	operator!=(Variant* v);
+  bool	operator>(Variant* v);
+  bool	operator>=(Variant* v);
+  bool	operator<(Variant* v);
+  bool	operator<=(Variant* v);
+  
   template<typename T>
   T	value(void)
   {
@@ -313,40 +339,50 @@ public:
     uint8_t	itype;
     T		t;
 
-    itype = typeId::Get()->getType((char*)typeid(static_cast<T*>(0)).name());
+	itype = typeId::Get()->getType(typeid(static_cast<T*>(0)).name());
+
     if (itype != 0)
-      {
-	if (this->convert(itype, &t))
-	  return t;
-	else
-	  return T();
-      }
+    {
+	  if (this->convert(itype, &t))
+	    return t;
+	  else
+	    return T();
+    }
     else
+	{
       return T();
+	}
   }
 
-  std::string	toString();
-  uint16_t	toUInt16();
-  int16_t	toInt16();
-  uint32_t	toUInt32();
-  int32_t	toInt32();
-  uint64_t	toUInt64();
-  int64_t	toInt64();
-  bool		toBool();
+  EXPORT std::string	toString() throw (std::string);
+  EXPORT std::string	toHexString() throw (std::string);
+  EXPORT std::string	toOctString() throw (std::string);
+  EXPORT uint16_t	toUInt16() throw (std::string);
+  EXPORT int16_t	toInt16() throw (std::string);
+  EXPORT uint32_t	toUInt32() throw (std::string);
+  EXPORT int32_t	toInt32() throw (std::string);
+  EXPORT uint64_t	toUInt64() throw (std::string);
+  EXPORT int64_t	toInt64() throw (std::string);
+  EXPORT char*		toCArray() throw (std::string);
+  EXPORT char		toChar() throw (std::string);
+  EXPORT bool		toBool() throw (std::string);
   EXPORT uint8_t	type();
+  EXPORT std::string	typeName();
 
 private:  
   uint8_t	_type;
 union Data
 {
-  char c;
-  int16_t s;
-  uint16_t us;
-  int32_t i;
-  uint32_t ui;
-  int64_t ll;
-  uint64_t ull;
-  void *ptr;
+  bool		b;
+  char		c;
+  int16_t	s;
+  uint16_t	us;
+  int32_t	i;
+  uint32_t	ui;
+  int64_t	ll;
+  uint64_t	ull;
+  std::string	*str;
+  void		*ptr;
 } __data;
 
 };
