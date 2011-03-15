@@ -83,7 +83,7 @@ void		OrphansInodes::load(class Extfs * extfs)
 		    size += extfs->SB()->block_size();
 	      ExtfsNode * node = NULL;
 	      node = new ExtfsNode(oss.str() + std::string("_content"),
-				   size, extfs->orphans(), extfs, addr);
+				   size, extfs->orphans(), extfs, addr, false, extfs->addBlockPointers);
 	    }
 	  if (extfs->SB()->inodes_struct_size() > sizeof(inodes_t))
 	    {
