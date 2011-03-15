@@ -133,5 +133,5 @@ class hash(Module):
                                "parameters": {"type": Parameter.NotEditable,
                                               "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
                                })
-        self.flags = "single"
+        self.flags = ["single", "generic"]
         self.tags = "Hash"
