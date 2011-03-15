@@ -111,6 +111,9 @@ class procMB(QDialog):
             label = QLabel(self.noResult)
             label.setAlignment(Qt.AlignCenter)
             self.tabwidget.addTab(label, self.resname)
+        for i in [0, 1]:
+            self.treeres.resizeColumnToContents(i)
+            self.treeargs.resizeColumnToContents(i)
         self.box.addLayout(self.dialogButtonsLayout)
             
 
