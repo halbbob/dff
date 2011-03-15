@@ -60,7 +60,9 @@ class Volatility(mfso):
      if self.dump:
        e = proc.dump()
        if e:
-        self.res.add_const("error", e)
+         ve = Variant(e)
+         ve.thisown = False
+         self.res["error"] = ve
      if self.openfiles:
        proc.getOpenFiles() 
      if self.connections:

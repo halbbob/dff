@@ -84,7 +84,9 @@ class Processus(Script):
          for err in err_trace:
            res += err
          print res
-         self.res["error"] = Variant(res)
+         verr = Variant(res)
+         verr.thisown = False
+         self.res["error"] = verr
          self.state = "fail"
          return
     if "gui" in self.exec_flags and "gui" in self.mod.flags:

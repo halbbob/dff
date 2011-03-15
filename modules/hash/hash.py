@@ -89,7 +89,9 @@ class HASH(Script):
                 self.attributeHash.setHash(node, algo, hash)
                 node.registerAttributes(self.attributeHash)
             else:
-                self.res["error"] = Variant(str(algo + " hashing failed on " + node.absolute()))
+                err = Variant(str(algo + " hashing failed on " + node.absolute()))
+                err.thisown = False
+                self.res["error"] = err
 
 
     def hashCalc(self, node, algorithm):
