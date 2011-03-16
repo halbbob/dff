@@ -16,14 +16,15 @@
 
 # compiled
 add_subdirectory (exceptions)
-#add_subdirectory (env)
 add_subdirectory (events)
 add_subdirectory (loader)
 add_subdirectory (module)
 add_subdirectory (types)
 add_subdirectory (vfs)
 add_subdirectory (search)
-add_subdirectory (index)
+if (ENABLE_INDEXER)
+   add_subdirectory (index)
+endif (ENABLE_INDEXER)
 add_subdirectory (tree)
 add_subdirectory (magic)
 # python only

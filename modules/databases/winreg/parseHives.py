@@ -714,8 +714,8 @@ class keyNode(Node):
       v = Variant(vmap)
       v.thisown = False
 
-      name += " = "
-      name += d
+#      name += " = "
+#      name += d
 
       attr[name] = v
 
