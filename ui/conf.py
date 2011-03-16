@@ -19,6 +19,12 @@ from os.path import exists, expanduser, normpath
 from PyQt4.QtCore import QDir
 import ConfigParser
 
+try:
+    import api.index
+    INDEX_ENABLED = True
+except ImportError:
+    INDEX_ENABLED = False
+
 class Conf():
     class __Conf():
         def __init__(self, confPath):
@@ -27,7 +33,7 @@ class Conf():
             By default ; no footprint !
             """
             self.initLanguage()
-            self.indexEnabled = False
+            self.indexEnabled = INDEX_ENABLED
             homeDir = normpath(expanduser('~') + '/')
             
             # Global settings

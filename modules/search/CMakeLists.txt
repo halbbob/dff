@@ -14,7 +14,9 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 add_subdirectory (carver)
-add_subdirectory (indexer)
+if (ENABLE_INDEXER)
+   add_subdirectory (indexer)
+endif (ENABLE_INDEXER)
 
 set(search_srcs
   __init__.py
