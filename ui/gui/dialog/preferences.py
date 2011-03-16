@@ -47,10 +47,14 @@ class Preferences(QDialog, Ui_PreferencesDialog):
       self.tNoHistoryFile = self.conf.noHistoryFile
       self.tWorkPath = self.conf.workingDir
       self.tHistoryFileFullPath = self.conf.historyFileFullPath
-      self.tRootIndex = self.conf.root_index
-      self.tIndexName = self.conf.index_name
-      self.tIndexPath = self.conf.index_path
 
+      if self.conf.indexEnabled:
+          self.tRootIndex = self.conf.root_index
+          self.tIndexName = self.conf.index_name
+          self.tIndexPath = self.conf.index_path
+      else:
+          idx = self.tabWidget.indexOf(self.indexTab)
+          self.tabWidget.removeTab(idx)
       # Activate preferences from conf values
       self.noFootPrintCheckBox.setChecked(self.conf.noFootPrint)
       self.noHistoryCheckBox.setChecked(self.conf.noHistoryFile)
@@ -71,7 +75,8 @@ class Preferences(QDialog, Ui_PreferencesDialog):
       self.connect(self.langComboBox, SIGNAL("currentIndexChanged (const QString&)"), self.langChanged)
 
       # indexation configuration
-      self.init_index_pref()
+      if self.conf.indexEnabled:
+          self.init_index_pref()
 
       # Help configuration
       self.connect(self.docAndHelpBrowse, SIGNAL("clicked()"), self.helpDir)
@@ -102,7 +107,7 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.conf.workingDir = self.tWorkPath
         if self.tNoFootPrint != self.conf.noFootPrint:
             self.conf.noFootPrint = self.tNoFootPrint
-        if not self.tNoFootPrint and not access(self.tIndexPath, R_OK):
+        if not self.tNoFootPrint and self.conf.indexEnabled and not access(self.tIndexPath, R_OK):
             if QMessageBox.question(self, self.createDirTitle, self.createDirTitle + ':<br>' + self.tIndexPath + '?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.No:
                 return
             else:
@@ -111,9 +116,10 @@ class Preferences(QDialog, Ui_PreferencesDialog):
                 except OSError, e:
                     QMessageBox.warning(self, self.createDirFail, self.createDirFail + ':<br>' + self.tIndexPath + '<br>' + e.strerror)
                     return
-        self.conf.root_index = self.tRootIndex
-        self.conf.index_name = self.tIndexName
-        self.conf.index_path = self.tIndexPath
+        if self.conf.indexEnabled:
+            self.conf.root_index = self.tRootIndex
+            self.conf.index_name = self.tIndexName
+            self.conf.index_path = self.tIndexPath
         self.conf.noHistoryFile = self.tNoHistoryFile
         if (not self.tNoHistoryFile and not self.tNoFootPrint) and self.tHistoryFileFullPath != self.conf.historyFileFullPath and access(dirname(self.tHistoryFileFullPath), W_OK):
             self.conf.historyFileFullPath = self.tHistoryFileFullPath
@@ -140,11 +146,13 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.historyToolButton.setEnabled(not self.tNoFootPrint and not self.tNoHistoryFile)
         self.noHistoryCheckBox.setEnabled(not self.tNoFootPrint)
         # Indexes related
-        self.indexTab.setEnabled(not self.tNoFootPrint)
+        if self.conf.indexEnabled:
+            self.indexTab.setEnabled(not self.tNoFootPrint)
 
         # Refresh label helpers
         self.globalValid()
-        self.indexValid()
+        if self.conf.indexEnabled:
+            self.indexValid()
 
     def workDir(self):
         """
@@ -158,13 +166,14 @@ class Preferences(QDialog, Ui_PreferencesDialog):
                 # History file does not exists and working dir has changed, update history path
                 self.conf.historyFileFullPath = normpath(str(self.tWorkPath + '/history'))
                 self.historyLineEdit.setText(self.conf.historyFileFullPath)
-            if not access(self.tRootIndex, R_OK):
+            if self.conf.indexEnabled and not access(self.tRootIndex, R_OK):
                 # Index directory does not exists and working dir has changed, update index path
                 self.tRootIndex = normpath(str(self.tWorkPath) + '/indexes/')
                 self.tIndexPath = normpath(self.tRootIndex + '/' + self.tIndexName)
                 self.root_index_line.setText(self.tRootIndex)
             self.globalValid()
-            self.indexValid()
+            if self.conf.indexEnabled:
+                self.indexValid()
 
     def historyDir(self):
         """

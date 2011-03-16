@@ -27,7 +27,7 @@ class Conf():
             By default ; no footprint !
             """
             self.initLanguage()
-
+            self.indexEnabled = False
             homeDir = normpath(expanduser('~') + '/')
             
             # Global settings
@@ -42,9 +42,10 @@ class Conf():
             self.noFootPrint = True
             
             # Indexes configuration
-            self.root_index = normpath(self.workingDir + '/indexes/')
-            self.index_name = 'default'
-            self.index_path = normpath(self.root_index + '/' + self.index_name)
+            if self.indexEnabled:
+                self.root_index = normpath(self.workingDir + '/indexes/')
+                self.index_name = 'default'
+                self.index_path = normpath(self.root_index + '/' + self.index_name)
 
             # Help
             self.docPath = normpath(sys.modules['ui.gui'].__path__[0] + '/help.qhc')
@@ -72,10 +73,11 @@ class Conf():
             config.set('Global', 'historyfilefullpath', self.historyFileFullPath)
             config.add_section('Language')
             config.set('Language', 'use', self.language)
-            config.add_section('Index')
-            config.set('Index', 'rootindex', self.root_index)
-            config.set('Index', 'indexname', self.index_name)
-            config.set('Index', 'indexpath', self.index_path)
+            if self.indexEnabled:
+                config.add_section('Index')
+                config.set('Index', 'rootindex', self.root_index)
+                config.set('Index', 'indexname', self.index_name)
+                config.set('Index', 'indexpath', self.index_path)
             config.add_section('Help')
             config.set('Help', 'helppath', self.docPath)
             with open(self.configFile, 'wb') as configfile:
@@ -89,9 +91,10 @@ class Conf():
             self.noHistoryFile = config.getboolean('Global', 'nohistoryfile')
             self.historyFileFullPath = config.get('Global', 'historyfilefullpath')
             self.language = config.get('Language', 'use')
-            self.root_index = config.get('Index', 'rootindex')
-            self.index_name = config.get('Index', 'indexname')
-            self.index_path = config.get('Index', 'indexpath')
+            if self.indexEnabled:
+                self.root_index = config.get('Index', 'rootindex')
+                self.index_name = config.get('Index', 'indexname')
+                self.index_path = config.get('Index', 'indexpath')
             self.docPath = config.get('Help', 'helppath')
 
             
