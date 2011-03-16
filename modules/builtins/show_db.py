@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_show_db_version__ = "1.0.0"
+
 from api.vfs import *
 from api.module.script import *
 from api.types.libtypes import Variant, Argument, typeId, ConfigManager

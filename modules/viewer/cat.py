@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_cat_version__ = "1.0.0"
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *

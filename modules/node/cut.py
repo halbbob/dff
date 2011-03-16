@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_cut_version__ = "1.0.0"
+
 from struct import unpack
 
 from api.vfs import *

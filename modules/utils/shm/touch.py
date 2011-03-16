@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_touch_version__ = "1.0.0"
+
 from api.vfs import *
 from api.module import *
 from api.types.libtypes import Argument, typeId

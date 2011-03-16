@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_unxor_version__ = "1.0.0"
+
 from modules.utils.shm.touch import *
 from api.module import *
 from api.exceptions.libexceptions import *

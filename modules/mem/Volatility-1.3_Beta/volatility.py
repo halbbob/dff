@@ -12,6 +12,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #
 
+__dff_module_volatility_version__ = "1.0.0"
+
 import sys
 import os
 import forensics.registry as MemoryRegistry

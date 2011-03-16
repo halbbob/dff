@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_link_version__ = "1.0.0"
+
 from api.module.module import *
 from api.exceptions.libexceptions import *
 from api.types.libtypes import Argument, typeId, Variant

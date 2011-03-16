@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_unzip_version__ = "1.0.0"
+
 from api.module.module import Module
 from api.module.script import Script
 from api.vfs.libvfs import VFS, FdManager, fdinfo, Node, fso

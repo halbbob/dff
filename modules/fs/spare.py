@@ -13,6 +13,8 @@
 #  Solal Jacob < sja@arxsys.fr>
 #
 
+__dff_module_spare_version__ = "1.0.0"
+
 from struct import unpack
 
 from api.vfs import *

@@ -13,6 +13,8 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 # 
 
+__dff_module_hash_version__ = "1.0.0"
+
 import hashlib 
 from api.vfs import *
 from api.module.script import *

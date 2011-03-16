@@ -13,6 +13,8 @@
 #  Romain Bertholon < rbe@arxsys.fr>
 #
 
+__dff_module_merge_version__ = "1.0.0"
+
 from struct import unpack
 
 from api.vfs import *

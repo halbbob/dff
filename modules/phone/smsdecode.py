@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_smsdecode_version__ = "1.0.0"
+
 import struct
 import binascii 
 
