@@ -471,7 +471,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_
 add_subdirectory (api)
 add_subdirectory (modules)
 add_subdirectory (ui)
-add_subdirectory (ressources)
 if (NOT UNIX AND WINALL)
   add_subdirectory (Prerequisites)
 endif(NOT UNIX AND WINALL)

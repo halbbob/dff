@@ -13,12 +13,6 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #  Christophe Malinge <cma@digital-forensic.org>
 
-# BASH / UNIX commands to check for files with translatable strings : <-- About to be/MUST be deprecated !
-# echo $(grep -R 'QApplication.translate(' * | grep '.py:' | grep -v '.sh:' | cut -d ':' -f 1 | sort | uniq | sed 's/^\(.*\)$/${CMAKE_HOME_DIRECTORY}\/\1/')
-
-# FIXME :
-#  - Dynamic specification of available languages in configuration <-- in progress
-
 # please keep the list of supported languages sorted alphabetically
 set(DFF_SUPPORTED_LANGUAGES "de" "en" "es" "fr" "nl")
 
