@@ -43,15 +43,20 @@ Also, the carver can now be launched in console.
 merge as many file you need, for examples you can merge all the file of a split
 DD images and then apply other modules to the virtually reconstructed images.
 
-* Enhanced GUI ergonomy; - Sort speed are lot enhanced.  - Displaying of large
-number of items ( > 100 000) are fast.  - The GUI now have a maximize and
-fullscreen button, to display widget on the entire screen.  - A new menu :
-relevant module help you to access in fast to the detected module to apply on a
-node.  - A new menu : open as new tab, create a new browser opened from the node
-you clicked on - Module as now an associated icon - Now when you double-click on
-a node to auto-apply module a quesiton will ask you if you're sure to want to
-apply the dected modules.  - The apply module widgets were totally rewritten to
-use the libtypes API (Config and argument of a module).    
+* Enhanced GUI ergonomy; 
+ - Sort speed are lot enhanced.
+ - Displaying of large  number of items ( > 100 000) are fast.
+ - The GUI now have a maximize and
+fullscreen button, to display widget on the entire screen.  
+ - A new menu :  relevant module help you to access in fast to the detected 
+module to apply on a node.  
+ - A new menu : open as new tab, create a new browser opened from the node
+you clicked on 
+ - Module as now an associated icon 
+ - Now when you double-click on a node to auto-apply module a quesiton will ask
+ you if you're sure to want to apply the dected modules.  
+ - The apply module widgets were totally rewritten to use the libtypes API 
+(Config and argument of a module).    
 	
 * Configuration: DFF now as a configuration files that can permit to setup your
 prefered languages, the path where the history file will be saved and the path
@@ -65,16 +70,18 @@ number to be easyier to maintain and upgrade.
 
 * API:
 	
-	- The config/argument and result class were totally rewritten based on
-variant.  - The attributes is now totally based on variant. Also now modules
-could add dynamic attributes to use less memory.  - Data type and compatible
-modules are now accessible directly from a node object.  - Old file type API is
-remplaced by the new DataType engine where you could plug your own datatype
-detection handler.
+ - The config/argument and result class were totally rewritten based on
+variant.
+ - The attributes is now totally based on variant. Also now modules
+could add dynamic attributes to use less memory.  
+ - Data type and compatible modules are now accessible directly from a node 
+object.  
+ - Old file type API is remplaced by the new DataType engine where you could 
+plug your own datatype detection handler.
 
-* Hash modules: - Now can hash directly with multiple algorithm (md5, sha1,
-sha256, ...) and use the new dynamic attributes API to add hash as node
-attributes.
+* Hash modules: 
+ Now can hash directly with multiple algorithm (md5, sha1, sha256, ...) and 
+use the new dynamic attributes API to add hash as node attributes.
 
 Bug fixes: 
 ----------
