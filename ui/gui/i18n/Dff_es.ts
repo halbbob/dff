@@ -24,7 +24,7 @@ Pablo Rogina pablojr@gmail.com
         <translation>Acerca de Digital Forensics Framework</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/about.ui" line="71"/>
+        <location filename="../../../ui/gui/resources/about.ui" line="77"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</source>
         <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;Si tiene problemas, por favor visite nuestra &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;página de soporte&lt;/a&gt;.&lt;br&gt;Canal IRC: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; en la red Freenode.&lt;br&gt;Más información: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software desarrollado por &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; y &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la comunidad DFF&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
@@ -646,7 +646,7 @@ Pablo Rogina pablojr@gmail.com
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
-        <source>the following nodes could not be opened with HexEdit because they are either empty or folders
+        <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -735,17 +735,17 @@ Pablo Rogina pablojr@gmail.com
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="328"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Create directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="329"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>Directory creation failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="330"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
         <source>History file is not writable</source>
         <translation type="unfinished"></translation>
     </message>

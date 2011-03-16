@@ -15,7 +15,8 @@ and IRC channels for your use.
 Author(s):
 Christophe Malinge cma@digital-forensic.org
 -->
-<!DOCTYPE TS><TS version="1.1" language="fr">
+<!DOCTYPE TS>
+<TS version="2.0" language="fr">
 <context>
     <name>About</name>
     <message>
@@ -24,7 +25,7 @@ Christophe Malinge cma@digital-forensic.org
         <translation>À propos de Digital Forensics Framework</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/about.ui" line="71"/>
+        <location filename="../../../ui/gui/resources/about.ui" line="77"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</source>
         <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;Au moindre problème, veuillez s&amp;apos;il vous plaît visiter notre &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;page de support&lt;/a&gt;.&lt;br&gt;Salon de discussion IRC : &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; sur le réseau Freenode.&lt;br&gt;Plus d&amp;apos;informations : &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Logiciel développé par &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; et &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la communauté DFF&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
@@ -643,13 +644,13 @@ Christophe Malinge cma@digital-forensic.org
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="365"/>
         <source>Empty files</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichiers vides</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
-        <source>the following nodes could not be opened with HexEdit because they are either empty or folders
+        <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
-        <translation type="unfinished"></translation>
+        <translation>les nœuds suivants ne peuvent être ouverts avec le Visualiseur hexadécimal car ce sont des répertoires ou ils sont vides</translation>
     </message>
 </context>
 <context>
@@ -736,17 +737,17 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="328"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Create directory</source>
         <translation>Créer un répertoire</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="329"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>Directory creation failure</source>
         <translation>Problème lors de la création d&apos;un répertoire</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="330"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
         <source>History file is not writable</source>
         <translation>Le fichier d&apos;historique n&apos;est pas accessible en écriture</translation>
     </message>

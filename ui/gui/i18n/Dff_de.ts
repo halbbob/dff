@@ -646,7 +646,7 @@ D. Schreiber dschreiber@gmx.de
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
-        <source>the following nodes could not be opened with HexEdit because they are either empty or folders
+        <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -735,17 +735,17 @@ D. Schreiber dschreiber@gmx.de
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="328"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Create directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="329"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>Directory creation failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="330"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
         <source>History file is not writable</source>
         <translation type="unfinished"></translation>
     </message>

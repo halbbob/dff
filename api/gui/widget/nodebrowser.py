@@ -317,7 +317,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        if len(errnodes):
          msg = QMessageBox(self)
          msg.setWindowTitle(self.tr("Empty files"))
-         msg.setText(self.tr("the following nodes could not be opened with HexEdit because they are either empty or folders\n"))
+         msg.setText(self.tr("the following nodes could not be opened with Hex viewer because they are either empty or folders\n"))
          msg.setIcon(QMessageBox.Warning)
          msg.setDetailedText(errnodes)
          msg.setStandardButtons(QMessageBox.Ok)
@@ -363,7 +363,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      if len(errnodes):
        msg = QMessageBox(self)
        msg.setWindowTitle(self.tr("Empty files"))
-       msg.setText(self.tr("the following nodes could not be opened with HexEdit because they are either empty or folders\n"))
+       msg.setText(self.tr("the following nodes could not be opened with Hex viewer because they are either empty or folders\n"))
        msg.setIcon(QMessageBox.Warning)
        msg.setDetailedText(errnodes)
        msg.setStandardButtons(QMessageBox.Ok)
