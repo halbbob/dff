@@ -133,6 +133,17 @@ ENDIF ()
 #FIND_PACKAGE(Qt4 REQUIRED)
 #INCLUDE(${QT_USE_FILE})
 
+if(UNIX)
+# Search for gzip program, to compress manpage for Unix
+  find_program(GZIP_TOOL
+               NAMES gzip
+               PATHS /bin
+               /usr/bin
+               /usr/local/bin)
+  if(NOT GZIP_TOOL)
+    message(FATAL_ERROR "Unable to find 'gzip' program")
+  endif(NOT GZIP_TOOL)
+endif(UNIX)
 
 ## Python-magic check for Unix only
 if(UNIX)
@@ -331,6 +342,11 @@ IF(WIN32 AND NOT UNIX)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.ico
     DESTINATION /${CMAKE_PROJECT_NAME}/ressources/)
 
+# Install docs and licenses
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE-THIRDPARTY
+          DESTINATION /${CMAKE_PROJECT_NAME}/
+          PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+
   SET(CPACK_MONOLITHIC_INSTALL "ON")
 	
   SET(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\arxsys.bmp")
@@ -435,6 +451,19 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 if (UNIX)
+# Compress manpage
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz
+                     COMMAND ${GZIP_TOOL} -c ${CMAKE_CURRENT_SOURCE_DIR}/docs/dff.1 > ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz
+                     COMMENT "Building dff.1.gz")
+  add_custom_target(manpage ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz)
+# Install man page
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz
+          DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/share/man/man1
+          PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME dff.1.gz)
+# Install docs and licenses
+  install(FILES README COPYRIGHT LICENSE LICENSE-THIRDPARTY
+          DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/share/doc/${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
+          PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME)
 # Install binary  launcher, icons, shortcuts.
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff
   DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/bin
