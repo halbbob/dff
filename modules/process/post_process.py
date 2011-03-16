@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_postprocess_version__ = "1.0.0"
+
 from api.module.script import Script 
 from api.taskmanager.taskmanager import TaskManager
 from api.module.module import Module 

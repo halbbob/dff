@@ -40,7 +40,7 @@
 %pythoncode
 %{
 
-__dff_module_local_version__ = "1.0.0"
+__dff_module_LOCAL_version__ = "1.0.0"
 
 from api.module.module import *
 from api.types.libtypes import *

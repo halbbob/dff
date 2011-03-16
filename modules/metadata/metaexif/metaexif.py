@@ -14,6 +14,8 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Christophe Malinge <cma@digital-forensic.org>
 
+__dff_module_metaexif_version__ = "1.0.0"
+
 from api.module.script import Script 
 from api.module.module import Module
 from api.types.libtypes import Variant, VMap, Argument, typeId, vtime

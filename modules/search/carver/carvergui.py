@@ -12,6 +12,8 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
+__dff_module_carvergui_version__ = "1.0.0"
+
 from api.module.module import Module
 from api.module.script import Script
 from api.types.libtypes import typeId, Argument, Parameter

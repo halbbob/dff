@@ -14,6 +14,8 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
+__dff_module_timeline_version__ = "1.0.0"
+
 # System imports
 from datetime import datetime, timedelta
 from PyQt4.QtCore import Qt, QPointF, QRectF, SIGNAL, QString

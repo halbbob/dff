@@ -13,7 +13,7 @@
 #  Solal Jacob < sja@arxsys.fr>
 #
 
-__dff_module_k800irecover_version__ = "1.0.0"
+__dff_module_K800iRecover_version__ = "1.0.0"
 
 from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread, SLOT, QSignalMapper
