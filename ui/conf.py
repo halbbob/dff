@@ -98,9 +98,15 @@ class Conf():
             self.historyFileFullPath = config.get('Global', 'historyfilefullpath')
             self.language = config.get('Language', 'use')
             if self.indexEnabled:
-                self.root_index = config.get('Index', 'rootindex')
-                self.index_name = config.get('Index', 'indexname')
-                self.index_path = config.get('Index', 'indexpath')
+                try:
+                    config.items('Index')
+                    self.root_index = config.get('Index', 'rootindex')
+                    self.index_name = config.get('Index', 'indexname')
+                    self.index_path = config.get('Index', 'indexpath')
+                except ConfigParser.NoSectionError:
+                    self.root_index = ""
+                    self.index_name = ""
+                    self.index_path = ""
             self.docPath = config.get('Help', 'helppath')
 
             
