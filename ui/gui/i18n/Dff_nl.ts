@@ -15,120 +15,121 @@ and IRC channels for your use.
 Author(s):
 Bram Mooij bram4n6@hotmail.com
 -->
-<!DOCTYPE TS><TS version="1.1" language="nl">
+<!DOCTYPE TS>
+<TS version="2.0" language="nl_NL">
 <context>
     <name>About</name>
     <message>
-        <location filename="../../../ui/gui/resources/about.ui" line="36"/>
+        <location filename="../../../ui/gui/resources/about.ui" line="20"/>
         <source>About Digital Forensics Framework</source>
-        <translation>Omschrijving Digital Forensics Framework</translation>
+        <translation>Informatie over Digital Forensic Framework</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/about.ui" line="77"/>
+        <location filename="../../../ui/gui/resources/about.ui" line="55"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;Voor hulp bij problemen, bezoekt u onze support pagina op: &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;onze site&lt;/a&gt;.&lt;br&gt;IRC kanaal: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; Freenode netwerk.&lt;br&gt;Meer informatie: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software ontwikkeling door &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; en &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;de DFF gemeenschap&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
 </context>
 <context>
     <name>AddBookmark</name>
     <message>
-        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="22"/>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="6"/>
         <source>Add bookmark</source>
-        <translation type="unfinished"></translation>
+        <translation>Toevoegen van een bookmark</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="42"/>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="26"/>
         <source>Add a bookmark from the Virtual File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Toevoegen van een bookmark aan een Virtueel Bestands Systeem</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="66"/>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="50"/>
         <source>Create a new category</source>
-        <translation type="unfinished"></translation>
+        <translation>Maak een nieuwe catagorie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="103"/>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="87"/>
         <source>Category name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Naam van de catagorie:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="91"/>
+        <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="75"/>
         <source>Add in an existing category</source>
-        <translation type="unfinished"></translation>
+        <translation>Voeg aan een bestaande catagorie toe</translation>
     </message>
 </context>
 <context>
     <name>DevicesDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="14"/>
         <source>Select Device</source>
-        <translation>Selecteer uw data opslag</translation>
+        <translation>Selecteer device</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="84"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="68"/>
         <source>Device</source>
-        <translation>Data opslag</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="122"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="106"/>
         <source>Model</source>
-        <translation>Model</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="154"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="138"/>
         <source>Size</source>
         <translation>Grootte</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="54"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="38"/>
         <source>Select a local device to add in the Virtual File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Toevoegen van een lokaal device aan het Virtueel Bestands Systeem </translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="69"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="53"/>
         <source>Warning : You must run the software with Administrator rights</source>
-        <translation type="unfinished"></translation>
+        <translation>Waarschuwing: U dient deze software als administrator uit te voeren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="106"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="90"/>
         <source>Block device name</source>
-        <translation type="unfinished"></translation>
+        <translation>Naam van blokkeer device</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="138"/>
+        <location filename="../../../ui/gui/resources/devicesdialog.ui" line="122"/>
         <source>Serial</source>
-        <translation>Serie nummer</translation>
+        <translation>Serieel</translation>
     </message>
 </context>
 <context>
     <name>Errors</name>
     <message>
-        <location filename="../../../ui/gui/resources/errors.ui" line="36"/>
+        <location filename="../../../ui/gui/resources/errors.ui" line="20"/>
         <source>Errors</source>
-        <translation type="unfinished"></translation>
+        <translation>Fouten</translation>
     </message>
 </context>
 <context>
     <name>ExtractDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="14"/>
         <source>Extract</source>
-        <translation>Uitpak</translation>
+        <translation>Uitpakken</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="76"/>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="60"/>
         <source>Recursive mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Omkeren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="89"/>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="73"/>
         <source>Destination folder:</source>
         <translation>Bestemmings folder:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/extractdialog.ui" line="116"/>
+        <location filename="../../../ui/gui/resources/extractdialog.ui" line="100"/>
         <source>Browse</source>
-        <translation>Surf</translation>
+        <translation>Surf naar</translation>
     </message>
 </context>
 <context>
@@ -136,266 +137,266 @@ Bram Mooij bram4n6@hotmail.com
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="118"/>
         <source>Extraction path is mandatory</source>
-        <translation type="unfinished"></translation>
+        <translation>Bestands bestemming verplicht invullen</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="119"/>
         <source>Choose the destination folder for extraction</source>
-        <translation>Kies uw &apos;uitpak&apos; bestemmings folder</translation>
+        <translation>Kies de bestemmings folder om uit te pakken</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="120"/>
         <source>Overwrite attempt</source>
-        <translation type="unfinished"></translation>
+        <translation>Probeer te overschijven</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="121"/>
         <source>Some selected files or folders already exist in the destination folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Sommige geselecteerde bestanden bestaan al in de bestemmings folder</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="122"/>
         <source>Overwrite with selected ones ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Het geselecteerde overschijven?</translation>
     </message>
 </context>
 <context>
     <name>FindFile</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="25"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="9"/>
         <source>Find file</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoek bestand</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="35"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="19"/>
         <source>Pattern:</source>
-        <translation type="unfinished"></translation>
+        <translation>Patroon:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="42"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="26"/>
         <source>Syntax:</source>
-        <translation type="unfinished"></translation>
+        <translation>Omschrijving:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="59"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="43"/>
         <source>Regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Reguliere expressie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="64"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="48"/>
         <source>Fixed string</source>
-        <translation type="unfinished"></translation>
+        <translation>Vaste string</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="69"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="53"/>
         <source>Wildcard</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="77"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="61"/>
         <source>Attribute:</source>
         <translation>Attribuut:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="85"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="69"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="90"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="74"/>
         <source>Size</source>
-        <translation>Grootte</translation>
+        <translation>grootte</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="95"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="79"/>
         <source>Date</source>
         <translation>Datum</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="124"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="108"/>
         <source>Case sensitive sorting</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoofd/kleine letter gevoelig sorteren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="131"/>
+        <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="115"/>
         <source>Case sensitive filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoofd/kleine letter gevoelig filteren</translation>
     </message>
 </context>
 <context>
     <name>Ide</name>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="14"/>
         <source>IDE</source>
-        <translation>IDE</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="46"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="30"/>
         <source>IDE toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="67"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="51"/>
         <source>New empty file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nieuw leeg bestand</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="79"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="60"/>
         <source>Generate skeleton</source>
-        <translation type="unfinished"></translation>
+        <translation>Genereer framewerk</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="280"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="271"/>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Open bestand</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="103"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="78"/>
         <source>Save</source>
         <translation>Bewaar</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="115"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="87"/>
         <source>Save as</source>
         <translation>Bewaren als</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="127"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="96"/>
         <source>Load</source>
-        <translation>Laden</translation>
+        <translation>Laad</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="139"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="105"/>
         <source>Undo</source>
         <translation>Stap terug</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="151"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="114"/>
         <source>Redo</source>
         <translation>Stap vooruit</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="163"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="123"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Commentaar</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/ide.ui" line="175"/>
+        <location filename="../../../ui/gui/resources/ide.ui" line="132"/>
         <source>Uncomment</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwijder commentaar</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="278"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="269"/>
         <source>Save document ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Bewaar document?</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="279"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="270"/>
         <source>No file found</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen bestand gevonden</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/ide/ide.py" line="281"/>
+        <location filename="../../../ui/gui/ide/ide.py" line="272"/>
         <source>Save file as</source>
-        <translation type="unfinished"></translation>
+        <translation>Bewaar bestand als</translation>
     </message>
 </context>
 <context>
     <name>IdeWizard</name>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="14"/>
         <source>Integrated Development Environment Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation>Intergraal Ontwikkel Omgeving Wizard</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="38"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="22"/>
         <source>General Informations</source>
-        <translation type="unfinished"></translation>
+        <translation>Algemene informatie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="41"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="25"/>
         <source>Fill all script information such as name, type and saving location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vul in: alle script informatie, zoals naam, type en bestemmings lokatie.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="47"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="31"/>
         <source>Name:</source>
         <translation>Naam:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="57"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="41"/>
         <source>Category:</source>
-        <translation type="unfinished"></translation>
+        <translation>Catagorie:</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="55"/>
+        <source>Work location:</source>
+        <translation>Werk lokatie:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="71"/>
-        <source>Work location:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="87"/>
         <source>Browse</source>
-        <translation>Surf</translation>
+        <translation>Surf naar</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="99"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="83"/>
         <source>Type:</source>
         <translation>Type:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="127"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="111"/>
         <source>Script</source>
         <translation>Script</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="137"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="121"/>
         <source>Graphical</source>
         <translation>Grafisch</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="144"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="128"/>
         <source>Driver</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="168"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="152"/>
         <source>Description</source>
         <translation>Omschrijving</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="171"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="155"/>
         <source>Describe here the goal of the module</source>
-        <translation type="unfinished"></translation>
+        <translation>Beschrijf het doel van module</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="177"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="161"/>
         <source>Module&apos;s description</source>
-        <translation type="unfinished"></translation>
+        <translation>Module omschrijving</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="188"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="172"/>
         <source>Author informations</source>
-        <translation>Auteur&apos;s informatie</translation>
+        <translation>Auteur informatie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="191"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="175"/>
         <source>Fill all author&apos;s informations in order to complete header</source>
-        <translation>Vul alle auteur&apos;s informatie in om de header compleet te maken</translation>
+        <translation>Vul alle header informatie van de auteur in</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="199"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="183"/>
         <source>Author&apos;s first name:</source>
-        <translation>Voornaam auteur&apos;s:</translation>
+        <translation>Voornaam auteur:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="206"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="190"/>
         <source>Author&apos;s last name:</source>
-        <translation>Achternaam auteur&apos;s:</translation>
+        <translation>Achternaam auteur:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/idewizard.ui" line="213"/>
+        <location filename="../../../ui/gui/resources/idewizard.ui" line="197"/>
         <source>Author&apos;s electronic mail:</source>
-        <translation>Email auteur&apos;s:</translation>
+        <translation>Email auteur:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/idewizard.py" line="59"/>
@@ -406,330 +407,294 @@ Bram Mooij bram4n6@hotmail.com
 <context>
     <name>Interpreter</name>
     <message>
-        <location filename="../../../ui/gui/resources/interpreter.ui" line="100"/>
+        <location filename="../../../ui/gui/resources/interpreter.ui" line="84"/>
         <source>Python interpreter</source>
-        <translation>Python vertaler</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/interpreter.ui" line="113"/>
+        <location filename="../../../ui/gui/resources/interpreter.ui" line="97"/>
         <source>Python Interpreter</source>
-        <translation>Python vertaler</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="44"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="28"/>
         <source>File</source>
         <translation>Bestand</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="155"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="133"/>
         <source>Exit</source>
-        <translation>Afsluiten</translation>
+        <translation>Einde</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="119"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="103"/>
         <source>Load</source>
-        <translation>Laden</translation>
+        <translation>Laad</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="131"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="115"/>
         <source>Open evidence file(s)</source>
-        <translation>Open uw bewijs bestand(en)</translation>
+        <translation>Bewijs bestand openen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="143"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="124"/>
         <source>Open local device</source>
-        <translation>Open lokale data opslag</translation>
+        <translation>Lokaal device openen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="14"/>
         <source>Digital Forensics Framework</source>
-        <translation>Digital Forensics Framework</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="75"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="59"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Bewerken</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="54"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="38"/>
         <source>Module</source>
-        <translation>Module</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="61"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="45"/>
         <source>IDE</source>
-        <translation>IDE</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="167"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="142"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Voorkeur instellingen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="68"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="52"/>
         <source>?</source>
-        <translation>?</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="81"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="65"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Bekijk</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="179"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="151"/>
         <source>Maximize</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximaliseer</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="191"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="160"/>
         <source>Fullscreen mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Volledig scherm modus</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="215"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="178"/>
         <source>Shell</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="203"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="169"/>
         <source>Browser</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="227"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="187"/>
         <source>Python interpreter</source>
-        <translation>Python vertaler</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="122"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="106"/>
         <source>Load module</source>
         <translation>Laad module</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="251"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="205"/>
         <source>Open</source>
-        <translation>Open</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="103"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="87"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="114"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="98"/>
         <source>About DFF ...</source>
-        <translation>Omschrijving DFF ...</translation>
+        <translation>Over DFF ...</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="239"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="196"/>
         <source>DFF Documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>DFF documentatie</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="380"/>
         <source>Error while loading help</source>
-        <translation type="unfinished"></translation>
+        <translation>fout opgetreden bij het laden van het help bestand</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="381"/>
         <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;On-line help beschikbaar: &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="382"/>
         <source>Not an help file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen help bestand.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="383"/>
         <source>Documentation path not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Documentatie bestand niet gevonden.</translation>
     </message>
 </context>
 <context>
     <name>Modules</name>
     <message>
-        <location filename="../../../ui/gui/resources/modules.ui" line="36"/>
+        <location filename="../../../ui/gui/resources/modules.ui" line="20"/>
         <source>Modules</source>
         <translation>Modulen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/modules.ui" line="47"/>
+        <location filename="../../../ui/gui/resources/modules.ui" line="31"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/modules.ui" line="52"/>
+        <location filename="../../../ui/gui/resources/modules.ui" line="36"/>
         <source>Key</source>
         <translation>Sleutel</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/modules.ui" line="57"/>
+        <location filename="../../../ui/gui/resources/modules.ui" line="41"/>
         <source>Value</source>
         <translation>Waarde</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/modules.ui" line="62"/>
+        <location filename="../../../ui/gui/resources/modules.ui" line="46"/>
         <source>Info</source>
-        <translation>Informatie</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/modules.ui" line="67"/>
+        <location filename="../../../ui/gui/resources/modules.ui" line="51"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>NodeBrowser</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="41"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="25"/>
         <source>Open in new tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Open in nieuwe tab</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="50"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="34"/>
         <source>Open</source>
-        <translation>Open</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="62"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="43"/>
         <source>Open with</source>
-        <translation type="unfinished"></translation>
+        <translation>Open met</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="74"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="52"/>
         <source>Hex viewer</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="86"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="61"/>
         <source>Extract</source>
-        <translation>Uitpak</translation>
+        <translation>Uitpakken</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="14"/>
         <source>Browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodebrowser.ui" line="94"/>
-        <source>Relevant module</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
-        <source>Apply module</source>
-        <translation type="unfinished">Module toevoegen</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
-        <source>Do you want to apply module </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
-        <source> on this node ?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="290"/>
-        <source>Always</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="365"/>
-        <source>Empty files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
-        <source>the following nodes could not be opened with HexEdit because they are either empty or folders
-</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
     <name>NodeViewBox</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="53"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorige</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Volgende</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="149"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
-        <translation type="unfinished"></translation>
+        <translation>Ga naar boven</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="175"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
         <source>Return to root</source>
-        <translation type="unfinished"></translation>
+        <translation>Terug naar de root</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="203"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="183"/>
         <source>List</source>
-        <translation type="unfinished"></translation>
+        <translation>Lijst</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="212"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="192"/>
         <source>Icons</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="221"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="201"/>
         <source>Tree</source>
-        <translation type="unfinished"></translation>
+        <translation>Boom structuur</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="250"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="230"/>
         <source>Attributes</source>
         <translation>Attributen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="263"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
         <source>Add to bookmarks</source>
-        <translation type="unfinished"></translation>
+        <translation>Toevoegen aan bookmarks</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="289"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="269"/>
         <source>Display search engine</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoekmachine</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="342"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="322"/>
         <source>Small</source>
-        <translation type="unfinished"></translation>
+        <translation>Klein</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="347"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="327"/>
         <source>Medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Middelmatig</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="352"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="332"/>
         <source>Large</source>
-        <translation type="unfinished"></translation>
+        <translation>Groot</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
         <source>Activate thumbnails</source>
-        <translation type="unfinished"></translation>
+        <translation>Activeer thumbnails</translation>
     </message>
 </context>
 <context>
     <name>Output</name>
     <message>
-        <location filename="../../../ui/gui/resources/output.ui" line="36"/>
+        <location filename="../../../ui/gui/resources/output.ui" line="20"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultaat</translation>
     </message>
 </context>
 <context>
@@ -737,280 +702,280 @@ Bram Mooij bram4n6@hotmail.com
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="328"/>
         <source>Create directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Maak een directorie</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="329"/>
         <source>Directory creation failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Het maken van de directorie is mislukt</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="330"/>
         <source>History file is not writable</source>
-        <translation type="unfinished"></translation>
+        <translation>Historie bestand is niet beschrijfbaar</translation>
     </message>
 </context>
 <context>
     <name>PreferencesDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="14"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Voorkeuren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="50"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="34"/>
         <source>Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Globaal</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="200"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="184"/>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translation>Historie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="208"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="192"/>
         <source>History file full path:</source>
-        <translation type="unfinished"></translation>
+        <translation>Volledig pad naar historie bestand:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="225"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="209"/>
         <source>No history file</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen historie bestand</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="64"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="48"/>
         <source>No footprint</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen afdruk</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="270"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="254"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Taal</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="276"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="260"/>
         <source>Interface language</source>
-        <translation type="unfinished"></translation>
+        <translation>Taal menu</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="284"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="268"/>
         <source>Use interface language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Taal keuze:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="329"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="313"/>
         <source>Indexation</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexeren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="377"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="361"/>
         <source>Index files location</source>
-        <translation type="unfinished"></translation>
+        <translation>Index bestands lokatie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="385"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="369"/>
         <source>Root index</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="550"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="534"/>
         <source>Browse</source>
-        <translation>Surf</translation>
+        <translation>Surf naar</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="402"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="386"/>
         <source>Index name</source>
-        <translation type="unfinished"></translation>
+        <translation>Index naam</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="362"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="346"/>
         <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
-        <translation type="unfinished"></translation>
+        <translation>In welke directorie wilt u de index bestanden bewaren? Directorie wordt automatisch aangemaakt, indien niet bestaand.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="56"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="40"/>
         <source>Working environment</source>
-        <translation type="unfinished"></translation>
+        <translation>Werkomgeving</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="71"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="55"/>
         <source>DFF user directory:</source>
-        <translation type="unfinished"></translation>
+        <translation>DFF gebruikers directory:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="526"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="510"/>
         <source>Help and documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Hulp en documentatie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="538"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="522"/>
         <source>Full path of the help and documentation file:</source>
-        <translation type="unfinished"></translation>
+        <translation>Voledig pad naar de help en documentatie bestanden:</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="532"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="516"/>
         <source>Help and documentation settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Hulp en documentatie instellingen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="458"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="442"/>
         <source>Provided path does not exists, will ask for creation on submit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Het ingegeven pad bestaat niet; word aangemaakt.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="502"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="486"/>
         <source>Provided path is a readable directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Het pad bevat een leesbare directorie.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="564"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="548"/>
         <source>Please provide an help.qhc file along with an help.qch file at same directory level.</source>
-        <translation type="unfinished"></translation>
+        <translation>help.qhc en help.qch moeten op hetzelfde directorie niveau.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="611"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="595"/>
         <source>Provided path is not a readable file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Onjuist pad naar het bestand opgegeven.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/preferences.ui" line="665"/>
+        <location filename="../../../ui/gui/resources/preferences.ui" line="649"/>
         <source>Provided path is a readable file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Het pad wijst naar een bestaand bestand.</translation>
     </message>
 </context>
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="117"/>
         <source>name</source>
-        <translation>naam</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
-        <source>file</source>
-        <translation>bestand</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
-        <source>generated by</source>
-        <translation>gemaakt door</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
-        <source>size</source>
-        <translation>grootte</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
-        <source>relevant module(s)</source>
-        <translation>relevante module(n)</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
-        <source> with module(s) applied on it</source>
-        <translation> met de toegevoegde module(n)</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
-        <source>folder</source>
-        <translation>folder</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
-        <source> empty</source>
-        <translation> leeg</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
-        <source> deleted</source>
-        <translation> verwijderd</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
-        <source>children</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
-        <source>file(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
-        <source> totalizing </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="133"/>
-        <source> bytes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="134"/>
-        <source>folder(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Naam</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
-        <source>node type</source>
-        <translation type="unfinished"></translation>
+        <source>folder</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="135"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
+        <source>file</source>
+        <translation>Bestand</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
+        <source>generated by</source>
+        <translation>Gemaakt door</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
+        <source>size</source>
+        <translation>Grootte</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
+        <source>relevant module(s)</source>
+        <translation>Relevante module(n)</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
+        <source>node type</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
         <source>attributes</source>
-        <translation>attributen</translation>
+        <translation>Attributen</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
+        <source>children</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
+        <source>file(s)</source>
+        <translation>Bestand(en)</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
+        <source> bytes</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
+        <source>folder(s)</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
+        <source> totalizing </source>
+        <translation>Afronden</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
+        <source> with module(s) applied on it</source>
+        <translation>met de navolgende modulen</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
+        <source> empty</source>
+        <translation>leeg</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
+        <source> deleted</source>
+        <translation>verwijderd</translation>
     </message>
 </context>
 <context>
     <name>Shell</name>
     <message>
-        <location filename="../../../ui/gui/resources/shell.ui" line="100"/>
+        <location filename="../../../ui/gui/resources/shell.ui" line="84"/>
         <source>Shell</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/shell.ui" line="113"/>
+        <location filename="../../../ui/gui/resources/shell.ui" line="97"/>
         <source>Welcome to DFF shell</source>
-        <translation type="unfinished"></translation>
+        <translation>Welkom bij de DFF shell</translation>
     </message>
 </context>
 <context>
     <name>TaskManager</name>
     <message>
-        <location filename="../../../ui/gui/resources/taskmanager.ui" line="44"/>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="28"/>
         <source>PID</source>
-        <translation>Process ID</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/taskmanager.ui" line="49"/>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="33"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/taskmanager.ui" line="54"/>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="38"/>
         <source>State</source>
-        <translation>Status</translation>
+        <translation>Provincie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/taskmanager.ui" line="59"/>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="43"/>
         <source>Info</source>
-        <translation>Informatie</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/taskmanager.ui" line="64"/>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="48"/>
         <source>Exec Time</source>
-        <translation>Begin tijd</translation>
+        <translation>totale tijd</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/taskmanager.ui" line="36"/>
+        <location filename="../../../ui/gui/resources/taskmanager.ui" line="20"/>
         <source>Task Manager</source>
-        <translation>Opdracht Manager</translation>
+        <translation>Opdracht manager</translation>
     </message>
 </context>
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="851"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="834"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
@@ -1018,50 +983,50 @@ Bram Mooij bram4n6@hotmail.com
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="579"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Name</source>
         <translation>Naam</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="580"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Size</source>
         <translation>Grootte</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="581"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Accessed time</source>
         <translation>Toegangs tijd</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="582"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Changed time</source>
-        <translation>Veranderde tijd</translation>
+        <translation>Veranderende tijd</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="583"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="567"/>
         <source>Modified time</source>
-        <translation>Gewijzigde tijd</translation>
+        <translation>Gemodificeerde tijd</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="584"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="568"/>
         <source>Module</source>
-        <translation>Module</translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="585"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="569"/>
         <source>Deleted</source>
-        <translation>Verwijderd</translation>
+        <translation>verwijderd</translation>
     </message>
 </context>
 <context>
     <name>VariantTreeWidget</name>
     <message>
-        <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="40"/>
+        <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="24"/>
         <source>Key</source>
         <translation>Sleutel</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="45"/>
+        <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="29"/>
         <source>Value</source>
         <translation>Waarde</translation>
     </message>
@@ -1069,37 +1034,37 @@ Bram Mooij bram4n6@hotmail.com
 <context>
     <name>applyModule</name>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="36"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="20"/>
         <source>Apply module</source>
         <translation>Module toevoegen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="42"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="26"/>
         <source>Informations</source>
         <translation>Informatie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="110"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="94"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="165"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="149"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="143"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="127"/>
         <source>Arguments</source>
-        <translation>Parameters</translation>
+        <translation>Argumenten</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="158"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="142"/>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Activeren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/applymodule.ui" line="172"/>
+        <location filename="../../../ui/gui/resources/applymodule.ui" line="156"/>
         <source>Description</source>
         <translation>Omschrijving</translation>
     </message>
@@ -1107,57 +1072,57 @@ Bram Mooij bram4n6@hotmail.com
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="31"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="15"/>
         <source>Select evidence type</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecteer bewijs type</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="129"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="113"/>
         <source>Add evidence directory</source>
-        <translation>Bewijs folder toevoegen</translation>
+        <translation>Voeg bewijs directorie toe</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="134"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="118"/>
         <source>Add evidence files</source>
-        <translation>Bewijs bestanden toevoegen</translation>
+        <translation>Voeg bewijs bestanden toe</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="64"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="48"/>
         <source>Open local files or directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Open een lokaal bestand of directorie</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="65"/>
+        <source>RAW format</source>
+        <translation>RAW formaat</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
-        <source>RAW format</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
         <source>EWF format</source>
-        <translation type="unfinished"></translation>
+        <translation>EWF formaat</translation>
     </message>
 </context>
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="123"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="119"/>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultaten</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="125"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="121"/>
         <source>No results</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen resultaten</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="122"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="118"/>
         <source>Provided Arguments</source>
-        <translation type="unfinished"></translation>
+        <translation>Geef argumenten</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="124"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="120"/>
         <source>Processus Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Verwerking van de informatie</translation>
     </message>
 </context>
 </TS>
