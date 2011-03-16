@@ -23,6 +23,7 @@ from api.vfs.vfs import vfs, Node, VLink
 from api.types.libtypes import  typeId
 from api.events.libevents import event
 from api.vfs import libvfs
+from api.gui.model.vfsitemmodel import HMODULE
 from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
 from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
@@ -65,6 +66,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
     self.completerWidget = CompleterWidget()
     self.pathedit.addWidget(self.completerWidget)
+    self.connect(self.completerWidget, SIGNAL("returnPressed()"), self.completerChanged)
 
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
@@ -79,6 +81,13 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     
     self.tableActivated()
 
+
+  def completerChanged(self):
+    path = self.completerWidget.text()
+    node = self.vfs.getnode(str(path))
+    if node:
+      self.emit(SIGNAL("pathChanged"), node)
+      self.parent.model.setRootPath(node)      
 
 
   def viewboxChanged(self, index):
@@ -108,7 +117,10 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.prevmenu.addAction(path)
 
   def prevMenuTriggered(self, action):
-    self.parent.model.setRootPath(self.vfs.getnode(str(action.text())))
+    node = self.vfs.getnode(str(action.text()))
+    self.completerWidget.pathChanged(node.absolute())
+    self.parent.model.setRootPath(node)
+
 
   def setNextDropButton(self):
     self.nextdrop.setFixedSize(QSize(16, 16))
@@ -129,7 +141,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     return False
 
   def nextMenuTriggered(self, action):
-    self.parent.model.setRootPath(self.vfs.getnode(str(action.text())))
+    node = self.vfs.getnode(str(action.text()))
+    self.completerWidget.pathChanged(node.absolute)
+    self.parent.model.setRootPath(node)
 
 
   def goHome(self):
@@ -156,6 +170,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      parent =  self.parent.model.rootItem.parent()
      self.parent.model.setRootPath(parent)
      self.changeNavigationState()
+     self.completerWidget.pathChanged(parent.absolute())
+
 
   def moveToPrevious(self):
     if self.currentPathId > 0:
@@ -163,9 +179,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       path = self.history[self.currentPathId]
       node = self.vfs.getnode(path)
       self.parent.model.setRootPath(node, 1)
+      self.completerWidget.pathChanged(node.absolute())
       self.changeNavigationState()
-      #self.pathedit.insert(path[1:])
-      #self.pathedit.setCompleter(self.completer)
+
 
   def moveToNext(self):
     if self.currentPathId < len(self.history) - 1:
@@ -173,11 +189,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       path = self.history[self.currentPathId]
       node = self.vfs.getnode(path)
       self.parent.model.setRootPath(node, 1)
+      self.completerWidget.pathChanged(node.absolute())
       self.changeNavigationState()
-      #self.pathedit.setCompleter(None)
-      #self.pathedit.clear()
-      #self.pathedit.insert(path[1:])
-      #self.pathedit.setCompleter(self.completer)
+
  
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
