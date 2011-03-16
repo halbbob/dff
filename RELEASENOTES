@@ -1,4 +1,5 @@
-Release Notes =============
+Release Notes 
+=============
 
 A detailed description of changes are available in the CHANGES.current and
 CHANGES files. The summaries below contain just a brief overview of the changes
@@ -6,7 +7,8 @@ made in each release.
 
 DFF-1.0.0 summary:
 
-Features: -------------
+Features: 
+---------
 
 * Windows registry parsing : This  create a tree of node for each key of a
 windows registry hive files.  Each node have the registry value set as
@@ -74,7 +76,8 @@ detection handler.
 sha256, ...) and use the new dynamic attributes API to add hash as node
 attributes.
 
-Bug fixes: ----------
+Bug fixes: 
+----------
 
 * ExtFs : Check magic of number of Inodes to avoid crash on crated or damaged
 data.	
