@@ -1,82 +1,83 @@
-Release Notes
-=============
+Release Notes =============
 
-A detailed description of changes are available in the CHANGES.current
-and CHANGES files. The summaries below contain just a brief overview of
-the changes made in each release.
+A detailed description of changes are available in the CHANGES.current and
+CHANGES files. The summaries below contain just a brief overview of the changes
+made in each release.
 
 DFF-1.0.0 summary:
 
-Features:
--------------
+Features: -------------
 
-* Windows registry parsing :
-	This  create a tree of node for each key of a windows registry hive files.
-Each node have the registry value set as attributes ( Creation time, data value, ...)
+* Windows registry parsing : This  create a tree of node for each key of a
+windows registry hive files.  Each node have the registry value set as
+attributes ( Creation time, data value, ...)
 
-* VMware VMDK reconstruction:
-	This module will reconstruct a volume from a vmdk files, it will recontrusct
-the base volume and the snapshoot.
+* VMware VMDK reconstruction: This module will reconstruct a volume from a vmdk
+files, it will recontrusct the base volume and the snapshoot.
 
-* MetaExif :
-	Now EXIF informations could be add as node attributes. The metaexif modules 
-use the dynamic attributes features of the API so it consume few memory. 
+* MetaExif : Now EXIF informations could be add as node attributes. The metaexif
+modules use the dynamic attributes features of the API so it consume few memory. 
 
-* Timeline :
-	This will construct a graphical timeline generated from each time attributes found
-in nodes. (i.e. if you have applyied NTFS, registry and metaexif modules, the timeline will be 
-drawn from MAC time of NTFS, creation time of windows registry and exif accessed and changed time).
-	Once the timeline is drawn you can zoom on a date range and then export all the founded nodes 
-for this period of time.
+* Timeline : This will construct a graphical timeline generated from each time
+attributes found in nodes. (i.e. if you have applyied NTFS, registry and
+metaexif modules, the timeline will be drawn from MAC time of NTFS, creation
+time of windows registry and exif accessed and changed time).  Once the timeline
+is drawn you can zoom on a date range and then export all the founded nodes for
+this period of time.
 
-* Translation: 
-	Now DFF GUI could be hot-translated (no need to relaunch the apps to have the language selected).
-Also most widget was  recreated under QtDesigner.
+* Translation: Now DFF GUI could be hot-translated (no need to relaunch the apps
+to have the language selected).  Also most widget was  recreated under
+QtDesigner.
 
-* Column dynamic filtering:
-	In the table-view of DFF node browser you can now add add as many column as you want. The column 
-that can be added correspond to each attributes present in a nodes. So you can sort on any time attributes, size, deleted, or any other attributes.
+* Column dynamic filtering: In the table-view of DFF node browser you can now
+add add as many column as you want. The column that can be added correspond to
+each attributes present in a nodes. So you can sort on any time attributes,
+size, deleted, or any other attributes.
 
-* Carver:
-	You now have the possibilites to add your own header in the carver. Also, the carver can now be launched in console.
+* Carver: You now have the possibilites to add your own header in the carver.
+Also, the carver can now be launched in console.
 
-* Merge:
-	The merge module now take a list of node as input. So you can virtually merge as many file you need, for examples you can merge all the file of a split DD images and then apply other modules to the virtually reconstructed images.
+* Merge: The merge module now take a list of node as input. So you can virtually
+merge as many file you need, for examples you can merge all the file of a split
+DD images and then apply other modules to the virtually reconstructed images.
 
-* Enhanced GUI ergonomy;
-	- Sort speed are lot enhanced.
-	- Displaying of large number of items ( > 100 000) are fast.
-	- The GUI now have a maximize and fullscreen button, to display widget on the entire screen.
-	- A new menu : relevant module help you to access in fast to the detected module to apply on a node.
-	- A new menu : open as new tab, create a new browser opened from the node you clicked on
-	- Module as now an associated icon
-	- Now when you double-click on a node to auto-apply module a quesiton will ask you if you're sure to want to apply the dected modules. 
-	- The apply module widgets were totally rewritten to use the libtypes API (Config and argument of a module).    
+* Enhanced GUI ergonomy; - Sort speed are lot enhanced.  - Displaying of large
+number of items ( > 100 000) are fast.  - The GUI now have a maximize and
+fullscreen button, to display widget on the entire screen.  - A new menu :
+relevant module help you to access in fast to the detected module to apply on a
+node.  - A new menu : open as new tab, create a new browser opened from the node
+you clicked on - Module as now an associated icon - Now when you double-click on
+a node to auto-apply module a quesiton will ask you if you're sure to want to
+apply the dected modules.  - The apply module widgets were totally rewritten to
+use the libtypes API (Config and argument of a module).    
 	
-* Configuration:
-	DFF now as a configuration files that can permit to setup your prefered languages, the path where the history file will be saved and the path to the help documention.
+* Configuration: DFF now as a configuration files that can permit to setup your
+prefered languages, the path where the history file will be saved and the path
+to the help documention.
 
-* IDE update:
-	IDE template is update, also the IDE syntax hilighting was rewritten and didn't QScintilla anymore.
+* IDE update: IDE template is update, also the IDE syntax hilighting was
+rewritten and didn't QScintilla anymore.
 
-* Versionning:
-	Each library of the API and each modules as now is own version number to be easyier to maintain and upgrade.
+* Versionning: Each library of the API and each modules as now is own version
+number to be easyier to maintain and upgrade.
 
 * API:
 	
-	- The config/argument and result class were totally rewritten based on variant.
-	- The attributes is now totally based on variant. Also now modules could add dynamic attributes to use less memory.
-	- Data type and compatible modules are now accessible directly from a node object.
-	- Old file type API is remplaced by the new DataType engine where you could plug your own datatype detection handler.
+	- The config/argument and result class were totally rewritten based on
+variant.  - The attributes is now totally based on variant. Also now modules
+could add dynamic attributes to use less memory.  - Data type and compatible
+modules are now accessible directly from a node object.  - Old file type API is
+remplaced by the new DataType engine where you could plug your own datatype
+detection handler.
 
-* Hash modules:
-	- Now can hash directly with multiple algorithm (md5, sha1, sha256, ...) and use the new dynamic attributes API to add hash as node attributes.
+* Hash modules: - Now can hash directly with multiple algorithm (md5, sha1,
+sha256, ...) and use the new dynamic attributes API to add hash as node
+attributes.
 
-Bug fixes:
-----------
+Bug fixes: ----------
 
-* ExtFs :
-	Check magic of number of Inodes to avoid crash on crated or damaged data.	
+* ExtFs : Check magic of number of Inodes to avoid crash on crated or damaged
+data.	
 
-* HexEdit pixel view :
-	Fixes some crash when underlaying read didn't return the requested number of bytes.
+* HexEdit pixel view : Fixes some crash when underlaying read didn't return the
+requested number of bytes.
