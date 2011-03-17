@@ -538,6 +538,7 @@ class layoutManager(QWidget):
         the fly.
         """
         if event.type() == QEvent.LanguageChange:
+            self.retranslateUi(self)
             self.translation()
         else:
             QWidget.changeEvent(self, event)
@@ -555,7 +556,7 @@ class fieldValidator(QRegExpValidator):
         elif self.typeid in (typeId.UInt16, typeId.UInt32, typeId.UInt64):
             exp = "^\d+$"
         else:
-            exp = "^\D+$"
+            exp = "^.+$"
         regexp = QRegExp(exp)
         regexp.setCaseSensitivity(Qt.CaseInsensitive)
         self.setRegExp(regexp)
