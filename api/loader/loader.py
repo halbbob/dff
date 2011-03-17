@@ -173,7 +173,7 @@ class loader():
             if vDict and __module_prepend__ in vDict:
                 if __module_prepend__ in vDict:
                     if len(vDict) < 2:
-                        status += 'v' + vDict[__module_prepend__][1] + ', does not require any dependency'
+                        status += 'v' + vDict[__module_prepend__][1]
                     else:
                         status += 'v' + vDict[__module_prepend__][1] + ', requires'
                         for k, v in vDict.iteritems():

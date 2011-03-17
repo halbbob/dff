@@ -22,7 +22,7 @@ from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
 from api.types.libtypes import vtime, Variant, VMap, Argument, typeId
 
-import os
+import os, sys
 from ctypes import CDLL, c_char_p, c_int, pointer, c_ulonglong, c_ulong, create_string_buffer, byref, pointer
 from ctypes.util import find_library
 from binascii import hexlify
@@ -164,8 +164,8 @@ class ewf(Module):
     Module.__init__(self, "ewf", EWF)
     global libewf
     if os.name == "nt":
-      ewfpath = "modules\\connector\\libewf\\libewf.dll"	    
-      zlibpath = "modules\\connector\\libewf\\zlib.dll"	  
+      ewfpath = os.path.normpath(os.path.dirname(sys.modules['ewf'].__file__) + '/libewf.dll')
+      zlibpath = os.path.normpath(os.path.dirname(sys.modules['ewf'].__file__) + '/zlib.dll')
       zlib = CDLL(zlibpath)
     else:
       ewfpath = find_library('ewf')
