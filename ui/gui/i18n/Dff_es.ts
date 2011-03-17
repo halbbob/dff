@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-DFF - An Open Source Digital Forensics Framework
-Copyright (C) 2011 ArxSys
-
-This program is free software, distributed under the terms of
-the GNU General Public License Version 2. See the LICENSE file
-at the top of the source tree.
-
-See http://www.digital-forensic.org for more information about this
-project. Please do not directly contact any of the maintainers of
-DFF for assistance; the project provides a web site, mailing lists
-and IRC channels for your use.
-
-Author(s):
-Pablo Rogina pablojr@gmail.com
--->
 <!DOCTYPE TS><TS version="1.1" language="es">
 <context>
     <name>About</name>
@@ -49,7 +33,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="103"/>
         <source>Category name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de la categoría:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="91"/>
@@ -82,17 +66,17 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="54"/>
         <source>Select a local device to add in the Virtual File System</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccione un dispositivo local para agregar al Sistema Virtual de Archivos</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="69"/>
         <source>Warning : You must run the software with Administrator rights</source>
-        <translation type="unfinished"></translation>
+        <translation>Atención: debe correr la aplicación con permisos de Adminitrador</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="106"/>
         <source>Block device name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre del dispositivo de bloques</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="138"/>
@@ -105,7 +89,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/errors.ui" line="36"/>
         <source>Errors</source>
-        <translation type="unfinished"></translation>
+        <translation>Errores</translation>
     </message>
 </context>
 <context>
@@ -118,7 +102,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="76"/>
         <source>Recursive mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo recursivo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="89"/>
@@ -136,7 +120,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="118"/>
         <source>Extraction path is mandatory</source>
-        <translation type="unfinished"></translation>
+        <translation>El directorio de extracción es obligatorio</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="119"/>
@@ -146,17 +130,17 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="120"/>
         <source>Overwrite attempt</source>
-        <translation type="unfinished"></translation>
+        <translation>Intento de sobre-escritura</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="121"/>
         <source>Some selected files or folders already exist in the destination folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Algunos archivos o directorios seleccionados ya existen en el directorio destino</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="122"/>
         <source>Overwrite with selected ones ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobreescribir con los elegidos?</translation>
     </message>
 </context>
 <context>
@@ -164,32 +148,32 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="25"/>
         <source>Find file</source>
-        <translation type="unfinished"></translation>
+        <translation>Encontrar archivo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="35"/>
         <source>Pattern:</source>
-        <translation type="unfinished"></translation>
+        <translation>Patrón:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="42"/>
         <source>Syntax:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sintaxis:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="59"/>
         <source>Regular expression</source>
-        <translation type="unfinished"></translation>
+        <translation>Expresión regular</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="64"/>
         <source>Fixed string</source>
-        <translation type="unfinished"></translation>
+        <translation>Cadena fija</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="69"/>
         <source>Wildcard</source>
-        <translation type="unfinished"></translation>
+        <translation>Comodín</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="77"/>
@@ -214,12 +198,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="124"/>
         <source>Case sensitive sorting</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenamiento sensible a mayúsculas y minúsculas</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="131"/>
         <source>Case sensitive filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro sensible a mayúsculas y minúsculas</translation>
     </message>
 </context>
 <context>
@@ -232,22 +216,22 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="46"/>
         <source>IDE toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de herramientas del IDE</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="67"/>
         <source>New empty file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuevo archivo vacío</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="79"/>
         <source>Generate skeleton</source>
-        <translation type="unfinished"></translation>
+        <translation>Generar esqueleto</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="280"/>
         <source>Open file</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir archivo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="103"/>
@@ -277,27 +261,27 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="163"/>
         <source>Comment</source>
-        <translation type="unfinished"></translation>
+        <translation>Comentar</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="175"/>
         <source>Uncomment</source>
-        <translation type="unfinished"></translation>
+        <translation>Descomentar</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="278"/>
         <source>Save document ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar documento?</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="279"/>
         <source>No file found</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró archivo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="281"/>
         <source>Save file as</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar archivo como</translation>
     </message>
 </context>
 <context>
@@ -310,12 +294,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="38"/>
         <source>General Informations</source>
-        <translation type="unfinished"></translation>
+        <translation>Información general</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="41"/>
         <source>Fill all script information such as name, type and saving location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Complete toda la información de la secuencia de comandos como nombre, tipo y ubicación de salvado.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="47"/>
@@ -330,7 +314,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="71"/>
         <source>Work location:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ubicación de trabajo:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="87"/>
@@ -340,7 +324,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="99"/>
         <source>Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="127"/>
@@ -360,22 +344,22 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="168"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descripción</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="171"/>
         <source>Describe here the goal of the module</source>
-        <translation type="unfinished"></translation>
+        <translation>Describa aquí el objetivo del módulo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="177"/>
         <source>Module&apos;s description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descripción del módulo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="188"/>
         <source>Author informations</source>
-        <translation type="unfinished"></translation>
+        <translation>Información del autor</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="191"/>
@@ -436,12 +420,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="131"/>
         <source>Open evidence file(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir archivo(s) de evidencia</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="143"/>
         <source>Open local device</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir dispositivo local</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="30"/>
@@ -451,7 +435,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="75"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="54"/>
@@ -466,7 +450,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="167"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferencias</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="68"/>
@@ -481,17 +465,17 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="81"/>
         <source>View</source>
-        <translation type="unfinished"></translation>
+        <translation>Ver</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="179"/>
         <source>Maximize</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximizar</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="191"/>
         <source>Fullscreen mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modo pantalla completa</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="203"/>
@@ -501,7 +485,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="227"/>
         <source>Python interpreter</source>
-        <translation type="unfinished">Intérprete Python</translation>
+        <translation>Intérprete Python</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="122"/>
@@ -516,7 +500,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="103"/>
         <source>Toolbar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barra de herramientas</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="114"/>
@@ -526,27 +510,27 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="239"/>
         <source>DFF Documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Documentación de DFF</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="380"/>
         <source>Error while loading help</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al cargar la ayuda</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="381"/>
         <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br&gt;Puede revisar la ayuda en línea en &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="382"/>
         <source>Not an help file.</source>
-        <translation type="unfinished"></translation>
+        <translation>No es un archivo de ayuda.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="383"/>
         <source>Documentation path not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encontró la ruta de la ayuda.</translation>
     </message>
 </context>
 <context>
@@ -587,7 +571,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="41"/>
         <source>Open in new tab</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir en una nueva pestaña</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="50"/>
@@ -597,12 +581,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="62"/>
         <source>Open with</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir con</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="74"/>
         <source>Hex viewer</source>
-        <translation type="unfinished"></translation>
+        <translation>Visor hexadecimal</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="86"/>
@@ -617,38 +601,39 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="94"/>
         <source>Relevant module</source>
-        <translation type="unfinished"></translation>
+        <translation>Módulo relevante</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source>Apply module</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar módulo</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source>Do you want to apply module </source>
-        <translation type="unfinished"></translation>
+        <translation>Quiere aplicar el módulo </translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source> on this node ?</source>
-        <translation type="unfinished"></translation>
+        <translation> en este nodo?</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="290"/>
         <source>Always</source>
-        <translation type="unfinished"></translation>
+        <translation>Siempre</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="365"/>
         <source>Empty files</source>
-        <translation type="unfinished"></translation>
+        <translation>Vaciar archivos</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
         <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
-        <translation type="unfinished"></translation>
+        <translation>los siguientes nodos no pueden abrirse con el Visor hexadecimal porque están vacíos o son carpetas
+</translation>
     </message>
 </context>
 <context>
@@ -711,12 +696,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="102"/>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Siguiente</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="149"/>
         <source>Move to top</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover al tope</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
@@ -729,7 +714,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/output.ui" line="36"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Salida</translation>
     </message>
 </context>
 <context>
@@ -737,17 +722,17 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Create directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Crear directorio</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>Directory creation failure</source>
-        <translation type="unfinished"></translation>
+        <translation>Error en la creación del directorio</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
         <source>History file is not writable</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede escribir en archivo histórico</translation>
     </message>
 </context>
 <context>
@@ -755,62 +740,62 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
         <source>Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Preferencias</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="50"/>
         <source>Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Global</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="200"/>
         <source>History</source>
-        <translation type="unfinished"></translation>
+        <translation>Historia</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="208"/>
         <source>History file full path:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta completa archivo histórico:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="225"/>
         <source>No history file</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay archivo histórico</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="64"/>
         <source>No footprint</source>
-        <translation type="unfinished"></translation>
+        <translation>No hay huella</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="270"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Idioma</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="276"/>
         <source>Interface language</source>
-        <translation type="unfinished"></translation>
+        <translation>Idioma de la interfase</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="284"/>
         <source>Use interface language:</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar idioma de interfase:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="329"/>
         <source>Indexation</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexación</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="377"/>
         <source>Index files location</source>
-        <translation type="unfinished"></translation>
+        <translation>Ubicación archivos de índices</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="385"/>
         <source>Root index</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice raíz</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="550"/>
@@ -820,62 +805,62 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="402"/>
         <source>Index name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre índice</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="362"/>
         <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor seleccione en qué directorio quiere guardar los archivos de índices. Si ese directorio no existe será creado cuando se apliquen los cambios.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="56"/>
         <source>Working environment</source>
-        <translation type="unfinished"></translation>
+        <translation>Entorno de trabajo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="71"/>
         <source>DFF user directory:</source>
-        <translation type="unfinished"></translation>
+        <translation>Directorio de usuario DFF:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="526"/>
         <source>Help and documentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Ayuda y documentación</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="538"/>
         <source>Full path of the help and documentation file:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta completa al archivo de ayuda y documentación:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="532"/>
         <source>Help and documentation settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de ayuda y documentación</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="458"/>
         <source>Provided path does not exists, will ask for creation on submit.</source>
-        <translation type="unfinished"></translation>
+        <translation>La ruta indicada no existe, se pedirá crearla al confirmar.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="502"/>
         <source>Provided path is a readable directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>La ruta provista es un directorio de solo lectura.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="564"/>
         <source>Please provide an help.qhc file along with an help.qch file at same directory level.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor provee un archivo help.qhc con un archivo help.qhc en el mismo nivel de directorio.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="611"/>
         <source>Provided path is not a readable file.</source>
-        <translation type="unfinished"></translation>
+        <translation>La ruta provista no es un archivo que se pueda leer.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="665"/>
         <source>Provided path is a readable file.</source>
-        <translation type="unfinished"></translation>
+        <translation>La ruta provista es un archivo que se puede leer.</translation>
     </message>
 </context>
 <context>
@@ -928,32 +913,32 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
         <source>children</source>
-        <translation type="unfinished"></translation>
+        <translation>hijos</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
         <source>file(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>archivo(s)</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
         <source> totalizing </source>
-        <translation type="unfinished"></translation>
+        <translation> totalizando </translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="133"/>
         <source> bytes</source>
-        <translation type="unfinished"></translation>
+        <translation> bytes</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="134"/>
         <source>folder(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>carpeta(s)</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
         <source>node type</source>
-        <translation type="unfinished"></translation>
+        <translation>tipo de nodo</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="135"/>
@@ -971,7 +956,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/shell.ui" line="113"/>
         <source>Welcome to DFF shell</source>
-        <translation type="unfinished"></translation>
+        <translation>Bienvenido a la línea de comandos de DFF</translation>
     </message>
 </context>
 <context>
@@ -999,7 +984,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="64"/>
         <source>Exec Time</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Tiempo Exec</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="36"/>
@@ -1071,12 +1056,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="36"/>
         <source>Apply module</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar módulo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="42"/>
         <source>Informations</source>
-        <translation type="unfinished"></translation>
+        <translation>Información</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="110"/>
@@ -1091,17 +1076,17 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="143"/>
         <source>Arguments</source>
-        <translation type="unfinished"></translation>
+        <translation>Argumentos</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="158"/>
         <source>Activate</source>
-        <translation type="unfinished"></translation>
+        <translation>Activar</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="172"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descripción</translation>
     </message>
 </context>
 <context>
@@ -1109,32 +1094,32 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="31"/>
         <source>Select evidence type</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccione el tipo de evidencia</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="129"/>
         <source>Add evidence directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar directorio de evidencia</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="134"/>
         <source>Add evidence files</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar archivos de evidencia</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="64"/>
         <source>Open local files or directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir directorio o archivos locales</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
         <source>RAW format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato RAW</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
         <source>EWF format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato EWF</translation>
     </message>
 </context>
 <context>
@@ -1142,22 +1127,22 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="123"/>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultados</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="125"/>
         <source>No results</source>
-        <translation type="unfinished"></translation>
+        <translation>Sin resultados</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="122"/>
         <source>Provided Arguments</source>
-        <translation type="unfinished"></translation>
+        <translation>Argumentos provistos</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="124"/>
         <source>Processus Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Información de los procesos</translation>
     </message>
 </context>
 </TS>
