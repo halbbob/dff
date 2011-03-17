@@ -628,12 +628,12 @@ Christophe Malinge cma@digital-forensic.org
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source>Do you want to apply module </source>
-        <translation>Voulez-vous appliquer le module</translation>
+        <translation>Voulez-vous appliquer le module </translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source> on this node ?</source>
-        <translation>sur ce noeud ?</translation>
+        <translation> sur ce noeud ?</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="290"/>

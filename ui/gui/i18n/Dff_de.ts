@@ -628,7 +628,7 @@ Denis Schreiber dschreiber@gmx.de
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source>Do you want to apply module </source>
-        <translation>Soll das Modul angewendet werden</translation>
+        <translation>Soll das Modul angewendet werden </translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
