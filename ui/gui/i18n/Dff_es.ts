@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+DFF - An Open Source Digital Forensics Framework
+Copyright (C) 2011 Pablo Rogina pablojr@gmail.com
+Copyright (C) 2011 ArxSys
+
+This program is free software, distributed under the terms of
+the GNU General Public License Version 2. See the LICENSE file
+at the top of the source tree.
+
+See http://www.digital-forensic.org for more information about this
+project. Please do not directly contact any of the maintainers of
+DFF for assistance; the project provides a web site, mailing lists
+and IRC channels for your use.
+
+Author(s):
+Pablo Rogina pablojr@gmail.com
+-->
 <!DOCTYPE TS><TS version="1.1" language="es">
 <context>
     <name>About</name>
@@ -984,7 +1001,7 @@
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="64"/>
         <source>Exec Time</source>
-        <translation type="unfinished">Tiempo Exec</translation>
+        <translation>Tiempo Exec</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="36"/>

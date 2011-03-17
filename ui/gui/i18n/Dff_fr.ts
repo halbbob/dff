@@ -15,8 +15,7 @@ and IRC channels for your use.
 Author(s):
 Christophe Malinge cma@digital-forensic.org
 -->
-<!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<!DOCTYPE TS><TS version="1.1" language="fr">
 <context>
     <name>About</name>
     <message>
