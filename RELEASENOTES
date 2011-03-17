@@ -45,6 +45,11 @@ virtually merge as many files you need. For example, you can merge all files
 from DD images split and then apply other modules to the virtually
 reconstructed image.
 
+* Hash: module can now be done directly with several algorithms (md5, sha1, sha256, ...)
+and uses the new dynamic attributes API to add hash as node attributes. It uses
+the post-processing feature.
+
+
 * Enhanced GUI ergonomy;
  - Sort speed and display greatly enhanced.
  - Fast display of large number of items (> 100 000).
@@ -57,7 +62,7 @@ clicked on.
  - Each module now has an associated icon.
  - When you double-click on a node to auto-apply a module, a question will now
 ask you if you are sure wanting to apply the detected module.
- - The apply module widget were totally rewritten to use the libtype API
+ - The apply module widget has been totally rewritten to use the libtype API
 (Config and argument of a module).
 
 * Configuration: DFF now as a configuration file, allowing to setup your
@@ -67,7 +72,7 @@ setting the path to the help documention.
 * IDE update: IDE templates has been updated. The IDE syntax highlighter has
 been rewritten and does not use QScintilla anymore.
 
-* Versioning: Each library of the API and each module now has his own version
+* Versioning: Each library of the API and each module now has their own version
 number, allowing easy maintainability and upgrade.
 
 * API:
@@ -79,11 +84,19 @@ attributes to use less memory.
 object.
  - Old file-type API is replaced by the new data-type engine where you can
 plug your own data-type detection handler.
+ - Variant enhancement:
+   - It is now possible to force the handled raw type in Python constructor
+   - Comparison operators implemented
+   - ability to convert raw types to String, OctString and HexString
+   - better conversion method (stringToInt, intToString, and so on)
 
-* Hash module:
-Hash can now be done directly with several algorithm (md5, sha1, sha256, ...)
-and uses the new dynamic attributes API to add hash as node attributes. It uses
-the post-processing feature.
+* Console:
+ - Completion has been rewritten from scratch to new Config API compliant
+   - It supports lists of parameters, predefined parameters are well handled
+ - Write of a line tokenizer:
+   - directly creates context used by the completion
+   - supports "&" and "&&" classical shell keys and manages correctly threading and wait
+
 
 Bug fixes:
 ----------

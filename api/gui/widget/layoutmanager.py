@@ -538,7 +538,6 @@ class layoutManager(QWidget):
         the fly.
         """
         if event.type() == QEvent.LanguageChange:
-            self.retranslateUi(self)
             self.translation()
         else:
             QWidget.changeEvent(self, event)
