@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 DFF - An Open Source Digital Forensics Framework
+Copyright (C) 2011 Bram Mooij bram4n6@hotmail.com
 Copyright (C) 2011 ArxSys
 
 This program is free software, distributed under the terms of
@@ -622,7 +623,7 @@ Bram Mooij bram4n6@hotmail.com
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source>Apply module</source>
-        <translation type="unfinished">Module toevoegen</translation>
+        <translation>Module toevoegen</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
