@@ -59,7 +59,7 @@ class MERGE(mfso):
     def start(self, args):
        self.files = args['files'].value()
        if args.has_key("output"):
-          name = args["output"]
+          name = args["output"].value()
        else:
           name = self.files[0].value().name() + "..." + self.files[len(self.files) - 1].value().name()
        if args.has_key("parent"):
