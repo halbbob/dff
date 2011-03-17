@@ -632,6 +632,12 @@
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
         <source>the following nodes could not be opened with Hex viewer because they are either empty or folders</source>
+        <translation type="obsolete">I seguenti nodi non possono essere visualizzati con l&apos;editor esadecimale perchè sono vuoti o cartelle</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
+        <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
+</source>
         <translation>I seguenti nodi non possono essere visualizzati con l&apos;editor esadecimale perchè sono vuoti o cartelle</translation>
     </message>
 </context>
@@ -759,7 +765,7 @@
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="71"/>
         <source>DFF user directory:</source>
-        <translation>DFF user directory:</translation>
+        <translation>DFF utenti directory:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="550"/>
