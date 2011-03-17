@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 DFF - An Open Source Digital Forensics Framework
-Copyright (C) 2011 Denis Schreiber dschreiber@gmx.de
+Copyright (C) 2011 Dennis Schreiber dschreiber@gmx.de
+Copyright (C) 2011 Johannes Stuettgen johannes.stuettgen@gmail.com
 Copyright (C) 2011 ArxSys
 
 This program is free software, distributed under the terms of
@@ -14,7 +15,8 @@ DFF for assistance; the project provides a web site, mailing lists
 and IRC channels for your use.
 
 Author(s):
-Denis Schreiber dschreiber@gmx.de
+Dennis Schreiber dschreiber@gmx.de
+Johannes Stuettgen johannes.stuettgen@gmail.com
 -->
 <!DOCTYPE TS><TS version="1.1" language="de_DE">
 <context>
@@ -215,12 +217,12 @@ Denis Schreiber dschreiber@gmx.de
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="124"/>
         <source>Case sensitive sorting</source>
-        <translation type="unfinished"></translation>
+        <translation>Groß-/Kleinschreibungs abhängiges Sortieren</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="131"/>
         <source>Case sensitive filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Groß- und Kleinschreibung beachtendes Filtern</translation>
     </message>
 </context>
 <context>
@@ -781,7 +783,7 @@ Denis Schreiber dschreiber@gmx.de
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="64"/>
         <source>No footprint</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Speichern von Daten auf der Festplatte</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="270"/>
@@ -924,7 +926,7 @@ Denis Schreiber dschreiber@gmx.de
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
         <source>children</source>
-        <translation type="unfinished"></translation>
+        <translation>kind-knoten</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
