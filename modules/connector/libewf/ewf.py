@@ -88,7 +88,7 @@ class EWF(fso):
     self.volume_array = c_char_p * len(self.files)
     self.ghandle = libewf.libewf_open(self.volume_array(*self.files), c_int(len(self.files)), c_int(1))
     if self.ghandle == 0:
-       raise RuntimeError("Unable to open ewf file " + self.files)
+       raise RuntimeError("Unable to open ewf file " + str(self.files))
     size_p = pointer(c_ulonglong(0))
     libewf.libewf_get_media_size(self.ghandle, size_p)
     self.ssize = size_p.contents.value
