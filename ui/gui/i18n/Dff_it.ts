@@ -609,12 +609,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="74"/>
         <source>Hex viewer</source>
-        <translation></translation>
+        <translation>Editor Esadecimale</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="86"/>
         <source>Extract</source>
-        <translation>Editor Esadecimale</translation>
+        <translation>Esporta</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="94"/>
@@ -1052,7 +1052,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="584"/>
         <source>Module</source>
-        <translation>Modulo</translation>
+        <translation>Moduli</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="585"/>
