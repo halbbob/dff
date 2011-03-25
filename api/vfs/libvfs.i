@@ -733,16 +733,9 @@ Open the node and return a pointer to a VFile instance
 
 %import "../exceptions/libexceptions.i"
 
-%typemap(directorargin) (int32_t fd, void *rbuff, uint32_t size)
-{
-  memcpy((char *)rbuff, PyString_AsString($input) , PyString_Size($input));
-  return PyString_Size($input);
-}
-
 %typemap(directorargout) (int32_t fd, void *rbuff, uint32_t size)
 {
   memcpy((char *)rbuff, PyString_AsString($input) , PyString_Size($input));
-  return PyString_Size($input);
 }
 
 %typemap(out) pdata*

@@ -69,6 +69,7 @@ class TaskManager():
          for p in self.lprocessus:
            if p.mod == mod:
 	    proc = p
+	    proc.timeend = 0
          if not proc:
            proc = Processus(mod, self.npid, None, exec_flags)
            self.lprocessus.append(proc)
