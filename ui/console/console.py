@@ -112,7 +112,7 @@ class console(Cmd):
                                 else:
                                     while not self.proc.event.isSet():
                                         self.comp_raw.get_char(1)
-                        except RuntimeError as error:
+                        except RuntimeError, error:
                             noerror = False
                             print "module " + cmd[0]
                             print "\t" + str(error)
