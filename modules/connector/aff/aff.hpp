@@ -28,31 +28,17 @@
 #include "variant.hpp"
 #include "vfs.hpp"
 #include "path.hpp"
-#include "affnode.hpp"
+#include "fdmanager.hpp"
+#include <fcntl.h>
+#include <afflib/afflib.h>
+#include <afflib/afflib_i.h>
 
 class aff : public fso
 {
 private:
-  unsigned int	nfd;
-  std::string	basePath;
-  int		vread_error(int fd, void *buff, unsigned int size);
   Node		*parent;
-  void		createTree(std::list<Variant *>);
-
-#ifndef WIN32
-  class ULocalNode*	__root; 
-#else
-  class WLocalNode*	__root;
-#endif
-
+  FdManager*	__fdm;
 public:
-#ifndef WIN32
-  void			iterdir(std::string path, Node* parent);
-#else
-  std::string		relativePath(std::string path);
-  void			createPath(std::string origPath);
-  void 			frec(const char *, Node *rfv);
-#endif
   aff();
   ~aff();
   int32_t		vopen(Node* handle);
@@ -62,6 +48,6 @@ public:
   int32_t		vwrite(int fd, void *buff, unsigned int size) { return 0; };
   uint32_t		status(void);
   uint64_t		vtell(int32_t fd);
-  virtual void	start(std::map<std::string, Variant* > args);
+  virtual void		start(std::map<std::string, Variant* > args);
 };
 #endif

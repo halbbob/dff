@@ -11,31 +11,22 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Frederic Baguelin <fba@digital-forensic.org>
+ *  Solal Jacob <sja@digital-forensic.org>
  */
 
 #ifndef __AFFNODE_HPP__
 #define __AFFNODE_HPP__
 
 #include "aff.hpp"
-#include "node.hpp"
+#include <iostream>
 
-class ULocalNode: public Node
+class AffNode : public Node
 {
-private:
-  struct stat*			affStat(void);
-  vtime*			utimeToVtime(time_t* t1);
 public:
-  std::string			originalPath;
-  enum Type
-    {
-      FILE,
-      DIR
-    };
-
-  ULocalNode(std::string name, uint64_t size, Node* parent, class aff* fsobj, uint8_t type, std::string origPath);
+  AffNode(std::string name, uint64_t size, Node* parent, class aff* fsobj, std::string originalPath);
+  ~AffNode();
+  int			addSegmentAttribute(Attributes* vmap, AFFILE* af, const char* segname);
+  std::string		originalPath;
   virtual Attributes	_attributes();
-  ~ULocalNode();
 };
-
 #endif

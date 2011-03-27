@@ -11,93 +11,167 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Frederic Baguelin <fba@digital-forensic.org>
+ *  Solal Jacob <sja@digital-forensic.org>
  */
 
-#include "ulocalnode.hpp"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "affnode.hpp"
 
-
-Attributes	ULocalNode::_attributes()
+int		AffNode::addSegmentAttribute(Attributes* vmap, AFFILE* af, const char* segname)
 {
-  struct stat*	st;
+    unsigned long arg;
+    unsigned char *data = 0;
+    if (segname[0] == 0)
+	return (0); 
+
+    size_t data_len = 0;
+
+    if(af_get_seg(af, segname, &arg, 0, &data_len))
+    {
+	return (0);
+    }
+    data = (unsigned char *)malloc(data_len);
+    if(af_get_seg(af, segname, 0, data, &data_len))
+    {
+	free(data);
+	return (0);
+    }
+   
+    if(strcmp(segname, AF_ACQUISITION_SECONDS) == 0)
+    {
+	int hours = arg / 3600;
+	int minutes = (arg / 60) % 60;
+	int seconds = arg % 60;
+
+	vtime*	time = new vtime;
+	time->hour = hours;
+	time->minute = minutes;
+	time->second = seconds;
+	(*vmap)[std::string(segname)] = new Variant(time);
+	free(data);
+	return (1);
+    }
+
+    if(((arg == AF_SEG_QUADWORD) && (data_len==8)) || af_display_as_quad(segname))
+    {
+	switch(data_len)
+        {
+	 case 8:
+	    (*vmap)[segname] = new Variant(af_decode_q(data));
+	    break;
+	case 0:
+	    (*vmap)[segname] = new Variant(0);
+	    break;
+	default:
+	    (*vmap)[segname] = new Variant(std::string("Cannot decode segment"));
+	}
+	free(data);
+	return (1);
+    }
+    if (data_len == 0 && arg != 0)
+    {
+       (*vmap)[std::string(segname)] = new Variant((uint64_t)arg);
+       free(data);
+       return (1);
+    }
+
+    if(af_display_as_hex(segname) || (data_len == 16 && strstr(segname, "md5")) || (data_len == 20 && strstr(segname, "sha1")))
+    {
+        char buf[80];
+
+	af_hexbuf(buf, sizeof(buf), data, data_len, AF_HEXBUF_NO_SPACES); 
+	(*vmap)[std::string(segname)] = new Variant(std::string(buf));
+    	free(data);
+    	return (1);
+    }
+    else 
+    {
+        (*vmap)[segname] = new Variant(std::string((char *)data));
+        free(data);
+        return (1);
+    }
+}
+
+
+Attributes	AffNode::_attributes()
+{
   Attributes 	vmap;
+  struct af_vnode_info vni;
+    unsigned long total_segs = 0;
+    unsigned long total_pages = 0;
+    unsigned long total_hashes = 0;
+    unsigned long total_signatures =0;
+    unsigned long total_nulls = 0;
 
   vmap["orignal path"] =  new Variant(this->originalPath);
-  if ((st = this->localStat()) != NULL)
+  AFFILE*  affile = af_open(this->originalPath.c_str(), O_RDONLY, 0);
+  if (affile)
+  {
+    vmap["dump type"] = new Variant(std::string(af_identify_file_name(this->originalPath.c_str(), 1)));
+    if (af_vstat(affile, &vni) == 0)
     {
-      vmap["uid"] =  new Variant(st->st_uid);
-      vmap["gid"] =  new Variant(st->st_gid);
-      vmap["inode"] = new Variant(st->st_ino);
-      vmap["modified"] = new Variant(this->utimeToVtime(&(st->st_mtime)));
-      vmap["accessed"] = new Variant(this->utimeToVtime(&(st->st_atime)));
-      vmap["changed"] = new Variant(this->utimeToVtime(&(st->st_ctime)));
-      free(st);
-    }
+	if (vni.segment_count_encrypted > 0 || vni.segment_count_signed > 0)
+        {
+	   vmap["encrypted segments"] = new Variant(vni.segment_count_encrypted);
+	   vmap["signed segments"] = new Variant(vni.segment_count_signed);
+	}
+//passphrase ? affinfo.cpp 622
+      vector <string> segments;
+      char segname[AF_MAX_NAME_LEN];
+      af_rewind_seg(affile);
+      int64_t total_datalen = 0;
+      size_t total_segname_len = 0;
+      size_t datalen = 0;
+      int aes_segs=0;
+      while(af_get_next_seg(affile, segname, sizeof(segname), 0, 0, &datalen)==0)
+      {
+	total_segs++;
+	total_datalen += datalen;
+	total_segname_len += strlen(segname);
+	if(segname[0]==0) 
+	  total_nulls++;
+
+	char hash[64];
+	int64_t page_num = af_segname_page_number(segname);
+	int64_t hash_num = af_segname_hash_page_number(segname,hash,sizeof(hash));
+	if(page_num>=0) 
+		total_pages++;
+	if(hash_num>=0) 
+		total_hashes++;
+	if(strstr(segname,AF_SIG256_SUFFIX)) 
+		total_signatures++;
+	if(strstr(segname,AF_AES256_SUFFIX)) 
+		aes_segs++;
+	if((page_num>=0||hash_num>=0)) 
+		continue;
+	if(af_is_encrypted_segment(segname)) 
+		continue; 
+	this->addSegmentAttribute(&vmap, affile, segname); 
+      }
+      vmap["Total segments"] = new Variant((uint64_t)total_segs);
+      vmap["Total segments real"] = new Variant((uint64_t)(total_segs - total_nulls));
+      if (aes_segs)
+	vmap["Encrypted segments"] = new Variant(aes_segs);
+      vmap["Page segments"] = new Variant((uint64_t)total_pages);
+      vmap["Hash segments"] = new Variant((uint64_t)total_hashes);
+      vmap["Signature segments"] = new Variant((uint64_t)total_signatures); 	 
+      vmap["Null segments"] = new Variant((uint64_t)total_nulls);
+      vmap["Total data bytes"] = new Variant((uint64_t)total_datalen);
+    } 
+
+  } 
+
+  af_close(affile);
+
   return vmap;
 }
 
 
-struct stat*	ULocalNode::localStat(void)
-{
-  std::string	file;
-  struct stat* 	st;
-  class local*  Local = static_cast<local*>(this->fsobj());
-
-  st = (struct stat*)malloc(sizeof(struct stat));
-  if (lstat(this->originalPath.c_str(), st) != -1)
-    return st;
-  else
-    {
-      free(st);
-      return NULL;
-    }
-}
-
-vtime*		ULocalNode::utimeToVtime(time_t* tt) 
-{
-  struct tm*	t;
-  vtime	*vt = new vtime;
-
-  if (tt != NULL)
-    {
-      if ((t = gmtime(tt)) != NULL)
-	{
-	  vt->year = t->tm_year + 1900;
-	  vt->month = t->tm_mon + 1;
-	  vt->day = t->tm_mday;
-	  vt->hour = t->tm_hour;
-	  vt->minute = t->tm_min;
-	  vt->second = t->tm_sec;
-	  vt->dst = t->tm_isdst;
-	  vt->wday = t->tm_wday;
-	  vt->yday = t->tm_yday;
-	  vt->usecond = 0;
-	}
-    }
-   return vt;
-}
-
-
-ULocalNode::ULocalNode(std::string Name, uint64_t size, Node* parent, local* fsobj, uint8_t type, std::string origPath): Node(Name, size, parent, fsobj)
+AffNode::AffNode(std::string Name, uint64_t size, Node* parent, aff* fsobj, std::string origPath): Node(Name, size, parent, fsobj)
 {
   this->originalPath = origPath;
-  switch (type)
-    {
-    case DIR:
-      this->setDir();
-      break;
-    case FILE:
-      this->setFile();
-      break;
-    default:
-      break;
-    }
 }
 
-ULocalNode::~ULocalNode()
+AffNode::~AffNode()
 {
 }
 

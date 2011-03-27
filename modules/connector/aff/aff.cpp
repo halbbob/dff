@@ -15,228 +15,98 @@
  */
 
 #include "aff.hpp"
-#include <fcntl.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/time.h>
-#include <iostream>
-#include <sstream>
-#include <errno.h>
+#include "affnode.hpp"
 
-
-void aff::iterdir(std::string dir, Node *parent)
+aff::aff() : fso("aff")
 {
-  struct stat		stbuff; 
-  struct dirent*	dp;
-  DIR*			dfd;
-  ULocalNode*		tmp;
-  uint64_t		total;
-  string		upath;
-  
-  if ((dfd = opendir(dir.c_str())))
-    {
-      while ((dp = readdir(dfd)))
-	{
-	  if (!strcmp(dp->d_name, ".")  || !strcmp(dp->d_name, ".."))
-	    continue; 
-	  upath = dir + "/" + dp->d_name;
-	  if (lstat(upath.c_str(), &stbuff) != -1)
-	    {
-	      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-		{
-		  tmp = new ULocalNode(dp->d_name, 0, parent, this, ULocalNode::DIR,  upath);
-		  total++;
-		  this->iterdir(upath, tmp);
-		}
-	      else
-		{
-		  tmp = new ULocalNode(dp->d_name, stbuff.st_size, parent, this, ULocalNode::FILE, upath);
-		  total++;
-		}
-	    }
-	}
-      closedir(dfd);
-    }
-  //res->add_const("nodes created", total);
-}
-
-aff::aff(): fso("aff")
-{
+  this->__fdm = new FdManager();
 }
 
 aff::~aff()
 {
 }
 
-void	aff::createTree(std::list<Variant *> vl)
-{
-  std::list<Variant* >::iterator	it;
-  Path*					tpath;
-  string				name;
-  struct stat				stbuff;
-  uint64_t				size = 0;
-
-  for (it = vl.begin(); it != vl.end(); it++)
-    {
-      tpath = (*it)->value<Path*>();
-      if ((tpath->path.rfind('/') + 1) == tpath->path.length())
-	tpath->path.resize(tpath->path.rfind('/'));
-      name = tpath->path.substr(tpath->path.rfind("/") + 1);
-      this->basePath = tpath->path.substr(0, tpath->path.rfind('/'));
-      if (stat(tpath->path.c_str(), &stbuff) == -1)
-	{
-	  return ;
-	}
-      if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-	{
-	  Node *dir = new ULocalNode(name, 0, NULL, this, ULocalNode::DIR, tpath->path);
-	  this->iterdir(tpath->path, dir);
-	  this->registerTree(this->parent, dir);
-	}
-      else
-	{
-	  Node *f;
-	  if (size)
-	    {
-	      f = new ULocalNode(name, size, NULL, this, ULocalNode::FILE,  tpath->path);
-	      this->registerTree(this->parent, f);
-	    }
-	  else
-	    {
-	      f = new ULocalNode(name, stbuff.st_size, NULL, this, ULocalNode::FILE, tpath->path);
-	      this->registerTree(this->parent, f);
-	    }
-	}
-    }
-}
-
 void aff::start(std::map<std::string, Variant* > args)
 {
-  std::map<std::string, Variant* >::iterator	argit;
+  std::list<Variant *> vl; 
+  std::list<Variant *>::iterator 		 vpath; 
+  AFFILE*					 affile;
+  AffNode*					 node;
 
-  this->nfd = 0;
-  if ((argit = args.find("parent")) != args.end())
-    this->parent = argit->second->value<Node*>();
+  if (args["parent"])
+    this->parent = args["parent"]->value<Node* >();
   else
     this->parent = VFS::Get().GetNode("/");
-  if ((argit = args.find("path")) != args.end())
-    if (argit->second != NULL)
-      this->createTree(argit->second->value<std::list<Variant* > >());
-    else
-      throw(envError("aff module requires at least one path parameter"));
+  if (args["path"])
+    vl = args["path"]->value<std::list<Variant* > >();
   else
     throw(envError("aff module requires path argument"));
+
+  for (vpath = vl.begin(); vpath != vl.end(); vpath++)
+  {
+     std::string path = (*vpath)->value<Path* >()->path;
+     affile = af_open(path.c_str(), O_RDONLY, 0);	
+     if (affile)
+     {
+	node = new AffNode(name, af_get_imagesize(affile), NULL, this, path);
+	af_close(affile);
+     }
+     else 
+	cout << "can't open file " << endl;
+  }
+  this->registerTree(this->parent, node);   
+
+//  this->res[""]
   return ;
+
 }
 
 int aff::vopen(Node *node)
 {
-  int n;
-  struct stat 	stbuff;
-  std::string	file;
-  ULocalNode*	unode = dynamic_cast<ULocalNode* >(node);
+  AffNode* affnode = dynamic_cast<AffNode* >(node);
+  AFFILE*  affile;
 
-  if (unode == NULL)
-   return (0);
-  file = unode->originalPath; 
-#if defined(__FreeBSD__)
-  if ((n = open(file.c_str(), O_RDONLY)) == -1)
-#elif defined(__linux__)
-  if ((n = open(file.c_str(), O_RDONLY | O_LARGEFILE)) == -1)
-#endif
-      throw vfsError("aff::open error can't open file");
-  if (stat(file.c_str(), &stbuff) == -1)
-    throw vfsError("aff::open error can't stat");
-  if (((stbuff.st_mode & S_IFMT) == S_IFDIR ))
-    throw vfsError("aff::open error can't open directory");
-  nfd++;
-  return (n);
-}
-
-int	aff::vread_error(int fd, void *buff, unsigned int size)
-{
-  unsigned int	pos;
-  int		n;
-  int		toread;
-
-  pos = 0;
-  while (pos < size)
-    {
-      if (size - pos < 512)
-	toread = size - pos;
-      else
-	toread = 512;
-      if ((n = read(fd, ((char*)buff)+pos, toread)) == -1)
-	{
-	  memset(((char*)buff)+pos, 0, toread);
-	  this->vseek(fd, toread, 1);
-	}
-      pos += toread;
-    }
-  return size;
+  affile = af_open(affnode->originalPath.c_str(), O_RDONLY, 0);
+  if (affile)
+  {
+    fdinfo* fi = new fdinfo();
+    fi->id = new Variant((void*)affile);
+    int fd = this->__fdm->push(fi);
+    return fd;
+  }
+  else
+    return (0);
 }
 
 int aff::vread(int fd, void *buff, unsigned int size)
 {
-  int n;
-  
-  n = read(fd, buff, size);
-  if (n < 0)
-  {
-    if (errno == EIO)
-      {
-	return this->vread_error(fd, buff, size);
-      }
-    else
-      throw vfsError("aff::vread error read = -1");
-  }
-  return n;
+  fdinfo* fi = this->__fdm->get(fd);
+  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  return (af_read(affile, (unsigned char*)buff, size));
 }
 
 int aff::vclose(int fd)
 {
-  if (close(fd) == -1)
-  {
-    throw vfsError("aff::close error can't close");
-  }
-  nfd--;
-  return (0);
+  fdinfo* fi = this->__fdm->get(fd);
+  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  return (af_close(affile));
 }
 
 uint64_t aff::vseek(int fd, uint64_t offset, int whence)
 {
- uint64_t  n = 0;
-
- if (whence == 0)
-   whence = SEEK_SET;
- else if (whence == 1)
-   whence = SEEK_CUR;
- else if (whence == 2)
-   whence = SEEK_END;
-#if defined(__FreeBSD__) || defined(__APPLE__)
- n = lseek(fd, offset, whence);
-#elif defined(__linux__)
- n = lseek64(fd, offset, whence);
-#endif
- if (n == ((uint64_t)-1))
-   {
-     throw vfsError("aff::vseek can't seek error " + string(strerror(errno)));
-   }
- return (n);
+  fdinfo* fi = this->__fdm->get(fd);
+  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  return (af_seek(affile, offset, whence));
 }
 
 uint64_t	aff::vtell(int32_t fd)
 {
-  uint64_t	pos;
-
-  pos = this->vseek(fd, 0, 1);
-  return pos;
+  fdinfo* fi = this->__fdm->get(fd);
+  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  return (af_tell(affile));
 }
 
 unsigned int aff::status(void)
 {
-  return (nfd);
+  return (0);
 }
