@@ -96,8 +96,6 @@ void		Carver::start(std::map<std::string, Variant*> args)
 
 int		Carver::Read(char *buffer, unsigned int size)
 {
-  unsigned int bytes_read;
-
   try
     {
       return (this->ifile->read(buffer, size));
@@ -111,7 +109,6 @@ int		Carver::Read(char *buffer, unsigned int size)
 
 std::string	Carver::needleToHexString(unsigned char* needle, int size)
 {
-  int			count;
   int			i;
   std::stringstream	ss;
 
@@ -154,7 +151,6 @@ void		Carver::createContexts(std::list<Variant*> patterns)
   std::list<Variant*>::iterator		it;
   std::map<std::string, Variant*>	vpattern;
   context				*cctx;
-  pattern				*cpattern;
   int					i;
   description*				descr;
   
@@ -209,7 +205,6 @@ void		Carver::mapper()
   e->type = event::SEEK;
   e1->type = event::OTHER;
   total_headers = 0;
-  bool debug = false;
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
     {
       offpos = this->tell();
