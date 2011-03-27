@@ -97,7 +97,6 @@ bool    SuperBlock::sanity_check(uint64_t fs_size) const
 
 bool    SuperBlock::sigfind(uint64_t fs_size, VFile * vfile)
 {
-  super_block_t_	sb;
   bool			possible_sb_found = false;
   uint64_t		previous_hit = 0;
   std::list<uint64_t> *	offset_list;
