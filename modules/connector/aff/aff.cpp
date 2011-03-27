@@ -50,9 +50,10 @@ void aff::start(std::map<std::string, Variant* > args)
      {
 	node = new AffNode(name, af_get_imagesize(affile), NULL, this, path);
 	af_close(affile);
+	this->res[path] = new Variant(std::string("added successfully by aff module"));
      }
      else 
-	cout << "can't open file " << endl;
+        this->res[path] = new Variant(std::string("can't be added by aff module"));
   }
   this->registerTree(this->parent, node);   
 

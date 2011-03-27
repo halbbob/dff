@@ -114,7 +114,6 @@ Attributes	AffNode::_attributes()
 	   vmap["encrypted segments"] = new Variant(vni.segment_count_encrypted);
 	   vmap["signed segments"] = new Variant(vni.segment_count_signed);
 	}
-//passphrase ? affinfo.cpp 622
       vector <string> segments;
       char segname[AF_MAX_NAME_LEN];
       af_rewind_seg(affile);
