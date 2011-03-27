@@ -30,12 +30,18 @@ class MagicHandler(DataTypeHandler):
      DataTypeHandler.__init__(self, name)
      self.__disown__()
      self.vfs = vfs.vfs()
-     self.mime = magic.open(mtype)
+     try:
+	self.mime = magic.open(mtype)
+     except AttributeError:
+	self.mime = magic.magic_open(mtype)
      if os.name == "nt":
        import sys
        self.mime.load(sys.path[0] + "./api/magic/magic.mgc")
      else:
-       self.mime.load()
+       try:
+          self.mime.load()
+       except AttributeError:
+	  self.mime = magic.Magic((mtype == magic.MAGIC_MIME))
 
   def __del__(self):
        self.mime.close()
@@ -43,12 +49,16 @@ class MagicHandler(DataTypeHandler):
   def type(self, node):
     buff = ""
     try:
-        f = node.open()
-        buff = f.read(0x2000)
-        f.close()
-        filemime = self.mime.buffer(buff)
-        return filemime
-    except IOError, e:
+     f = node.open()
+     buff = f.read(0x2000)
+     f.close()
+     try:
+      filemime = self.mime.buffer(buff)
+      return filemime
+     except AttributeError:
+      filemime = self.mime.from_buffer(buff)
+      return filemime
+    except IOError:
 	return "None"
 
 try:

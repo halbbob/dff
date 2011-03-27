@@ -86,8 +86,10 @@ class Conf():
                 config.set('Index', 'indexpath', self.index_path)
             config.add_section('Help')
             config.set('Help', 'helppath', self.docPath)
-            with open(self.configFile, 'wb') as configfile:
-                config.write(configfile)
+            configfile = open(self.configFile, 'wb')
+            if configgile:
+		config.write(configfile)
+		configfile.close()
 
         def read(self):
             config = ConfigParser.RawConfigParser()

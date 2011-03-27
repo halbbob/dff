@@ -14,7 +14,7 @@
 #
 
 from PyQt4.QtGui import QDialog, QFileDialog, QMessageBox
-from PyQt4.QtCore import SIGNAL, QEvent, QString
+from PyQt4.QtCore import SIGNAL, QEvent, QString, Qt
 
 from ui.gui.resources.ui_preferences import Ui_PreferencesDialog
 from ui.conf import Conf
@@ -140,11 +140,13 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         """
         # Working dir related
         self.workingDirPath.setEnabled(not self.tNoFootPrint)
+        self.workingDirLabel.setEnabled(not self.tNoFootPrint)
         self.workingDirBrowse.setEnabled(not self.tNoFootPrint)
         # History related
-        self.historyLineEdit.setEnabled(not self.tNoFootPrint and not self.tNoHistoryFile)
-        self.historyToolButton.setEnabled(not self.tNoFootPrint and not self.tNoHistoryFile)
         self.noHistoryCheckBox.setEnabled(not self.tNoFootPrint)
+        self.historyLineEdit.setEnabled(not self.tNoFootPrint and not self.tNoHistoryFile)
+        self.historyLabel.setEnabled(not self.tNoFootPrint and not self.tNoHistoryFile)
+        self.historyToolButton.setEnabled(not self.tNoFootPrint and not self.tNoHistoryFile)
         # Indexes related
         if self.conf.indexEnabled:
             self.indexTab.setEnabled(not self.tNoFootPrint)
@@ -264,7 +266,6 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         if f_dialog.exec_():
             self.root_index_line.setText(f_dialog.selectedFiles()[0])
             self.tRootIndex = normpath(str(f_dialog.selectedFiles()[0]) + '/indexes/')
-#            self.conf.root_index = self.root_index_line.text()
 
     def conf_index_name_dir(self):
         """
@@ -281,8 +282,6 @@ class Preferences(QDialog, Ui_PreferencesDialog):
             self.tIndexName = normpath(name)
             self.tIndexPath = normpath(self.tRootIndex + '/' + name)
             
-#            self.conf.index_name = name
-#            self.conf.index_path = self.conf.root_index + "/" + name
 
     def langPopulate(self):
         translationPath = normpath(sys.modules['ui.gui'].__path__[0] + '/i18n/')
@@ -297,14 +296,14 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         self.langComboBox.setCurrentIndex(selected)
 
     def noFootPrintChanged(self, state):
-        self.tNoFootPrint = (state == 2)
+        self.tNoFootPrint = (state == Qt.Checked)
         self.footprintOrNo()
         
     def historyStateChanged(self, state):
-        self.tNoHistoryFile = (state == 2)
-        self.historyLabel.setEnabled((state == 0))
-        self.historyLineEdit.setEnabled((state == 0))
-        self.historyToolButton.setEnabled((state == 0))
+        self.tNoHistoryFile = (state == Qt.Checked)
+        self.historyLabel.setEnabled((state == Qt.Unchecked))
+        self.historyLineEdit.setEnabled((state == Qt.Unchecked))
+        self.historyToolButton.setEnabled((state == Qt.Unchecked))
 
     def langChanged(self, text):
         """ Change interface language
