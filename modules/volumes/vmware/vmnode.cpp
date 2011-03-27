@@ -69,15 +69,9 @@ void VMNode::fileMapping(FileMapping *fmap)
   // Get number of extents
   uint32_t	nextents = extents.size();
   uint32_t	curextent = 0;
-
   uint64_t	voffset = 0;
   uint64_t	vextoffset = 0;
-
-  uint64_t	GDEOffset;
-  uint64_t	GTOffset;
-
   uint64_t	currentGDE = 0;
-
   int		mapcheck;
   // Parse All extents
 
