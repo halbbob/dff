@@ -743,7 +743,7 @@ Open the node and return a pointer to a VFile instance
   Py_XDECREF($result);
   $result = PyString_FromStringAndSize((const char *)$1->buff, $1->len);
   free($1->buff);
-  free($1);
+  delete $1;
 }
 
 %{
