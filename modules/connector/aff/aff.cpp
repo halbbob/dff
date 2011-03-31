@@ -20,6 +20,7 @@
 aff::aff() : fso("aff")
 {
   this->__fdm = new FdManager();
+  setenv("AFFLIB_CACHE_PAGES", "2", 1);
 }
 
 aff::~aff()
@@ -48,7 +49,8 @@ void aff::start(std::map<std::string, Variant* > args)
      affile = af_open(path.c_str(), O_RDONLY, 0);	
      if (affile)
      {
-	node = new AffNode(name, af_get_imagesize(affile), NULL, this, path);
+	std::string nname = path.substr(path.rfind('/') + 1);
+	node = new AffNode(nname, af_get_imagesize(affile), NULL, this, path);
 	af_close(affile);
 	this->res[path] = new Variant(std::string("added successfully by aff module"));
      }
@@ -57,7 +59,6 @@ void aff::start(std::map<std::string, Variant* > args)
   }
   this->registerTree(this->parent, node);   
 
-//  this->res[""]
   return ;
 
 }
@@ -67,22 +68,23 @@ int aff::vopen(Node *node)
   AffNode* affnode = dynamic_cast<AffNode* >(node);
   AFFILE*  affile;
 
+  
   affile = af_open(affnode->originalPath.c_str(), O_RDONLY, 0);
   if (affile)
   {
     fdinfo* fi = new fdinfo();
     fi->id = new Variant((void*)affile);
-    int fd = this->__fdm->push(fi);
-    return fd;
+    return (this->__fdm->push(fi));
   }
   else
-    return (0);
+    return (-1);
 }
 
 int aff::vread(int fd, void *buff, unsigned int size)
 {
-  fdinfo* fi = this->__fdm->get(fd);
+  fdinfo* fi = this->__fdm->get(fd);  
   AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+
   return (af_read(affile, (unsigned char*)buff, size));
 }
 
@@ -90,20 +92,25 @@ int aff::vclose(int fd)
 {
   fdinfo* fi = this->__fdm->get(fd);
   AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
-  return (af_close(affile));
+
+  this->__fdm->remove(fd);
+  af_close(affile);
+  return (0);
 }
 
 uint64_t aff::vseek(int fd, uint64_t offset, int whence)
 {
   fdinfo* fi = this->__fdm->get(fd);
   AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
-  return (af_seek(affile, offset, whence));
+
+  return (af_seek(affile, (int64_t)offset, whence));
 }
 
 uint64_t	aff::vtell(int32_t fd)
 {
   fdinfo* fi = this->__fdm->get(fd);
   AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+
   return (af_tell(affile));
 }
 

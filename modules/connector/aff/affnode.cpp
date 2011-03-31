@@ -18,7 +18,7 @@
 
 int		AffNode::addSegmentAttribute(Attributes* vmap, AFFILE* af, const char* segname)
 {
-    unsigned long arg;
+    uint32_t arg;
     unsigned char *data = 0;
     if (segname[0] == 0)
 	return (0); 
@@ -85,6 +85,7 @@ int		AffNode::addSegmentAttribute(Attributes* vmap, AFFILE* af, const char* segn
     }
     else 
     {
+	//check valgrind surrement ele 0 a la fin
         (*vmap)[segname] = new Variant(std::string((char *)data));
         free(data);
         return (1);
