@@ -211,7 +211,7 @@ class ImageView(QWidget, Script):
     self.type = "imageview"
     self.icon = None
     self.vfs = vfs.vfs()
-    self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+    self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM|TIFF|tiff).*", re.IGNORECASE)
     self.sceneWidth = 0
 
 
@@ -358,6 +358,6 @@ class viewerimage(Module):
     self.conf.addConstant({"name": "mime-type", 
  	                   "type": typeId.String,
  	                   "description": "managed mime type",
- 	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap"]})
+ 	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap", "TIFF", "PBM", "PGM", "PPM", "XBM", "XPM"]})
     self.tags = "Viewers"
     self.icon = ":lphoto"
