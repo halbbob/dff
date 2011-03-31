@@ -77,7 +77,8 @@ if(DISABLE_SWIG_THREADING)
   message(STATUS "Will we use swig -threads -- no")
 else()
   #message(STATUS "Will we use swig -threads -- yes")
-  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
+  #set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
+  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -threads)
 endif(DISABLE_SWIG_THREADING)
 # $> cmake -DDISABLE_SWIG_THREADING:BOOLEAN=ON
 
