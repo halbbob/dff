@@ -13,12 +13,14 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_info_version__ = "1.0.0"
+
 from api.vfs import *
 from api.module.script import *
 from api.loader import *
 from api.module.module import *
 from api.taskmanager.taskmanager import *
-from api.types.libtypes import Variant, Argument, typeId, ConfigManager
+from api.types.libtypes import Parameter, Variant, Argument, typeId, ConfigManager
 from datetime import timedelta, datetime
 from ui.console.utils import VariantTreePrinter
 
@@ -123,6 +125,9 @@ class INFO(Script, VariantTreePrinter):
      print self.info  
 
   def getmodinfo(self, modname):
+    conf = self.cm.configByName(modname)
+    if conf == None:
+      return
     self.lproc = self.tm.lprocessus
     self.info +=  "\n" +  modname + self.show_config(modname)
     for proc in self.lproc:

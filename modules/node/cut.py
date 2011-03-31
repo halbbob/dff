@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_cut_version__ = "1.0.0"
+
 from struct import unpack
 
 from api.vfs import *
@@ -83,5 +85,5 @@ class cut(Module):
                            "name": "size",
                            "description": "Size readed after start's address. If not specified, read until EOF"
                            })
-
+    self.icon = ":editcut"
     self.tags = "Node"

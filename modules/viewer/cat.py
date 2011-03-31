@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_cat_version__ = "1.0.0"
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -79,4 +81,5 @@ ex:cat /myfile.txt"""
  	                   "description": "managed mime type",
  	                   "values": ["HTML", "ASCII", "XML", "text"]})
     self.tags = "Viewers"
-    self.flags = ["console", "gui"]	
+    self.flags = ["console", "gui"]
+    self.icon = ":text"	

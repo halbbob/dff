@@ -13,13 +13,15 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_unzip_version__ = "1.0.0"
+
 from api.module.module import Module
 from api.module.script import Script
-from api.vfs.libvfs import FdManager, fdinfo, Node, fso
+from api.vfs.libvfs import VFS, FdManager, fdinfo, Node, fso
 from api.vfs import vfs
 from api.exceptions.libexceptions import vfsError, envError
 from api.types.libtypes import vtime, Variant, VMap, Argument, typeId
-
+from api.events.libevents import event
 
 import traceback
 import mzipfile
@@ -79,6 +81,7 @@ class UNZIP(fso):
   def __init__(self):
     fso.__init__(self, "unzip")
     self.name = "unzip"
+    self.VFS = VFS.Get()
     self.vfs = vfs.vfs()
     self.fdm = FdManager()
     self.origin = None
@@ -110,7 +113,9 @@ class UNZIP(fso):
       attr = self.zipcontent.getinfo(zipfile)
       node = ZipNode(filename, attr.file_size, parent, self, zipfile)
       node.__disown__()
-
+    e = event()
+    e.value = Variant(self.origin)
+    self.VFS.notify(e)
 
   def makeDirs(self, folders):
     sfolders = folders.split("/")
@@ -230,3 +235,4 @@ This version of unzip store all data in RAM so don't decompress huge file."""
  	                   "description": "managed mime type",
  	                   "values": ["Zip"]})
     self.tags = "Archives"
+    self.icon = ":zip"

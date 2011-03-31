@@ -13,7 +13,7 @@
 #  Jeremy MOUNIER < sja@arxsys.fr>
 #
 
-#from struct import unpack
+__dff_module_winreg_version__ = "1.0.0"
 
 from modules.databases.winreg.parseHives import *
 
@@ -47,3 +47,4 @@ class winreg(Module):
  	                   "description": "managed mime type",
  	                   "values": ["registry file"]})
     self.tags = "Databases"
+    self.icon = ":database"

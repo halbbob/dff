@@ -33,6 +33,9 @@
 
 %pythoncode
 %{
+
+__dff_module_shm_version__ = "1.0.0"
+
 from api.module.module import *
 from api.types.libtypes import Argument, typeId
 

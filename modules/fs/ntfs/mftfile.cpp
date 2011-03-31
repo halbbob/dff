@@ -94,7 +94,9 @@ MftEntry	*MftFile::get(uint64_t parentReference)
   parent->clusterSize(_clusterSize);
   parent->mftEntrySize(_mftEntrySize);
   DEBUG(INFO, "parent on da way\n");
-  parent->decode(offset);
+  if (parent->decode(offset) == false) {
+    return NULL;
+  }
   if (parent->getMftEntryBlock()->fixupArrayOffset > _mftEntrySize) {
     return NULL;
   }

@@ -40,6 +40,9 @@
 
 %pythoncode
 %{
+
+__dff_module_NTFS_version__ = "0.5.0"
+
 from api.module.module import *
 from api.types.libtypes import Argument, typeId
 

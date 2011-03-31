@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_fileinfo_version__ = "1.0.0"
+
 from api.vfs import *
 from api.loader import *
 from api.module.module import *

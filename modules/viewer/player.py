@@ -14,6 +14,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_player_version__ = "1.0.0"
+
 from PyQt4.QtGui import QWidget, QAction, QStyle, QToolBar, QLabel, QPalette, QPixmap, QLCDNumber, QSizePolicy, QHBoxLayout, QVBoxLayout, QMessageBox
 from PyQt4.QtCore import SIGNAL, SLOT, QTime, Qt
 from PyQt4.phonon import Phonon 
@@ -186,3 +188,4 @@ class player(Module):
                           "type": typeId.String,
                           "description": "managed mime type",
                           "values": ["video"]})
+   self.icon = ":multimedia"

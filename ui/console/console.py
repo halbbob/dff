@@ -94,10 +94,9 @@ class console(Cmd):
             for command in commands:
                 cmds = self.completion.lp.makeCommands(command)
                 for cmd in cmds:
-                    if cmd[1] == None and cmd[3] != "":
+                    if len(cmd[3]):
                         noerror = False
-                        print "module " + cmd[0]
-                        print "\t" + cmd[3]
+                        print cmd[3]
                     else:
                         exec_type = ["console"]
                         cname = cmd[0]
@@ -113,7 +112,7 @@ class console(Cmd):
                                 else:
                                     while not self.proc.event.isSet():
                                         self.comp_raw.get_char(1)
-                        except RuntimeError as error:
+                        except RuntimeError, error:
                             noerror = False
                             print "module " + cmd[0]
                             print "\t" + str(error)

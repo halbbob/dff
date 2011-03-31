@@ -50,6 +50,9 @@ namespace std
 
 %pythoncode
 %{
+
+__dff_module_extfs_version__ = "1.0.0"
+
 from api.module.module import *
 from api.types.libtypes import Argument, typeId, Parameter
 
@@ -62,6 +65,9 @@ class EXTFS(Module):
     self.conf.addArgument({"name": "file",
                            "description": "file containing an EXT file system",
                            "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "blockpointers",
+                           "description": "Add block pointer as extfs extended attributes",
+                           "input": Argument.Empty})
     self.conf.addArgument({"name": "ils",
                            "description": "List inodes",
                            "input": Argument.Empty})

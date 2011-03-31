@@ -12,6 +12,8 @@
 # Author(s):
 #  Frederic B. <fba@digital-forensic.org>
 
+__dff_module_carverui_version__ = "1.0.0"
+
 from api.module.module import Module
 from api.module.script import Script
 from api.events.libevents import EventHandler, event
@@ -24,10 +26,6 @@ from typeSelection import filetypes, wildcard
 import string
 
 import time
-
-from predef import predefPattern
-from userdef import userPattern
-
 
 class CarverUi(Script):
     def __init__(self):

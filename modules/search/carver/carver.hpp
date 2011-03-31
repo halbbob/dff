@@ -54,8 +54,8 @@ private:
 
   bool			createFile();
   void			createNode(Node *parent, uint64_t start, uint64_t end);
-  unsigned int		createWithoutFooter(Node *parent, vector<uint64_t> *headers, unsigned int max);
-  unsigned int		createWithFooter(Node *parent, vector<uint64_t> *headers, vector<uint64_t> *footers, uint32_t max);
+  unsigned int		createWithoutFooter(Node *parent, vector<uint64_t> *headers, unsigned int max, bool aligned);
+  unsigned int		createWithFooter(Node *parent, vector<uint64_t> *headers, vector<uint64_t> *footers, uint32_t max, bool aligned);
   int		        createTree();
   void			mapper();
   std::string		generateName(uint64_t start, uint64_t end);

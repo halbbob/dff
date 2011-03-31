@@ -122,7 +122,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.MenuTags = MenuTags(self, self)
 
         self.refreshTabifiedDockWidgets()
-
+        
 #############  DOCKWIDGETS FUNCTIONS ###############
 
     def addDockWidgets(self, widget, internalName, master=True):

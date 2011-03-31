@@ -21,8 +21,9 @@ from api.vfs import *
 from api.vfs.libvfs import VFS
 from api.events.libevents import EventHandler
 from api.loader import loader
-from api.taskmanager.taskmanager import *
+from api.taskmanager.taskmanager import TaskManager 
 from api.types import libtypes
+from api.types.libtypes import typeId, Variant
 
 from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
@@ -32,8 +33,10 @@ from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView,
 from api.gui.widget.propertytable import PropertyTable
 from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
 
-from ui.gui.utils.menu import MenuTags
+from ui.gui.utils.menu import MenuTags, MenuRelevant
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
+
+modulePriority = {} 
 
 class SimpleNodeBrowser(QWidget):
   def __init__(self, parent, view = NodeThumbsView):
@@ -231,6 +234,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
          if self.nodeViewBox.propertyTable.isVisible():
             self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
+       self.menuRelevant = MenuRelevant(self, self.parent, node)
        if node.hasChildren() or node.isDir():
          self.actionOpen_in_new_tab.setEnabled(True)
        else:
@@ -269,8 +273,26 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        node = self.currentNode()
        if not node:
 	 return
-     try:
-       mod = node.compatibleModules()[0]
+     mods = node.compatibleModules()
+     mods.reverse()	
+     if len(mods):
+       for mod in mods:
+          if "Viewers" in self.lmodules[mod].tags:
+	    break
+       try:
+         priority = modulePriority[mod] #XXX put in conf
+       except KeyError:
+         modulePriority[mod] = 0
+         priority = 0
+       if not priority: 
+        #XXX translate
+         mbox = QMessageBox(QMessageBox.Question, self.tr("Apply module"), self.tr("Do you want to apply module ") + str(mod) + self.tr(" on this node ?"), QMessageBox.Yes | QMessageBox.No, self)
+         mbox.addButton(self.tr("Always"), QMessageBox.AcceptRole)
+	 reply = mbox.exec_() 
+         if reply == QMessageBox.No:
+           return		
+         elif reply == QMessageBox.AcceptRole:
+	   modulePriority[mod] = 1 
        if self.lmodules[mod]:
          conf = self.lmodules[mod].conf
          arguments = conf.arguments()
@@ -280,11 +302,28 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
              marg[argument.name()] = node
          args = conf.generate(marg)
          self.taskmanager.add(mod, args, ["thread", "gui"])       
-     except (IndexError, RuntimeError):
-       conf = self.lmodules["hexadecimal"].conf
-       args = conf.generate({"file": node})
-       self.taskmanager.add("hexadecimal", args, ["thread", "gui"])
+	 return
+     else:
+       errnodes = ""
+       if node.size():
+         conf = self.lmodules["hexadecimal"].conf
+         try:
+           arg = conf.generate({"file": node})
+           self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
+         except RuntimeError:
+           errnodes += node.absolute() + "\n"
+       else:
+         errnodes += node.absolute() + "\n"
+       if len(errnodes):
+         msg = QMessageBox(self)
+         msg.setWindowTitle(self.tr("Empty files"))
+         msg.setText(self.tr("the following nodes could not be opened with Hex viewer because they are either empty or folders\n"))
+         msg.setIcon(QMessageBox.Warning)
+         msg.setDetailedText(errnodes)
+         msg.setStandardButtons(QMessageBox.Ok)
+         ret = msg.exec_()
  
+
   def createSubMenu(self):
      self.extractor = Extractor(self.parent)
      self.connect(self.extractor, SIGNAL("filled"), self.launchExtract)
@@ -293,6 +332,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      self.connect(self.actionOpen, SIGNAL("triggered()"), self.openDefault)
      self.submenuFile.addAction(self.actionOpen_in_new_tab)
      self.connect(self.actionOpen_in_new_tab, SIGNAL("triggered()"), self.openAsNewTab)
+     self.submenuRelevant = self.submenuFile.addMenu(self.actionRelevant_module.icon(), self.actionRelevant_module.text())
      self.menu = {}
      self.menuModule = self.submenuFile.addMenu(self.actionOpen_with.icon(), self.actionOpen_with.text())
      self.menuTags = MenuTags(self, self.parent, self.currentNodes)
@@ -309,28 +349,43 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def launchHexedit(self):
      nodes = self.currentNodes()
+     conf = self.loader.get_conf("hexadecimal")
+     errnodes = ""
      for node in nodes:
-       conf = self.loader.get_conf("hexadecimal")
-       try:
-         arg = conf.generate({"file": node})
-         self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
-       except RuntimeError:
-         pass
+       if node.size():
+         try:
+           arg = conf.generate({"file": node})
+           self.taskmanager.add("hexadecimal", arg, ["thread", "gui"])
+         except RuntimeError:
+           errnodes += node.absolute() + "\n"
+       else:
+         errnodes += node.absolute() + "\n"
+     if len(errnodes):
+       msg = QMessageBox(self)
+       msg.setWindowTitle(self.tr("Empty files"))
+       msg.setText(self.tr("the following nodes could not be opened with Hex viewer because they are either empty or folders\n"))
+       msg.setIcon(QMessageBox.Warning)
+       msg.setDetailedText(errnodes)
+       msg.setStandardButtons(QMessageBox.Ok)
+       ret = msg.exec_()
+
 
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())
 
   def launchExtract(self):
      res = self.extractor.getArgs()
-     arg = libtypes.Arguments("gui_input")
-     lnodes.thisown = 0
-     for node in res["nodes"]:
-        lnodes.append(node)
-     arg.thisown = 0
-     arg.add_path("syspath", str(res["path"]))
-     arg.add_lnode("files", lnodes)
-     arg.add_bool("recursive", int(res["recurse"]))
-     self.taskmanager.add("extract", arg, ["thread", "gui"])
+     args = {}
+     args["files"] = res["nodes"]
+     args["syspath"] = str(res["path"])
+     args["recursive"] = res["recurse"]
+     conf = self.loader.get_conf("extract")
+     try:
+       margs = conf.generate(args)
+       self.taskmanager.add("extract", margs, ["thread", "gui"])
+     except RuntimeError:
+       pass
+
 
   def changeEvent(self, event):
     """ Search for a language change event
@@ -341,6 +396,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     if event.type() == QEvent.LanguageChange:
       self.retranslateUi(self)
       self.menuModule.setTitle(self.actionOpen_with.text())
+      self.submenuRelevant.setTitle(self.actionRelevant_module.text())
       self.model.translation()
       self.treeModel.translation()
     else:

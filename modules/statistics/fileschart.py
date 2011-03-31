@@ -13,6 +13,8 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 # 
 
+__dff_module_fileschart_version__ = "1.0.0"
+
 from api.vfs import *
 from api.module.script import *
 from api.module.module import *
@@ -155,5 +157,5 @@ ex: statistics /mydump/"""
                            "description": "Directory or files used to render chart",
                            "input": Argument.Required|Argument.List|typeId.Node})
     self.tags = "Statistics"
-
+    self.icon = ":chart"
 

@@ -20,7 +20,7 @@ from PyQt4 import QtCore
 
 import re
 
-from api.types.libtypes import Variant
+from api.types.libtypes import Variant, vtime
 from api.vfs.libvfs import VFS
 from api.events.libevents import EventHandler
 
@@ -133,6 +133,7 @@ class TypeWorker(QThread):
 
 typeWorker = TypeWorker()
 typeWorker.start()
+
 
 class VFSItemModel(QAbstractItemModel, EventHandler):
   """
@@ -498,6 +499,21 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     """
     return (Qt.ItemIsSelectable | Qt.ItemIsUserCheckable | Qt.ItemIsTristate | Qt.ItemIsEnabled )
 
+  def dataTypeByKey(self, stype, node):
+    try:
+	return node.dataType().value()[str(stype)].value()
+    except IndexError:
+	return None	
+
+  def fsoAttributesByKey(self, stype, node):
+    try:
+       val = node.fsoAttributes()[stype]
+       if isinstance(val.value(), vtime):
+	 return val.value().get_time()
+       return val
+    except IndexError:
+       return Variant()
+
   def sort(self, column, order):
     """
     \reimp
@@ -548,11 +564,11 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     elif column - 2 >= len(self.header_list): # sorting on the mime type
       type = self.type_list[column - 2 - len(self.header_list)]
       self.node_list = sorted(children_list, \
-                                key=lambda Node: Node.dataType().value()[str(type)].value(), \
+                                key= lambda Node: self.dataTypeByKey(str(type), Node), \
                                 reverse=Reverse)
     else: # sort on an extended attribute.
       self.node_list = sorted(children_list, \
-                              key=lambda Node: Node.dynamicAttributes(str(self.header_list[column - 2])), \
+                              key=lambda Node: self.fsoAttributesByKey(str(self.header_list[column - 2]), Node), \
                               reverse=Reverse)
     self.emit(SIGNAL("layoutChanged()"))
 
@@ -610,7 +626,8 @@ class TreeModel(QStandardItemModel, EventHandler):
       node_item.setData(QVariant(long(i.this)), Qt.UserRole + 1)
       node_item.setData(QVariant(False), Qt.UserRole + 2)
       item_list.append(node_item)
-    self.root_item.appendRows(item_list)
+    if len(item_list):
+      self.root_item.appendRows(item_list)
 
     if event:
       self.VFS.connection(self)
@@ -832,3 +849,33 @@ class TreeModel(QStandardItemModel, EventHandler):
     Used for translating the framework.
     """
     self.nameTr = self.tr('Name')
+
+
+class CompleterModel(VFSItemModel):
+    def __init__(self):
+        VFSItemModel.__init__(self)
+        self.__absolute = False
+        self.currentPath = ""
+
+
+    def setCurrentPath(self, path):
+      self.currentPath = path
+      
+
+    def data(self, index, role):
+        if not index.isValid():
+          return QVariant()
+        if index.row() > len(self.node_list) or index.row() < 0:
+          return QVariant()
+        node = self.node_list[index.row()]
+        column = index.column()
+        if role == Qt.DisplayRole and index.column() == 0:
+          if self.currentPath != "":
+            res = node.absolute()[len(self.currentPath):]
+          else:
+            res = node.absolute()
+          return QVariant(res)
+        if role == Qt.DecorationRole and column == HNAME:
+          return QVariant(QIcon(node.icon()))
+        else:
+          return QVariant()

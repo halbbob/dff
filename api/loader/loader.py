@@ -84,7 +84,7 @@ class loader():
 
             '''
             if line.startswith(__module_prepend__) and line.find(__module_append__) != -1:
-                m = re.search('^' + __module_prepend__ + '([a-zA-Z]+)' + __module_append__ + '\s*=\s*[\'\"]([ab0-9\.]+)[\'\"]\s*$', line)
+                m = re.search('^' + __module_prepend__ + '([a-zA-Z0-9_]+)' + __module_append__ + '\s*=\s*[\'\"]([ab0-9\.]+)[\'\"]\s*$', line)
                 if m and len(m.groups()) == 2:
                     return (__module_prepend__, [m.group(1), m.group(2)])
             if not line.startswith(__api_version_prepend__):
@@ -109,15 +109,17 @@ class loader():
              - Text block delimited by three double quote characters
             '''
             vDict = dict()
-            with open(module_path, 'r') as f:
+            f = open(module_path, 'r')
+	    if f:
                 b = f.read(4096)
                 start = -1
                 headerT1, headerT2 = False, False
+                rest = ''
                 while len(b):
+                    b = b + rest
                     end = b.find('\n', start + 1)
                     while end != -1:
                         line = b[start + 1:end]
-
                         # Skip header line starting with #
                         if line.startswith('#'):
                             pass
@@ -145,18 +147,18 @@ class loader():
                             vFound = self._versionFromLine(line)
                             if vFound:
                                 vDict[vFound[0]] = vFound[1]
-                        else:
-                            return vDict
                             
                         start = b.find('\n', start + 1)
                         end = b.find('\n', start + 1)
-                    if end > 0:
-                        rest = b[end - 1:]
+                    if start > 0:
+                        rest = b[start - 1:]
+                        start = 0
                     else:
                         rest = b
                     b = f.read(4096)
-                    b = rest + b
-            return vDict
+            if f:
+		f.close()
+	    return vDict
 
             
         def ModuleImport(self, module_path, modname):
@@ -174,9 +176,9 @@ class loader():
             if vDict and __module_prepend__ in vDict:
                 if __module_prepend__ in vDict:
                     if len(vDict) < 2:
-                        status += 'module ' + vDict[__module_prepend__][0] + ' v' + vDict[__module_prepend__][1] + ' requires any dependency'
+                        status += 'v' + vDict[__module_prepend__][1]
                     else:
-                        status += 'module ' + vDict[__module_prepend__][0] + ' v' + vDict[__module_prepend__][1] + ' requires'
+                        status += 'v' + vDict[__module_prepend__][1] + ', requires'
                         for k, v in vDict.iteritems():
                             if k != __module_prepend__:
                                 status += ' ' + k + ' v' + vDict[k]
@@ -191,18 +193,20 @@ class loader():
                 # About to be deprecated ; read all module content to find "(Module)"
                 status += 'using old style module check'
                 flag = False
-                with open(module_path, 'r') as f:
+                f = open(module_path, 'r')
+		if f:
                     for line in f:
                         if line.find("(Module)") != -1:
                             flag = True
                             break
-                if not flag:
+                if f:
+		    f.close()
+		if not flag:
                     return
 
             if warnwithoutload:
                 self.pprint('[WARN]\tnot loading ' + status + ': API required version greather than actual API component version')
                 return
-            
             if modname in sys.modules:
               module = sys.modules[modname]
               del module
@@ -217,6 +221,7 @@ class loader():
                self.pprint('[OK]\tloading ' + modname + ' ' + status) 
                sys.modules[modname] = module
                self.cm.registerConf(mod.conf)
+
             except:
                print('[ERROR]\tloading ' + modname + ' from ' + pathname)
                exc_type, exc_value, exc_traceback = sys.exc_info()

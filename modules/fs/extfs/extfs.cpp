@@ -106,6 +106,11 @@ void		Extfs::launch(std::map<std::string, Variant*> args)
   else
     run_driver = true;
 
+   if ((it = args.find("blockpointers")) != args.end())
+    this->addBlockPointers = it->second->value<bool>();
+  else
+    this->addBlockPointers = false;
+
   if (run_driver)
     {
       bool		orphans;
@@ -154,14 +159,14 @@ void		Extfs::run(uint64_t root_i_nb)
   __root_dir->dir_init();
   __root_dir->i_list()->insert(root_i_nb);
   __root_dir->read(addr, &inode);
-  __first_node = new ExtfsNode("Extfs", 0, NULL, this, 0, true);
-  __fs_node = new ExtfsNode("File system", 0, __first_node, this, addr);
+  __first_node = new ExtfsNode("Extfs", 0, NULL, this, 0, true, this->addBlockPointers);
+  __fs_node = new ExtfsNode("File system", 0, __first_node, this, addr, false, this->addBlockPointers);
   __fs_node->set_i_nb(root_i_nb);
-  __metadata_node = new ExtfsNode("Metadata", 0, __first_node, this, 0);
+  __metadata_node = new ExtfsNode("Metadata", 0, __first_node, this, 0, false, this->addBlockPointers);
   __suspiscious_i = new ExtfsNode("Suspiscious inodes", 0, __first_node,
-				  this, 0);
+				  this, 0, false, this->addBlockPointers);
   __suspiscious_dir = new ExtfsNode("Suspiscious directory", 0, __first_node,
-				    this, 0);
+				    this, 0, false, this->addBlockPointers);
   __root_dir->dirContent(__fs_node, (inodes_t *)__root_dir->inode(),
 			 addr, root_i_nb);
   __add_meta_nodes();
@@ -185,17 +190,17 @@ class ExtfsNode *	Extfs::createVfsNode(Node * parent, std::string name,
   if ((inode->file_mode & __IFMT) == __IFLNK)
     {
       size = inode->lower_size;
-      ExtfsNode * node = new ExtfsNode(name, 0, parent, this, id);
+      ExtfsNode * node = new ExtfsNode(name, 0, parent, this, id, false, this->addBlockPointers);
       return node;
     }
   else if (id && ((inode->file_mode & __IFMT) == __IFREG))
     {
       size = inode->lower_size;
-      ExtfsNode * node = new ExtfsNode(name, size, parent, this, id);
+      ExtfsNode * node = new ExtfsNode(name, size, parent, this, id, false, this->addBlockPointers);
       node->setFile();
       return node;
     }
-  ExtfsNode * node = new ExtfsNode(name, size, parent, this, id);
+  ExtfsNode * node = new ExtfsNode(name, size, parent, this, id, false, this->addBlockPointers);
   return node;
 }
 
@@ -240,7 +245,7 @@ void		Extfs::__reserved_inodes()
   inodes_t *	inode_s = new inodes_t;	
 
   __first_inodes_nodes = new ExtfsNode("Reserved inodes", 0, __first_node,
-				       this, 0);
+				       this, 0, false, this->addBlockPointers);
   inode->setInode(inode_s);
   for (unsigned int i = 1; i < __SB->f_non_r_inodes(); ++i)
     if ((i != ROOT_INODE) && (i != __SB->journal_inode()))
@@ -288,6 +293,6 @@ void			Extfs::__add_meta_nodes()
 void	Extfs::__orphan_inodes()
 {
   OrphansInodes *	orphans_i = new OrphansInodes(__root_dir->i_list());
-  this->__orphans_i = new ExtfsNode("Orphans inodes", 0, __first_node, this, 0);
+  this->__orphans_i = new ExtfsNode("Orphans inodes", 0, __first_node, this, 0, false, this->addBlockPointers);
   orphans_i->load(this);
 }

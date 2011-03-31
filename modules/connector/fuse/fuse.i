@@ -36,6 +36,9 @@
 
 %pythoncode
 %{
+
+__dff_module_fuse_version__ = "1.0.0"
+
 from api.module.module import Module
 from api.types.libtypes import Argument, typeId
 

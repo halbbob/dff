@@ -32,7 +32,7 @@ class	ExtfsNode : public Node
 {
  public:
   ExtfsNode(std::string name, uint64_t size = 0, Node * parent = NULL,
-	    Extfs * fsobj = NULL, uint64_t inode_addr = 0, bool is_root = false);
+	    Extfs * fsobj = NULL, uint64_t inode_addr = 0, bool is_root = false, bool add_attribute_blocks = false);
   ~ExtfsNode();
 
   //! return NULL if an error occurs.

@@ -4,12 +4,15 @@
 # Copyright 2010 Julien 'Lta' BALLET <elthariel@gmail.com>
 # Released under the terms of the Free Documentation License
 #
+# Contributors:
+#  Julien 'Lta' BALLET <elthariel@gmail.com>
+#  Christophe Malinge <cma@digital-forensic.org>
 
 ### Introduction
 
 # NOTE: If you want to easily install it, use the binary packages and
   follow the procedure described here:
-  http://wiki.digital-forensic.org/wiki/dff/Unix__Linux
+  http://wiki.digital-forensic.org/index.php/Installation#Linux
 
 This little documentation descibes the steps necessary to build,
 install and run dff on your GNU/Linux system.
@@ -36,7 +39,8 @@ packaging system.
 
 ## Run dependencies (if you need the gui)
 - PyQt4 (python-qt4)
-- Python QScintilla bindings (python-qscintilla2)
+- Python magic bindings (python-magic)
+- (optional) libewf, EWF library.
 
 ### Building and installing
 
@@ -46,7 +50,7 @@ $~> mkdir dff-build && cd dff-build
 Run cmake, which will detects the components installed on your system
 and will check for dependancies. It'll also generates the Makefile that will actually builds the code and install the resulting program.
 
-$~/dff-build/> cmake $PATH_TO_DFF_SOURCES
+$~/dff-build/> cmake -DINSTALL=YES $PATH_TO_DFF_SOURCES
 
 Then build the source code :
 

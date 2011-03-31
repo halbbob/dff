@@ -34,6 +34,7 @@ typeId::typeId()
   this->mapping.insert(std::pair<std::string, uint8_t>(typeid(int64_t*).name(), typeId::Int64));
   this->mapping.insert(std::pair<std::string, uint8_t>(typeid(uint64_t*).name(), typeId::UInt64));
   this->mapping.insert(std::pair<std::string, uint8_t>(typeid(char*).name(), typeId::Char));
+  this->mapping.insert(std::pair<std::string, uint8_t>(typeid(bool*).name(), typeId::Bool));
   this->mapping.insert(std::pair<std::string, uint8_t>(typeid(char**).name(), typeId::CArray));
   this->mapping.insert(std::pair<std::string, uint8_t>(typeid(void**).name(), typeId::VoidPtr));
   this->mapping.insert(std::pair<std::string, uint8_t>(typeid(std::string *).name(), typeId::String));

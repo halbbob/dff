@@ -1129,7 +1129,6 @@ void		Ntfs::start(std::map<std::string, Variant*> args)
 {
   uint64_t	offset = 0;
   uint16_t	mftEntryNumber;
-  int		tmpDecode;
   std::map<std::string, Variant*>::iterator	it;
 
   if ((it = args.find("mftdecode")) != args.end())

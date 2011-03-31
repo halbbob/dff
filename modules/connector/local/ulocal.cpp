@@ -142,7 +142,7 @@ int local::vopen(Node *node)
   if (unode == NULL)
    return (0);
   file = unode->originalPath; 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__APPLE__)
   if ((n = open(file.c_str(), O_RDONLY)) == -1)
 #elif defined(__linux__)
   if ((n = open(file.c_str(), O_RDONLY | O_LARGEFILE)) == -1)

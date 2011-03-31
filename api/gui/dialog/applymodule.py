@@ -40,8 +40,6 @@ class ApplyModule(QDialog, Ui_applyModule):
         self.labActivate.setVisible(False)
         self.labType.setVisible(False)
         self.labDescription.setVisible(False)
-        p = self.modulepix.pixmap().scaled(64,64, Qt.KeepAspectRatio)
-        self.modulepix.setPixmap(p)
         self.connect(self.buttonBox,SIGNAL("accepted()"), self.validateModule)
         self.__mainWindow = mainWindow
         self.loader = loader.loader()
@@ -53,6 +51,19 @@ class ApplyModule(QDialog, Ui_applyModule):
     def initAllInformations(self, nameModule, typeModule, nodesSelected):
         self.__nodesSelected = nodesSelected
         self.nameModule = nameModule
+        try: 
+	  self.module = self.loader.modules[str(nameModule)]
+        except KeyError:
+	   self.module = None
+        if self.module and self.module.icon:
+          p = QPixmap(self.module.icon)
+          p.scaled(64, 64, Qt.KeepAspectRatio)
+	  self.modulepix.setPixmap(p)
+        else:
+          p = self.modulepix.pixmap().scaled(64,64, Qt.KeepAspectRatio)
+          self.modulepix.setPixmap(p)
+	   
+
         title = self.windowTitle() + ' ' + str(nameModule)
         self.setWindowTitle(title)
         self.nameModuleField.setText(nameModule)
@@ -103,8 +114,10 @@ class ApplyModule(QDialog, Ui_applyModule):
         if warguments:
             vlayout.addWidget(warguments, 2)        
             self.valueArgs[arg.name()] = warguments
-        self.stackedargs.addWidget(warg)
+        else:
+            self.valueArgs[arg.name()] = winfo
         warg.setLayout(vlayout)
+        self.stackedargs.addWidget(warg)
         argitem = QListWidgetItem(str(arg.name()), self.listargs)
 
     def getWidgetFromType(self, arg):

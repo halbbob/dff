@@ -104,7 +104,6 @@ int32_t		Shm::vread(int32_t fd, void *buff, uint32_t size)
   ShmNode*	node;
   uint32_t	id;
   pdata*	data;
-  uint32_t	realsize;
   std::string	err;
 
   try
@@ -237,8 +236,6 @@ int32_t		Shm::vclose(int32_t fd)
 uint64_t	Shm::vtell(int32_t fd)
 {
   fdinfo*	fi;
-  ShmNode*	node;
-  uint32_t	id;
   std::string	err;
 
   try

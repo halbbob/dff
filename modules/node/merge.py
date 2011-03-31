@@ -13,6 +13,8 @@
 #  Romain Bertholon < rbe@arxsys.fr>
 #
 
+__dff_module_merge_version__ = "1.0.0"
+
 from struct import unpack
 
 from api.vfs import *
@@ -30,7 +32,6 @@ class MergeNode(Node):
       offset = 0
       for f in self.files:
          node = f.value()
-         print offset, node.size(), node.absolute()
          fm.push(offset, node.size(), node, 0)
          offset += node.size()
       
@@ -58,7 +59,7 @@ class MERGE(mfso):
     def start(self, args):
        self.files = args['files'].value()
        if args.has_key("output"):
-          name = args["output"]
+          name = args["output"].value()
        else:
           name = self.files[0].value().name() + "..." + self.files[len(self.files) - 1].value().name()
        if args.has_key("parent"):
@@ -68,7 +69,6 @@ class MERGE(mfso):
        size = 0
        for f in self.files:
           size += f.value().size()
-       print size
        self.merge_node = MergeNode(name, size, None, self, self.files)
        self.merge_node.__disown__()
        self.registerTree(parent, self.merge_node)

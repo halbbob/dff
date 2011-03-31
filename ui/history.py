@@ -14,27 +14,32 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #
 
-import os
+from conf import Conf
 
 class history():
   class __history():
     def __init__(self):
-      self.path = os.path.expanduser('~') + "/.dff_history" 
+      self.conf = Conf()
       self.hist = []
-      self.file = None	
-      self.current = 0	
-      self.load()	
+      self.wfile = None
+      self.current = 0
+      self.load()
 
     def load(self):
+        self.path = self.conf.historyFileFullPath
+        if self.wfile:
+          self.wfile.close()
         try:
-          self.rfile = open(self.path, 'r')
-	  self.wfile = open(self.path, 'a')
-	  self.hist = self.rfile.readlines()
+          if not self.conf.noHistoryFile and not self.conf.noFootPrint:
+            self.rfile = open(self.path, 'r')
+            self.wfile = open(self.path, 'a')
+            self.hist = self.rfile.readlines()
+            self.rfile.close()
 	  self.current = len(self.hist)
-	  self.rfile.close()
         except IOError:
-	   self.wfile = open(self.path, 'a')
-           return
+          if not self.conf.noHistoryFile and not self.conf.noFootPrint:
+            self.wfile = open(self.path, 'a')
+        return
 
     def getnext(self):
 	self.current -= 1
@@ -55,21 +60,24 @@ class history():
 	return cmd.strip('\n')
 
     def save(self):
-	self.wfile.close()
+        if not self.conf.noHistoryFile and not self.conf.noFootPrint:
+          self.wfile.close()
 
     def add(self, cmd):
-      try: 
-        self.hist += [ cmd ]	
-        self.wfile.write(cmd + "\n")
-        self.wfile.flush()
-      except IOError:
-	print "can't write on history" 
-	return 
+        try: 
+          self.hist += [ cmd ]
+          if not self.conf.noHistoryFile and not self.conf.noFootPrint:
+            self.wfile.write(cmd + "\n")
+            self.wfile.flush()
+        except IOError:
+          print "can't write on history" 
+        return 
 
     def clear(self):
-       self.hist = []	 
-       self.wfile.close()	
-       self.wfile = open(self.path, 'w')	
+        self.hist = []
+        if not self.conf.noHistoryFile and not self.conf.noFootPrint:
+          self.wfile.close()
+          self.wfile = open(self.path, 'w')
 
   __instance = None
 

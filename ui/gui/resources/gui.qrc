@@ -1,4 +1,20 @@
 <RCC>
+<comment>
+DFF - An Open Source Digital Forensics Framework
+Copyright (C) 2011 ArxSys
+
+This program is free software, distributed under the terms of
+the GNU General Public License Version 2. See the LICENSE file
+at the top of the source tree.
+
+See http://www.digital-forensic.org for more information about this
+project. Please do not directly contact any of the maintainers of
+DFF for assistance; the project provides a web site, mailing lists
+and IRC channels for your use.
+
+Author(s):
+Jeremy Mounier jmo@digital-forensic.org
+</comment>
 <qresource>
     <file alias="filefind.png">icons/filefind.png</file>
     <file alias="file_broken.png">icons/mime/file_broken.png</file>
@@ -94,6 +110,21 @@
     <file alias="bookmark_category_add.png">icons/actions/bookmark_category_add.png</file>
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>
+
+    <file alias="editcut">icons/actions/editcut.png</file>
+    <file alias="encrypted">icons/actions/encrypted.png</file>
+    <file alias="database">icons/app/database.png</file>
+    <file alias="index">icons/app/krdc.png</file>
+    <file alias="stats">icons/app/stats.png</file>
+    <file alias="chart">icons/app/kchart.png</file>
+    <file alias="text">icons/app/kedit.png</file>
+    <file alias="multimedia">icons/app/multimedia.png</file>
+    <file alias="lphoto">icons/app/lphoto.png</file>
+    <file alias="date">icons/app/date.png</file>
+    <file alias="disksfilesystems">icons/app/disksfilesystems.png</file>
+    <file alias="unlock">icons/actions/unlock.png</file>
+    <file alias="zip">icons/mime/zip.png</file>
+
 
     <file alias="green_configure.png">icons/app/agt_utilities.png</file>
     <file alias="autostart.png">icons/app/autostart.png</file>

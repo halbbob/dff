@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # DFF -- An Open Source Digital Forensics Framework
-# Copyright (C) 2009 ArxSys
+# Copyright (C) 2009-2011 ArxSys
 # 
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2. See the LICENSE file
@@ -18,8 +18,5 @@
 #
 # This script starts DFF. Its right place is in /usr/bin or
 # /usr/local/bin (installer does it).
-# It sets library path in order libraries from the DFF API be
-# well resolved.
-# 
 
-LD_LIBRARY_PATH=${PYTHON_SITE_PACKAGES_PATH}/dff/api/exceptions:${PYTHON_SITE_PACKAGES_PATH}/dff/api/env:${PYTHON_SITE_PACKAGES_PATH}/dff/api/loader:${PYTHON_SITE_PACKAGES_PATH}/dff/api/module:${PYTHON_SITE_PACKAGES_PATH}/dff/api/vfs:${PYTHON_SITE_PACKAGES_PATH}/dff/api/type:${PYTHON_SITE_PACKAGES_PATH}/dff/api/magic python ${PYTHON_SITE_PACKAGES_PATH}/dff/dff.py $*
+python ${PYTHON_SITE_PACKAGES_PATH}/dff/dff.py $*

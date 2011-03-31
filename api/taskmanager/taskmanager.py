@@ -41,7 +41,7 @@ class TaskManager():
        self.modPP.remove( [( mod, args, exec_flags)] )
 
     def createProcessNode(self, mod, args, exec_flags, node):
-       if node.isCompatibleModule(mod):
+       if node.isCompatibleModule(mod) or ("generic" in self.loader.modules[mod].flags):
 	 config = self.configManager.configByName(mod)	
          if args == None:
            args = {}
@@ -69,6 +69,7 @@ class TaskManager():
          for p in self.lprocessus:
            if p.mod == mod:
 	    proc = p
+	    proc.timeend = 0
          if not proc:
            proc = Processus(mod, self.npid, None, exec_flags)
            self.lprocessus.append(proc)

@@ -14,6 +14,8 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 #
 
+__dff_module_binarydiff_version__ = "1.0.0"
+
 import sys
 from api.module.script import *
 from api.vfs import *

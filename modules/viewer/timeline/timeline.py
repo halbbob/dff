@@ -14,6 +14,8 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 #
 
+__dff_module_timeline_version__ = "1.0.0"
+
 # System imports
 from datetime import datetime, timedelta
 from PyQt4.QtCore import Qt, QPointF, QRectF, SIGNAL, QString
@@ -413,3 +415,4 @@ class timeline(Module):
                            "description": "Text file to display",
                            "input": Argument.Required|Argument.Single|typeId.Node})
     self.tags = 'Statistics'
+    self.icon = ":date"

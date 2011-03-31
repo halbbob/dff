@@ -13,6 +13,8 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 # 
 
+__dff_module_hash_version__ = "1.0.0"
+
 import hashlib 
 from api.vfs import *
 from api.module.script import *
@@ -26,14 +28,14 @@ class AttributeHash(AttributesHandler):
        self.calculatedHash = {}
        self.__disown__()	
 
-    def haveHashCalculated(self, node):
+    def haveHashCalculated(self, node, algo):
        try :
-          return self.calculatedHash[long(node.this)]
+          return self.calculatedHash[long(node.this)][algo]
        except KeyError:
          return None
 
     def setHash(self, node, algo, hash):
-        if not self.calculatedHash.has_key(node.this):
+        if not self.calculatedHash.has_key(long(node.this)):
             self.calculatedHash[long(node.this)] = {}
         self.calculatedHash[long(node.this)][algo] = hash
 
@@ -41,15 +43,15 @@ class AttributeHash(AttributesHandler):
     def attributes(self, node):
        m = VMap()
        hashes = self.calculatedHash[long(node.this)]
-       for hash in hashes.iterkeys():
-           v = Variant(hashes[hash])
+       for h in hashes.iterkeys():
+           v = Variant(hashes[str(h)])
            v.thisown = False
-           m[hash] = v
+           m[str(h)] = v
        m.thisown = False
        return m
 
     def __del__(self):
-	print "deleting attributes hash"
+	pass
 
 class HASH(Script): 
     def __init__(self):
@@ -75,17 +77,23 @@ class HASH(Script):
             return -1
         
     def start(self, args):
-        algorithms = args["algorithm"]
+	try:
+          algorithms = args["algorithm"].value()
+        except IndexError:
+	  algorithms = [Variant("md5")]
         node = args["file"].value()
-        if self.attributeHash.haveHashCalculated(node):
-            return
         for algo in algorithms:
+	    algo = algo.value()
+            if self.attributeHash.haveHashCalculated(node, algo):
+		continue
             hash = self.hashCalc(node, algo)
             if hash != "":
                 self.attributeHash.setHash(node, algo, hash)
                 node.registerAttributes(self.attributeHash)
             else:
-                res = algo + " hashing failed on " + node.absolute() 
+                err = Variant(str(algo + " hashing failed on " + node.absolute()))
+                err.thisown = False
+                self.res["error"] = err
 
 
     def hashCalc(self, node, algorithm):
@@ -117,7 +125,7 @@ class hash(Module):
     ex: hash /myfile"""
     def __init__(self):
         Module.__init__(self, "hash", HASH)
-        self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Node,
+        self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node,
                                "name": "file",
                                "description": "file to hash"
                                })
@@ -127,5 +135,5 @@ class hash(Module):
                                "parameters": {"type": Parameter.NotEditable,
                                               "predefined": ["md5", "sha1", "sha224", "sha256", "sha384", "sha512"]}
                                })
-        self.flags = "single"
+        self.flags = ["single", "generic"]
         self.tags = "Hash"

@@ -34,7 +34,7 @@ typedef struct
 {
   class FileMapping*		fm;
   Node*				node;
-  uint64_t			id;
+  class Variant*		id;
   uint64_t			offset;
 }				fdinfo;
 

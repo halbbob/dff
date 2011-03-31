@@ -37,6 +37,7 @@ class Context():
         self.currentStrScope = 0
         self.paramsplit = re.compile('(?<!\\\)\,')
         self.badargs = []
+        self.tokens = []
 
 
     def debug(self, dbg):
@@ -106,8 +107,7 @@ class Context():
                 dbg += "\n      " + argname + " --> " + str(command[argname])
         self.debug(dbg)
         return command
-                
-    
+
 
     def dump(self):
         buff = "\n ==== Context.dump() ===="
@@ -265,6 +265,7 @@ class Context():
         dbg = "\n ==== Context.addToken() ===="
         dbg += "\n    token: " + token
         dbg += "\n    curpos: " + str(curpos)
+        self.tokens.append(token)
         self.debug(dbg)
         if self.config == None:
             if curpos != -1:
@@ -339,8 +340,12 @@ class LineParser():
             if context.config != None:
                 try:
                     commands.append((context.config.origin(), context.makeArguments(), context.threaded, ""))
-                except (KeyError, ValueError) as error:
-                    commands.append((context.config.origin(), None, context.threaded, str(error)))
+                except KeyError, error:
+                    commands.append((context.config.origin(), None, context.threaded, "module < " + context.config.origin() + " >\n" + str(error)))
+                except ValueError, error:
+		    commands.append((context.config.origin(), None, context.threaded, "module < " + context.config.origin() + " >\n" + str(error)))
+            elif len(context.tokens) != 0:
+                commands.append((None, None, None, str("module < "+ context.tokens[0] + " > does not exist")))
         if self.DEBUG and self.VERBOSITY:
             dbg += "\n    stacked commands:"
             for command in commands:
@@ -412,6 +417,7 @@ class LineParser():
             elif self.begidx == len(line):
                 self.contexts[self.ctxpos].addToken(token, self.begidx-startidx)
                 self.scopeCtx = self.ctxpos
+
 
             if self.DEBUG and self.VERBOSITY > 0:
                 dbg += "\n    current context: "
@@ -859,10 +865,11 @@ class Completion():
     def longestCommonStr(self, str1, str2):
         minstr = (len("+" + str1) > len("+" + str2) and ("+" + str2) or ("+" + str1))[1:]
         maxstr = (len(str1) > len(str2) and str1 or str2)
-        if minstr == "" or minstr == maxstr:
+        if minstr == maxstr:
             res = maxstr
         else:
             comp = map(lambda x: minstr.startswith(maxstr[:x]), xrange(1, len(maxstr) + 1))
+            #print comp
             idx = comp.index(False)
             res = maxstr[:idx]
         return res
@@ -876,23 +883,25 @@ class Completion():
      prev_key = text
      same = 0
 
-     if text in ["", "-", "--"]:
-         common = ""
-     else:
-         common = text[2:]
+     common = ""
      for requirement in ["required", "optional"]:
          if len(matches[requirement]) > 0:
              filled += 1
              sys.stdout.write(requirement + ": ")
              x = 0
+             count = 0
              for key in matches[requirement]:
                  if x == col:
                      sys.stdout.write("\n" + (" " * 10))
                      x = 0
                  key_arg = key + " " * (max_key + 2 - len(key))
-                 common = self.longestCommonStr(common, key_arg)
+                 if count == 0:
+                     common = self.longestCommonStr(key_arg, key_arg)
+                 else:
+                     common = self.longestCommonStr(common, key_arg)
                  sys.stdout.write(key_arg)
                  x += 1
+                 count += 1
          idx += 1
          if idx < filled:
            sys.stdout.write("\n")
@@ -903,4 +912,4 @@ class Completion():
      elif "--" + common == text:
          return ""
      else:
-         return common
+         return common[len(text)-2:]

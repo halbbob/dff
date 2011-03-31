@@ -64,25 +64,28 @@ Options:
   -t      --test=NAME	             start a specific test
   -l      --language=LANG            use LANG as interface language
   -h      --help                     display this help message
-  -d 	  --debug		     redirect IO to system console
-  --verbosity=LEVEL                  set verbosity level when debugging [0-3]
+  -d      --debug                    redirect IO to system console
+          --verbosity=LEVEL          set verbosity level when debugging [0-3]
+  -c      --config=FILEPATH          use config file from FILEPATH
 """
    VERSION = "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
 
    def __init__(self, argv):
      self.argv = argv
      self.graphical = 0
-     self.test = ""
+     self.test = ''
+     self.confPath = ''
      self.debug = False
      self.verbosity = 0
 # Configuration
-     self.conf = Conf()
      self.main()
+     self.conf = Conf(self.confPath)
   
+
    def main(self):
     """Check command line argument"""
     try:
-        opts, args = getopt.getopt(self.argv, "vgdht:l:", [ "version", "graphical",  "debug", "help", "test=", "language=", "verbosity="])
+        opts, args = getopt.getopt(self.argv, "vgdht:l:c:", [ "version", "graphical",  "debug", "help", "test=", "language=", "verbosity=", "config="])
     except getopt.GetoptError:
         self.usage()
     for opt, arg in opts:
@@ -101,6 +104,8 @@ Options:
           self.debug = True
         elif opt == "--verbosity":
           self.verbosity = int(arg)
+        elif opt in ("-c", "--config"):
+          self.confPath = str(arg)
     return
 
    def usage(self):

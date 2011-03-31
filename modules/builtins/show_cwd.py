@@ -13,6 +13,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+__dff_module_show_cwd_version__ = "1.0.0"
+
 from api.vfs import *
 from api.module.module import *
 from api.module import *

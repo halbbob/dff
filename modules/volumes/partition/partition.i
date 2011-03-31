@@ -34,6 +34,9 @@
 
 %pythoncode
 %{
+
+__dff_module_partition_version__ = "1.0.0"
+
 from api.module.module import *
 from api.types.libtypes import Argument, typeId
 
@@ -49,4 +52,5 @@ class PARTITION(Module):
  	                   "description": "managed mime type",
  	                   "values": ["partition"]})
     self.tags = "Volumes"
+    self.icon = ":disksfilesystems"
 %}

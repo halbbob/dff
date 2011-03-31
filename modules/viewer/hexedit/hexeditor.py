@@ -14,6 +14,8 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 #
 
+__dff_module_hexeditor_version__ = "1.0.0"
+
 import sys
 from api.module.script import Script
 from api.module.module import Module
@@ -74,5 +76,5 @@ class hexeditor(Module):
                            "name": "file",
                            "description": "File to display as hexadecimal"})
     self.tags = "Viewers"
-
+    self.icon = ":hexedit.png"
 

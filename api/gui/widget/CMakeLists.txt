@@ -22,9 +22,9 @@ set(apiguiwidget_srcs
   nodeview.py
   varianttreewidget.py
   propertytable.py
-  resulttable.py
   textedit.py
   devicesdialog.py
+  completer.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

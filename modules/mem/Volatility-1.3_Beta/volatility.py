@@ -12,6 +12,8 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #
 
+__dff_module_volatility_version__ = "1.0.0"
+
 import sys
 import os
 import forensics.registry as MemoryRegistry
@@ -60,7 +62,9 @@ class Volatility(mfso):
      if self.dump:
        e = proc.dump()
        if e:
-        self.res.add_const("error", e)
+         ve = Variant(e)
+         ve.thisown = False
+         self.res["error"] = ve
      if self.openfiles:
        proc.getOpenFiles() 
      if self.connections:
@@ -79,8 +83,8 @@ class Volatility(mfso):
 
 
 class volatility(Module):
+  """Analyse a windows-xp ram dump"""
   def __init__(self):
-   """Analyse a windows-xp ram dump"""
    Module.__init__(self, "volatility", Volatility)
    self.conf.addArgument({"name": "file",
                           "description": "Dump to analyse", 
@@ -98,3 +102,4 @@ class volatility(Module):
                           "description": "List opened connection per processus",
                           "input": Argument.Empty})
    self.tags = "Volatile memory"
+   self.icon = ":dev_ram.png"

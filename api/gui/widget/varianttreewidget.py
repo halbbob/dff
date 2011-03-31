@@ -25,7 +25,9 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
 
 
     def setItemText(self, item, vval):
-        if vval.type() == typeId.VTime:
+        if vval == None:
+	    item.setText(1, str("None")) 
+        elif vval.type() == typeId.VTime:
             vtime = vval.value()
             item.setText(1, str(vtime.get_time()))
         elif vval.type() in [typeId.Int16, typeId.UInt16, typeId.Int32, typeId.UInt32, typeId.Int64, typeId.UInt64]:
@@ -47,7 +49,9 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
             item.setText(0, str(key))
             vval = vmap[key]
             expand = True
-            if vval.type() == typeId.Map:
+	    if vval == None:
+	      self.setItemText(item, vval)	
+            elif vval.type() == typeId.Map:
                 vvmap = vval.value()
                 self.fillMap(item, vvmap)
             elif vval.type() == typeId.List:

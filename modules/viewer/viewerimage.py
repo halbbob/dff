@@ -13,6 +13,8 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 # 
 
+__dff_module_viewerimage_version__ = "1.0.0"
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread
 from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem, QAbstractItemView
@@ -358,3 +360,4 @@ class viewerimage(Module):
  	                   "description": "managed mime type",
  	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap"]})
     self.tags = "Viewers"
+    self.icon = ":lphoto"

@@ -19,6 +19,8 @@ from PyQt4.QtGui import QWidget, QCheckBox, QHBoxLayout, QVBoxLayout, QComboBox,
 
 from api.vfs import vfs, libvfs
 from api.vfs.libvfs import Node, VLink
+from api.types.libtypes import Variant
+from api.events.libevents import event
 
 class OptionsLayout(QTabWidget):
     ''' Manages right pannel.
@@ -374,6 +376,9 @@ class OptionsLayout(QTabWidget):
                   baseNode = Node('timeline', 0, root)
 	          baseNode.__disown__()
                   baseNode.setDir()
+		  e = event()
+		  e.value = Variant(baseNode)
+                  self.VFS.notify(e)
 # Create /timeline/<ParentName>
                   self.exportedNode = Node(self.timeline.node.name(), 0, baseNode)
                   self.exportedNode.__disown__()

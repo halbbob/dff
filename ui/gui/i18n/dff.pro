@@ -1,3 +1,18 @@
+# DFF -- An Open Source Digital Forensics Framework
+# Copyright (C) 2011 ArxSys
+#
+# This program is free software, distributed under the terms of
+# the GNU General Public License Version 2. See the LICENSE file
+# at the top of the source tree.
+#
+# See http://www.digital-forensic.org for more information about this
+# project. Please do not directly contact any of the maintainers of
+# DFF for assistance; the project provides a web site, mailing lists
+# and IRC channels for your use.
+#
+# Author(s):
+#  Christophe Malinge <cma@digital-forensic.org>
+
 FORMS           += ../../../ui/gui/resources/about.ui
 FORMS           += ../../../ui/gui/resources/applymodule.ui
 FORMS           += ../../../ui/gui/resources/bookmarkdialog.ui
@@ -23,12 +38,15 @@ SOURCES         += ../../../ui/gui/ide/ide.py
 SOURCES         += ../../../ui/gui/ide/idewizard.py
 SOURCES         += ../../../api/gui/dialog/extractor.py
 SOURCES         += ../../../api/gui/model/vfsitemmodel.py
+SOURCES 	+= ../../../api/gui/widget/nodebrowser.py
 SOURCES         += ../../../api/gui/widget/propertytable.py
 SOURCES         += ../../../ui/gui/widget/taskmanager.py
 SOURCES         += ../../../ui/gui/mainwindow.py
+SOURCES         += ../../../ui/gui/dialog/preferences.py
 
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_es.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_fr.ts
+TRANSLATIONS    += ../../../ui/gui/i18n/Dff_it.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_nl.ts

@@ -18,7 +18,7 @@ set(utils_srcs
   __init__.py
   #integrity.py
   fileinfo.py
-  #man.py
+  man.py
 )
 
 install_file(utils ${utils_srcs})

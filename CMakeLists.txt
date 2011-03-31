@@ -32,7 +32,7 @@ endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 option(ENABLE_DEBUG "Compile using -g flag ? Useful for debugging" OFF)
 if(UNIX)
   if(ENABLE_DEBUG)
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall)
     message(STATUS "Will use -g for debugging -- yes")
   else(ENABLE_DEBUG)
 #change flag here
@@ -77,7 +77,8 @@ if(DISABLE_SWIG_THREADING)
   message(STATUS "Will we use swig -threads -- no")
 else()
   #message(STATUS "Will we use swig -threads -- yes")
-  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
+  #set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
+  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -threads)
 endif(DISABLE_SWIG_THREADING)
 # $> cmake -DDISABLE_SWIG_THREADING:BOOLEAN=ON
 
@@ -133,6 +134,17 @@ ENDIF ()
 #FIND_PACKAGE(Qt4 REQUIRED)
 #INCLUDE(${QT_USE_FILE})
 
+if(UNIX)
+# Search for gzip program, to compress manpage for Unix
+  find_program(GZIP_TOOL
+               NAMES gzip
+               PATHS /bin
+               /usr/bin
+               /usr/local/bin)
+  if(NOT GZIP_TOOL)
+    message(FATAL_ERROR "Unable to find 'gzip' program")
+  endif(NOT GZIP_TOOL)
+endif(UNIX)
 
 ## Python-magic check for Unix only
 if(UNIX)
@@ -151,14 +163,6 @@ if(NOT PYTHON_QT4_PATH)
 else(NOT PYTHON_QT4_PATH)
   message(STATUS "Python QT4 libraries bindings found: ${PYTHON_QT4_PATH}")
 endif(NOT PYTHON_QT4_PATH)
-
-## QScintilla python bindings check, for IDE
-execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from PyQt4 import Qsci; print Qsci.__file__" OUTPUT_VARIABLE PYTHON_QT4_QSCI_PATH ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-if(NOT PYTHON_QT4_QSCI_PATH)
-  message(STATUS "Python QScintilla bindings not found. Not needed at build step but mandatory to start DFF.")
-else(NOT PYTHON_QT4_QSCI_PATH)
-  message(STATUS "Python QScintilla library bindings found: ${PYTHON_QT4_QSCI_PATH}")
-endif(NOT PYTHON_QT4_QSCI_PATH)
 
 ## PyQt linguist transalation updater check, to create or update translation
 ## files
@@ -193,28 +197,29 @@ else(PYTHON_QT4_RCC)
   message(SEND_ERROR "Python Qt4 resource compiler not found.")
 endif(PYTHON_QT4_RCC)
 
-## CLucene indexer library check
-find_library(CLUCENE_LIBRARY NAMES clucene)
-if(CLUCENE_LIBRARY)
-  message(STATUS "CLucene indexing library found: ${CLUCENE_LIBRARY}")
-else(CLUCENE_LIBRARY)
-  message(STATUS "CLucene indexing library not found.")
-endif(CLUCENE_LIBRARY)
-# Check for header, usually sits in /usr/lib on linux, strange !
-get_directory_property(cmake_include_directories INCLUDE_DIRECTORIES)
-find_path(CLUCENE_CONFIG_INCLUDE_PATH NAMES clucene-config.h ${cmake_include_directories})
-if(CLUCENE_CONFIG_INCLUDE_PATH)
-  message(STATUS "CLucene indexing library config header file found in common include directories.")
-else(CLUCENE_CONFIG_INCLUDE_PATH)
-  find_path(CLUCENE_CONFIG_INCLUDE_PATH NAMES CLucene/clucene-config.h PATHS /usr/lib /usr/local/lib)
-  if(CLUCENE_CONFIG_INCLUDE_PATH)
-    message(STATUS "CLucene indexing library config header file found in: ${CLUCENE_CONFIG_INCLUDE_PATH}/CLucene")
-    
-  else(CLUCENE_CONFIG_INCLUDE_PATH)
-    message(STATUS "CLucene indexing library config header file not found.")
-  endif(CLUCENE_CONFIG_INCLUDE_PATH)
-endif(CLUCENE_CONFIG_INCLUDE_PATH)
-
+option(ENABLE_INDEXER "Compile and enable Lucene indexing engine" OFF)
+if (ENABLE_INDEXER)
+   ## CLucene indexer library check
+   find_library(CLUCENE_LIBRARY NAMES clucene)
+   if(CLUCENE_LIBRARY)
+	message(STATUS "CLucene indexing library found: ${CLUCENE_LIBRARY}")
+   else(CLUCENE_LIBRARY)
+	message(STATUS "CLucene indexing library not found.")
+   endif(CLUCENE_LIBRARY)
+   # Check for header, usually sits in /usr/lib on linux, strange !
+   get_directory_property(cmake_include_directories INCLUDE_DIRECTORIES)
+   find_path(CLUCENE_CONFIG_INCLUDE_PATH NAMES clucene-config.h ${cmake_include_directories})
+   if(CLUCENE_CONFIG_INCLUDE_PATH)
+	message(STATUS "CLucene indexing library config header file found in common include directories.")
+   else(CLUCENE_CONFIG_INCLUDE_PATH)
+	find_path(CLUCENE_CONFIG_INCLUDE_PATH NAMES CLucene/clucene-config.h PATHS /usr/lib /usr/local/lib)
+    	if(CLUCENE_CONFIG_INCLUDE_PATH)
+		message(STATUS "CLucene indexing library config header file found in: ${CLUCENE_CONFIG_INCLUDE_PATH}/CLucene")
+	else(CLUCENE_CONFIG_INCLUDE_PATH)
+		message(STATUS "CLucene indexing library config header file not found.")
+  	endif(CLUCENE_CONFIG_INCLUDE_PATH)
+   endif(CLUCENE_CONFIG_INCLUDE_PATH)
+endif(ENABLE_INDEXER)
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})
@@ -338,6 +343,11 @@ IF(WIN32 AND NOT UNIX)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ressources/dff.ico
     DESTINATION /${CMAKE_PROJECT_NAME}/ressources/)
 
+# Install docs and licenses
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README ${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE-THIRDPARTY
+          DESTINATION /${CMAKE_PROJECT_NAME}/
+          PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+
   SET(CPACK_MONOLITHIC_INSTALL "ON")
 	
   SET(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\\\ressources\\\\arxsys.bmp")
@@ -433,15 +443,28 @@ ELSE(WIN32 AND NOT UNIX)
 ENDIF(WIN32 AND NOT UNIX)
 
 # Debian deb dependencies
-#  python${PYTHON_VERSION} (>=${PYTHON_VERSION}.0), python-qt4 (>= 4.4.0), python-qscintilla2 (>= 2.2), python-magic (>= 4.26)
+#  python${PYTHON_VERSION} (>=${PYTHON_VERSION}.0), python-qt4 (>= 4.4.0), python-magic (>= 4.26)
 # RedHat rpm dependencies
-#  python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, qscintilla-python >= 2.2, python-magic >= 4.26
+#  python >= ${PYTHON_VERSION}.0, PyQt4 >= 4.4.0, python-magic >= 4.26
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.py
   DESTINATION ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 if (UNIX)
+# Compress manpage
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz
+                     COMMAND ${GZIP_TOOL} -c ${CMAKE_CURRENT_SOURCE_DIR}/docs/dff.1 > ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz
+                     COMMENT "Building dff.1.gz")
+  add_custom_target(manpage ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz)
+# Install man page
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff.1.gz
+          DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/share/man/man1
+          PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME dff.1.gz)
+# Install docs and licenses
+  install(FILES README COPYRIGHT LICENSE LICENSE-THIRDPARTY
+          DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/share/doc/${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}
+          PERMISSIONS OWNER_READ GROUP_READ WORLD_READ RENAME)
 # Install binary  launcher, icons, shortcuts.
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/dff
   DESTINATION ${CMAKE_INSTALL_ORIG_PREFIX}/bin
@@ -478,7 +501,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_
 add_subdirectory (api)
 add_subdirectory (modules)
 add_subdirectory (ui)
-add_subdirectory (ressources)
 if (NOT UNIX AND WINALL)
   add_subdirectory (Prerequisites)
 endif(NOT UNIX AND WINALL)

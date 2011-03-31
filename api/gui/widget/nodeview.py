@@ -124,6 +124,7 @@ class NodeLinkTreeView(QTreeView):
       if rect.contains(e.pos()):
         self.insertRows(index, node)
       self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
+      self.resizeColumnToContents(0)
       QTreeView.mousePressEvent(self, e)
 
   def mouseDoubleClickEvent(self, e):

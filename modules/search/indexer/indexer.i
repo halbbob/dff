@@ -75,4 +75,5 @@ class INDEXER(Module):
 			   		 "predefined": [str(path)]}
 			   })
     self.tags = "Search"
+    self.icon = ":index"
 %}

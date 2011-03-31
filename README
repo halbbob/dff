@@ -53,7 +53,7 @@ Python and Python QT have to be installed first.
 Two packages are provided for Windows, one with those two dependencies add to DFF installer and an other with DFF installer alone.
 
 Web-page where Python should be downloaded :
-http://www.python.org/download/releases/2.6.5/.
+http://www.python.org/download/releases/2.7.1/.
 Web-page where Python QT should be downloaded :
 http://www.riverbankcomputing.co.uk/software/pyqt/download
 
@@ -80,7 +80,7 @@ A GZipped tarball is also provided.
 Cmake and latest version of swig are needed (http://www.swig.org, developer have
 to compile and install the latest version himself).
 In the top-source tree type :
-$> cmake .
+$> cmake -DINSTALL=TRUE .
 It creates make files.
 To build type :
 $> make
@@ -98,11 +98,12 @@ provided ; graphical and console. Command-line console also sits in graphical as
 well.
 
 Graphical :
-Click on the 'File' menu and select 'Add dump'.
-Right-click on the dump, in the 'Files' tab, select 'Open with' and apply a
+Click on the 'File(s)' menu and select 'Open evidence file(s)', then add your
+disk dump.
+Right-click on the dump, in the 'Browser' tab, select 'Open with' and apply a
 filesystem module ; select 'file system' and 'fat' for example.
 Files appears in the 'Virtual File System' tab.
-Many informations are provided under 'log' and 'info' tabs.
+Many informations are provided under 'Task Manager', 'Output' and 'Errors' tabs.
 
 
 Console :
@@ -139,8 +140,8 @@ Main website : http://www.digital-forensic.org .
 
 Archives of this mailing lists : http://lists.digital-forensic.org
 
-A project manager exists at http://tracker.digital-forensic.org , ideas and bug
-submited by e-mail will be reported on it.
+A project manager exists at https://tracker.digital-forensic.org , ideas and
+bug submited by e-mail will be reported on it.
 
 Documentation sits on http://wiki.digital-forensic.org.
 
