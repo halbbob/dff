@@ -39,8 +39,6 @@ class LoadedImage(QLabel):
     self.maxsize = 1024*10*10*10*25
     self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored);
     self.setAlignment(Qt.AlignCenter)
-    #self.setScaledContents(True);
-    
 
   def setParent(self, parent):
     self.parent = parent
@@ -231,16 +229,11 @@ class ImageView(QWidget, Script):
   def isImage(self, node):
     if node.size() != 0:
       try:
-        #XXX temporary patch for windows magic
-        #f = str(node.staticAttributes().attributes()["mime-type"])
         type = node.dataType()
       except (IndexError, AttributeError, IOError):
-        #XXX temporary patch for windows magic
-        #self.ft.filetype(node)
 	return False
-        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX
       if  self.reg_viewer.search(str(type)):
-           return True
+        return True
     return False
 
 
