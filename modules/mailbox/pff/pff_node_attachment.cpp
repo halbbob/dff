@@ -24,6 +24,11 @@ PffNodeAttachment::PffNodeAttachment(std::string name, Node* parent, fso* fsobj,
 }
 
 
+std::string	PffNodeAttachment::icon(void)
+{
+  return (":attach");
+}
+
 uint8_t*	PffNodeAttachment::dataBuffer(void)
 {
   uint8_t*	buff = NULL;

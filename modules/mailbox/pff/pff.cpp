@@ -40,7 +40,7 @@ void pff::start(std::map<std::string, Variant*> args)
   {
     this->__fdm = new FdManager;
     this->initialize(this->parent->absolute());
-    this->info();
+    this->info(); // optional return as variant results ? 
     this->create_unallocated();
     this->create_item();
   }
@@ -144,13 +144,16 @@ int32_t pff::vopen(Node* tnode)
 {
   fdinfo*	fi;
   int32_t	fd;
-  uint8_t*	buff;
-  
 
   PffNodeData* node = dynamic_cast<PffNodeData *>(tnode);
 
   if (node == NULL)
+  {
+    PffNodeUnallocatedPageBlocks* node  = dynamic_cast<PffNodeUnallocatedPageBlocks *>(tnode); 
+    if (node)
+	 return (mfso::vopen(node));
     return (-1);
+  }
   if (!node->size())
     return (-1);
  
@@ -158,7 +161,7 @@ int32_t pff::vopen(Node* tnode)
   if (fi == NULL)
     return (-1);
  
-  fd = this->__fdm->push(fi);
+  fd = this->__fdmanager->push(fi);
   return (fd);
 }
 
@@ -167,13 +170,19 @@ int32_t  pff::vread(int fd, void *buff, unsigned int size)
   fdinfo*				fi;
   try
    {
-     fi = this->__fdm->get(fd);
+     fi = this->__fdmanager->get(fd);
    }
-   catch (...)
+   catch (vfsError e)
    {
      return (0); 
    }
    PffNodeData* node = dynamic_cast<PffNodeData *>(fi->node);
+   if (node == NULL)
+   {
+      if (dynamic_cast<PffNodeUnallocatedPageBlocks *>(fi->node)) 
+	 return (mfso::vread(fd, buff, size));
+      return (0);
+   }
    return (node->vread(fi, buff, size));
 }
 
@@ -185,12 +194,19 @@ int32_t pff::vclose(int fd)
 
   try
   {
-    fi = this->__fdm->get(fd);
+    fi = this->__fdmanager->get(fd);
     node = dynamic_cast<PffNodeData* >(fi->node);
+    PffNodeData* node = dynamic_cast<PffNodeData *>(fi->node);
+    if (node == NULL)
+    {
+      if(dynamic_cast<PffNodeUnallocatedPageBlocks *>(fi->node))
+	 return (mfso::vclose(fd));
+      return (-1);
+    }
     node->vclose(fi);
     this->__fdm->remove(fd);
   }
-  catch (...)
+  catch (vfsError e)
   {
     return (-1); 
   }
@@ -205,13 +221,17 @@ uint64_t pff::vseek(int fd, uint64_t offset, int whence)
 
   try
   {
-    fi = this->__fdm->get(fd);
+    fi = this->__fdmanager->get(fd);
     node = dynamic_cast<PffNodeData*>(fi->node);
-
-    return (node->vseek(fi, offset, whence));
-
+    if (node == NULL)
+    {
+      if (dynamic_cast<PffNodeUnallocatedPageBlocks *>(fi->node)) 
+	 return (mfso::vseek(fd, offset, whence));
+      return ((uint64_t) -1);
     }
-  catch (...)
+    return (node->vseek(fi, offset, whence));
+  }
+  catch (vfsError e)
   {
     return ((uint64_t) -1);
   }
@@ -224,14 +244,14 @@ uint64_t	pff::vtell(int32_t fd)
   fdinfo*	fi;
 
   try
-    {
-      fi = this->__fdm->get(fd);
+  {
+      fi = this->__fdmanager->get(fd);
       return (fi->offset);
-    }
-  catch (...)
-    {
+  }
+  catch (vfsError e)
+  {
       return (uint64_t)-1; 
-    }
+  }
 }
 
 uint32_t pff::status(void)

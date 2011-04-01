@@ -38,7 +38,6 @@ class mfso: public fso
 {
 private:
   std::map<Node*, class VFile*>			__origins;
-  FdManager*					__fdmanager;
   class VFile*					__vfile;
   std::list<class mfso*>			__children;
   class mfso					*__parent;
@@ -49,6 +48,7 @@ private:
   int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
 
 public:
+  FdManager*					__fdmanager;
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
   EXPORT virtual void		start(std::map<std::string, Variant*> args) = 0;

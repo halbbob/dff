@@ -105,6 +105,7 @@ public:
   EXPORT 		        PffNodeAttachment(std::string name, Node* parent, fso* fsobj, libpff_item_t *mail, libpff_error_t**, size64_t);
 //  EXPORT virtual Attributes     _attributes(void);
   EXPORT uint8_t*		dataBuffer(void);
+  EXPORT std::string		icon(void);
 
 //fdinfo*       		vopen(void);
 //int32_t 	       	 	vread(fdinfo* fi, void *buff, unsigned int size);
