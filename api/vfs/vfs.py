@@ -19,6 +19,27 @@ class vfs():
     def __init__(self):
         self.libvfs = VFS.Get()
 
+
+    def walk(self, top, topdown=True):
+        node = self.getnode(top.replace("//", "/"))
+        if node == None:
+            return
+        children = node.children()
+        dirs, files = [], []
+        for child in children:
+            if child.hasChildren() or child.isDir():
+                dirs.append(child.name())
+            if child.size() > 0:
+                files.append(child.name())
+        if topdown:
+            yield top, dirs, files
+        for name in dirs:
+            for x in self.walk(str(top + "/" + name).replace("//", "/"), topdown):
+                yield x
+        if not topdown:
+            yield top, dirs, files
+
+
     def getnode(self, path):
         if not path:
             return self.getcwd()
