@@ -27,7 +27,6 @@ class pff : public mfso
 {
 private:
   Node*			parent;
-  FdManager*		__fdm;
   libpff_file_t*	pff_file;
   libpff_error_t*	pff_error;
   int			export_attachments(Node*, libpff_item_t*);

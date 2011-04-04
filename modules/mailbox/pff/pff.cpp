@@ -31,14 +31,13 @@ void pff::start(std::map<std::string, Variant*> args)
 {
   string 	path;
   Path		*tpath;
-   
+  
   if (args["file"] != NULL)
     this->parent = args["file"]->value<Node* >();
   else
     throw envError("pff need a file argument.");
   try 
   {
-    this->__fdm = new FdManager;
     this->initialize(this->parent->absolute());
     this->info(); // optional return as variant results ? 
     this->create_unallocated();
@@ -83,9 +82,11 @@ int32_t pff:get_root_folder(libpff_file_t* file, libpff_item_t **root_folder, li
 void	pff::create_unallocated(void)
 {
 //XXX create with mailbox parent ?
-   cout << "create unalocated pages block as a single node" << endl;
-   new PffNodeUnallocatedPageBlocks(std::string("unallocated page blocks"), this->parent, this, this->parent, &(this->pff_error), &(this->pff_file));
+   PffNodeUnallocatedBlocks*  unallocatedPage = new PffNodeUnallocatedBlocks(std::string("unallocated page blocks"), NULL, this, this->parent, LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, &(this->pff_error), &(this->pff_file));
+   this->registerTree(this->parent, unallocatedPage);
 
+   PffNodeUnallocatedBlocks*  unallocatedData = new PffNodeUnallocatedBlocks(std::string("unallocated data blocks"), NULL, this, this->parent, LIBPFF_UNALLOCATED_BLOCK_TYPE_DATA, &(this->pff_error), &(this->pff_file));
+   this->registerTree(this->parent, unallocatedData);
 }
 
 
@@ -149,9 +150,9 @@ int32_t pff::vopen(Node* tnode)
 
   if (node == NULL)
   {
-    PffNodeUnallocatedPageBlocks* node  = dynamic_cast<PffNodeUnallocatedPageBlocks *>(tnode); 
-    if (node)
-	 return (mfso::vopen(node));
+    PffNodeUnallocatedBlocks* pnode  = dynamic_cast<PffNodeUnallocatedBlocks *>(tnode); 
+    if (pnode)
+	 return (mfso::vopen(pnode));
     return (-1);
   }
   if (!node->size())
@@ -179,7 +180,7 @@ int32_t  pff::vread(int fd, void *buff, unsigned int size)
    PffNodeData* node = dynamic_cast<PffNodeData *>(fi->node);
    if (node == NULL)
    {
-      if (dynamic_cast<PffNodeUnallocatedPageBlocks *>(fi->node)) 
+      if (dynamic_cast<PffNodeUnallocatedBlocks *>(fi->node)) // == fi->fm ? c file manager !
 	 return (mfso::vread(fd, buff, size));
       return (0);
    }
@@ -199,12 +200,12 @@ int32_t pff::vclose(int fd)
     PffNodeData* node = dynamic_cast<PffNodeData *>(fi->node);
     if (node == NULL)
     {
-      if(dynamic_cast<PffNodeUnallocatedPageBlocks *>(fi->node))
+      if(dynamic_cast<PffNodeUnallocatedBlocks *>(fi->node))
 	 return (mfso::vclose(fd));
       return (-1);
     }
     node->vclose(fi);
-    this->__fdm->remove(fd);
+    this->__fdmanager->remove(fd);
   }
   catch (vfsError e)
   {
@@ -225,7 +226,7 @@ uint64_t pff::vseek(int fd, uint64_t offset, int whence)
     node = dynamic_cast<PffNodeData*>(fi->node);
     if (node == NULL)
     {
-      if (dynamic_cast<PffNodeUnallocatedPageBlocks *>(fi->node)) 
+      if (dynamic_cast<PffNodeUnallocatedBlocks *>(fi->node)) 
 	 return (mfso::vseek(fd, offset, whence));
       return ((uint64_t) -1);
     }
