@@ -277,11 +277,11 @@ void	NtfsNode::fileMapping(FileMapping *fm)
     //    FileMapping	*fm = new FileMapping();
 
     if (_data->attributeHeader()->nonResidentFlag) {
-      DEBUG(INFO, "NtfsNode::fileMapping nonResident\n");
+      DEBUG(CRITICAL, "NtfsNode::fileMapping nonResident\n");
       _offsetFromRunList(fm);
     }
     else {
-      DEBUG(INFO, "NtfsNode::fileMapping resident\n");
+      DEBUG(CRITICAL, "NtfsNode::fileMapping resident\n");
       _offsetResident(fm);
     }
     //    return fm;
@@ -322,69 +322,203 @@ void		NtfsNode::_offsetFromRunList(FileMapping *fm)
   uint64_t	currentOffset = 0;
   uint64_t	registeredClusters = 0;
   uint64_t	newSize;
+  AttributeData	currentData = *(_data);
+  uint16_t	offsetListSize = currentData.getOffsetListSize();
 
   OffsetRun	*run;
 
-  DEBUG(INFO, "Offset list size: %u\n",_data->getOffsetListSize());
-  while ((currentRunIndex < _data->getOffsetListSize())) {
-    run = _data->getOffsetRun(currentRunIndex);
+  DEBUG(CRITICAL, "Offset list size: %u\n", offsetListSize);
+  while ((currentRunIndex < offsetListSize)) {
+    run = currentData.getOffsetRun(currentRunIndex);
 
-    newSize = (run->runLength - registeredClusters) * _data->clusterSize();
-
-#if __WORDSIZE == 64
-    DEBUG(INFO, " (0x%x - 0x%lx) * 0x%x\n", run->runLength, newSize, _data->clusterSize());
-    DEBUG(INFO, " cO: 0x%lx si: 0x%lx\n", currentOffset, (run->runLength - newSize) * _data->clusterSize());
-    DEBUG(INFO, "offset: 0x%lx\n", run->runOffset);
-#else
-    DEBUG(INFO, " (0x%x - 0x%llx) * 0x%x\n", run->runLength, newSize, _data->clusterSize());
-    DEBUG(INFO, " cO: 0x%llx si: 0x%llx\n", currentOffset, (run->runLength - newSize) * _data->clusterSize());
-    DEBUG(INFO, "offset: 0x%llx\n", run->runOffset);
-#endif
+    newSize = (run->runLength - registeredClusters) * currentData.clusterSize();
 
     if (run->runOffset) {
-      if (currentOffset + newSize > _data->getSize()) {
-#if __WORDSIZE == 64
-	DEBUG(INFO, "current1: 0x%lx, initsize: 0x%lx\n", currentOffset, _data->getInitSize());
-#else
-	DEBUG(INFO, "current1: 0x%llx, initsize: 0x%llx\n", currentOffset, _data->getInitSize());
-#endif
+      if (currentOffset + newSize > currentData.getSize()) {
 	// XXX if > initSize, need to create shadow node
-	fm->push(currentOffset, newSize - (currentOffset + newSize - _data->getSize()),
-		 _node, run->runOffset * _data->clusterSize());
+	fm->push(currentOffset, newSize - (currentOffset + newSize - currentData.getSize()),
+		 _node, run->runOffset * currentData.clusterSize());
 #if __WORDSIZE == 64
-	DEBUG(INFO, "node pushed size 0x%lx from 0x%lx\n", newSize - (currentOffset + newSize - _data->getSize()),run->runOffset * _data->clusterSize() );
+	DEBUG(CRITICAL, "FM1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, newSize - (currentOffset + newSize - currentData.getSize()), run->runOffset * currentData.clusterSize());
 #else
-	DEBUG(INFO, "node pushed size 0x%llx from 0x%llx\n", newSize - (currentOffset + newSize - _data->getSize()),run->runOffset * _data->clusterSize() );
+	DEBUG(CRITICAL, "FM1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, newSize - (currentOffset + newSize - currentData.getSize()), run->runOffset * currentData.clusterSize());
 #endif
       }
       else {
-#if __WORDSIZE == 64
-	DEBUG(INFO, "current2: 0x%lx, initsize: 0x%lx\n", currentOffset, _data->getInitSize());
-#else
-	DEBUG(INFO, "current2: 0x%llx, initsize: 0x%llx\n", currentOffset, _data->getInitSize());
-#endif
-	if ((currentOffset + newSize) > _data->getInitSize()) {
+	if ((currentOffset + newSize) > currentData.getInitSize()) {
 	  // > initSize, need to create shadow node
-	  fm->push(currentOffset, _data->getInitSize() - currentOffset,
-		   _node, run->runOffset * _data->clusterSize());
-	  fm->push(currentOffset + (_data->getInitSize() - currentOffset),
-		   newSize - (_data->getInitSize() - currentOffset), NULL, 0);
+	  fm->push(currentOffset, currentData.getInitSize() - currentOffset,
+		   _node, run->runOffset * currentData.clusterSize());
+#if __WORDSIZE == 64
+	  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
+#else
+	  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
+#endif
+	  fm->push(currentOffset + (currentData.getInitSize() - currentOffset),
+		   newSize - (currentData.getInitSize() - currentOffset), NULL, 0);
+#if __WORDSIZE == 64
+	  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
+#else
+	  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
+#endif
 	}
 	else {
-	  fm->push(currentOffset, newSize, _node, run->runOffset * _data->clusterSize());
+	  fm->push(currentOffset, newSize, _node, run->runOffset * currentData.clusterSize());
+#if __WORDSIZE == 64
+	  DEBUG(CRITICAL, "FM3 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, newSize, run->runOffset * currentData.clusterSize());
+#else
+	  DEBUG(CRITICAL, "FM3 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, newSize, run->runOffset * currentData.clusterSize());
+#endif
 	}
       }
     }
     else { // shadow
       fm->push(currentOffset, newSize, NULL, 0);
+#if __WORDSIZE == 64
+      DEBUG(CRITICAL, "FM4 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset, newSize);
+#else
+      DEBUG(CRITICAL, "FM4 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset, newSize);
+#endif
     }
 
-    currentOffset += (run->runLength - registeredClusters) * _data->clusterSize();
+    currentOffset += (run->runLength - registeredClusters) * currentData.clusterSize();
     registeredClusters = run->runLength;
 
     currentRunIndex++;
+    if (currentRunIndex >= offsetListSize && _dataOffsets.size() > 1) {
+      // There are several $DATA attributes, we have to fetch the next one.
+      // We also have to take care of $DATA attribute's name because of ADS
+      // feature, we should rely of next valid VCN.
+      DEBUG(CRITICAL, "starting VCN 0x%llx ending VCN 0x%llx\n", currentData.nonResidentDataHeader()->startingVCN, currentData.nonResidentDataHeader()->endingVCN);
+      _setNextAttrData(fm, currentOffset);
+    }
   }
-  DEBUG(INFO, "\n");
+  DEBUG(CRITICAL, "\n");
+}
+
+void					NtfsNode::_setNextAttrData(FileMapping *fm, uint64_t totalOffset) {
+  std::list<uint64_t>::const_iterator	iter(_dataOffsets.begin());
+  std::list<uint64_t>::const_iterator	listend(_dataOffsets.end());
+  MftEntry				*externalData;
+  VFile					*vfile;
+  Attribute				*attribute;
+  AttributeData				*data;
+  uint64_t				totalSize = _data->getSize();
+  uint64_t				initSize = _data->getInitSize();
+
+  if (!_SI || _dataOffsets.size() <= 1) {
+    DEBUG(CRITICAL, "No $STANDARD_INFORMATION attribute, returns\n");
+    return ;
+  }
+  // TODO _dataOffsets list should be ordered by VCN, but it seams to be done
+  // in $ATTRIBUTE_LIST.
+
+  // Init mft decoder
+  vfile = _node->open();
+  externalData = new MftEntry(vfile);
+  // Init sizes from previously registered attribute _data
+  externalData->clusterSize(_data->clusterSize());
+  externalData->indexRecordSize(_data->indexRecordSize());
+  externalData->sectorSize(_data->sectorSize());
+  externalData->mftEntrySize(_data->mftEntrySize());
+
+  // First $DATA attribute is _data, has already been mapped above,
+  // so increment iter.
+  ++iter;
+#if __WORDSIZE == 64
+  DEBUG(CRITICAL, "dataOffsets size is %u (0x%x), skipped first @ 0x%lx\n", _dataOffsets.size(), _dataOffsets.size(), _dataOffsets.front());
+#else
+  DEBUG(CRITICAL, "dataOffsets size is %u (0x%x), skipped first @ 0x%llx\n", _dataOffsets.size(), _dataOffsets.size(), _dataOffsets.front());
+#endif
+  while (iter != listend) {
+    if (externalData->decode(*iter)) {
+      while ((attribute = externalData->getNextAttribute())) {
+	attribute->readHeader();
+	if (attribute->getType() == ATTRIBUTE_DATA) {
+	  data = new AttributeData(*attribute);
+#if __WORDSIZE == 64
+	  DEBUG(CRITICAL, "data @ 0x%lx starting VCN 0x%llx ending VCN 0x%lx\n", *iter, data->nonResidentDataHeader()->startingVCN, data->nonResidentDataHeader()->endingVCN);
+#else
+	  DEBUG(CRITICAL, "data @ 0x%llx starting VCN 0x%llx ending VCN 0x%llx\n", *iter, data->nonResidentDataHeader()->startingVCN, data->nonResidentDataHeader()->endingVCN);
+#endif
+	  // TODO Same code as in _offsetFromRunList( merge in one func ?
+	  uint16_t	currentRunIndex = 0;
+	  uint64_t	currentOffset = 0;
+	  uint64_t	newSize;
+	  uint16_t	offsetListSize = data->getOffsetListSize();
+	  uint64_t	registeredClusters = 0;
+
+	  OffsetRun	*run;
+
+	  DEBUG(CRITICAL, "Offset list size: %u\n", offsetListSize);
+	  while ((currentRunIndex < offsetListSize)) {
+	    run = data->getOffsetRun(currentRunIndex);
+	    
+	    newSize = (run->runLength - registeredClusters) * data->clusterSize();
+	    if (run->runOffset) {
+	      if (currentOffset + newSize > totalSize) {
+		// XXX if > initSize, need to create shadow node
+		fm->push(totalOffset, newSize - (currentOffset + newSize - totalSize),
+			 _node, run->runOffset * data->clusterSize());
+#if __WORDSIZE == 64
+		DEBUG(CRITICAL, "FM1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, newSize - (currentOffset + newSize - totalSize), run->runOffset * data->clusterSize());
+#else
+		DEBUG(CRITICAL, "FM1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx, runLength 0x%x clustSize 0x%x\n", totalOffset, newSize - (currentOffset + newSize - totalSize), run->runOffset * data->clusterSize(), run->runLength, data->clusterSize());
+#endif
+	      }
+	      else {
+		if ((currentOffset + newSize) > initSize) {
+		  // > initSize, need to create shadow node
+		  fm->push(totalOffset, initSize - currentOffset,
+			   _node, run->runOffset * data->clusterSize());
+#if __WORDSIZE == 64
+		  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, initSize - currentOffset, run->runOffset * data->clusterSize());
+#else
+		  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", totalOffset, initSize - currentOffset, run->runOffset * data->clusterSize());
+#endif
+		  fm->push(totalOffset + (initSize - currentOffset),
+			   newSize - (initSize - currentOffset), NULL, 0);
+#if __WORDSIZE == 64
+		  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", totalOffset + (initSize - currentOffset), newSize - (initSize - currentOffset));
+#else
+		  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", totalOffset + (initSize - currentOffset), newSize - (initSize - currentOffset));
+#endif
+		}
+		else {
+		  fm->push(totalOffset, newSize, _node, run->runOffset * data->clusterSize());
+#if __WORDSIZE == 64
+		  DEBUG(CRITICAL, "FM3 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, newSize, run->runOffset * data->clusterSize());
+#else
+		  DEBUG(CRITICAL, "FM3 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", totalOffset, newSize, run->runOffset * data->clusterSize());
+#endif
+		}
+	      }
+	    }
+	    else { // shadow
+	      fm->push(totalOffset, newSize, NULL, 0);
+#if __WORDSIZE == 64
+	      DEBUG(CRITICAL, "FM4 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", totalOffset, newSize);
+#else
+	      DEBUG(CRITICAL, "FM4 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", totalOffset, newSize);
+#endif
+	    }
+	    
+	    currentOffset += (run->runLength - registeredClusters) * data->clusterSize();
+	    totalOffset += (run->runLength - registeredClusters) * data->clusterSize();
+	    //currentOffset += (run->runLength) * data->clusterSize();
+	    registeredClusters = run->runLength;
+	    
+	    currentRunIndex++;
+	  }
+	  //delete data;
+	  DEBUG(CRITICAL, "\n");
+	  //	  throw("yeah");
+	  break;
+	}
+      }
+    }
+    ++iter;
+  }
 }
 
 
