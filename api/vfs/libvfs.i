@@ -705,8 +705,15 @@ Open the node and return a pointer to a VFile instance
   SWIG_PYTHON_THREAD_BEGIN_BLOCK;
   $action
   SWIG_PYTHON_THREAD_END_BLOCK;
-
 }
+
+%exception Node::compatibleModules
+{
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  $action
+  SWIG_PYTHON_THREAD_END_BLOCK;
+}
+
 
 %feature("director:except") fso
 {
