@@ -34,11 +34,11 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
             item.setText(1, vval.toString() + " - " + vval.toHexString())
         elif vval.type() in [typeId.Char, typeId.String, typeId.CArray]:
             val = vval.toString()
-            item.setText(1, str(val))
+            item.setText(1, QString.fromUtf8(val))
         elif vval.type() == typeId.Node:
-            item.setText(1, str(vval.value().absolute()))
+            item.setText(1, QString.fromUtf8(vval.value().absolute()))
         elif vval.type() == typeId.Path:
-            item.setText(1, str(vval.value().path))
+            item.setText(1, QString.fromUtf8(vval.value().path))
         else:
             item.setText(1, str(vval.value()))
 

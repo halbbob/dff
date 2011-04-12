@@ -30,7 +30,7 @@ class PropertyTable(VariantTreeWidget):
       fsobjname = fsobj.name
     itemName = QTreeWidgetItem(self)
     itemName.setText(0, self.nameText)
-    itemName.setText(1, str(node.name()))
+    itemName.setText(1, QString.fromUtf8(node.name()))
 
     itemName = QTreeWidgetItem(self)
     itemName.setText(0, self.nodeTypeText)

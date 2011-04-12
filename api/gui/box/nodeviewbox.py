@@ -84,7 +84,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
   def completerChanged(self):
     path = self.completerWidget.text()
-    node = self.vfs.getnode(str(path))
+    node = self.vfs.getnode(unicode(path).encode('utf-8'))
     if node:
       self.emit(SIGNAL("pathChanged"), node)
       self.parent.model.setRootPath(node)      
