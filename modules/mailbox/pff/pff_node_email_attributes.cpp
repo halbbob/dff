@@ -69,7 +69,6 @@ bool         msDateToVTime(uint64_t value, vtime *setMe)
   if (value > 0) {
     value -= NANOSECS_1601_TO_1970;
     value /= 10000000;
-#if (!defined(WIN32) && !defined(WIN64)) //XXX windows / XXX ntfs code to share in lib
     struct tm   *date;
 
     date = gmtime((time_t *)&value);
@@ -82,9 +81,7 @@ bool         msDateToVTime(uint64_t value, vtime *setMe)
     setMe->dst = date->tm_isdst;
     setMe->wday = date->tm_wday;
     setMe->yday = date->tm_yday;
-    //FIXME NTFS has nanosecond precision
     setMe->usecond = 0;
-#endif
     return true;
   }
   return false;
@@ -100,7 +97,7 @@ Attributes PffNodeEMail::_attributes()
 
   Attributes messageHeader;
   this->attributesMessageHeader(&messageHeader); //export message header 9147
-  attr["Message Header"] = new Variant(messageHeader);
+  attr["Message Headers"] = new Variant(messageHeader);
 //   this->attributesMessageConversationIndex(attr); //9174
 // 9288 export_recipients
   Attributes recipients;
@@ -110,7 +107,7 @@ Attributes PffNodeEMail::_attributes()
 // 9315  export_handle_export_message_transport_headers
   Attributes transportHeaders;
   this->attributesTransportHeaders(&transportHeaders); //internetHEaders.txt
-  attr["transportHeaders"] = new Variant(transportHeaders);
+  attr["Transport Headers"] = new Variant(transportHeaders);
   return attr;
 }
 
@@ -156,7 +153,7 @@ void PffNodeEMail::splitTextToAttributes(std::string text, Attributes* attr)
  
      next_eol = text.rfind("\n", next_splitter);
      if (next_eol == string::npos)
-       next_eol == buff_size;
+       next_eol = buff_size; //it was == but now does it work ? fixed during appointment work
                 
    }
    value = text.substr(splitter + 2,  next_eol - splitter - 3); 
@@ -179,7 +176,7 @@ void PffNodeEMail::attributesTransportHeaders(Attributes* attr)
 {
   size_t message_transport_headers_size  = 0; 
   uint8_t *entry_string = NULL;
-  size_t write_count    = 0;
+  //size_t write_count    = 0;
 
   if (libpff_message_get_transport_headers_size(*(this->item), &message_transport_headers_size,
 	          				     this->pff_error) != 1)
@@ -212,7 +209,7 @@ void PffNodeEMail::attributesRecipients(Attributes* attr)
   libpff_item_t	*recipients			= NULL;
   uint8_t 	*entry_value_string          	= NULL;
   int 		number_of_recipients		= 0;
-  int 		result				= 0;
+  //int 		result				= 0;
   size_t 	entry_value_string_size         = 0;
   size_t 	maximum_entry_value_string_size = 0;
   uint32_t 	entry_value_32bit		= 0;
@@ -344,7 +341,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
   uint64_t 			entry_value_64bit 		= 0;
   uint32_t 			entry_value_32bit 		= 0;
   uint8_t 			entry_value_boolean 		= 0;
-  int 				result 				= 0;
+  //int 				result 				= 0;
 
 //OUTLOOKMESSAGE.HEADERS TEXT -> Refacto sous formes de list est sous list !!
 // virer ERROR si pas besoin et le mettre a NULL tous le temps...
@@ -419,7 +416,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 
   if (libpff_message_get_flags(*(this->item), &entry_value_32bit, NULL) == 1)
   {
-     if (entry_value_32bit & LIBPFF_MESSAGE_FLAG_READ == LIBPFF_MESSAGE_FLAG_READ)
+     if ((entry_value_32bit & LIBPFF_MESSAGE_FLAG_READ) == LIBPFF_MESSAGE_FLAG_READ)
        (*attr)["is readed"] = new Variant(std::string("Yes"));
      else
        (*attr)["is readed"] = new Variant(std::string("No"));

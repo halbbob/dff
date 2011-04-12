@@ -17,6 +17,12 @@
 #include "pff.hpp"
 // XXX delete this if ok whi PffNodeData
 
+PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_error_t** error) :PffNodeData(name, parent, fsobj, error)
+{
+}
+
+
+
 PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_item_t *item, libpff_error_t** error) : PffNodeData(name, parent, fsobj, item, error) //format HTML / TXT  / RTF
 {
   //this->itemEMail = mail;
@@ -59,7 +65,7 @@ fdinfo* PffNodeEMail::vopen(void)
 int32_t  PffNodeEMail::vread(fdinfo* fi, void *buff, unsigned int size)
 {
   uint8_t*				rbuff;
-  uint32_t				readed;
+  //uint32_t				readed;
  
   rbuff = (uint8_t*)fi->fm;
 

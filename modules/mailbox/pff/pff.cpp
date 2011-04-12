@@ -30,7 +30,7 @@ pff::~pff()
 void pff::start(std::map<std::string, Variant*> args)
 {
   string 	path;
-  Path		*tpath;
+  //Path		*tpath;
   
   if (args["file"] != NULL)
     this->parent = args["file"]->value<Node* >();
@@ -39,7 +39,7 @@ void pff::start(std::map<std::string, Variant*> args)
   try 
   {
     this->initialize(this->parent->absolute());
-    this->info(); // optional return as variant results ? 
+//    this->info(); // optional return as variant results ? 
     this->create_unallocated();
     this->create_item();
   }
@@ -48,6 +48,7 @@ void pff::start(std::map<std::string, Variant*> args)
      res["error"] = new Variant(e.error);
      return ;
   }
+  
  //XXX
 // this->registerTree(parent, son); 
 //    libpff_file_close(this->pff_file, *(this->error));
@@ -134,10 +135,10 @@ void pff::initialize(string path)
   this->pff_error = NULL;
   if (libpff_file_initialize(&(this->pff_file), &(this->pff_error)) != 1)
     throw vfsError(std::string("Unable to initialize system values."));
-  cout << "pff file open " << endl;
+  //cout << "pff file open " << endl;
   if (libpff_file_open(this->pff_file, path.c_str(), LIBPFF_OPEN_READ , &(this->pff_error)) != 1)
     throw vfsError(std::string("error", "Can't open pff file."));
-  cout << "pff file open ok" << endl;
+  //cout << "pff file open ok" << endl;
 }
 
 
@@ -190,7 +191,6 @@ int32_t  pff::vread(int fd, void *buff, unsigned int size)
 int32_t pff::vclose(int fd)
 {
   fdinfo*		fi;
-  uint8_t*		rbuff;
   PffNodeData*		node;
 
   try

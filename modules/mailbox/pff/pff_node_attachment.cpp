@@ -40,14 +40,14 @@ uint8_t*	PffNodeAttachment::dataBuffer(void)
   
   //6490
   //uint32_t read_count                         = 0;
-  uint8_t *attachment_data                   = NULL;
-  size64_t attachment_data_size              = 0;
-  uint32_t total_read			     = 0;
+  //uint8_t *attachment_data                   = NULL;
+  //size64_t attachment_data_size              = 0;
+  //uint32_t total_read			     = 0;
   //off64_t result			     = 0;
   //off64_t rsize				     = 0;
 
   ssize_t read_count                         = 0;
-  size_t read_size                           = 0;
+  //size_t read_size                           = 0;
 
   if (libpff_attachment_data_seek_offset(*(this->item), 0, SEEK_SET, this->pff_error) != 0)
     return (NULL); //XXX can't be concurrent no FD in libpff !!! ? or maybe clone item here

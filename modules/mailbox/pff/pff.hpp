@@ -42,9 +42,11 @@ public:
   void			create_unallocated();
   void		        export_sub_items(libpff_item_t* item, Node* parent);
   int 		        export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent);
-  int 		        export_email(libpff_item_t* item, int item_index,  Node* parent);
   int			export_attachments(libpff_item_t* item, Node* parent);
+  int 		        export_email(libpff_item_t* item, int item_index,  Node* parent);
+  int 		        export_activity(libpff_item_t* item, int item_index,  Node* parent);
   int 		        export_folder(libpff_item_t* folder, int folder_index, Node* parent);
+  int			export_appointment(libpff_item_t* item, int item_index, Node* parent);
   int		        export_sub_folders(libpff_item_t* folder, PffNodeFolder* nodeFolder);
   int		        export_sub_messages(libpff_item_t* folder, PffNodeFolder* message);
   int32_t       	vopen(Node*);

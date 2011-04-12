@@ -53,10 +53,6 @@ void pff::export_sub_items(libpff_item_t *item, Node* parent)
 
 int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent)
 {
-  uint8_t*	entry_value_string	= NULL;
-  const char*	item_type_string	= NULL;
-  size_t 	entry_value_string_size	= 0;
-  size_t 	item_path_size		= 0;
   uint8_t 	item_type		= 0;
   int 		result			= 0;
 
@@ -66,27 +62,29 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   //switch export_handle 1918
   if (item_type == LIBPFF_ITEM_TYPE_ACTIVITY)
   {
-	  //cout << "Exporting activity" << endl;	
+	  cout << "Exporting activity" << endl;	
    // this->export_activity(item, item_index);
+	//HEU THIS IS CALL !
+   //result = this->export_activity(item, item_index, parent);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_APPOINTMENT)
   {
-	  //cout << "Exporting appointment" << endl;	
-   // this->export_activity(item, item_index);
+     result = this->export_appointment(item, item_index, parent);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONTACT)
   {
-	  //cout << "Exporting contact" << endl;	
+	  cout << "Exporting contact" << endl;
+	  result = 1; //XXX for test de toute c  nimpos	
    // this->export_activity(item, item_index);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_DOCUMENT)
   {
-	  //cout << "Exporting document" << endl;	
+	  cout << "Exporting document" << endl;	
    // this->export_activity(item, item_index);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONFLICT_MESSAGE || item_type == LIBPFF_ITEM_TYPE_EMAIL || item_type == LIBPFF_ITEM_TYPE_EMAIL_SMIME)
   {
-	  //cout << "Exporting e-mail" << endl;	
+//	  cout << "Exporting e-mail" << endl;	
      result = this->export_email(item, item_index, parent);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_FOLDER)
@@ -96,36 +94,65 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
-	  //cout << "Exporting meeting" << endl;	
+	  cout << "Exporting meeting" << endl;	
    // this->export_activity(item, item_index);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_NOTE)
   {
-	  //cout << "Exporting note" << endl;	
+	  cout << "Exporting note" << endl;	
    // this->export_activity(item, item_index);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_RSS_FEED)
   {
-	  //cout << "Exporting rss feed" << endl;	
+	  cout << "Exporting rss feed" << endl;	
    // this->export_activity(item, item_index);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_TASK)
   {
-	  //cout << "Exporting task" << endl;	
+	  cout << "Exporting task" << endl;	
    // this->export_activity(item, item_index);
   }
+  else
+  {
+	cout << "Exporting unknown type" << endl;
+	result = 1; //XXX
+  }
 //return (1);
- return (result); //FIX ME
+ return (result); //FIX ME c tous pouyris si on pecho pas un type d item tous s arrette ...
  //if result ...
+}
+
+int pff::export_appointment(libpff_item_t* appointment, int appointment_index, Node* parent)
+{
+   std::ostringstream messageName; 
+
+   messageName << std::string("Appointment")  << appointment_index + 1; //start a 1 not 0
+   PffNodeFolder* nodeFolder = new PffNodeFolder(messageName.str(), parent, this);
+
+
+   PffNodeAppointment* 	nodeAppointment = new PffNodeAppointment(std::string("Appointment"), nodeFolder, this, appointment, &(this->pff_error), &(this->pff_file));
+
+//export_handle_export_message_header_to_stream -> 8236 == a ce ki est ds un mail a recuperer ! creation de node mais surtout des metadata car rien dedans ! 
+
+//export recipients  _> pareille que e-mail
+// juste pas l air d export les transport header et c ds node e-mail par default !!
+
+  this->export_attachments(appointment, nodeFolder);
+
+  return (1);
+}
+
+
+
+int pff::export_activity(libpff_item_t* activity, int activity_index, Node* parent)
+{
+   return (1);
 }
 
 int pff::export_folder(libpff_item_t* folder, int folder_index, Node* parent)
 {
   uint8_t 	*folder_name		= NULL;
   size_t 	folder_name_size	= 0;
-  size_t 	target_path_size	= 0;
-  uint32_t 	identifier		= 0;
-  int 		print_count		= 0;
   int 		result			= 0;
   //std::string	str_folder_name;
 
@@ -167,14 +194,9 @@ int pff::export_folder(libpff_item_t* folder, int folder_index, Node* parent)
 int pff::export_email(libpff_item_t* email, int email_index, Node *parent)
 {
 //8888
-  uint8_t*	email_filename = NULL;
-  size_t 	email_filename_size = 0;
   size_t 	email_html_body_size = 0;
-  size_t 	email_path_size = 0;
   size_t 	email_rtf_body_size = 0;
   size_t 	email_text_body_size = 0;
-  uint32_t 	identifier = 0;
-  int 		export_format = 0;
   int 		has_html_body = 0;
   int 		has_rtf_body = 0;
   int 		has_text_body = 0;
@@ -237,12 +259,9 @@ int pff::export_attachments(libpff_item_t* item, Node* parent)
   int 		attachment_type         	= 0;
   int 		attachment_iterator     	= 0;
   int 		number_of_attachments   	= 0;
-  size_t 	attachments_path_size   	= 0;
   size_t 	attachment_filename_size	= 0;
   size64_t 	attachment_data_size            = 0;
   uint8_t*	attachment_filename     	= NULL;
-  libpff_item_t *attachments            	= NULL;
-
 
   if (libpff_message_get_number_of_attachments(item, &number_of_attachments, &(this->pff_error) ) != 1 )
     return (-1);
@@ -318,8 +337,22 @@ int pff::export_attachments(libpff_item_t* item, Node* parent)
 	   new PffNodeAttachment(attachmentName.str(), parent, this, attachment, &(this->pff_error), attachment_data_size);
 	 }
      }    
-     else if(attachment_type == LIBPFF_ATTACHMENT_TYPE_ITEM) //  6552
-        cout << "create attachment type item " << endl;
+     else if(attachment_type == LIBPFF_ATTACHMENT_TYPE_ITEM)
+     { //  6552 // 6808 function special ! 
+	libpff_item_t**	attached_item = new libpff_item_t*;
+	*attached_item = NULL;
+	if (libpff_attachment_get_item(attachment, attached_item, &(this->pff_error)) == 1)
+	{
+	  PffNodeFolder* folder = new PffNodeFolder(attachmentName.str(), parent, this);		
+          this->export_item(*attached_item, 0, 1, folder);
+	 // libpff_item_free(attached_item, &(this->pff_error)); //didn't free because can't copy
+	//delete atached_item
+	}
+	else
+	{
+	  delete attached_item;
+	}
+     }
   }
   return (1);
 }

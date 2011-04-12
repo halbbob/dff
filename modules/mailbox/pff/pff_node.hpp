@@ -24,6 +24,7 @@
 #endif
 
 #include "pff.hpp"
+//#include "libpff-20110201/libpff/libpff_item.h"
 
 bool         msDateToVTime(uint64_t value, vtime *setMe); //XXX api XXX ntfs XXX windows
 
@@ -38,6 +39,7 @@ public:
 class PffNodeData : public Node
 {
 public:
+  EXPORT 		        PffNodeData(std::string name, Node* parent, fso* fsobj, libpff_error_t**);
   EXPORT 		        PffNodeData(std::string name, Node* parent, fso* fsobj, libpff_item_t *dataItem, libpff_error_t**);
   virtual fdinfo*       	vopen();
   virtual int32_t 	        vread(fdinfo* fi, void *buff, unsigned int size);
@@ -56,6 +58,7 @@ private:
   void			        attributesTransportHeaders(Attributes* attr);
   void 			        splitTextToAttributes(std::string text, Attributes* attr);
 public:
+  EXPORT 		        PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_error_t**);
   EXPORT 		        PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_item_t *mail, libpff_error_t**);
   EXPORT virtual Attributes     _attributes(void);
   fdinfo*       		vopen(void);
@@ -114,6 +117,17 @@ public:
 //set icon
 };
 
+class PffNodeAppointment : public PffNodeEMail
+{
+//use identifier because clone didn't work here ! use it very were ? test memory usage & perf !
+ libpff_file_t**	pff_file;
+ uint32_t		identifier;
+public:
+EXPORT	PffNodeAppointment(std::string name, Node *parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t**, libpff_file_t**);
+ EXPORT virtual Attributes     _attributes(void);
+ EXPORT void  	               attributesAppointment(Attributes* attr);
+};
+
 class PffNodeUnallocatedBlocks : public Node
 {
 private:
@@ -121,6 +135,7 @@ private:
  int			block_type;
  libpff_error_t**	pff_error;
  libpff_file_t**	pff_file;
+ uint32_t		identifier;
 public:
  EXPORT			PffNodeUnallocatedBlocks(std::string name, Node* parent, mfso* fsobj, Node* root,int block_type, libpff_error_t**, libpff_file_t**);
  virtual void		fileMapping(FileMapping* fm);
