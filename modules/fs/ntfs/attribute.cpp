@@ -271,7 +271,6 @@ uint16_t	Attribute::setNextRun(uint16_t runDescOffset,
   if (!runDescOffset) {
     _previousRunOffset = 0;
     DEBUG(INFO, "bufferOffset: 0x%x\n", _bufferOffset);
-    DEBUG(INFO, "attributNonRDH ptr: 0x%lx\n", _attributeNonResidentDataHeader);
     DEBUG(INFO, "runListOffset: 0x%x\n", _attributeNonResidentDataHeader->runListOffset);
     runDescOffset = _bufferOffset + _attributeNonResidentDataHeader->runListOffset;
   }

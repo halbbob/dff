@@ -274,8 +274,6 @@ std::pair<std::string, class Variant *>	NtfsNode::_dataToAttr(std::string key, u
 void	NtfsNode::fileMapping(FileMapping *fm)
 {
   if (_isFile && size()) {
-    //    FileMapping	*fm = new FileMapping();
-
     if (_data->attributeHeader()->nonResidentFlag) {
       DEBUG(CRITICAL, "NtfsNode::fileMapping nonResident\n");
       _offsetFromRunList(fm);
@@ -284,14 +282,12 @@ void	NtfsNode::fileMapping(FileMapping *fm)
       DEBUG(CRITICAL, "NtfsNode::fileMapping resident\n");
       _offsetResident(fm);
     }
-    //    return fm;
   }
-  //  return NULL;
 }
 
 /**
  * Set data chunks for data inside of MFT attribute
- *  Fixups values are present in the last two bytes of secto
+ *  Fixups values are present in the last two bytes of sector
  *
  *  TODO if mftEntrySize > sectorSize * 2 ; we need to loop to replace fixup
  */
@@ -303,11 +299,12 @@ void	NtfsNode::_offsetResident(FileMapping *fm)
     dataStart;
   uint16_t	remainSize = size() - firstChunkSize - SIZE_2BYTES;
 
-  DEBUG(INFO, "\tdataStart: 0x%x\n", dataStart);
-  DEBUG(INFO, "\tsectorSize - 2: 0x%x\n", _data->getSectorSize() - 2);
-  
+  DEBUG(CRITICAL, "\tdataStart: 0x%x\n", dataStart);
+  DEBUG(CRITICAL, "\tsectorSize - 2: 0x%x\n", _data->getSectorSize() - 2);
+  DEBUG(CRITICAL, "\tfirst fixup: 0x%llx\n", _physOffset + _data->getFixupOffset(0));
+
   fm->push(0, firstChunkSize, _node, _data->getOffset());
-  fm->push(firstChunkSize, SIZE_2BYTES, _node, _data->getFixupOffset(0));
+  fm->push(firstChunkSize, SIZE_2BYTES, _node, _physOffset + _data->getFixupOffset(0));
   fm->push(firstChunkSize + SIZE_2BYTES, remainSize, _node, SIZE_2BYTES +
 	   firstChunkSize + _data->getOffset());
 
