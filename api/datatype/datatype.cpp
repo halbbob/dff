@@ -48,21 +48,17 @@ Variant*	DataTypeManager::type(Node* node)
     {
       for (handler = this->handlers.begin(); handler != this->handlers.end(); handler++)
       {
-        std::string* res = (*handler)->type(node);
-	if (res != NULL)
+        std::string res = (*handler)->type(node);
+	uint32_t id = uniq[res];
+	if (id)
+	  nodeTypeId[node].push_back(id);
+        else
 	{
-	  uint32_t id = uniq[*res];
-	  if (id)
-	   nodeTypeId[node].push_back(id);
-          else
-	  {
-	    uniq[*res] = ++idCounter;
-	    typeIdString[idCounter] = *res;
-            typeIdHandler[idCounter] = *handler;
-	    nodeTypeId[node].push_back(idCounter);
-          }
-	  delete res;
-	}
+	  uniq[res] = ++idCounter;
+	  typeIdString[idCounter] = res;
+          typeIdHandler[idCounter] = *handler;
+	  nodeTypeId[node].push_back(idCounter);
+        }
       } 
     }
   }
