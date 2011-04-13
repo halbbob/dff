@@ -22,8 +22,7 @@ PffNodeEmailTransportHeaders::PffNodeEmailTransportHeaders(std::string name, Nod
 {
   size_t 	headers_size  = 0; 
 
-  if (libpff_message_get_transport_headers_size(*(this->item), &headers_size,
-	          				     this->pff_error) == 1)
+  if (libpff_message_get_transport_headers_size(*(this->item), &headers_size, this->pff_error) == 1)
   {
     if (headers_size > 0)
        this->setSize(headers_size); 
@@ -40,10 +39,10 @@ uint8_t*	PffNodeEmailTransportHeaders::dataBuffer(void)
   entry_string =  new uint8_t [this->size()];
 
   if (libpff_message_get_transport_headers(*(this->item), entry_string, this->size(), this->pff_error ) != 1 )
-    {
-      delete entry_string;
-      return (NULL);
-    }
+  {
+    delete entry_string;
+    return (NULL);
+  }
   
   return (entry_string);
 }

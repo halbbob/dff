@@ -27,12 +27,6 @@ PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_it
 {
   //this->itemEMail = mail;
   //libpff_item_get_identifier(*mail, &(this->identifier), *error);
- 
-// 9335 export_handle_export_message_body
-// 9361 export_handle_export_attachments
- //export message header 9147
-//node buffer 
-//exportMessageHtml
 }
 
 std::string	PffNodeEMail::icon(void)
@@ -48,8 +42,8 @@ uint8_t*	PffNodeEMail::dataBuffer(void)
 
 fdinfo* PffNodeEMail::vopen(void)
 {
-   fdinfo*				fi;
-   uint8_t*				buff;
+   fdinfo*	fi;
+   uint8_t*	buff;
 
    fi = new fdinfo;
    buff = this->dataBuffer();
@@ -59,13 +53,13 @@ fdinfo* PffNodeEMail::vopen(void)
    fi->fm = (FileMapping*) (buff);
    fi->node = this;
    fi->offset = 0;
+
    return (fi);
 }
 
 int32_t  PffNodeEMail::vread(fdinfo* fi, void *buff, unsigned int size)
 {
-  uint8_t*				rbuff;
-  //uint32_t				readed;
+  uint8_t*	rbuff;
  
   rbuff = (uint8_t*)fi->fm;
 
@@ -78,45 +72,43 @@ int32_t  PffNodeEMail::vread(fdinfo* fi, void *buff, unsigned int size)
   memcpy(buff, rbuff + (uint32_t)fi->offset, size);
   fi->offset += size; 
  
-  //cout << "Vread size" << size << endl;
   return (size);
 }
 
 uint64_t	PffNodeEMail::vseek(fdinfo* fi, uint64_t offset, int whence)
 {
-	//cout << "pffNodeEMail::vseek offset " << offset << " whence " << whence << endl;	 
-    if (whence == 0)
+  if (whence == 0)
+  {
+    if (offset <= this->size())
     {
-      if (offset <= this->size())
-      {
-        fi->offset = offset;
-        return (fi->offset);
-      }
-    }
-    else if (whence == 1)
-    {
-      if (fi->offset + offset <= this->size())
-      {
-        fi->offset += offset;
-        return (fi->offset);
-      }
-    }
-    else if (whence == 2)
-    {
-      fi->offset = this->size();
+      fi->offset = offset;
       return (fi->offset);
     }
+  }
+  else if (whence == 1)
+  {
+    if (fi->offset + offset <= this->size())
+    {
+      fi->offset += offset;
+      return (fi->offset);
+    }
+  }
+  else if (whence == 2)
+  {
+    fi->offset = this->size();
+    return (fi->offset);
+  }
+
   return ((uint64_t) -1);
 }
 
 
 int32_t PffNodeEMail::vclose(fdinfo *fi)
 {
-  uint8_t*				rbuff;
+  uint8_t*	rbuff;
+
   rbuff = (uint8_t*)fi->fm;
   delete rbuff;
 
   return (0);
 }
-
-

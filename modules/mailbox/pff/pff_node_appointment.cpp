@@ -45,20 +45,9 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr)
   uint32_t	entry_value_32bit               = 0;
   int 		result                          = 0;
 
-  // UTF8 possible UTF16
-  if (libpff_appointment_get_utf8_location_size((*this->item), &entry_value_string_size, this->pff_error) == -1)
-  return ;
+  check_maximum_size(libpff_appointment_get_utf8_location_size)
+  check_maximum_size(libpff_appointment_get_utf8_recurrence_pattern_size) 
 
-  if (entry_value_string_size > maximum_entry_value_string_size)
-       maximum_entry_value_string_size = entry_value_string_size;
-  result = libpff_appointment_get_utf8_recurrence_pattern_size(*(this->item), &entry_value_string_size, this->pff_error);
-  if (result == -1)
-    return ;
-  else if (result != 0)
-  {
-    if (entry_value_string_size > maximum_entry_value_string_size)
-       maximum_entry_value_string_size = entry_value_string_size;
-  }
   if (maximum_entry_value_string_size == 0)
 	return ;
   entry_value_string = (char *)malloc(sizeof(char *) * maximum_entry_value_string_size);
@@ -67,32 +56,12 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr)
 
   value_time_to_attribute(libpff_appointment_get_start_time, "Start time")
   value_time_to_attribute(libpff_appointment_get_end_time, "End time")
-
   value_uint32_to_attribute(libpff_appointment_get_duration, "Duration")
-
-  result = libpff_appointment_get_utf8_location(*(this->item), (uint8_t *) entry_value_string, maximum_entry_value_string_size, this->pff_error);
-  if (result != -1 && result != 0)
-  {
-     (*attr)["Location"] = new Variant(std::string(entry_value_string));
-  }
-  //appointment recurence pattern 8583
-  result = libpff_appointment_get_utf8_recurrence_pattern(*(this->item), (uint8_t *) entry_value_string , maximum_entry_value_string_size, this->pff_error);
-  if (result != -1 && result != 0)
-    (*attr)["Recurrence pattern"] = new Variant(std::string(entry_value_string));
-//libpff_apointment first effectime time
-
+  value_string_to_attribute(libpff_appointment_get_utf8_location, "Location")
+  value_string_to_attribute(libpff_appointment_get_utf8_recurrence_pattern, "Recurrence pattern")
   value_time_to_attribute(libpff_appointment_first_effective_time, "First effective time")
   value_time_to_attribute(libpff_appointment_last_effective_time,  "Last effective time")
-
-
   value_uint32_to_attribute(libpff_appointment_get_busy_status, "Busy status")
-/* 
-  result = libpff_appointment_get_busy_status(*(this->item), &entry_value_32bit, this->pff_error);
-  if (result != -1 && result != 0)
-  {
-     (*attr)[std::string("Busy status")] = new Variant(entry_value_32bit);
-  }
-*/
 
   free(entry_value_string);
 }
@@ -100,13 +69,11 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr)
 
 Attributes PffNodeAppointment::_attributes()
 {
-//use mail default attribute and add appointment attriubtes
   Attributes attr = PffNodeEMail::_attributes();
-
   Attributes appointment;
+
   this->attributesAppointment(&appointment); 
   attr[std::string("Appointment")] = new Variant(appointment);
-//add specific attribute for apointment here
 
   return attr;
 }

@@ -176,29 +176,23 @@ void PffNodeEMail::attributesTransportHeaders(Attributes* attr)
 {
   size_t message_transport_headers_size  = 0; 
   uint8_t *entry_string = NULL;
-  //size_t write_count    = 0;
 
   if (libpff_message_get_transport_headers_size(*(this->item), &message_transport_headers_size,
 	          				     this->pff_error) != 1)
     return ;
 
-//5584 export_handle_export_message_transport_headers_to_stream()
-//5621...
   if (message_transport_headers_size <= 0)
     return ;
 
   entry_string =  new uint8_t [message_transport_headers_size];
 
 //This read all in buff there no seems to have class to get each attributes could be written to a buffer node but here we will 
-
   if (libpff_message_get_transport_headers(*(this->item), entry_string, message_transport_headers_size, this->pff_error ) != 1 )
   {
     delete entry_string;
     return ;
   }
-
   this->splitTextToAttributes(std::string((char *)entry_string), attr);
-
 
   delete entry_string;
 }
@@ -257,14 +251,21 @@ void PffNodeEMail::attributesRecipients(Attributes* attr)
 	   if ((maximum_entry_value_string_size == 0))
 		return ; //break ? 
 	   entry_value_string = (uint8_t*) new uint8_t[maximum_entry_value_string_size];
+
+
+
 	   if (libpff_item_get_entry_value_utf8_string(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_DISPLAY_NAME, entry_value_string, maximum_entry_value_string_size, 0, NULL) == 1)
 	    (*attr)["Display Name"] = new Variant(std::string((char *)entry_value_string));
+
 	   if (libpff_recipients_get_display_name(recipients, recipient_iterator, entry_value_string, maximum_entry_value_string_size, NULL) == 1)
 	     (*attr)["Recipient display name"] = new Variant(std::string((char*)entry_value_string));
+
 	   if (libpff_item_get_entry_value_utf8_string(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_ADDRESS_TYPE, entry_value_string, maximum_entry_value_string_size, 0, NULL) == 1)
 	     (*attr)["Address type"] = new Variant((char*) entry_value_string);
+
 	   if (libpff_item_get_entry_value_utf8_string(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_EMAIL_ADDRESS, entry_value_string, maximum_entry_value_string_size, 0, NULL) == 1)
 	     (*attr)["Email address"] = new Variant((char*)entry_value_string);
+
 	   if (libpff_recipients_get_type(recipients, recipient_iterator, &entry_value_32bit, NULL) == 1)
 	   {
 	      for (uint32_t n = 0; n < 5; n++)
@@ -335,84 +336,36 @@ void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr)
 
 void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 {
-  uint8_t 			*entry_value_string 		= NULL;
+  char*				entry_value_string 		= NULL;
   size_t			entry_value_string_size 	= 0;
   size_t 			maximum_entry_value_string_size	= 0;
   uint64_t 			entry_value_64bit 		= 0;
   uint32_t 			entry_value_32bit 		= 0;
   uint8_t 			entry_value_boolean 		= 0;
-  //int 				result 				= 0;
+  int 				result 				= 0;
 
 //OUTLOOKMESSAGE.HEADERS TEXT -> Refacto sous formes de list est sous list !!
 // virer ERROR si pas besoin et le mettre a NULL tous le temps...
 //  libpff_file_get_item_by_identifier();
   maximum_entry_value_string_size = 24;
-//2989
 
-  if (libpff_item_get_display_name_size(*(this->item), &entry_value_string_size, this->pff_error))
-  {
-    if (entry_value_string_size > maximum_entry_value_string_size)
-      maximum_entry_value_string_size = entry_value_string_size;
-  }
-  if (libpff_message_get_conversation_topic_size(*(this->item), &entry_value_string_size, this->pff_error))
-  {
-    if (entry_value_string_size > maximum_entry_value_string_size)
-      maximum_entry_value_string_size = entry_value_string_size;
-  }
-  if (libpff_message_get_subject_size(*(this->item), &entry_value_string_size, this->pff_error))
-  {
-    if (entry_value_string_size > maximum_entry_value_string_size)
-      maximum_entry_value_string_size = entry_value_string_size;
-  }
-  if (libpff_message_get_sender_name_size(*(this->item), &entry_value_string_size, this->pff_error))
-  {
-    if (entry_value_string_size > maximum_entry_value_string_size)
-      maximum_entry_value_string_size = entry_value_string_size;
-  }
- if (libpff_message_get_sender_email_address_size(*(this->item), &entry_value_string_size, this->pff_error))
-  {
-    if (entry_value_string_size > maximum_entry_value_string_size)
-      maximum_entry_value_string_size = entry_value_string_size;
-  }
+  check_maximum_size(libpff_item_get_display_name_size)
+  check_maximum_size(libpff_message_get_conversation_topic_size)
+  check_maximum_size(libpff_message_get_subject_size)
+  check_maximum_size(libpff_message_get_sender_name_size)
+  check_maximum_size(libpff_message_get_sender_email_address_size)
+
   if (!(maximum_entry_value_string_size))
-    return ; //throw invalid maximum entry value string size//ret -1
+    return ; 
 
-//3210 export_handle.c
-//DATE TIME IS FROM 1601 microsoft format -> ntfs
-  entry_value_string = (uint8_t *) new uint8_t[maximum_entry_value_string_size];
-  if (libpff_message_get_client_submit_time(*(this->item), &entry_value_64bit, this->pff_error) == 1)
-  {
-    vtime* client_submit_time = new vtime;
-    msDateToVTime(entry_value_64bit, client_submit_time);
-    Variant* var_client_submit_time = new Variant(client_submit_time);
-    (*attr)["client submit time"] = var_client_submit_time;
-  }
-  if (libpff_message_get_delivery_time(*(this->item), &entry_value_64bit, this->pff_error) == 1)
-  {
-    vtime* client_submit_time = new vtime;
-    msDateToVTime(entry_value_64bit, client_submit_time);
-    Variant* var_client_submit_time = new Variant(client_submit_time);
-    (*attr)["delivery time"] = var_client_submit_time;
-  }
+  entry_value_string = (char *) new char[maximum_entry_value_string_size];
 
-  if (libpff_message_get_creation_time(*(this->item), &entry_value_64bit, this->pff_error) == 1)
-  {
-    vtime* client_submit_time = new vtime;
-    msDateToVTime(entry_value_64bit, client_submit_time);
-    Variant* var_client_submit_time = new Variant(client_submit_time);
-    (*attr)["creation time"]= var_client_submit_time;
-  }
-
-  if (libpff_message_get_modification_time(*(this->item), &entry_value_64bit, this->pff_error) == 1)
-  {
-    vtime* client_submit_time = new vtime;
-    msDateToVTime(entry_value_64bit, client_submit_time);
-    Variant* var_client_submit_time = new Variant(client_submit_time);
-    (*attr)["modification time"] = var_client_submit_time;
-  }
+  value_time_to_attribute(libpff_message_get_client_submit_time, "Client submit time") 
+  value_time_to_attribute(libpff_message_get_delivery_time, "Delivery time")
+  value_time_to_attribute(libpff_message_get_creation_time, "Creation time")
+  value_time_to_attribute(libpff_message_get_modification_time, "Modification time")
 //3340 XXX libpff_message_get_size -> file size !! ??? message size ? set attr ou set as file size ?
-  if (libpff_message_get_size(*(this->item), &entry_value_32bit, NULL) == 1)
-    (*attr)["message size"] = new Variant(entry_value_32bit);
+  value_uint32_to_attribute(libpff_message_get_size, "Message size")  
 
   if (libpff_message_get_flags(*(this->item), &entry_value_32bit, NULL) == 1)
   {
@@ -424,24 +377,13 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 	if ((entry_value_32bit & LIBPFF_MESSAGE_FLAG[n].type) == LIBPFF_MESSAGE_FLAG[n].type)
 	  (*attr)["flags"] = new Variant(std::string(LIBPFF_MESSAGE_FLAG[n].message));
 	  //XXX flags REFACTO sous formes de list ! ???  //les var sont telle bien delete par python ?   
-
   }
-//display NAME 3433
-  if (libpff_item_get_display_name(*(this->item), entry_value_string, maximum_entry_value_string_size, this->pff_error) == 1)
-    (*attr)["display name"] = new Variant(std::string((char*)entry_value_string));
-  
-  if (libpff_message_get_conversation_topic(*(this->item), entry_value_string, maximum_entry_value_string_size, this->pff_error) == 1)
-    (*attr)["conversation topic"] = new Variant(std::string((char*)entry_value_string));
 
-  if (libpff_message_get_subject(*(this->item), entry_value_string, maximum_entry_value_string_size, this->pff_error) == 1)
-    (*attr)["subject"] = new Variant(std::string((char*)entry_value_string));
-
-  if (libpff_message_get_sender_name(*(this->item), entry_value_string, maximum_entry_value_string_size, this->pff_error) == 1)
-    (*attr)["sender name"] = new Variant(std::string((char*)entry_value_string));
-
-  if (libpff_message_get_sender_email_address(*(this->item), entry_value_string, maximum_entry_value_string_size, this->pff_error) == 1)
-    (*attr)["sender email address"] = new Variant(std::string((char*)entry_value_string));
-//3610 Get importance
+  value_string_to_attribute(libpff_item_get_display_name, "Display name")
+  value_string_to_attribute(libpff_message_get_conversation_topic, "Conversation topic") 
+  value_string_to_attribute(libpff_message_get_subject, "Subject")
+  value_string_to_attribute(libpff_message_get_sender_name, "Sender name")
+  value_string_to_attribute(libpff_message_get_sender_email_address, "Sender email address")
 
   if (libpff_message_get_importance(*(this->item), &entry_value_32bit, NULL) == 1)
   {
@@ -452,7 +394,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 	 break;
        }
   }
-//export priority 3643
+
   if (libpff_message_get_priority(*(this->item), &entry_value_32bit, NULL) == 1)
   {
      for (uint32_t n = 0; n < 3; n++)
@@ -462,7 +404,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 	 break;
        }
   }
-//sensivityi 3677
+
   if (libpff_message_get_sensitivity(*(this->item), &entry_value_32bit, NULL) == 1)
   {
      for (uint32_t n = 0; n < 4; n++)
@@ -472,7 +414,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 	 break;
        }
   }
-//is reminder
+
   if (libpff_message_get_is_reminder(*(this->item), &entry_value_boolean, NULL) == 1)
   {
     if (!(entry_value_boolean))
@@ -480,21 +422,10 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
     else
       (*attr)["Is a reminder"] = new Variant(std::string("yes"));
   }
-//reminder time 3742
-  if (libpff_message_get_reminder_time(*(this->item), &entry_value_64bit, NULL) == 1)
-  {
-    vtime* reminder_time = new vtime;
-    msDateToVTime(entry_value_64bit, reminder_time);
-    Variant* var_reminder_time = new Variant(reminder_time);
-    (*attr)["reminder time"] = var_reminder_time;
-  }
-  if (libpff_message_get_reminder_signal_time(*(this->item), &entry_value_64bit, NULL) == 1)
-  {
-    vtime* reminder_signal_time = new vtime;
-    msDateToVTime(entry_value_64bit, reminder_signal_time);
-    Variant* var_reminder_signal_time = new Variant(reminder_signal_time);
-    (*attr)["reminder time"] = var_reminder_signal_time;
-  }
+  
+  value_time_to_attribute(libpff_message_get_reminder_time, "Reminder time")
+  value_time_to_attribute(libpff_message_get_reminder_signal_time, "Reminder signal time")
+
   if (libpff_message_get_is_private(*(this->item), &entry_value_boolean, NULL) == 1)
   {
     if (!(entry_value_boolean))
@@ -502,7 +433,6 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
     else
       (*attr)["Is private"] = new Variant(std::string("yes"));	 
   }
+
   delete entry_value_string; 
 }
-
-
