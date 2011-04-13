@@ -26,6 +26,7 @@ set(pff_srcs
     pff_info.cpp
     pff_export.cpp
     pff_node_data.cpp
+    pff_node_task.cpp
     pff_node_folder.cpp
     pff_node_contact.cpp
     pff_node_attachment.cpp

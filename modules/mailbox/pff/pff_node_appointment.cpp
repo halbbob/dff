@@ -64,30 +64,12 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr)
   entry_value_string = (char *)malloc(sizeof(char *) * maximum_entry_value_string_size);
   if (entry_value_string == NULL)
      return ;
-  //if (libfdatetime_filetime_initialize(&filetime, this->pff_error) != 1)
-  //return ;
-  result = libpff_appointment_get_start_time((*this->item), &entry_value_64bit, this->pff_error);
-  if (result != -1 && result != 0)
-  {
-     vtime* 	start_time = new vtime;
-     msDateToVTime(entry_value_64bit, start_time);
-     Variant*  vstart_time = new Variant(start_time);
-     (*attr)["start time"] = vstart_time;
-  }
-  result = libpff_appointment_get_end_time(*(this->item), &entry_value_64bit, this->pff_error);
-  if (result != -1 && result != 0)
-  {
-     vtime*  	end_time = new vtime;
-     msDateToVTime(entry_value_64bit, end_time);
-     Variant*  vstart_time = new Variant(end_time);
-     (*attr)[std::string("end time")] = vstart_time;
-  }
-  //8515
-  result = libpff_appointment_get_duration(*(this->item), &entry_value_32bit, this->pff_error);
-  if (result  != -1 && result != 0)
-  {
-     (*attr)[std::string("Duration")] = new Variant(entry_value_32bit);
-  }
+
+  value_time_to_attribute(libpff_appointment_get_start_time, "Start time")
+  value_time_to_attribute(libpff_appointment_get_end_time, "End time")
+
+  value_uint32_to_attribute(libpff_appointment_get_duration, "Duration")
+
   result = libpff_appointment_get_utf8_location(*(this->item), (uint8_t *) entry_value_string, maximum_entry_value_string_size, this->pff_error);
   if (result != -1 && result != 0)
   {
@@ -98,27 +80,20 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr)
   if (result != -1 && result != 0)
     (*attr)["Recurrence pattern"] = new Variant(std::string(entry_value_string));
 //libpff_apointment first effectime time
-  result = libpff_appointment_first_effective_time(*(this->item), &entry_value_64bit, this->pff_error);
-  if (result != 0 && result != -1)
-  {
-     vtime*  	first_effective_time = new vtime;
-     msDateToVTime(entry_value_64bit, first_effective_time);
-     Variant*  vfirst_effective_time = new Variant(first_effective_time);
-     (*attr)[std::string("First effective time")] = vfirst_effective_time;
-  }
-  result = libpff_appointment_last_effective_time(*(this->item), &entry_value_64bit, this->pff_error);
-  if (result != 0 && result != -1)
-  {
-     vtime*  	first_effective_time = new vtime;
-     msDateToVTime(entry_value_64bit, first_effective_time);
-     Variant*  vfirst_effective_time = new Variant(first_effective_time);
-     (*attr)[std::string("Last effective time")] = vfirst_effective_time;
-  }
+
+  value_time_to_attribute(libpff_appointment_first_effective_time, "First effective time")
+  value_time_to_attribute(libpff_appointment_last_effective_time,  "Last effective time")
+
+
+  value_uint32_to_attribute(libpff_appointment_get_busy_status, "Busy status")
+/* 
   result = libpff_appointment_get_busy_status(*(this->item), &entry_value_32bit, this->pff_error);
   if (result != -1 && result != 0)
   {
      (*attr)[std::string("Busy status")] = new Variant(entry_value_32bit);
   }
+*/
+
   free(entry_value_string);
 }
 

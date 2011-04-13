@@ -73,10 +73,7 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONTACT)
   {
-	  cout << "Exporting contact" << endl;
-	  result = this->export_contact(item, item_index, parent);
-	//  result = 1; //XXX for test de toute c  nimpos	
-   // this->export_activity(item, item_index);
+     result = this->export_contact(item, item_index, parent);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_DOCUMENT)
   {
@@ -95,13 +92,15 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
-	  cout << "Exporting meeting" << endl;	
-   // this->export_activity(item, item_index);
+	  cout << "Exporting meeting" << endl;
+	//XXX code me 
+	 result = 1;	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_NOTE)
   {
-	  cout << "Exporting note" << endl;	
-   // this->export_activity(item, item_index);
+	  cout << "Exporting note" << endl;
+	//XXX code me 
+	result = 1;	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_RSS_FEED)
   {
@@ -110,8 +109,8 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_TASK)
   {
-	  cout << "Exporting task" << endl;	
-   // this->export_activity(item, item_index);
+	 cout << "Exporting task" << endl;
+	 result = this->export_task(item, item_index, parent);
   }
   else
   {
@@ -122,6 +121,21 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
  return (result); //FIX ME c tous pouyris si on pecho pas un type d item tous s arrette ...
  //if result ...
 }
+
+int pff::export_task(libpff_item_t* task, int task_index, Node* parent)
+{
+  std::ostringstream taskName;
+
+  taskName << std::string("Task") << task_index + 1;
+  PffNodeFolder* nodeFolder = new PffNodeFolder(taskName.str(), parent, this);
+//13058
+  PffNodeTask*  nodeTask = new PffNodeTask(std::string("Task"), nodeFolder, this, task, &(this->pff_error), &(this->pff_file));
+
+  this->export_attachments(task, nodeFolder);
+
+  return (1);
+}
+
 
 int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent)
 {

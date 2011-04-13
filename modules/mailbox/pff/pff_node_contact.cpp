@@ -16,24 +16,6 @@
 
 #include "pff.hpp"
 
-//mettre pff_node ou pff.hpp pour eviter ce code redondant
-
-#define check_maximum_size(func) \
-  result = func(*(this->item), &entry_value_string_size, (this->pff_error)); \
-  if (result != 0 && result != -1) \
-  {\
-    if (entry_value_string_size > maximum_entry_value_string_size)\
-  	maximum_entry_value_string_size = entry_value_string_size;\
-  }
-
-#define value_string_to_attribute(func, key) \
-  result = func(*(this->item), (uint8_t *)entry_value_string, \
-maximum_entry_value_string_size, this->pff_error); \
-  if (result != -1 && result != 0) \
-    (*attr)[key] = new Variant(std::string(entry_value_string));
- 
-
-
 PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t** error) : PffNodeEMail(name, parent, fsobj, contact, error)
 {
   size_t 	headers_size  = 0; 
@@ -116,7 +98,7 @@ void		PffNodeContact::attributesContact(Attributes* attr)
 }
 
 
-uint8_t*	PffNodeContact::dataBuffer(void)
+uint8_t*	PffNodeContact::dataBuffer(void) //autant herite de mail_node_text directement
 {
   uint8_t*	entry_string = NULL;
 
