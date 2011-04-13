@@ -301,7 +301,11 @@ void	NtfsNode::_offsetResident(FileMapping *fm)
 
   DEBUG(CRITICAL, "\tdataStart: 0x%x\n", dataStart);
   DEBUG(CRITICAL, "\tsectorSize - 2: 0x%x\n", _data->getSectorSize() - 2);
+#if __WORDSIZE == 64
+  DEBUG(CRITICAL, "\tfirst fixup: 0x%lx\n", _physOffset + _data->getFixupOffset(0));
+#else
   DEBUG(CRITICAL, "\tfirst fixup: 0x%llx\n", _physOffset + _data->getFixupOffset(0));
+#endif
 
   fm->push(0, firstChunkSize, _node, _data->getOffset());
   fm->push(firstChunkSize, SIZE_2BYTES, _node, _physOffset + _data->getFixupOffset(0));
@@ -386,7 +390,11 @@ void		NtfsNode::_offsetFromRunList(FileMapping *fm)
       // There are several $DATA attributes, we have to fetch the next one.
       // We also have to take care of $DATA attribute's name because of ADS
       // feature, we should rely of next valid VCN.
+#if __WORDSIZE == 64
+      DEBUG(CRITICAL, "starting VCN 0x%llx ending VCN 0x%lx\n", currentData.nonResidentDataHeader()->startingVCN, currentData.nonResidentDataHeader()->endingVCN);
+#else
       DEBUG(CRITICAL, "starting VCN 0x%llx ending VCN 0x%llx\n", currentData.nonResidentDataHeader()->startingVCN, currentData.nonResidentDataHeader()->endingVCN);
+#endif
       _setNextAttrData(fm, currentOffset);
     }
   }
@@ -422,11 +430,6 @@ void					NtfsNode::_setNextAttrData(FileMapping *fm, uint64_t totalOffset) {
   // First $DATA attribute is _data, has already been mapped above,
   // so increment iter.
   ++iter;
-#if __WORDSIZE == 64
-  DEBUG(CRITICAL, "dataOffsets size is %u (0x%x), skipped first @ 0x%lx\n", _dataOffsets.size(), _dataOffsets.size(), _dataOffsets.front());
-#else
-  DEBUG(CRITICAL, "dataOffsets size is %u (0x%x), skipped first @ 0x%llx\n", _dataOffsets.size(), _dataOffsets.size(), _dataOffsets.front());
-#endif
   while (iter != listend) {
     if (externalData->decode(*iter)) {
       while ((attribute = externalData->getNextAttribute())) {
@@ -434,7 +437,7 @@ void					NtfsNode::_setNextAttrData(FileMapping *fm, uint64_t totalOffset) {
 	if (attribute->getType() == ATTRIBUTE_DATA) {
 	  data = new AttributeData(*attribute);
 #if __WORDSIZE == 64
-	  DEBUG(CRITICAL, "data @ 0x%lx starting VCN 0x%llx ending VCN 0x%lx\n", *iter, data->nonResidentDataHeader()->startingVCN, data->nonResidentDataHeader()->endingVCN);
+	  DEBUG(CRITICAL, "data @ 0x%lx starting VCN 0x%lx ending VCN 0x%lx\n", *iter, data->nonResidentDataHeader()->startingVCN, data->nonResidentDataHeader()->endingVCN);
 #else
 	  DEBUG(CRITICAL, "data @ 0x%llx starting VCN 0x%llx ending VCN 0x%llx\n", *iter, data->nonResidentDataHeader()->startingVCN, data->nonResidentDataHeader()->endingVCN);
 #endif
