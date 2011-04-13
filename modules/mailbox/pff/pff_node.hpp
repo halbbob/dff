@@ -128,6 +128,17 @@ EXPORT	PffNodeAppointment(std::string name, Node *parent, fso* fsobj, libpff_ite
  EXPORT void  	               attributesAppointment(Attributes* attr);
 };
 
+
+class PffNodeContact : public PffNodeEMail
+{
+  public:
+EXPORT PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t**);
+ EXPORT virtual Attributes 	_attributes(void);
+ EXPORT void			attributesContact(Attributes* attr);
+ EXPORT uint8_t*		dataBuffer(void); 
+
+};
+
 class PffNodeUnallocatedBlocks : public Node
 {
 private:

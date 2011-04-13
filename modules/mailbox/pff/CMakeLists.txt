@@ -27,6 +27,7 @@ set(pff_srcs
     pff_export.cpp
     pff_node_data.cpp
     pff_node_folder.cpp
+    pff_node_contact.cpp
     pff_node_attachment.cpp
     pff_node_appointment.cpp
     pff_node_unallocated_blocks.cpp

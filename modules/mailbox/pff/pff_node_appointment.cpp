@@ -17,12 +17,8 @@
 #include "pff.hpp"
 
 
-//XXX pas top herite de PffNodeEMail juste pour une fonctions des attribute voir 2 mais ds le cas d example y en a qu une de valide : tramsport header ou ...
-//XXX on copy l 'item et one le free pas ds attachment pas ce que si non ca marche pas, et aussi on ne peut pas clone les appointment donc on le sprend par identifier 
-// fautdrait peut etre prendre teoute les node par identifier ? mais est-ce que y a pas un bug equivalent certain qui se clone mais qui s identifie pas ? 
-//XXX cleaner tous ca si possible + renvoyer bug patch au monsieur 
 
-PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file) : PffNodeEMail(name, parent, fsobj, appointment, error)
+PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file) : PffNodeEMail(name, parent, fsobj, error)
 {
   libpff_item_get_identifier(appointment, &(this->identifier), error);
   this->pff_error = error;

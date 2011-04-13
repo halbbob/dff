@@ -44,6 +44,7 @@ public:
   int 		        export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent);
   int			export_attachments(libpff_item_t* item, Node* parent);
   int 		        export_email(libpff_item_t* item, int item_index,  Node* parent);
+  int 		        export_contact(libpff_item_t* item, int item_index,  Node* parent);
   int 		        export_activity(libpff_item_t* item, int item_index,  Node* parent);
   int 		        export_folder(libpff_item_t* folder, int folder_index, Node* parent);
   int			export_appointment(libpff_item_t* item, int item_index, Node* parent);

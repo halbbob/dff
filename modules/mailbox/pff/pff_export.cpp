@@ -74,7 +74,8 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   else if (item_type == LIBPFF_ITEM_TYPE_CONTACT)
   {
 	  cout << "Exporting contact" << endl;
-	  result = 1; //XXX for test de toute c  nimpos	
+	  result = this->export_contact(item, item_index, parent);
+	//  result = 1; //XXX for test de toute c  nimpos	
    // this->export_activity(item, item_index);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_DOCUMENT)
@@ -120,6 +121,21 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
 //return (1);
  return (result); //FIX ME c tous pouyris si on pecho pas un type d item tous s arrette ...
  //if result ...
+}
+
+int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent)
+{
+// 8920  export_handle_export_contact
+  std::ostringstream contactName;
+
+  contactName << std::string("Contact") << contact_index + 1;
+  PffNodeFolder* nodeFolder = new PffNodeFolder(contactName.str(), parent, this);
+
+  PffNodeContact*  nodeContact = new PffNodeContact(std::string("Contact"), nodeFolder, this, contact, &(this->pff_error));
+
+  this->export_attachments(contact, nodeFolder);
+
+  return (1);
 }
 
 int pff::export_appointment(libpff_item_t* appointment, int appointment_index, Node* parent)
