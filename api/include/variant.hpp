@@ -201,6 +201,11 @@ public:
 	    *m = *((std::map<std::string, Variant*>*)this->__data.ptr);
 	    ret = true;
 	  }
+        else if ((itype == typeId::VoidPtr) && (this->_type == typeId::VoidPtr))
+	{
+	   (*(void**)res) =  this->__data.ptr;
+	   ret = true;
+	}
 	else
 	  ret = false;
 	return ret;

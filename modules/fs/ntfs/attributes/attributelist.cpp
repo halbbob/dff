@@ -31,9 +31,20 @@ AttributeAttributeList::AttributeAttributeList(VFile *vFile, Attribute &parent)
   _vfile = vFile;
   _clusterSize = parent.clusterSize();
 
+  _baseOffset = 0;
+  _bufferOffset = parent.bufferOffset();
+  _offsetListSize = 0;
+  _mftIndex = 0;
+
+  _mftEntrySize = parent.mftEntrySize();
+  _indexRecordSize = parent.indexRecordSize();
+  _sectorSize = parent.sectorSize();
+  _clusterSize = parent.clusterSize();
+  _currentRunIndex = 0;
+
   if (_attributeHeader->nonResidentFlag) {
-    setRunList();
     _attributeNonResidentDataHeader = new AttributeNonResidentDataHeader(*(parent.nonResidentDataHeader()));
+    setRunList();
     size(_attributeNonResidentDataHeader->attributeContentActualSize);
 
     _contentBuffer = new uint8_t[_size];
@@ -82,6 +93,7 @@ void		AttributeAttributeList::content()
   uint16_t	contentSize;
 
   if (_attributeHeader->nonResidentFlag) {
+    DEBUG(CRITICAL, "This attribute list is non-resident, content display not developped yet\n");
     return;
   }
   else {
@@ -112,6 +124,7 @@ void		AttributeAttributeList::content()
     printf("\t\tAttribute ID 0x%x\n\n", _data->attributeID);
     _dataOffset += _data->entryLength;
   }
+  _dataOffset = _attributeResidentDataHeader->contentOffset;
 }
 
 uint32_t	AttributeAttributeList::getExternalAttributeIndexRoot()
@@ -221,13 +234,13 @@ uint32_t	AttributeAttributeList::getExternalAttributeData()
   }
   while (_dataOffset < contentSize) {
     if (_attributeHeader->nonResidentFlag) {
-    //XXX to validate
-	_data = (AttributeAttributeList_t *)(_contentBuffer + _dataOffset);
+      _data = (AttributeAttributeList_t *)(_contentBuffer + _dataOffset);
     }
     else {
       _data = (AttributeAttributeList_t *)(_readBuffer + _bufferOffset + _dataOffset);
     }
     if (_data->attributeType == ATTRIBUTE_DATA) {
+      _dataOffset += _data->entryLength;
 #if __WORDSIZE == 64
       return _data->fileReference & 0xffffffUL;
 #else

@@ -37,8 +37,6 @@ VMware::~VMware()
 void	VMware::start(std::map<std::string, Variant*> args)
 {
   int		err;
-  int		extcp;
-  int		ft;
   std::map<std::string, Variant*>::iterator	it;
 
   it = args.find("vmdkroot");

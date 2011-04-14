@@ -44,7 +44,6 @@ struct stat*	ULocalNode::localStat(void)
 {
   std::string	file;
   struct stat* 	st;
-  class local*  Local = static_cast<local*>(this->fsobj());
 
   st = (struct stat*)malloc(sizeof(struct stat));
   if (lstat(this->originalPath.c_str(), st) != -1)

@@ -618,7 +618,7 @@ Bram Mooij bram4n6@hotmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="94"/>
         <source>Relevant module</source>
-        <translation type="unfinished"></translation>
+        <translation>Relevante module</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
@@ -628,28 +628,29 @@ Bram Mooij bram4n6@hotmail.com
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source>Do you want to apply module </source>
-        <translation type="unfinished"></translation>
+        <translation>Wilt u module </translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
         <source> on this node ?</source>
-        <translation type="unfinished"></translation>
+        <translation> aan deze node toevoegen ?</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="290"/>
         <source>Always</source>
-        <translation type="unfinished"></translation>
+        <translation>Altijd</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="365"/>
         <source>Empty files</source>
-        <translation type="unfinished"></translation>
+        <translation>Lege bestanden</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
         <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
-        <translation type="unfinished"></translation>
+        <translation>de volgende nodes konden niet geopend worden door de hex viewer, omdat het folders zijn of ze zijn leeg
+</translation>
     </message>
 </context>
 <context>

@@ -109,7 +109,8 @@ class loader():
              - Text block delimited by three double quote characters
             '''
             vDict = dict()
-            with open(module_path, 'r') as f:
+            f = open(module_path, 'r')
+	    if f:
                 b = f.read(4096)
                 start = -1
                 headerT1, headerT2 = False, False
@@ -155,7 +156,9 @@ class loader():
                     else:
                         rest = b
                     b = f.read(4096)
-            return vDict
+            if f:
+		f.close()
+	    return vDict
 
             
         def ModuleImport(self, module_path, modname):
@@ -190,12 +193,15 @@ class loader():
                 # About to be deprecated ; read all module content to find "(Module)"
                 status += 'using old style module check'
                 flag = False
-                with open(module_path, 'r') as f:
+                f = open(module_path, 'r')
+		if f:
                     for line in f:
                         if line.find("(Module)") != -1:
                             flag = True
                             break
-                if not flag:
+                if f:
+		    f.close()
+		if not flag:
                     return
 
             if warnwithoutload:

@@ -18,8 +18,6 @@
 
 void		Fatfs::process()
 {
-  Node	*tmp;
-
   try
     {
       if (this->parent->size() > 0)

@@ -112,7 +112,8 @@ class EWF(fso):
     libewf.libewf_get_media_size(handle, size_p)
     self.ssize = size_p.contents.value
     fi = fdinfo()
-    fi.id = long(handle)
+    fi.id = Variant(handle)
+    fi.id.thisown = False
     fi.thisown = False
     fi.node = node
     fi.offset = 0
@@ -122,11 +123,12 @@ class EWF(fso):
   def vread(self, fd, buff, size):
     buf = create_string_buffer(size)
     fi = self.fdm.get(fd)
-    retsize = libewf.libewf_read_random(fi.id, buf, c_ulong(size), c_ulonglong(fi.offset))
+    if fi.offset >= self.ssize:
+	return (0, "")
+    retsize = libewf.libewf_read_random(fi.id.value(), buf, c_ulong(size), c_ulonglong(fi.offset))
     if retsize <= 0:
        return (0, "")
-    else :
-      fi.offset += retsize
+    fi.offset += retsize
     if fi.offset > self.ssize:
 	fi.offset = self.ssize
     return (retsize, buf.raw)
@@ -136,16 +138,20 @@ class EWF(fso):
     if whence == 0:
       if offset <= self.ssize:
         fi.offset = offset
+      else:
+	return -1
     if whence == 1:
-      if fi.offset + offset > self.ssize:
+      if fi.offset + offset < self.ssize:
         fi.offset += offset
+      else:
+	 return -1
     if whence == 2:
       fi.offset = self.ssize
     return fi.offset
 
   def vclose(self, fd):
     fi = self.fdm.get(fd)
-    libewf.libewf_close(fi.id) 
+    libewf.libewf_close(fi.id.value()) 
     self.fdm.remove(fd)
     return 0
 

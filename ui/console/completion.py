@@ -340,8 +340,10 @@ class LineParser():
             if context.config != None:
                 try:
                     commands.append((context.config.origin(), context.makeArguments(), context.threaded, ""))
-                except (KeyError, ValueError) as error:
+                except KeyError, error:
                     commands.append((context.config.origin(), None, context.threaded, "module < " + context.config.origin() + " >\n" + str(error)))
+                except ValueError, error:
+		    commands.append((context.config.origin(), None, context.threaded, "module < " + context.config.origin() + " >\n" + str(error)))
             elif len(context.tokens) != 0:
                 commands.append((None, None, None, str("module < "+ context.tokens[0] + " > does not exist")))
         if self.DEBUG and self.VERBOSITY:

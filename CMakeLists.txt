@@ -32,7 +32,7 @@ endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 option(ENABLE_DEBUG "Compile using -g flag ? Useful for debugging" OFF)
 if(UNIX)
   if(ENABLE_DEBUG)
-    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g)
+    add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall)
     message(STATUS "Will use -g for debugging -- yes")
   else(ENABLE_DEBUG)
 #change flag here
@@ -77,7 +77,8 @@ if(DISABLE_SWIG_THREADING)
   message(STATUS "Will we use swig -threads -- no")
 else()
   #message(STATUS "Will we use swig -threads -- yes")
-  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
+  #set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -O -threads)
+  set(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -threads)
 endif(DISABLE_SWIG_THREADING)
 # $> cmake -DDISABLE_SWIG_THREADING:BOOLEAN=ON
 
