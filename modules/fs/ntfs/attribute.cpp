@@ -182,7 +182,7 @@ void		Attribute::setRunList()
     _runAmount += offsetRunToSet->runLength;
     if (runListIndex) {
 // Also transform relative offset addr to real addr
-//  Be carefule ; runLength is relative to previous offset it can be signed !
+//  Be carefull ; runLength is relative to previous offset it can be signed !
       _offsetList[runListIndex].runLength += _offsetList[runListIndex - 1].runLength;
       _offsetList[runListIndex].runOffset += _offsetList[runListIndex - 1].runOffset;
     }
