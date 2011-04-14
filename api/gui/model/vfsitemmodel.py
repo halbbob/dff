@@ -604,7 +604,8 @@ class TreeModel(QStandardItemModel, EventHandler):
    * http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/qstandarditem.html
 
   """
-  numberPopulated = QtCore.pyqtSignal(int)  
+  numberPopulated = QtCore.pyqtSignal(int)
+  stateChanged = QtCore.pyqtSignal(QModelIndex)
   def __init__(self, __parent = None, event=False, fm = False):
     """
     Model constructor. Create the default QStandardItem's for the default nodes.
@@ -613,6 +614,7 @@ class TreeModel(QStandardItemModel, EventHandler):
     EventHandler.__init__(self)
     self.__parent = __parent
     self.VFS = VFS.Get()
+    self.ch = False
 
     # init translation
     self.translation()
@@ -631,6 +633,9 @@ class TreeModel(QStandardItemModel, EventHandler):
 
     if event:
       self.VFS.connection(self)
+  
+  def setCh(self, ch):
+    self.ch = ch
 
   def nodeClicked(self, mouseButton, node, index = None):
     """
@@ -683,11 +688,24 @@ class TreeModel(QStandardItemModel, EventHandler):
 
     \return a QVariant containing the data, or an invalid QVariant if the data could not be retrieved.
     """
+    if not index.isValid():
+      return QVariant()
 
     # Qt.UserRole + 2 contain a boolean indicating if the node has already been expanded
     # in the tree.
     if role == Qt.UserRole + 2:
       return QStandardItemModel.data(self, index, role)
+
+    # get the checkstate if necessary
+    if self.ch == True:
+      if role == Qt.CheckStateRole:
+        data = QStandardItemModel.data(self, index, Qt.CheckStateRole)
+        if data == Qt.Checked:
+          return Qt.Checked
+        elif data == Qt.PartiallyChecked:
+          return Qt.Checked
+        else:
+          return Qt.Unchecked
 
     # call QStandardItemModel.data method with a Qt.UserRole + 1 to get the pointer on the node
     # (returns a invalid QVariant if the node or the data is None)
@@ -715,6 +733,25 @@ class TreeModel(QStandardItemModel, EventHandler):
     if role == Qt.DecorationRole:
       return QVariant(QIcon(node.icon()))
     return QVariant()
+
+  def setData(self, index, value, role):
+    """
+    \reimp
+
+    Set the data which value is `value` at index `index` with role `role`.
+
+    \return `True` if no error occured, `False` otherwise.
+    """
+    if self.ch == True:
+      if role == Qt.CheckStateRole:
+        ret =  QStandardItemModel.setData(self, index, value, role)
+        if ret == False:
+          return False
+        data = QStandardItemModel.data(self, index, Qt.UserRole + 1)
+        if not data.isValid():
+          return False
+        self.emit(SIGNAL("stateChanged"), index)
+    return True #return true if ok 	
 
   def columnCount(self, parent = QModelIndex()):
     """
@@ -759,7 +796,7 @@ class TreeModel(QStandardItemModel, EventHandler):
 
     \returns the flag set in the model.
     """
-    return (Qt.ItemIsSelectable | Qt.ItemIsEnabled )  
+    return (Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)  
 
   def Event(self, e):
     """
@@ -857,11 +894,9 @@ class CompleterModel(VFSItemModel):
         self.__absolute = False
         self.currentPath = ""
 
-
     def setCurrentPath(self, path):
       self.currentPath = path
       
-
     def data(self, index, role):
         if not index.isValid():
           return QVariant()

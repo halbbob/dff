@@ -122,9 +122,11 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
  
   def addOptionsView(self):
     self.nodeViewBox = NodeViewBox(self)
-    self.nodeFilterBox = NodeFilterBox(self)
+    self.nodeFilterBox = NodeFilterBox(self, self.treeModel)
+    self.nodeFilterBox.vfs_item_model(self.model)
     self.baseLayout.insertWidget(0,self.nodeFilterBox)
     self.baseLayout.insertWidget(0, self.nodeViewBox)
+    self.nodeFilterBox.setVisible(False)
 
   def addModel(self, path):
     self.model = VFSItemModel(self, True, True)

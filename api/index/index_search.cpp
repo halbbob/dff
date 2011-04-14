@@ -23,7 +23,9 @@
 #include "../include/vlink.hpp"
 #include "../include/index.hpp"
 
-#include <CLucene.h> //queryParser/QueryParser.h>
+#include <CLucene.h> 
+#include <CLucene/queryParser/MultiFieldQueryParser.h>
+#include <CLucene/search/Compare.h>
 
 AttributeIndex::AttributeIndex(std::string name, std::string query) : AttributesHandler(name)
 {
@@ -39,7 +41,7 @@ Attributes 	AttributeIndex::attributes(Node * node)
   return vm;
 }
 
-IndexSearch::IndexSearch() : __location(".")
+IndexSearch::IndexSearch() : __location(".") // default location, should not be used.
 {
 }
 
@@ -55,9 +57,22 @@ IndexSearch::~IndexSearch()
 void	IndexSearch::exec_query(const std::string & query,
 				const std::string & must_contain_query)
 {
-
   lucene::analysis::standard::StandardAnalyzer * an = NULL;
   lucene::search::IndexSearcher * index = NULL;
+  lucene::search::Query * q;
+  TCHAR qq[512];
+  wchar_t **fields = new wchar_t*[3];
+
+  fields[0] = new wchar_t[5];
+  fields[1] = new wchar_t[5];
+  fields[2] = 0;
+  STRCPY_AtoT(fields[0], "name", 5);
+  STRCPY_AtoT(fields[1], "text", 5);
+
+  uint8_t * flags = new uint8_t[2];
+
+  flags[0] = lucene::queryParser::MultiFieldQueryParser::NORMAL_FIELD;
+  flags[1] = lucene::queryParser::MultiFieldQueryParser::NORMAL_FIELD;
 
   if (this->__location.empty())
     return ;
@@ -70,10 +85,26 @@ void	IndexSearch::exec_query(const std::string & query,
     {
       an = _CLNEW lucene::analysis::standard::StandardAnalyzer;
       index = _CLNEW lucene::search::IndexSearcher(this->__location.c_str());
+
+      STRCPY_AtoT(qq, query.c_str(), 511);
+      qq[query.size() >= 512 ? 512 : query.size()];
+      if (must_contain_query.empty())
+	q = lucene::queryParser::MultiFieldQueryParser::parse(qq, (const wchar_t **)fields,  an);
+      else
+	q = __getMultiSearchQuery(must_contain_query, an);
     }
-  catch(std::exception & e)
+  catch (CLuceneError & e)
     {
-      std::cerr << "Cannot perfrorm search : " << e.what()
+      std::cerr << "Cannot perform the search : " << e.what()
+		<< "Does the index exist ?"
+		<< std::endl;
+      _CLDELETE(index);
+      _CLDELETE(an);
+      return ;
+    }
+  catch (std::exception & e)
+    {
+      std::cerr << "Cannot perform the search : " << e.what()
 		<< "Does the index exist ?"
 		<< std::endl;
       _CLDELETE(index);
@@ -81,15 +112,7 @@ void	IndexSearch::exec_query(const std::string & query,
       return ;
     }
 
-  lucene::search::Query * q;
-  TCHAR qq[512];
-
-  STRCPY_AtoT(qq, query.c_str(), 512);
-  qq[query.size() >= 512 ? 512 : query.size()];
-  if (must_contain_query.empty())
-    q = lucene::queryParser::QueryParser::parse(qq, _T("contents"), an);
-  else
-    q = __getMultiSearchQuery(must_contain_query, an);
+  _tprintf(_T("parsed query : %s\n"), (const wchar_t*)q->toString());
 
   // if the query is not NULL and the Hits * is not NULL create VLinks and then
   // free resources before exiting.
@@ -101,7 +124,7 @@ void	IndexSearch::exec_query(const std::string & query,
       // Get hits and display results if not NULL.
       lucene::search::Hits *  h = index->search(q);
       if (!h)
-	std::cerr << "An error eccured while fetching results. Cannot proceed."
+	std::cerr << "An error occured while fetching results. Cannot proceed."
 		  << std::endl;
       else
 	{
@@ -177,6 +200,41 @@ lucene::search::Query * IndexSearch::__getMultiSearchQuery(const std::string & q
     between the different terms of the search. The logical AND should be added.
   */
   return NULL;
+}
+
+bool		IndexSearch::deleteDoc(std::string path, std::string location)
+{
+  TCHAR *	w_path = (TCHAR *)operator new((path.size() + 1) * sizeof(w_path));
+  
+  STRCPY_AtoT(w_path, path.c_str(), path.size());
+  w_path[path.size()] = 0;
+
+  try
+    {
+      lucene::index::Term * doc_path
+	= _CLNEW lucene::index::Term(_T("path"), w_path);
+
+      lucene::store::Directory * directory 
+	= lucene::store::FSDirectory::getDirectory(location.c_str(), false);
+
+      lucene::index::IndexReader *  indexReader
+	= lucene::index::IndexReader::open(directory);
+
+      if (lucene::index::IndexReader::isLocked(location.c_str()))
+	lucene::index::IndexReader::unlock(location.c_str());
+
+      indexReader->deleteDocuments(doc_path);
+      indexReader->close();
+
+      _CLDELETE(indexReader);
+      _CLDELETE(doc_path);
+    }
+  catch (CLuceneError & e)
+    {
+      std::cerr << "CLuceneError caught : " << e.what() << std::endl;
+      return false;
+    }
+  return true;
 }
 
 char* IndexSearch::narrow( const wstring& str )

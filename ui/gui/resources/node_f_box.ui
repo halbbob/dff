@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>NodeFBox</class>
+ <widget class="QWidget" name="NodeFBox">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1133</width>
+    <height>51</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Quick search :</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="searchClause"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="notIndexed">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="recurse">
+     <property name="text">
+      <string>Recurse</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox">
+     <property name="text">
+      <string>Search in files content</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="search">
+     <property name="toolTip">
+      <string>Search</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/search_small.png</normaloff>:/search_small.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="advancedSearch">
+     <property name="toolTip">
+      <string>Advanced search</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/search_advance.png</normaloff>:/search_advance.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="indexOpt">
+     <property name="toolTip">
+      <string>Index options</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/db_opt.png</normaloff>:/db_opt.png</iconset>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="gui.qrc"/>
+ </resources>
+ <connections/>
+</ui>

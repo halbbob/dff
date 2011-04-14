@@ -13,9 +13,21 @@
 #  Solal Jacob <sja@digital-forensic.org>
 # 
 
+import thread
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog, QMessageBox
+from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog, QMessageBox, QDialog, QProgressBar
+
+from api.vfs.libvfs import VFS
+from api.index.libindex import IndexSearch, Index
+
+from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
+from ui.gui.resources.ui_advance_search import Ui_AdvanceSearch
+from ui.conf import Conf
+
+from ui.gui.widget.modif_index import ModifIndex
+
 try:
   from api.index.libindex import *
   IndexerFound = True
@@ -23,37 +35,179 @@ except ImportError:
   IndexerFound = False
 from ui.conf import Conf
 
-class NodeFilterBox(QWidget):
+class AdvSearch(QDialog, Ui_AdvanceSearch):
+  def __init__(self, parent):
+    super(QDialog, self).__init__()
+    self.parent = parent
+    self.setupUi(self)
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.resetForm.clicked.connect(self.reset_form)
+    else:
+      QtCore.QObject.connect(self.resetForm, SIGNAL("clicked(bool)"), self.reset_form)
+
+  def reset_form(self, changed):
+    self.allWords.setText("")
+    self.noneWord.setText("")
+    self.oneWord.setText("")
+
+class NodeFilterBox(QWidget, Ui_NodeFBox):
   """
   This class is designed to perform searches on nodes in the VFS or a part of the VFS.
   """
-  def __init__(self, parent):
+  def __init__(self, parent, model):
     QWidget.__init__(self)
+    Ui_NodeFBox.__init__(parent)
     self.parent = parent
+    self.setupUi(self)
+    self.model = model
+    self.translation()
+    self.opt = ModifIndex(self, model)
 
-    # create the GUI for searching within the content of a node
-    self.filterContentLineEdit = QLineEdit()
-    self.filterContentLabel = QLabel(self.tr("Contains:"))
-    self.filterContentLabel.setBuddy(self.filterContentLineEdit)
-    self.filterContentLineEdit.setText("")
-
-    # create the button used to launch the search
-    self.searchButton = QPushButton(self.tr("&Search"))
+    self.adv = AdvSearch(self)
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.searchButton.clicked.connect(self.search)
+      self.search.clicked.connect(self.searching)
+      self.notIndexed.linkActivated.connect(self.index_opt2)
+      self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
+      self.advancedSearch.clicked.connect(self.adv_search)
     else:
-      QtCore.QObject.connect(self.searchButton, SIGNAL("clicked(bool)"), self.search)
+      QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
+      QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
+      QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
+      QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
 
-    # adding all widgets in a QGridLayout
-    proxyLayout = QGridLayout()
-    proxyLayout.addWidget(self.filterContentLabel, 0, 0)
-    proxyLayout.addWidget(self.filterContentLineEdit, 0, 1, 1, 3)
-    proxyLayout.addWidget(self.searchButton, 0, 4)
+  def index_opt2(self, url):
+    self.explain_this_odd_behavior()
 
-    # set the QGridLayout in the current widget and make it visible
-    self.setLayout(proxyLayout)
-    self.setVisible(False)
+  def explain_this_odd_behavior(self):
+    ret = self.opt.exec_()
+    thread.start_new_thread(self.index_opt, (True, ret))
+
+  def index_opt(self, changed, ret):
+    # set labal to indicate that a dir is not indexed to empty
+    self.notIndexed.setText("")
+
+    conf = Conf()
+    index_path = conf.index_path
+
+    if ret == QDialog.Accepted:
+      index = Index(index_path)
+      index.createIndex()
+
+      # config index
+      index_c = self.opt.indexFileContent.checkState()
+      index_a = self.opt.indexFileAttr.checkState()
+
+      if index_c == Qt.Checked:
+        index.setIndexContent(True)
+      else:
+        index.setIndexContent(False)
+
+      if index_a == Qt.Checked:
+        index.setIndexAttr(True)
+      else:
+       index.setIndexAttr(False)
+
+      # delete doc from index (if any stuff are to be deleted)
+      for i in self.opt.un_index:
+        recurse = self.opt.indexed_items[long(i)]
+        node = VFS.Get().getNodeFromPointer(i)
+        if recurse == True:
+          tmp = node.children()
+          for j in tmp:
+            IndexSearch.deleteDoc(str(j.absolute()).lower(), str(index_path).lower())
+        else:
+          self.deleteRecurse(node, index, index_path)
+        self.opt.indexed_items.pop(i)
+
+      # adding new selected nodes in index
+      for i in self.opt.tmp_indexed_items:
+        node = VFS.Get().getNodeFromPointer(i)
+        self.opt.indexed_items[i] = self.opt.tmp_indexed_items[i]
+
+        # only index current node content
+        if self.opt.indexed_items[i] == True:
+          tmp = node.children()
+          for ii in tmp:
+            index.indexData(ii)
+        else: #index recursively
+          self.recurseNode(node, index)
+      self.opt.tmp_indexed_items.clear()
+
+      index.closeIndex()
+      # un-activated the check box for nodes which have been recursivly indexed.
+      self.hide_recurse()
+      # clear the un index dict
+      self.opt.un_index.clear()
+
+  def hide_recurse(self):
+    for i in range(0, self.opt.indexedItems.rowCount()):
+      item = self.opt.indexedItems.item(i, 1)
+      if item.data(Qt.CheckStateRole) == Qt.Checked:
+        item.setFlags(Qt.NoItemFlags)
+
+  def deleteRecurse(self, node, index, index_path):
+    if not node:
+      return
+    if node.size() and node.isFile():
+      IndexSearch.deleteDoc(str(node.absolute()), index_path)
+    if node.hasChildren(): # if the node has children, get all of them
+      tmp = node.children()
+      for i in tmp:
+        self.deleteRecurse(i, index, index_path);
+
+  def recurseNode(self, node, index):
+    if not node:
+      return ;
+    if node.size() and node.isFile():
+      index.indexData(node);
+    if node.hasChildren(): # if the node has children, get all of them
+      tmp = node.children()
+      for i in tmp:
+        self.recurseNode(i, index);
+
+  def adv_search(self, changed):
+    ret = self.adv.exec_()
+    if ret == QDialog.Accepted:
+      all_word = str(self.adv.allWords.text())
+      none_word = str(self.adv.noneWord.text())
+      one_word = str(self.adv.oneWord.text())
+
+      # LOL
+      if all_word == "t":
+        all_word = ""
+      if none_word == "t":
+        none_word = ""
+      if one_word == "t":
+        one_word = ""
+      if all_word == "" and none_word == "" and one_word == "":
+        return
+      query = ""
+      query += one_word
+      none_word = none_word.lstrip()
+      l = none_word.split()
+      if len(l):
+        for i in l:
+          query += (" -" + i)
+      elif none_word != "":
+        query += (" -" + none_word)
+
+      all_word = all_word.lstrip()
+      l = all_word.split()
+      if len(l):
+        for i in l:
+          query += (" AND " + i)
+      elif all_word != "":
+        if self.adv.allWordTitle.isChecked():
+          query += (all_word)
+        if self.adv.allWordContent.isChecked():
+          query += (all_word)
+
+      # prepare stuff to fo the query
+      conf = Conf()
+      index_path = conf.index_path # get path to the index
+      search_engine = IndexSearch(index_path)
+      search_engine.exec_query(query, "")
 
   def filterRegExpChanged(self):
     if self.quickSearch.isChecked():
@@ -66,59 +220,40 @@ class NodeFilterBox(QWidget):
       if self.parent.currentProxyModel():
         self.parent.currentProxyModel().setFilterRegExp(regExp)
 
-  def filterColumnChanged(self):
-    if self.parent.currentProxyModel():
-      self.parent.currentProxyModel().setFilterKeyColumn(self.filterColumnComboBox.currentIndex())
+  def searching(self, changed):
+    if not self.searchClause.text().isEmpty():
+      try:
+        # testing shit
+        useless = self.opt.indexed_items[long(self.vfs_model.rootItem.this)]
 
-  def sortChanged(self):
-    if self.sortCaseSensitivityCheckBox.isChecked():
-      caseSensitivity = Qt.CaseSensitive
-    else:
-      caseSensitivity = Qt.CaseInsensitive
-    if self.parent.currentProxyModel():
-      self.parent.currentProxyModel().setSortCaseSensitivity(caseSensitivity)
+        # prepare stuff to fo the query
+        conf = Conf()
+        index_path = conf.index_path # get path to the index
+        search_engine = IndexSearch(index_path)
+        qquery = str(self.searchClause.text())
 
-  def search(self, changed):
-    if IndexerFound:
-      dff_conf = Conf()
-      if not self.filterContentLineEdit.text().isEmpty():
-        search_engine = IndexSearch(str(dff_conf.index_path))
-        qquery = str(self.filterContentLineEdit.text())
+        # strip the query to remove useless char
         qquery = qquery.lstrip()
+
+        # exec the query
         search_engine.exec_query(qquery, "")
-      else:
-        msg = QMessageBox.warning(self, "DFF", "Please fill the contain field", QMessageBox.Ok)
-    else:
-      msg = QMessageBox.warning(self, "DFF", "Indexer module not installed", QMessageBox.Ok)
+      except KeyError:
+        # if the key is not found that means that the current node is not indexed
+        self.notIndexed.setText("<font color='red'>" + self.msg_not_indexed \
+                                  + "</font> <a href=\"\#\">" + self.msg_not_indexed2 \
+                                  + "</a>")
 
+  def translation(self):
+    self.msg_not_indexed = self.tr("This location is not indexed.")
+    self.msg_not_indexed2 = self.tr("Index it ?")
 
-  def openDictionary(self, changed):
-    dialog = QFileDialog()
-    dialog.exec_()
-    path = str(dialog.selectedFiles()[0])
-    self.dictionnary.setText(path)
+  def   vfs_item_model(self, model):
+    """
+    Method used to access to the vfsitemmodel. It is used to know
+    the current directory in which we currently are.
+    """
+    self.vfs_model = model
+    self.connect(self.vfs_model, SIGNAL("rootPathChanged"), self.hideIndexBar)
 
-  def quickSearchStateChanged(self, state):
-    self.changeWidgetState(state)
-    if not self.quickSearch.isChecked():
-      if self.parent.currentProxyModel():
-        self.parent.currentProxyModel().setFilterRegExp(QRegExp(""))
-    else:
-      self.filterRegExpChanged()
-
-  def openNamesDictionary(self, changed):
-    dialog = QFileDialog()
-    dialog.exec_()
-    path = str(dialog.selectedFiles()[0])
-    self.namesDictionnary.setText(path)
-
-  def changeWidgetState(self, state):
-    self.dictionnary.setEnabled(not state)
-    self.dictLabel.setEnabled(not state)
-    self.filterContentLineEdit.setEnabled(not state)
-    self.filterContentLabel.setEnabled(not state)
-    self.openDict.setEnabled(not state)
-    self.namesDictLabel.setEnabled(not state)
-    self.namesDictionnary.setEnabled(not state)
-    self.openDictNames.setEnabled(not state)
-    self.searchButton.setEnabled(not state)
+  def   hideIndexBar(self, node):    
+    self.notIndexed.setText("")

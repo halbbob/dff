@@ -112,6 +112,9 @@ public:
   */
   void			setDocument(lucene::document::Document * doc);
 
+  void	setIndexContent(bool index);
+  void	setIndexAttr(bool index);
+
 private:
   void			__indexContent(Node * data, lucene::document::Field * content);
 
@@ -120,6 +123,7 @@ private:
   lucene::document::Document *		__doc;
   lucene::analysis::standard::StandardAnalyzer *	__an;
   lucene::document::Field *		__content;
+  bool	index_content, index_attr;
 
 };
 
@@ -168,6 +172,8 @@ public:
   void	exec_query(const std::string & query,
 		   const std::string & must_contain_query = "");
   char*		narrow( const wstring& str );
+
+  static bool	deleteDoc(std::string path, std::string location);
 
 private:
   void		__displayResults(lucene::search::Hits *  h);
