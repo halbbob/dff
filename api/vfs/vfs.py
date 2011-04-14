@@ -13,28 +13,45 @@
 #  Solal J. <sja@digital-forensic.org>
 #
 
+
 from libvfs import *
+import types
 
 class vfs():
     def __init__(self):
         self.libvfs = VFS.Get()
 
 
-    def walk(self, top, topdown=True):
-        node = self.getnode(top.replace("//", "/"))
+    def walk(self, top, topdown=True, depth=-1):
+        if depth == 0:
+            return
+        if type(top) == types.StringType:
+            node = self.getnode(top.replace("//", "/"))
+        elif isinstance(top, Node):
+            node = top
+        else:
+            raise ValueError("top must be a string or a Node")
         if node == None:
             return
         children = node.children()
         dirs, files = [], []
         for child in children:
+            if type(top) == types.StringType:
+                item = child.name()
+            elif isinstance(top, Node):
+                item = child
             if child.hasChildren() or child.isDir():
-                dirs.append(child.name())
+                dirs.append(item)
             if child.size() > 0:
-                files.append(child.name())
+                files.append(item)
         if topdown:
             yield top, dirs, files
         for name in dirs:
-            for x in self.walk(str(top + "/" + name).replace("//", "/"), topdown):
+            if type(top) == types.StringType:
+                newtop = str(top + "/" + name).replace("//", "/")
+            elif isinstance(top, Node):
+                newtop = name
+            for x in self.walk(newtop, topdown, depth-1):
                 yield x
         if not topdown:
             yield top, dirs, files
