@@ -16,28 +16,26 @@
 
 #include "pff.hpp"
 
-
-
-PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file) : PffNodeEMail(name, parent, fsobj, error)
+PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEMail(name, parent, fsobj, appointment, error, file, clone)
 {
-  libpff_item_get_identifier(appointment, &(this->identifier), error);
-  this->pff_error = error;
-  this->pff_file = file;
+/*  if (*this->item)
+     libpff_item_free(this->item, error);
 
-  this->item = new libpff_item_t*; 
-  *(this->item) = NULL;
-
-
+  (*this->item) = NULL;
   if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, this->item, this->pff_error) == 0)
   {
-    (*this->item) = appointment; 
+    *this->item = appointment;
   }
+  else
+    libpff_item_free(this->item, error);
 //ds attribute pour pas prendre en ram ? 
+*/
 }
 
 
-void  PffNodeAppointment::attributesAppointment(Attributes* attr)
+void  PffNodeAppointment::attributesAppointment(Attributes* attr, libpff_item_t* item)
 {
+
   char*		entry_value_string 		= NULL;
   size_t	entry_value_string_size         = 0;
   size_t	maximum_entry_value_string_size	= 1;
@@ -64,16 +62,35 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr)
   value_uint32_to_attribute(libpff_appointment_get_busy_status, "Busy status")
 
   free(entry_value_string);
+
 }
 
 
 Attributes PffNodeAppointment::_attributes()
 {
-  Attributes attr = PffNodeEMail::_attributes();
-  Attributes appointment;
+  ///Attributes attr = PffNodeEMail::_attributes();
+  Attributes		attr;
+  libpff_item_t*	item = NULL;
+  /*Attributes appointment;
 
-  this->attributesAppointment(&appointment); 
+*/
+
+  if (this->pff_item == NULL)
+  {
+    if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, &item, this->pff_error) != 1)
+      return attr;
+  }
+  else 
+    item = *(this->pff_item);
+
+  attr = this->allAttributes(item);
+  Attributes	appointment;
+
+  this->attributesAppointment(&appointment, item); 
   attr[std::string("Appointment")] = new Variant(appointment);
+
+  if (this->pff_item == NULL)
+    libpff_item_free(&item, this->pff_error);
 
   return attr;
 }

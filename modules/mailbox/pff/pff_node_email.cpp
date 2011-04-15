@@ -21,12 +21,8 @@ PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_er
 {
 }
 
-
-
-PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_item_t *item, libpff_error_t** error) : PffNodeData(name, parent, fsobj, item, error) //format HTML / TXT  / RTF
+PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_item_t *item, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeData(name, parent, fsobj, item, error, file, clone)
 {
-  //this->itemEMail = mail;
-  //libpff_item_get_identifier(*mail, &(this->identifier), *error);
 }
 
 std::string	PffNodeEMail::icon(void)

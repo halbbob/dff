@@ -16,11 +16,31 @@
 
 #include "pff.hpp"
 
-
-
-PffNodeAttachment::PffNodeAttachment(std::string name, Node* parent, fso* fsobj, libpff_item_t *mail, libpff_error_t** error, size64_t size) : PffNodeEMail(name, parent, fsobj, mail, error)
+PffNodeAttachment::PffNodeAttachment(std::string name, Node* parent, fso* fsobj, libpff_item_t *item, libpff_error_t** error, size64_t size, libpff_file_t**  file, int attachment_iterator, bool clone) : PffNodeEMail(name, parent, fsobj, item, error, file, clone)
 {
+  int result;
+//  libpff_item_t*	attachment = NULL;
+
   this->setSize(size); 
+  this->attachment_iterator = attachment_iterator;
+
+/* 
+  if (this->pff_item)
+  {
+     cout << "TRY TO GET MESSAGE ATTACHMENT " << endl;
+     result = libpff_message_get_attachment(*(this->pff_item), attachment_iterator, &attachment, this->pff_error);
+    
+     if (result == 0 || result == -1)
+     {
+       libpff_message_get_attachment(item, attachment_iterator, &attachment, this->pff_error);
+       libpff_item_free(this->pff_item, error);
+       (*this->pff_item) = attachment;	
+       cout << "GET ONLY BY THIS FUCKING WAY " << endl;	
+     } 
+     else
+      cout << "OK" << endl;
+  }
+*/
 }
 
 
@@ -31,29 +51,51 @@ std::string	PffNodeAttachment::icon(void)
 
 uint8_t*	PffNodeAttachment::dataBuffer(void)
 {
-  uint8_t*	buff = NULL;
-  
+  uint8_t*		buff = NULL;
+  libpff_item_t*	item = NULL;
+  libpff_item_t* 	attachment = NULL;
+  int			result = 0;
+
   if (this->size() <= 0)
     return (NULL);
-  
+
+  if (this->pff_item == NULL)
+  {
+     result = libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, &item, this->pff_error);
+    if (result == 0 || result == -1)
+    {
+      cout << "can't get attachment by identifier" << endl;
+       return (NULL);
+    }
+  }
+  else
+  {
+    item = *(this->pff_item);
+   // cout << "get attachment by clone" << endl;
+  }
+  result = libpff_message_get_attachment(item, attachment_iterator, &attachment, this->pff_error);
+  if (result == 0 || result == -1)
+  {
+    cout << "can't get attachment by iterator " << endl;
+    return (NULL);
+  }
   buff =  new uint8_t[this->size()];
   
-  //6490
-  //uint32_t read_count                         = 0;
-  //uint8_t *attachment_data                   = NULL;
-  //size64_t attachment_data_size              = 0;
-  //uint32_t total_read			     = 0;
-  //off64_t result			     = 0;
-  //off64_t rsize				     = 0;
-
   ssize_t read_count                         = 0;
-  //size_t read_size                           = 0;
 
-  if (libpff_attachment_data_seek_offset(*(this->item), 0, SEEK_SET, this->pff_error) != 0)
+  if (libpff_attachment_data_seek_offset(attachment, 0, SEEK_SET, this->pff_error) != 0)
+  {
+    libpff_item_free(&attachment, this->pff_error);
+    if (this->pff_item == NULL)
+      libpff_item_free(&item, this->pff_error);
     return (NULL); //XXX can't be concurrent no FD in libpff !!! ? or maybe clone item here
-  
-  read_count = libpff_attachment_data_read_buffer(*(this->item), (uint8_t*)buff , this->size(), this->pff_error);
+  }
+  read_count = libpff_attachment_data_read_buffer(attachment, (uint8_t*)buff , this->size(), this->pff_error);
   //cout << "create buff size " << endl;
+
+  libpff_item_free(&attachment, this->pff_error);
+    if (this->pff_item == NULL)
+      libpff_item_free(&item, this->pff_error);
   return buff;
   // WORK BUT SEEK DONT WORK AFTER 8192KO this is in the bugtracker == 1 item size, look if a patch is possible
   ////read 8192 max

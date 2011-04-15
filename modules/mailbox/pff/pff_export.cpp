@@ -51,7 +51,7 @@ void pff::export_sub_items(libpff_item_t *item, Node* parent)
   
 }
 
-int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent)
+int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent, bool clone)
 {
   uint8_t 	item_type		= 0;
   int 		result			= 0;
@@ -69,11 +69,11 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_APPOINTMENT)
   {
-     result = this->export_appointment(item, item_index, parent);
+     result = this->export_appointment(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONTACT)
   {
-     result = this->export_contact(item, item_index, parent);
+     result = this->export_contact(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_DOCUMENT)
   {
@@ -83,12 +83,12 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   else if (item_type == LIBPFF_ITEM_TYPE_CONFLICT_MESSAGE || item_type == LIBPFF_ITEM_TYPE_EMAIL || item_type == LIBPFF_ITEM_TYPE_EMAIL_SMIME)
   {
 //	  cout << "Exporting e-mail" << endl;	
-     result = this->export_email(item, item_index, parent);
+     result = this->export_email(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_FOLDER)
   {
 	  //cout << "Exporting folder" << endl;	
-    result = this->export_folder(item, item_index, parent);
+    result = this->export_folder(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
@@ -110,7 +110,7 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   else if (item_type == LIBPFF_ITEM_TYPE_TASK)
   {
 	 cout << "Exporting task" << endl;
-	 result = this->export_task(item, item_index, parent);
+	 result = this->export_task(item, item_index, parent, clone);
   }
   else
   {
@@ -122,22 +122,22 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
  //if result ...
 }
 
-int pff::export_task(libpff_item_t* task, int task_index, Node* parent)
+int pff::export_task(libpff_item_t* task, int task_index, Node* parent, bool clone)
 {
   std::ostringstream taskName;
 
   taskName << std::string("Task") << task_index + 1;
   PffNodeFolder* nodeFolder = new PffNodeFolder(taskName.str(), parent, this);
 //13058
-  PffNodeTask*  nodeTask = new PffNodeTask(std::string("Task"), nodeFolder, this, task, &(this->pff_error), &(this->pff_file));
+  PffNodeTask*  nodeTask = new PffNodeTask(std::string("Task"), nodeFolder, this, task, &(this->pff_error), &(this->pff_file), clone);
 
-  this->export_attachments(task, nodeFolder);
+  this->export_attachments(task, nodeFolder, clone);
 
   return (1);
 }
 
 
-int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent)
+int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent, bool clone)
 {
 // 8920  export_handle_export_contact
   std::ostringstream contactName;
@@ -145,14 +145,14 @@ int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent)
   contactName << std::string("Contact") << contact_index + 1;
   PffNodeFolder* nodeFolder = new PffNodeFolder(contactName.str(), parent, this);
 
-  PffNodeContact*  nodeContact = new PffNodeContact(std::string("Contact"), nodeFolder, this, contact, &(this->pff_error));
+  PffNodeContact*  nodeContact = new PffNodeContact(std::string("Contact"), nodeFolder, this, contact, &(this->pff_error), &(this->pff_file), clone);
 
-  this->export_attachments(contact, nodeFolder);
+  this->export_attachments(contact, nodeFolder, clone);
 
   return (1);
 }
 
-int pff::export_appointment(libpff_item_t* appointment, int appointment_index, Node* parent)
+int pff::export_appointment(libpff_item_t* appointment, int appointment_index, Node* parent, bool clone)
 {
    std::ostringstream messageName; 
 
@@ -160,26 +160,26 @@ int pff::export_appointment(libpff_item_t* appointment, int appointment_index, N
    PffNodeFolder* nodeFolder = new PffNodeFolder(messageName.str(), parent, this);
 
 
-   PffNodeAppointment* 	nodeAppointment = new PffNodeAppointment(std::string("Appointment"), nodeFolder, this, appointment, &(this->pff_error), &(this->pff_file));
+   PffNodeAppointment* 	nodeAppointment = new PffNodeAppointment(std::string("Appointment"), nodeFolder, this, appointment, &(this->pff_error), &(this->pff_file), clone);
 
 //export_handle_export_message_header_to_stream -> 8236 == a ce ki est ds un mail a recuperer ! creation de node mais surtout des metadata car rien dedans ! 
 
 //export recipients  _> pareille que e-mail
 // juste pas l air d export les transport header et c ds node e-mail par default !!
 
-  this->export_attachments(appointment, nodeFolder);
+  this->export_attachments(appointment, nodeFolder, clone);
 
   return (1);
 }
 
 
 
-int pff::export_activity(libpff_item_t* activity, int activity_index, Node* parent)
+int pff::export_activity(libpff_item_t* activity, int activity_index, Node* parent, bool clone)
 {
    return (1);
 }
 
-int pff::export_folder(libpff_item_t* folder, int folder_index, Node* parent)
+int pff::export_folder(libpff_item_t* folder, int folder_index, Node* parent, bool clone)
 {
   uint8_t 	*folder_name		= NULL;
   size_t 	folder_name_size	= 0;
@@ -221,7 +221,7 @@ int pff::export_folder(libpff_item_t* folder, int folder_index, Node* parent)
   return (1);
 }
 
-int pff::export_email(libpff_item_t* email, int email_index, Node *parent)
+int pff::export_email(libpff_item_t* email, int email_index, Node *parent, bool clone)
 {
 //8888
   size_t 	email_html_body_size = 0;
@@ -254,25 +254,25 @@ int pff::export_email(libpff_item_t* email, int email_index, Node *parent)
   
   PffNodeFolder* nodeFolder = new PffNodeFolder(messageName.str(), parent, this);
 
-  PffNodeEmailTransportHeaders* nodeTransportHeaders = new PffNodeEmailTransportHeaders("Transport Headers", nodeFolder, this, email, &(this->pff_error));
+  PffNodeEmailTransportHeaders* nodeTransportHeaders = new PffNodeEmailTransportHeaders("Transport Headers", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);
 
   if (has_text_body)
   {
 	  //cout << "create text message node" << endl;
-    PffNodeEmailMessageText* 	nodeMessageText = new PffNodeEmailMessageText("Message", nodeFolder, this, email, &(this->pff_error));
+    PffNodeEmailMessageText* 	nodeMessageText = new PffNodeEmailMessageText("Message", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);
   }
   if (has_html_body)
   {
 	  //cout << "create HTML message node" << endl;
-    PffNodeEmailMessageHTML* 	nodeMessageHTML = new PffNodeEmailMessageHTML("Message HTML", nodeFolder, this, email, &(this->pff_error));
+    PffNodeEmailMessageHTML* 	nodeMessageHTML = new PffNodeEmailMessageHTML("Message HTML", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);
   }
   if (has_rtf_body)
   {
 	  //cout << "create RTF message node" << endl;
-    PffNodeEmailMessageRTF* 	nodeMessageRTF = new PffNodeEmailMessageRTF("Message RTF", nodeFolder, this, email, &(this->pff_error));
+    PffNodeEmailMessageRTF* 	nodeMessageRTF = new PffNodeEmailMessageRTF("Message RTF", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);
   }
 //9361 Export Attachements
-  this->export_attachments(email, nodeFolder);
+  this->export_attachments(email, nodeFolder, clone);
 
 
 
@@ -283,7 +283,7 @@ int pff::export_email(libpff_item_t* email, int email_index, Node *parent)
   return (1);
 }
 
-int pff::export_attachments(libpff_item_t* item, Node* parent)
+int pff::export_attachments(libpff_item_t* item, Node* parent, bool clone)
 {
   int		result 				= 0;
   int 		attachment_type         	= 0;
@@ -316,17 +316,22 @@ int pff::export_attachments(libpff_item_t* item, Node* parent)
      //cout << "attachment " << attachment_iterator << " get atchment ok " <<  endl;
     // new PffNodeAttachment();
      if (libpff_attachment_get_type(attachment, &attachment_type, &(this->pff_error)) != 1)
+     {
+       libpff_item_free(&attachment, &(this->pff_error));
        continue;    
-
+     }
      //cout << "attachment " << attachment_iterator << " get type ok " <<  endl;
      if ((attachment_type != LIBPFF_ATTACHMENT_TYPE_DATA)
          && (attachment_type != LIBPFF_ATTACHMENT_TYPE_ITEM)
          && (attachment_type != LIBPFF_ATTACHMENT_TYPE_REFERENCE))
+     {
+	libpff_item_free(&attachment, &(this->pff_error));
         continue;
- 
+     }
      if ((attachment_type == LIBPFF_ATTACHMENT_TYPE_REFERENCE)) //6126
      {
 	     //cout << "Attachment is stored externally" << endl;
+       libpff_item_free(&attachment, &(this->pff_error));
        continue;
      }
      if (attachment_type == LIBPFF_ATTACHMENT_TYPE_DATA)
@@ -335,8 +340,11 @@ int pff::export_attachments(libpff_item_t* item, Node* parent)
      attachment_filename = new uint8_t[attachment_filename_size];
     //6166
      if (attachment_filename == NULL)
+     {
+       libpff_item_free(&attachment, &(this->pff_error));
+       delete attachment_filename;
        continue;
-	
+     }	
      //cout << "attachment " << attachment_iterator << " alloc filename ok " <<  endl;
      std::ostringstream attachmentName;
      if (attachment_type == LIBPFF_ATTACHMENT_TYPE_DATA)
@@ -359,12 +367,18 @@ int pff::export_attachments(libpff_item_t* item, Node* parent)
 	     //cout << "attachment type data " << endl;
 	 result = libpff_attachment_get_data_size(attachment, &attachment_data_size, &(this->pff_error));
          if (result == -1)
+	 {
+	   libpff_item_free(&attachment, &(this->pff_error));
+	   delete attachment_filename;
 	   continue;
+	 }
          if ((result != 0) && (attachment_data_size > 0 ))
 	 {
 		//6443
 		//cout << "create attachment " << endl;
-	   new PffNodeAttachment(attachmentName.str(), parent, this, attachment, &(this->pff_error), attachment_data_size);
+	   new PffNodeAttachment(attachmentName.str(), parent, this, item, &(this->pff_error), attachment_data_size, &(this->pff_file), attachment_iterator, clone);
+	   delete attachment_filename;
+	   libpff_item_free(&attachment, &(this->pff_error));
 	 }
      }    
      else if(attachment_type == LIBPFF_ATTACHMENT_TYPE_ITEM)
@@ -374,14 +388,16 @@ int pff::export_attachments(libpff_item_t* item, Node* parent)
 	if (libpff_attachment_get_item(attachment, attached_item, &(this->pff_error)) == 1)
 	{
 	  PffNodeFolder* folder = new PffNodeFolder(attachmentName.str(), parent, this);		
-          this->export_item(*attached_item, 0, 1, folder);
-	 // libpff_item_free(attached_item, &(this->pff_error)); //didn't free because can't copy
+          this->export_item(*attached_item, 0, 1, folder, true);
+	  libpff_item_free(attached_item, &(this->pff_error)); //didn't free because can't copy
 	//delete atached_item
 	}
 	else
 	{
 	  delete attached_item;
 	}
+	libpff_item_free(&attachment, &(this->pff_error));
+	delete attachment_filename;
      }
   }
   return (1);
@@ -401,7 +417,7 @@ int pff::export_sub_folders(libpff_item_t* folder, PffNodeFolder* nodeFolder)
      //abot return ?? 11812
      if (libpff_folder_get_sub_folder(folder, sub_folder_iterator, &sub_folder, &(this->pff_error)) != 1)
        throw vfsError(std::string("Unable to retrieve sub folders"));
-     if (export_folder(sub_folder, sub_folder_iterator, nodeFolder) != 1) //catch ici car recursif ? 
+     if (export_folder(sub_folder, sub_folder_iterator, nodeFolder, false) != 1) //catch ici car recursif ? 
        throw vfsError(std::string("Unable to export sub folders"));  
      if (libpff_item_free(&sub_folder, &(this->pff_error)) != 1)
        throw vfsError(std::string("Unable to free sub folder")); 

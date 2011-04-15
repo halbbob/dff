@@ -16,11 +16,11 @@
 
 #include "pff.hpp"
 
-PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t** error) : PffNodeEMail(name, parent, fsobj, contact, error)
+PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEMail(name, parent, fsobj, contact, error, file, clone)
 {
   size_t 	headers_size  = 0; 
 
-  if (libpff_message_get_plain_text_body_size(*(this->item), &headers_size, this->pff_error) == 1)
+  if (libpff_message_get_plain_text_body_size(contact, &headers_size, this->pff_error) == 1)
   {
     if (headers_size > 0)
        this->setSize(headers_size); 
@@ -29,16 +29,30 @@ PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpf
 
 Attributes	PffNodeContact::_attributes(void)
 {
-  Attributes	attr = PffNodeEMail::_attributes();
-  
+  Attributes		attr;
+  libpff_item_t*	item = NULL;
+
+  if (this->pff_item == NULL)
+  {
+    if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, &item, this->pff_error) != 1)
+      return attr;
+  }
+  else 
+    item = *(this->pff_item);
+ 
+  attr = this->allAttributes(item); 
+
   Attributes	contact;
-  this->attributesContact(&contact);
+  this->attributesContact(&contact, item);
   attr[std::string("Contact")] = new Variant(contact);
+
+  if (this->pff_item == NULL)
+    libpff_item_free(&item, this->pff_error);
 
   return (attr);
 }
 
-void		PffNodeContact::attributesContact(Attributes* attr)
+void		PffNodeContact::attributesContact(Attributes* attr, libpff_item_t* item)
 {
   char*		entry_value_string		= 0;
   size_t	entry_value_string_size 	= 0;
@@ -95,23 +109,35 @@ void		PffNodeContact::attributesContact(Attributes* attr)
   
   free(entry_value_string);
   entry_value_string = NULL; 
+
 }
 
 
 uint8_t*	PffNodeContact::dataBuffer(void) //autant herite de mail_node_text directement
 {
   uint8_t*	entry_string = NULL;
+  libpff_item_t*	item = NULL;
 
   if (this->size() <= 0)
     return (NULL);
-	
-  entry_string =  new uint8_t [this->size()];
-	
-  if (libpff_message_get_plain_text_body(*(this->item), entry_string, this->size(), this->pff_error ) != 1 )
+
+  if (this->pff_item)
+    item = *(this->pff_item);
+  else
   {
+    if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, &item, this->pff_error) != 1)
+       return (NULL);
+  }
+  entry_string =  new uint8_t [this->size()];	
+  if (libpff_message_get_plain_text_body(item, entry_string, this->size(), this->pff_error ) != 1 )
+  {
+    if (this->pff_item == NULL)
+       libpff_item_free(&item, this->pff_error);
     delete entry_string;
     return (NULL);
   }
 
+  if (this->pff_item == NULL)
+    libpff_item_free(&item, this->pff_error);
   return (entry_string);
 }

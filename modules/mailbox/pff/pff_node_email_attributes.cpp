@@ -87,34 +87,51 @@ bool         msDateToVTime(uint64_t value, vtime *setMe)
   return false;
 }
 
-Attributes PffNodeEMail::_attributes()
-{
-//XXX options ds le modules pour choisir ce qu on veux en attribut, proposer transport
-// header soit ds un fichier virtuel node soit en attribut
 
-  Attributes attr;
-//XXX maintenat qu on utilise des sous mrap faire un check et pas un return void sur les != attributes pour pas les push si error
+Attributes PffNodeEMail::allAttributes(libpff_item_t*	item)
+{
+  Attributes 		attr;
 
   Attributes messageHeader;
-  this->attributesMessageHeader(&messageHeader); //export message header 9147
+  this->attributesMessageHeader(&messageHeader, item);
   attr["Message Headers"] = new Variant(messageHeader);
-//   this->attributesMessageConversationIndex(attr); //9174
-// 9288 export_recipients
+
   Attributes recipients;
-  this->attributesRecipients(&recipients);
+  this->attributesRecipients(&recipients, item);
   attr["Recipients"] = new Variant(recipients);
 
-// 9315  export_handle_export_message_transport_headers
   Attributes transportHeaders;
-  this->attributesTransportHeaders(&transportHeaders); //internetHEaders.txt
+  this->attributesTransportHeaders(&transportHeaders, item);
   attr["Transport Headers"] = new Variant(transportHeaders);
+
+  return (attr);
+}
+
+Attributes PffNodeEMail::_attributes()
+{
+// header soit ds un fichier virtuel node soit en attribut
+  Attributes		attr;
+  libpff_item_t*	item = NULL;
+
+  if (this->pff_item == NULL)
+  {
+    if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, &item, this->pff_error) != 1)
+       return attr;
+  }
+  else 
+    item = *(this->pff_item);
+
+  attr = this->allAttributes(item);
+
+  if (this->pff_item == NULL)
+    libpff_item_free(&item, this->pff_error);
+
   return attr;
 }
 
 void PffNodeEMail::splitTextToAttributes(std::string text, Attributes* attr)
 {
- //format 
- //attributes name: attributesValue -> multiline !  
+
  size_t 	splitter = 0;
  size_t		next_splitter = 0;
  size_t 	eol = 0;
@@ -169,15 +186,15 @@ void PffNodeEMail::splitTextToAttributes(std::string text, Attributes* attr)
 
    splitter = next_eol + 2; 
  }
- 
+
 }
 
-void PffNodeEMail::attributesTransportHeaders(Attributes* attr)
+void PffNodeEMail::attributesTransportHeaders(Attributes* attr, libpff_item_t* item)
 {
   size_t message_transport_headers_size  = 0; 
   uint8_t *entry_string = NULL;
 
-  if (libpff_message_get_transport_headers_size(*(this->item), &message_transport_headers_size,
+  if (libpff_message_get_transport_headers_size(item, &message_transport_headers_size,
 	          				     this->pff_error) != 1)
     return ;
 
@@ -187,7 +204,7 @@ void PffNodeEMail::attributesTransportHeaders(Attributes* attr)
   entry_string =  new uint8_t [message_transport_headers_size];
 
 //This read all in buff there no seems to have class to get each attributes could be written to a buffer node but here we will 
-  if (libpff_message_get_transport_headers(*(this->item), entry_string, message_transport_headers_size, this->pff_error ) != 1 )
+  if (libpff_message_get_transport_headers(item, entry_string, message_transport_headers_size, this->pff_error ) != 1 )
   {
     delete entry_string;
     return ;
@@ -198,7 +215,7 @@ void PffNodeEMail::attributesTransportHeaders(Attributes* attr)
 }
 
 
-void PffNodeEMail::attributesRecipients(Attributes* attr)
+void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 {
   libpff_item_t	*recipients			= NULL;
   uint8_t 	*entry_value_string          	= NULL;
@@ -215,7 +232,7 @@ void PffNodeEMail::attributesRecipients(Attributes* attr)
 // seulement le dernier apparait car les attributs on le meme nom donc ca doit ecraser....
 // faire des liste et sous liste genre recipient1 : ... recipient2: /// -> refactor
 
-  if (libpff_message_get_recipients(*(this->item), &recipients, this->pff_error) == 1)
+  if (libpff_message_get_recipients(item, &recipients, this->pff_error) == 1)
   {
      if (libpff_item_get_number_of_sets(recipients, (uint32_t*) &number_of_recipients, this->pff_error) != 1)
       return ; 
@@ -289,7 +306,7 @@ void PffNodeEMail::attributesRecipients(Attributes* attr)
 }
 
 
-void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr)
+void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr, libpff_item_t* item)
 {
 //  cout << "Message conversation" << endl;//Conversation index.txt
 //4953
@@ -334,7 +351,7 @@ void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr)
  */ 
 }
 
-void PffNodeEMail::attributesMessageHeader(Attributes* attr)
+void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item)
 {
   char*				entry_value_string 		= NULL;
   size_t			entry_value_string_size 	= 0;
@@ -367,7 +384,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
 //3340 XXX libpff_message_get_size -> file size !! ??? message size ? set attr ou set as file size ?
   value_uint32_to_attribute(libpff_message_get_size, "Message size")  
 
-  if (libpff_message_get_flags(*(this->item), &entry_value_32bit, NULL) == 1)
+  if (libpff_message_get_flags(item, &entry_value_32bit, NULL) == 1)
   {
      if ((entry_value_32bit & LIBPFF_MESSAGE_FLAG_READ) == LIBPFF_MESSAGE_FLAG_READ)
        (*attr)["is readed"] = new Variant(std::string("Yes"));
@@ -385,7 +402,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
   value_string_to_attribute(libpff_message_get_sender_name, "Sender name")
   value_string_to_attribute(libpff_message_get_sender_email_address, "Sender email address")
 
-  if (libpff_message_get_importance(*(this->item), &entry_value_32bit, NULL) == 1)
+  if (libpff_message_get_importance(item, &entry_value_32bit, NULL) == 1)
   {
      for (uint32_t n = 0; n < 3; n++)
        if (entry_value_32bit == LIBPFF_MESSAGE_IMPORTANCE_TYPE[n].type)
@@ -395,7 +412,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
        }
   }
 
-  if (libpff_message_get_priority(*(this->item), &entry_value_32bit, NULL) == 1)
+  if (libpff_message_get_priority(item, &entry_value_32bit, NULL) == 1)
   {
      for (uint32_t n = 0; n < 3; n++)
        if (entry_value_32bit == LIBPFF_MESSAGE_PRIORITY_TYPE[n].type)
@@ -405,7 +422,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
        }
   }
 
-  if (libpff_message_get_sensitivity(*(this->item), &entry_value_32bit, NULL) == 1)
+  if (libpff_message_get_sensitivity(item, &entry_value_32bit, NULL) == 1)
   {
      for (uint32_t n = 0; n < 4; n++)
        if (entry_value_32bit == LIBPFF_MESSAGE_SENSITIVITY_TYPE[n].type)
@@ -415,7 +432,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
        }
   }
 
-  if (libpff_message_get_is_reminder(*(this->item), &entry_value_boolean, NULL) == 1)
+  if (libpff_message_get_is_reminder(item, &entry_value_boolean, NULL) == 1)
   {
     if (!(entry_value_boolean))
       (*attr)["Is a reminder"] = new Variant(std::string("no"));
@@ -426,7 +443,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr)
   value_time_to_attribute(libpff_message_get_reminder_time, "Reminder time")
   value_time_to_attribute(libpff_message_get_reminder_signal_time, "Reminder signal time")
 
-  if (libpff_message_get_is_private(*(this->item), &entry_value_boolean, NULL) == 1)
+  if (libpff_message_get_is_private(item, &entry_value_boolean, NULL) == 1)
   {
     if (!(entry_value_boolean))
       (*attr)["Is private"] = new Variant(std::string("no"));

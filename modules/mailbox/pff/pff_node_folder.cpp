@@ -34,13 +34,13 @@ std::string	PffNodeFolder::icon()
  //sent items
 //contacts
 //XXX 
-  if (this->name().find("Sent") != -1)
+  if (this->name().find("Sent") != std::string::npos)
     return (":folder_sent_mail");
-  if (this->name().find("Outbox") != -1)
+  if (this->name().find("Outbox") != std::string::npos)
     return (":folder_outbox");
-  if (this->name().find("Deleted") != -1)
+  if (this->name().find("Deleted") != std::string::npos)
     return (":mail_delete");
-  if (this->name().find("Inbox") != -1) //en francais ? regarder ds les attribut plutot ...
+  if (this->name().find("Inbox") != std::string::npos) //en francais ? regarder ds les attribut plutot ...
     return (":folder_inbox");
   return (":folder_128.png");
 }
