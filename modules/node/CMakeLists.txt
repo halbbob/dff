@@ -16,6 +16,7 @@
 set(node_srcs
   cut.py
   merge.py
+  split.py
 )
 
 install_file(node ${node_srcs})
