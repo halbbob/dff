@@ -10,14 +10,6 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-
-add_subdirectory(readlines)
-
-set(testmod_srcs
-  huge_node.py
-  gen_nodes.py
-)
-
-install_file(testmod ${testmod_srcs})
+__all__ = ["READLINES"]
