@@ -46,7 +46,7 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
     throw vfsError(std::string("Unable to retrive item type"));
   if (item_type == LIBPFF_ITEM_TYPE_ACTIVITY)
   {
-    cout << "Exporting activity" << endl;	
+    result = this->export_message_default(item, item_index, parent, clone, std::string("Activity"));
   }
   else if (item_type == LIBPFF_ITEM_TYPE_APPOINTMENT)
   {
@@ -58,7 +58,7 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_DOCUMENT)
   {
-    cout << "Exporting document" << endl;	
+    result = this->export_message_default(item, item_index, parent, clone, std::string("Document"));
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONFLICT_MESSAGE || item_type == LIBPFF_ITEM_TYPE_EMAIL || item_type == LIBPFF_ITEM_TYPE_EMAIL_SMIME)
   {
@@ -70,15 +70,15 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
-    result = this->export_meeting(item, item_index, parent, clone); 
+    result = this->export_message_default(item, item_index, parent, clone, std::string("Meeting")); 
   }
   else if (item_type == LIBPFF_ITEM_TYPE_NOTE)
   {
-    result = this->export_note(item, item_index, parent, clone);	
+    result = this->export_message_default(item, item_index, parent, clone, std::string("Note"));	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_RSS_FEED)
   {
-    cout << "Exporting rss feed" << endl;
+    result = this->export_message_default(item, item_index, parent, clone, std::string("RSS"));
   }
   else if (item_type == LIBPFF_ITEM_TYPE_TASK)
   {
@@ -93,26 +93,15 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
  return (result); //FIXME must return 1 and set add->result according to error
 }
 
-int pff::export_note(libpff_item_t* note, int note_index, Node* parent, bool clone)
+
+int pff::export_message_default(libpff_item_t* note, int note_index, Node* parent, bool clone, std::string item_type_name)
 {
-  std::ostringstream noteName;
+  std::ostringstream folderName;
 
-  noteName << std::string("Note") << note_index + 1;
-  PffNodeFolder* nodeFolder = new PffNodeFolder(noteName.str(), parent, this);
+  folderName << std::string(item_type_name) << note_index + 1;
+  PffNodeFolder* nodeFolder = new PffNodeFolder(folderName.str(), parent, this);
 
-  new PffNodeNote(std::string("Note"), nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
-
-  return (1);
-}
-
-int pff::export_meeting(libpff_item_t* meeting, int meeting_index, Node* parent, bool clone)
-{
-  std::ostringstream meetingName;
-
-  meetingName << std::string("Meeting") << meeting_index + 1;
-  PffNodeFolder* nodeFolder = new PffNodeFolder(meetingName.str(), parent, this);
-
-  new PffNodeMeeting(std::string("Meeting"), nodeFolder, this, meeting, &(this->pff_error), &(this->pff_file), clone);
+  new PffNodeEmailMessageText(std::string(item_type_name), nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
 
   return (1);
 }
