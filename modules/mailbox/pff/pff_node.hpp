@@ -117,22 +117,20 @@ public:
 };
 
 
-class PffNodeContact : public PffNodeEMail
+class PffNodeContact : public PffNodeEmailMessageText
 {
 public:
   EXPORT PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t**, libpff_file_t**, bool clone);
   EXPORT virtual Attributes 	_attributes(void);
   EXPORT void			attributesContact(Attributes* attr, libpff_item_t*);
-  EXPORT uint8_t*		dataBuffer(void); 
 };
 
-class PffNodeTask : public PffNodeEMail
+class PffNodeTask : public PffNodeEmailMessageText
 {
 public:
   EXPORT PffNodeTask(std::string name, Node* parent, fso* fsobj, libpff_item_t* task, libpff_error_t**, libpff_file_t** file, bool clone);
   EXPORT virtual Attributes   	_attributes(void);
   EXPORT void		      	attributesTask(Attributes* attr, libpff_item_t*); 
-  EXPORT uint8_t*	   	dataBuffer(void); 
 };
 
 class PffNodeUnallocatedBlocks : public Node

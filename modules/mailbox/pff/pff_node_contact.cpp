@@ -16,15 +16,8 @@
 
 #include "pff.hpp"
 
-PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEMail(name, parent, fsobj, contact, error, file, clone)
+PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpff_item_t* contact, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEmailMessageText(name, parent, fsobj, contact, error, file, clone)
 {
-  size_t 	headers_size  = 0; 
-
-  if (libpff_message_get_plain_text_body_size(contact, &headers_size, this->pff_error) == 1)
-  {
-    if (headers_size > 0)
-       this->setSize(headers_size); 
-  }
 }
 
 Attributes	PffNodeContact::_attributes(void)
@@ -109,34 +102,4 @@ void		PffNodeContact::attributesContact(Attributes* attr, libpff_item_t* item)
   
   free(entry_value_string);
   entry_value_string = NULL; 
-
-}
-
-uint8_t*	PffNodeContact::dataBuffer(void)
-{
-  uint8_t*	entry_string = NULL;
-  libpff_item_t*	item = NULL;
-
-  if (this->size() <= 0)
-    return (NULL);
-
-  if (this->pff_item)
-    item = *(this->pff_item);
-  else
-  {
-    if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, &item, this->pff_error) != 1)
-       return (NULL);
-  }
-  entry_string =  new uint8_t [this->size()];	
-  if (libpff_message_get_plain_text_body(item, entry_string, this->size(), this->pff_error ) != 1 )
-  {
-    if (this->pff_item == NULL)
-       libpff_item_free(&item, this->pff_error);
-    delete entry_string;
-    return (NULL);
-  }
-
-  if (this->pff_item == NULL)
-    libpff_item_free(&item, this->pff_error);
-  return (entry_string);
 }

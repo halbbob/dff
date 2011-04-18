@@ -46,23 +46,23 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
     throw vfsError(std::string("Unable to retrive item type"));
   if (item_type == LIBPFF_ITEM_TYPE_ACTIVITY)
   {
-	  cout << "Exporting activity" << endl;	
+    cout << "Exporting activity" << endl;	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_APPOINTMENT)
   {
-     result = this->export_appointment(item, item_index, parent, clone);
+    result = this->export_appointment(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONTACT)
   {
-     result = this->export_contact(item, item_index, parent, clone);
+    result = this->export_contact(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_DOCUMENT)
   {
-	  cout << "Exporting document" << endl;	
+    cout << "Exporting document" << endl;	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_CONFLICT_MESSAGE || item_type == LIBPFF_ITEM_TYPE_EMAIL || item_type == LIBPFF_ITEM_TYPE_EMAIL_SMIME)
   {
-     result = this->export_email(item, item_index, parent, clone);
+    result = this->export_email(item, item_index, parent, clone);
   }
   else if (item_type == LIBPFF_ITEM_TYPE_FOLDER)
   {
@@ -70,29 +70,27 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
-	  cout << "Exporting meeting" << endl;
-	//XXX code me 
-	 result = 1;	
+//    result = this->export_meeting(item, item_index, parent, clone); 
+    result = 1;
   }
   else if (item_type == LIBPFF_ITEM_TYPE_NOTE)
   {
-	  cout << "Exporting note" << endl;
-	//XXX code me 
-	result = 1;	
+    cout << "Exporting note" << endl;
+    //XXX code me 
+    result = 1;	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_RSS_FEED)
   {
-	  cout << "Exporting rss feed" << endl;	
+    cout << "Exporting rss feed" << endl;	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_TASK)
   {
-	 cout << "Exporting task" << endl;
-	 result = this->export_task(item, item_index, parent, clone);
+    result = this->export_task(item, item_index, parent, clone);
   }
   else
   {
-	cout << "Exporting unknown type" << endl; //add->result[error]... XXX
-	result = 1;
+    cout << "Exporting unknown type" << endl; //add->result[error]... XXX
+    result = 1;
   }
 //return (1);
  return (result); //FIXME must return 1 and set add->result according to error
