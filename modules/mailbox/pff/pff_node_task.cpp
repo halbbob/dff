@@ -65,11 +65,10 @@ void	PffNodeTask::attributesTask(Attributes*	attr, libpff_item_t* item)
   value_time_to_attribute(libpff_task_due_date, "Due date")
   value_uint32_to_attribute(libpff_task_get_status, "Status")
 //task percentage float ! ... 13296 XXX fred
-
   value_uint32_to_attribute(libpff_task_get_actual_effort, "Actual effort")
   value_uint32_to_attribute(libpff_task_get_total_effort, "Total effort")
   result = libpff_task_get_is_complete(item, &entry_value_boolean, this->pff_error);
-  if (result != -1 && result != 0) //utiliser variant boolean ? 
+  if (result != -1 && result != 0) //utiliser variant boolean ?
   {
      if (entry_value_boolean)
        (*attr)["Is complete"] = new Variant(std::string("Yes"));

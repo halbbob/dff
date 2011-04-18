@@ -109,7 +109,6 @@ Attributes PffNodeEMail::allAttributes(libpff_item_t*	item)
 
 Attributes PffNodeEMail::_attributes()
 {
-// header soit ds un fichier virtuel node soit en attribut
   Attributes		attr;
   libpff_item_t*	item = NULL;
 
@@ -176,12 +175,10 @@ void PffNodeEMail::splitTextToAttributes(std::string text, Attributes* attr)
    value = text.substr(splitter + 2,  next_eol - splitter - 3); 
 
    if (value.length() > 256)
-     (*attr)[key] = new Variant(std::string("Value too long")); //XXX too field sometimes too long must be troncated in sub field
+     (*attr)[key] = new Variant(std::string("Value too long")); //XXX too field sometimes too long must be truncated 
    else
    {
      (*attr)[key] = new Variant(value);
-     //cout << "key:" << key << "-" << endl;
-    // cout << "value:" << value << "-"  << endl;
    }
 
    splitter = next_eol + 2; 
@@ -203,7 +200,6 @@ void PffNodeEMail::attributesTransportHeaders(Attributes* attr, libpff_item_t* i
 
   entry_string =  new uint8_t [message_transport_headers_size];
 
-//This read all in buff there no seems to have class to get each attributes could be written to a buffer node but here we will 
   if (libpff_message_get_transport_headers(item, entry_string, message_transport_headers_size, this->pff_error ) != 1 )
   {
     delete entry_string;
@@ -217,14 +213,13 @@ void PffNodeEMail::attributesTransportHeaders(Attributes* attr, libpff_item_t* i
 
 void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 {
-  libpff_item_t	*recipients			= NULL;
-  uint8_t 	*entry_value_string          	= NULL;
-  int 		number_of_recipients		= 0;
-  //int 		result				= 0;
-  size_t 	entry_value_string_size         = 0;
-  size_t 	maximum_entry_value_string_size = 0;
-  uint32_t 	entry_value_32bit		= 0;
-  int 		recipient_iterator		= 0;
+  libpff_item_t*	recipients			= NULL;
+  uint8_t*		entry_value_string          	= NULL;
+  int			number_of_recipients		= 0;
+  size_t 		entry_value_string_size         = 0;
+  size_t 		maximum_entry_value_string_size = 0;
+  uint32_t 		entry_value_32bit		= 0;
+  int 			recipient_iterator		= 0;
 
 //XXX fix me unicode doit display de l unicode ds les variant pas fait pour 
 // soit just afficher les variant en string8 (coter python /qt) ou utiliser wchar_t ? + python qt
@@ -238,9 +233,7 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
       return ; 
      if (number_of_recipients > 0)
      {
-	//XXX export_item_values -> pas fait mais peut etre a faire 
-        //ici on imite export_hande_export_recipients_to_stream en attrib/variant
-   	//6913
+	//XXX export_item_values 
         for (recipient_iterator = 0; recipient_iterator < number_of_recipients; recipient_iterator++)
 	{
 	   if (libpff_item_get_entry_value_utf8_string_size(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_DISPLAY_NAME, &entry_value_string_size, 0, NULL) == 1)
@@ -298,9 +291,8 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 		 }
 	      }
 	   }
-	   delete entry_value_string; //here seems ok ?  
+	   delete entry_value_string;
 	}	
-	
      }	 
   }
 }

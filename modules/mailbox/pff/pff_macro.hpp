@@ -31,4 +31,37 @@ struct libpff_macro32_t
   const char* 		message;
 } typedef libpff_macro32_s;
 
+#define check_maximum_size(func) \
+  result = func(item, &entry_value_string_size, (this->pff_error)); \
+  if (result != 0 && result != -1) \
+  {\
+    if (entry_value_string_size > maximum_entry_value_string_size)\
+  	maximum_entry_value_string_size = entry_value_string_size;\
+  }
+
+#define value_string_to_attribute(func, key) \
+  result = func(item, (uint8_t *)entry_value_string, \
+maximum_entry_value_string_size, this->pff_error); \
+  if (result != -1 && result != 0) \
+    (*attr)[key] = new Variant(std::string(entry_value_string));
+
+#define value_time_to_attribute(func, key) \
+  result = func(item, &entry_value_64bit, this->pff_error); \
+  if (result != -1 && result != 0) \
+  { \
+     vtime* 	value_time = new vtime; \
+     msDateToVTime(entry_value_64bit, value_time); \
+     Variant*  variant_time = new Variant(value_time); \
+     (*attr)[key] = variant_time; \
+  }
+
+#define value_uint32_to_attribute(func, key) \
+  result = func(item, &entry_value_32bit, this->pff_error); \
+  if (result  != -1 && result != 0) \
+  {\
+     (*attr)[key] = new Variant(entry_value_32bit); \
+  }
+
+
+
 #endif

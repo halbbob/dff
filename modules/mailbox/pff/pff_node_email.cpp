@@ -15,7 +15,6 @@
  */
 
 #include "pff.hpp"
-// XXX delete this if ok whi PffNodeData
 
 PffNodeEMail::PffNodeEMail(std::string name, Node* parent, fso* fsobj, libpff_error_t** error) :PffNodeData(name, parent, fsobj, error)
 {

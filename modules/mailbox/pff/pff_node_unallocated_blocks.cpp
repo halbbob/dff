@@ -16,11 +16,8 @@
 
 #include "pff.hpp"
 
-
-/*concatenate all unallocated page blocks*/
 PffNodeUnallocatedBlocks::PffNodeUnallocatedBlocks(std::string name, Node *parent, mfso* fsobj, Node* root, int block_type, libpff_error_t** error, libpff_file_t** file) : Node(name, 0, parent, fsobj)
 {
-  //this->setFile();
   off64_t offset                   = 0;
   size64_t size                    = 0;
   int number_of_unallocated_blocks = 0;

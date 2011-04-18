@@ -30,7 +30,6 @@ pff::~pff()
 void pff::start(std::map<std::string, Variant*> args)
 {
   string 	path;
-  //Path		*tpath;
   
   if (args["file"] != NULL)
     this->parent = args["file"]->value<Node* >();
@@ -60,29 +59,13 @@ void pff::start(std::map<std::string, Variant*> args)
      res->add_const("error", "Can't print file info.");
      return; 
   }
- 
-
- 
-  libpff_item_t*	root_folder = NULL;
-  if (libpff_file_get_root_folder(pff_file, &root_folder, &error) != 1)
-  {  
-     res->add_const("error", "Can't get root folder.");
-     return;
-  }
 */
 
   res["result"] = new Variant(std::string("Mailbox parsed successfully."));
 }
-/*
-int32_t pff:get_root_folder(libpff_file_t* file, libpff_item_t **root_folder, libpff_error_t** error)
-{
-  if ((libpff_file_get_root_folder(file, root_folder, error))
-}
-*/
 
 void	pff::create_unallocated(void)
 {
-//XXX create with mailbox parent ?
    PffNodeUnallocatedBlocks*  unallocatedPage = new PffNodeUnallocatedBlocks(std::string("unallocated page blocks"), NULL, this, this->parent, LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, &(this->pff_error), &(this->pff_file));
    this->registerTree(this->parent, unallocatedPage);
 
@@ -93,15 +76,8 @@ void	pff::create_unallocated(void)
 
 void pff::create_item()
 {
-//  export_handle_t *pffexport_export_handle = NULL;
-//  libpff_file_t *pffexport_file            = NULL;
-
-//cout << "Creating items" << endl;
   if (libpff_file_recover_items(this->pff_file, 0, &(this->pff_error)) != 1)
     throw vfsError(std::string("Unable to recover items."));
-  //cout << "Exporting Items" << endl;
-  ////mimic export_handle_export_items 
-	//export handle make directory 
 	
    libpff_item_t *pff_root_item = NULL;
    int number_of_sub_items      = 0;
@@ -112,20 +88,12 @@ void pff::create_item()
       throw vfsError(std::string("Unable to retrive number of sub items."));
    if (number_of_sub_items > 0)
    {
-     //export_handle_export_sub_items
-     Node* mbox = new Node(std::string("mailbox"), 0, NULL, this); //this facilitate the registering of the tree
-//     this->export_sub_items(pff_root_item, this->parent);
+     Node* mbox = new Node(std::string("mailbox"), 0, NULL, this);
      this->export_sub_items(pff_root_item, mbox);
 //     if (libpff_item_free(&pff_root_item, &(this->pff_error)) != 1)
   //     throw vfsError(std::string("Unable to free root item."));
      this->registerTree(this->parent, mbox);
    }  
-
- 
-//  if (export_handle_initialize(&pffexport_export_handle) != -1)
-  //  throw vfsError(std::string("Unable to create export handle."));
-
-  //cout << "Items exported" << endl;
 }
 
 
@@ -135,10 +103,8 @@ void pff::initialize(string path)
   this->pff_error = NULL;
   if (libpff_file_initialize(&(this->pff_file), &(this->pff_error)) != 1)
     throw vfsError(std::string("Unable to initialize system values."));
-  //cout << "pff file open " << endl;
   if (libpff_file_open(this->pff_file, path.c_str(), LIBPFF_OPEN_READ , &(this->pff_error)) != 1)
     throw vfsError(std::string("error", "Can't open pff file."));
-  //cout << "pff file open ok" << endl;
 }
 
 
@@ -181,7 +147,7 @@ int32_t  pff::vread(int fd, void *buff, unsigned int size)
    PffNodeData* node = dynamic_cast<PffNodeData *>(fi->node);
    if (node == NULL)
    {
-      if (dynamic_cast<PffNodeUnallocatedBlocks *>(fi->node)) // == fi->fm ? c file manager !
+      if (dynamic_cast<PffNodeUnallocatedBlocks *>(fi->node))
 	 return (mfso::vread(fd, buff, size));
       return (0);
    }

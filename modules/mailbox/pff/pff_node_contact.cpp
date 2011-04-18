@@ -112,8 +112,7 @@ void		PffNodeContact::attributesContact(Attributes* attr, libpff_item_t* item)
 
 }
 
-
-uint8_t*	PffNodeContact::dataBuffer(void) //autant herite de mail_node_text directement
+uint8_t*	PffNodeContact::dataBuffer(void)
 {
   uint8_t*	entry_string = NULL;
   libpff_item_t*	item = NULL;

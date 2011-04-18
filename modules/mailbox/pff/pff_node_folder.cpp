@@ -40,7 +40,7 @@ std::string	PffNodeFolder::icon()
     return (":folder_outbox");
   if (this->name().find("Deleted") != std::string::npos)
     return (":mail_delete");
-  if (this->name().find("Inbox") != std::string::npos) //en francais ? regarder ds les attribut plutot ...
+  if (this->name().find("Inbox") != std::string::npos)
     return (":folder_inbox");
   return (":folder_128.png");
 }

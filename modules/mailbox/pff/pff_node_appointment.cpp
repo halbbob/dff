@@ -17,7 +17,6 @@
 #include "pff.hpp"
 
 //Appointment as attachment can't be cloned ! So we copy the item and didn't free it
-
 PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEMail(name, parent, fsobj, error)
 {
   int result;
@@ -78,12 +77,8 @@ void  PffNodeAppointment::attributesAppointment(Attributes* attr, libpff_item_t*
 
 Attributes PffNodeAppointment::_attributes()
 {
-  ///Attributes attr = PffNodeEMail::_attributes();
   Attributes		attr;
   libpff_item_t*	item = NULL;
-  /*Attributes appointment;
-
-*/
 
   if (this->pff_item == NULL)
   {
