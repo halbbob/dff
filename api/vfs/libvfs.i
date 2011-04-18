@@ -746,6 +746,42 @@ Open the node and return a pointer to a VFile instance
   delete $1;
 }
 
+%typecheck(SWIG_TYPECHECK_CHAR) unsigned char 
+{
+  $1 = (PyString_Check($input) && (PyString_Size($input) == 1)) ? 1 : 0;
+}
+
+%typemap(in) (unsigned char wildcard)
+{
+  if (!PyString_Check($input) && (PyString_Size($input) > 1))
+    {
+      PyErr_SetString(PyExc_ValueError, "Expecting a string");
+      return NULL;
+    }
+  $1 = (unsigned char) PyString_AsString($input)[0];
+}
+
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen);
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start);
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end);
+
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen);
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start);
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end);
+
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount, uint64_t start);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount, uint64_t start, uint64_t end);
+
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen);
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start);
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end);
+
 %{
 
 #include "eventhandler.hpp"
@@ -793,6 +829,28 @@ namespace std
 %fragment(SWIG_Traits_frag(Variant));
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));
+
+%extend VFile
+{
+%pythoncode
+    %{
+    def __iter__(self):
+        return self
+    
+    def next(self):
+        cpos = self.tell()
+        idx = self.find('\n')
+        if idx != -1:
+           self.seek(cpos)
+           buff = self.read(idx - cpos+1)
+           if len(buff) == 0:
+               raise StopIteration()
+           else:
+               return buff
+        else:
+           raise StopIteration()
+    %}
+};
 
 %extend VFS
 {

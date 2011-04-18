@@ -15,66 +15,52 @@
  */
 
 #include "search.hpp"
-#include "boyer_moore.hpp"
 
-Search::Search()
+FastSearch::FastSearch()//: SearchAlgorithm()
 {
-  this->algo = new BoyerMoore();
-  this->preprocessed = false;
 }
 
-Search::~Search()
+FastSearch::~FastSearch()
 {
-  delete this->algo;
 }
 
-Search::Search(unsigned char *needle, unsigned int needlesize, unsigned char wildcard)
+int32_t		FastSearch::find(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard)
 {
-  this->algo = new BoyerMoore(needle, needlesize, wildcard);
-  this->preprocessed = true;
+  if (wildcard == '\0')
+    return fastsearch(haystack, hslen, needle, ndlen, 1, FAST_SEARCH);
+  else
+    {
+      if (fastsearch(needle, ndlen, &wildcard, 1, 1, FAST_SEARCH) == -1)
+	return fastsearch(haystack, hslen, needle, ndlen, 1, FAST_SEARCH);
+      else
+	return wfastsearch(haystack, hslen, needle, ndlen, wildcard, 1, FAST_SEARCH);
+    }
 }
 
-list<unsigned int>	*Search::run(unsigned char *haystack, unsigned int hslen)
+
+int32_t		FastSearch::rfind(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard)
 {
-  if (!this->preprocessed)
-    this->algo->preprocess();
-  return this->algo->search(haystack, hslen);
+  if (wildcard == '\0')
+    return fastsearch(haystack, hslen, needle, ndlen, 1, FAST_RSEARCH);
+  else
+    {
+      if (fastsearch(needle, ndlen, &wildcard, 1, 1, FAST_SEARCH) == -1)
+	return fastsearch(haystack, hslen, needle, ndlen, 1, FAST_RSEARCH);
+      else
+	return wfastsearch(haystack, hslen, needle, ndlen, wildcard, 1, FAST_RSEARCH);
+    }
 }
 
-list<unsigned int>	*Search::run(unsigned char *haystack, unsigned int hslen, unsigned int *count)
-{
-  if (!this->preprocessed)
-    this->algo->preprocess();
-  return this->algo->search(haystack, hslen, count);
-}
 
-bool			Search::setNeedle(unsigned char *n)
+int32_t       FastSearch::count(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard, int32_t maxcount)
 {
-  this->preprocessed = false;
-  return this->algo->setNeedle(n);
-}
-
-bool			Search::setNeedleSize(unsigned int size)
-{
-  this->preprocessed = false;
-  return this->algo->setNeedleSize(size);
-}
-
-bool			Search::setWildcard(unsigned char w)
-{
-  this->preprocessed = false;
-  return this->algo->setWildcard(w);
-}
-
-bool			Search::setBlockSize(unsigned int bs)
-{
-  // this->preprocessed = false;
-  return true;
-}
-
-bool			Search::setAligned(bool aligned)
-{
-  //  this->preprocessed = false;
-  this->aligned = aligned;
-  return true;
+  if (wildcard == '\0')
+    return fastsearch(haystack, hslen, needle, ndlen, maxcount, FAST_COUNT);
+  else
+    {
+      if (fastsearch(needle, ndlen, &wildcard, 1, 1, FAST_SEARCH) == -1)
+	return fastsearch(haystack, hslen, needle, ndlen, maxcount, FAST_COUNT);
+      else
+	return wfastsearch(haystack, hslen, needle, ndlen, wildcard, maxcount, FAST_COUNT);
+    }
 }
