@@ -13,7 +13,7 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory (carver)
+#add_subdirectory (carver)
 if (ENABLE_INDEXER)
    add_subdirectory (indexer)
 endif (ENABLE_INDEXER)
