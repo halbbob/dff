@@ -67,13 +67,19 @@ void		FatNode::fileMapping(FileMapping* fm)
   int			i;
   uint64_t		voffset;
   uint64_t		clustsize;
+  uint64_t		rsize;
 
   clusters = this->fs->fat->clusterChainOffsets(this->cluster);
   voffset = 0;
+  rsize = this->size();
   clustsize = this->fs->bs->csize * this->fs->bs->ssize;
   for (i = 0; i != clusters.size(); i++)
     {
-      fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+      if (rsize < clustsize)
+	fm->push(voffset, rsize, this->fs->parent, clusters[i]);
+      else
+	fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+      rsize -= clustsize;
       voffset += clustsize;
     }
 }
