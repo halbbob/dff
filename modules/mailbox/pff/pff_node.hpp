@@ -133,6 +133,12 @@ public:
   EXPORT void		      	attributesTask(Attributes* attr, libpff_item_t*); 
 };
 
+class PffNodeMeeting : public PffNodeEmailMessageText
+{
+public:
+  EXPORT PffNodeMeeting(std::string name, Node* parent, fso* fsobj, libpff_item_t* task, libpff_error_t**, libpff_file_t** file, bool clone);
+};
+
 class PffNodeUnallocatedBlocks : public Node
 {
 private:

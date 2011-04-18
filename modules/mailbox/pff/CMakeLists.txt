@@ -29,6 +29,7 @@ set(pff_srcs
     pff_node_task.cpp
     pff_node_folder.cpp
     pff_node_contact.cpp
+    pff_node_meeting.cpp
     pff_node_attachment.cpp
     pff_node_appointment.cpp
     pff_node_unallocated_blocks.cpp

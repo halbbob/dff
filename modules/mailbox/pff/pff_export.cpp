@@ -70,8 +70,7 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
-//    result = this->export_meeting(item, item_index, parent, clone); 
-    result = 1;
+    result = this->export_meeting(item, item_index, parent, clone); 
   }
   else if (item_type == LIBPFF_ITEM_TYPE_NOTE)
   {
@@ -81,7 +80,7 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else if (item_type == LIBPFF_ITEM_TYPE_RSS_FEED)
   {
-    cout << "Exporting rss feed" << endl;	
+    cout << "Exporting rss feed" << endl;
   }
   else if (item_type == LIBPFF_ITEM_TYPE_TASK)
   {
@@ -94,6 +93,18 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
 //return (1);
  return (result); //FIXME must return 1 and set add->result according to error
+}
+
+int pff::export_meeting(libpff_item_t* meeting, int meeting_index, Node* parent, bool clone)
+{
+  std::ostringstream meetingName;
+
+  meetingName << std::string("Meeting") << meeting_index + 1;
+  PffNodeFolder* nodeFolder = new PffNodeFolder(meetingName.str(), parent, this);
+
+  new PffNodeMeeting(std::string("Meeting"), nodeFolder, this, meeting, &(this->pff_error), &(this->pff_file), clone);
+
+  return (1);
 }
 
 int pff::export_task(libpff_item_t* task, int task_index, Node* parent, bool clone)
