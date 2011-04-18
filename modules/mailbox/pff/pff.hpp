@@ -43,6 +43,7 @@ public:
   void		        export_sub_items(libpff_item_t* item, Node* parent);
   int 		        export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent, bool clone = 0);
   int			export_attachments(libpff_item_t* item, Node* parent, bool clone);
+  int			export_note(libpff_item_t* item, int item_index, Node* parent, bool clone);
   int			export_task(libpff_item_t* item, int item_index, Node* parent, bool clone);	
   int 		        export_email(libpff_item_t* item, int item_index, Node* parent, bool clone);
   int 		        export_folder(libpff_item_t* item, int item_index, Node* parent, bool clone);
