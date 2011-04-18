@@ -387,9 +387,12 @@ int pff::export_attachments(libpff_item_t* item, Node* parent, bool clone)
 	*attached_item = NULL;
 	if (libpff_attachment_get_item(attachment, attached_item, &(this->pff_error)) == 1)
 	{
+          uint8_t	item_type;
 	  PffNodeFolder* folder = new PffNodeFolder(attachmentName.str(), parent, this);		
           this->export_item(*attached_item, 0, 1, folder, true);
-	  libpff_item_free(attached_item, &(this->pff_error)); //didn't free because can't copy
+          if (libpff_item_get_type(item, &item_type, &(this->pff_error)) == 1)
+            if (item_type != LIBPFF_ITEM_TYPE_APPOINTMENT)
+	      libpff_item_free(attached_item, &(this->pff_error)); //didn't free because can't copy ->appointment
 	//delete atached_item
 	}
 	else

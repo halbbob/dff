@@ -16,7 +16,6 @@
 
 #include "pff.hpp"
 
-//XXX test pour appopiinment mais sert a rien car pas de data au final ! 
 PffNodeData::PffNodeData(std::string name, Node* parent, fso* fsobj, libpff_error_t** error) : Node(name, 0, parent, fsobj)
   
 {

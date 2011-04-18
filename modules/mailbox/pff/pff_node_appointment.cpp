@@ -16,20 +16,30 @@
 
 #include "pff.hpp"
 
-PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEMail(name, parent, fsobj, appointment, error, file, clone)
-{
-/*  if (*this->item)
-     libpff_item_free(this->item, error);
+//Appointment as attachment can't be cloned ! So we copy the item and didn't free it
 
-  (*this->item) = NULL;
-  if (libpff_file_get_item_by_identifier(*(this->pff_file), this->identifier, this->item, this->pff_error) == 0)
+PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsobj, libpff_item_t* appointment, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEMail(name, parent, fsobj, error)
+{
+  int result;
+
+  this->pff_item = NULL;
+  if (clone == 0)
   {
-    *this->item = appointment;
+    result = libpff_item_get_identifier(appointment, &(this->identifier), error);
+    if (result == 0 || result == -1)
+    {
+      this->pff_item = new libpff_item_t*;
+      *(this->pff_item) = appointment;
+    }
   }
   else
-    libpff_item_free(this->item, error);
-//ds attribute pour pas prendre en ram ? 
-*/
+  {
+    this->pff_item = new libpff_item_t*;
+    *(this->pff_item) = appointment;
+  }
+  this->setFile();
+  this->pff_file = file;
+  this->pff_error = error;
 }
 
 
