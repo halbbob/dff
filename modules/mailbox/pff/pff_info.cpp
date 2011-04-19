@@ -122,12 +122,7 @@ void pff::info_file()
     cout << "file encryption type : " << message << endl;
   else
     cout << "file encryption type unknown" << encryption_type << endl;
-
- 
 }
-
-
-
 
 void pff::info_message_store()
 {
@@ -162,7 +157,6 @@ void pff::info_message_store()
 
   return;
 }
-
 
 
 void pff::info_unallocated_blocks()

@@ -24,26 +24,34 @@ void pff::export_sub_items(libpff_item_t *item, Node* parent)
   int 		sub_item_iterator   = 0;
 
   if (libpff_item_get_number_of_sub_items(item, &number_of_sub_items, &(this->pff_error)) != 1)
-    throw vfsError(std::string("Unable to retrive number of sub items."));
-
+  {
+    std::string error_name = "error on " + parent->name();
+    this->res[error_name] = new Variant(std::string("Unable to retrieve number of items."));
+    return ;
+  }
   for (sub_item_iterator = 0; sub_item_iterator < number_of_sub_items; sub_item_iterator++)
   {
     if (libpff_item_get_sub_item(item, sub_item_iterator, &sub_item, &(this->pff_error)) != 1)
-      throw vfsError(std::string("Unable to retrieve sub item."));
-    this->export_item(sub_item, sub_item_iterator, number_of_sub_items, parent);
+    {
+      error_on_item("Unable to retrieve subitem", sub_item_iterator, parent)
+      continue ;
+    }
+    this->export_item(sub_item, sub_item_iterator, parent);
     if (libpff_item_free(&sub_item, &(this->pff_error)) != 1)
-      throw vfsError(std::string("Unable to free sub item."));
+    {
+      error_on_item("Unable to free subitem", sub_item_iterator, parent)
+      continue ;
+    }
   } 
-  
 }
 
-int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, Node* parent, bool clone)
+int pff::export_item(libpff_item_t* item, int item_index, Node* parent, bool clone)
 {
   uint8_t 	item_type		= 0;
   int 		result			= 0;
 
   if (libpff_item_get_type(item, &item_type, &(this->pff_error)) != 1)
-    throw vfsError(std::string("Unable to retrive item type"));
+    return (0);
   if (item_type == LIBPFF_ITEM_TYPE_ACTIVITY)
   {
     result = this->export_message_default(item, item_index, parent, clone, std::string("Activity"));
@@ -86,11 +94,10 @@ int pff::export_item(libpff_item_t* item, int item_index, int number_of_items, N
   }
   else
   {
-    cout << "Exporting unknown type" << endl; //add->result[error]... XXX
+    error_on_item("Exporting unknown type for item", item_index, parent)
     result = 1;
   }
-//return (1);
- return (result); //FIXME must return 1 and set add->result according to error
+ return (result);
 }
 
 
@@ -149,36 +156,38 @@ int pff::export_appointment(libpff_item_t* appointment, int appointment_index, N
   return (1);
 }
 
-
-
-int pff::export_activity(libpff_item_t* activity, int activity_index, Node* parent, bool clone)
-{
-   return (1);
-}
-
 int pff::export_folder(libpff_item_t* folder, int folder_index, Node* parent, bool clone)
 {
-  uint8_t 	*folder_name		= NULL;
-  size_t 	folder_name_size	= 0;
-  int 		result			= 0;
+  PffNodeFolder* 	subFolder	 = NULL;
+  uint8_t*	 	folder_name	 = NULL;
+  size_t 		folder_name_size = 0;
+  int 			result		 = 0;
 
-  if (libpff_folder_get_name_size(folder, &folder_name_size, &(this->pff_error)) == 1)
+  result = libpff_folder_get_name_size(folder, &folder_name_size, &(this->pff_error));
+  if (result == 0 || result == -1 || folder_name_size == 0)
   {
-    //XXX != 0 && != -1
-   //  if (folder_name_size > (size_t) SSIZE_MAX)
-     //  throw vfsError(std::string("folder name too long"));//catch avant
+    std::ostringstream folderName;
+
+    folderName << std::string("Folder") << folder_index + 1;
+    subFolder = new PffNodeFolder(folderName.str(), parent, this);
   }
-  if (folder_name_size < 12)
-    folder_name_size = 12;
-  
-  folder_name = (uint8_t *) new uint8_t[folder_name_size];
-  result = libpff_folder_get_name(folder, folder_name, folder_name_size, NULL);
-  PffNodeFolder *subFolder = new PffNodeFolder(std::string((char *)folder_name), parent, this);
+  else
+  {
+    folder_name = (uint8_t *) new uint8_t[folder_name_size];
+    result = libpff_folder_get_name(folder, folder_name, folder_name_size, NULL);
+    subFolder = new PffNodeFolder(std::string((char *)folder_name), parent, this);
+  }
 
   if (export_sub_folders(folder, subFolder) != 1)
-     throw vfsError(std::string("Unable to export sub folders"));
+  {
+    error_on_item("Unable to export subfolders", folder_index, subFolder)
+    return (0);
+  }
   if (export_sub_messages(folder, subFolder) != 1)
-    throw vfsError(std::string("Unable to export sub messages"));
+  {
+    error_on_item("Unable to export submessages", folder_index, subFolder)
+    return (0);
+  }
 
   return (1);
 }
@@ -308,7 +317,7 @@ int pff::export_attachments(libpff_item_t* item, Node* parent, bool clone)
 	{
           uint8_t	item_type;
 	  PffNodeFolder* folder = new PffNodeFolder(attachmentName.str(), parent, this);		
-          this->export_item(*attached_item, 0, 1, folder, true);
+          this->export_item(*attached_item, 0, folder, true);
           if (libpff_item_get_type(item, &item_type, &(this->pff_error)) == 1)
             if (item_type != LIBPFF_ITEM_TYPE_APPOINTMENT)
 	      libpff_item_free(attached_item, &(this->pff_error)); //didn't free because can't copy ->appointment
@@ -331,15 +340,28 @@ int pff::export_sub_folders(libpff_item_t* folder, PffNodeFolder* nodeFolder)
   int 		sub_folder_iterator   = 0;
 
   if (libpff_folder_get_number_of_sub_folders(folder, &number_of_sub_folders, &(this->pff_error)) != 1)
-    throw vfsError(std::string("Unable to retrieve numbers of subfolders"));
+  {
+    std::string error_name = "error on " + nodeFolder->name();
+    this->res[error_name] = new Variant(std::string("Unable to retrieve number of subfolders"));
+    return (0);
+  }
   for (sub_folder_iterator = 0; sub_folder_iterator < number_of_sub_folders; sub_folder_iterator++)
   {
      if (libpff_folder_get_sub_folder(folder, sub_folder_iterator, &sub_folder, &(this->pff_error)) != 1)
-       throw vfsError(std::string("Unable to retrieve sub folders"));
+     {
+       error_on_item("Unable to retrieve subfolders", sub_folder_iterator, nodeFolder)
+       continue ;
+     }
      if (export_folder(sub_folder, sub_folder_iterator, nodeFolder, false) != 1)
-       throw vfsError(std::string("Unable to export sub folders"));  
+     {
+       error_on_item("Unable to export subfolder", sub_folder_iterator, nodeFolder)
+       continue ;
+     }
      if (libpff_item_free(&sub_folder, &(this->pff_error)) != 1)
-       throw vfsError(std::string("Unable to free sub folder")); 
+     {
+       error_on_item("Unable to free subfolder", sub_folder_iterator, nodeFolder)
+       continue ;
+     }
   }
   return (1);
 }
@@ -351,15 +373,28 @@ int pff::export_sub_messages(libpff_item_t* folder, PffNodeFolder* nodeFolder)
   int sub_message_iterator   = 0;
 
   if (libpff_folder_get_number_of_sub_messages(folder, &number_of_sub_messages, &(this->pff_error)) != 1)
-    throw vfsError(std::string("Unable to retrieve number of sub messages"));
+  {
+    std::string error_name = "error on " + nodeFolder->name();
+    this->res[error_name] = new Variant(std::string("Unable to retrieve number of submessages"));
+    return (0);
+  }
   for (sub_message_iterator = 0; sub_message_iterator < number_of_sub_messages; sub_message_iterator++)
   {
      if (libpff_folder_get_sub_message(folder, sub_message_iterator, &sub_message, &(this->pff_error)) != 1)
-       throw vfsError(std::string("Unable to retrieve sub message"));  
-     if (export_item(sub_message, sub_message_iterator, number_of_sub_messages, nodeFolder) != 1)
-       throw vfsError(std::string("Unable to export sub message"));
+     {
+       error_on_item("Unable to retrieve submessage", sub_message_iterator, nodeFolder) 
+       continue ;	
+     }
+     if (export_item(sub_message, sub_message_iterator, nodeFolder) != 1)
+     {
+       error_on_item("Unable to export submessage", sub_message_iterator, nodeFolder) 
+       continue ;
+     }
      if (libpff_item_free(&sub_message, &(this->pff_error)) != 1)
-       throw vfsError("Unable to free sub message");
+     {
+       error_on_item("Unable to free submessage", sub_message_iterator, nodeFolder) 
+       continue ;
+     }
   }
 
   return (1);

@@ -62,6 +62,9 @@ maximum_entry_value_string_size, this->pff_error); \
      (*attr)[key] = new Variant(entry_value_32bit); \
   }
 
-
+#define error_on_item(error_value, Item_index, Parent)\
+  std::ostringstream error_name;\
+  error_name << "Error on " << Parent->name() << " item " << Item_index + 1;\
+  this->res[error_name.str()] = new Variant(std::string(error_value));
 
 #endif

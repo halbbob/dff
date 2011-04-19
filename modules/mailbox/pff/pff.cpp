@@ -17,7 +17,6 @@
 #include <sstream>
 #include "pff.hpp"
 
-
 pff::pff() : mfso("pff")
 {
   
@@ -38,21 +37,27 @@ void pff::start(std::map<std::string, Variant*> args)
   try 
   {
     this->initialize(this->parent->absolute());
-//    this->info(); // optional return as variant results ? 
+//    this->info(); // optional return as variant results ?
+    this->stateinfo = std::string("Searching unallocated data"); 
     this->create_unallocated();
+    this->stateinfo = std::string("Searching recoverable items");
+    this->create_recovered();
+    this->stateinfo = std::string("Searching orphan items");
+    this->create_orphan();
+    this->stateinfo = std::string("Creating mailbox items");
     this->create_item();
+    this->stateinfo = std::string("Mailbox parsed successfully");
   }
   catch (vfsError e)
   {
-     res["error"] = new Variant(e.error);
+     this->res["error"] = new Variant(e.error);
+     this->stateinfo = std::string(e.error);
      return ;
   }
-  
  //XXX
 // this->registerTree(parent, son); 
 //    libpff_file_close(this->pff_file, *(this->error));
   //  libpff_file_free(this->pff_file, *(this->error));
-
 /*
   if (libpff_file_info_fprint(stdout, pff_file) != 1)
   {
@@ -60,8 +65,71 @@ void pff::start(std::map<std::string, Variant*> args)
      return; 
   }
 */
-
   res["result"] = new Variant(std::string("Mailbox parsed successfully."));
+}
+
+void    pff::create_recovered(void)
+{
+  int 				number_of_recovered_items 	= 0; 
+  int 				recovered_item_iterator  	= 0;  
+  int				number_of_found_recovered_items = 0;
+  libpff_item_t*		pff_recovered_item		= NULL;
+                                            
+  if (libpff_file_recover_items(this->pff_file, 0, &(this->pff_error)) != 1)
+    return ;
+  if (libpff_file_get_number_of_recovered_items(this->pff_file, &number_of_recovered_items, &(this->pff_error)) != 1)
+    return ;
+
+  if (number_of_recovered_items > 0)
+  {
+     Node* recoveredNode = new Node(std::string("recovered"), 0, NULL, this);
+     for (recovered_item_iterator = 0; recovered_item_iterator < number_of_recovered_items; recovered_item_iterator++)
+     {
+       if (libpff_file_get_recovered_item(this->pff_file, recovered_item_iterator, &pff_recovered_item, &(this->pff_error)) == 1)
+       {
+         if (pff_recovered_item != NULL)
+         {
+	   this->export_item(pff_recovered_item, recovered_item_iterator, recoveredNode, 1);
+//ask to clone because can't get by id for sure .....
+//must use somethings other than clone like a flag 
+// flags_copy == CLONE / flags_copy == RECOVERED_ITEM to use recover by iterator etc...
+           libpff_item_free(&pff_recovered_item, &(this->pff_error));  
+           number_of_found_recovered_items++; 
+         }
+       }
+     }
+     this->res["Number of recovered items"] = new Variant(number_of_found_recovered_items);
+     this->registerTree(this->parent, recoveredNode); 
+  }
+}
+
+void	pff::create_orphan()
+{
+  int			orphan_item_iterator 	= 0;
+  int			number_of_orphan_items 	= 0; 
+  int			number_of_found_orphan_items = 0;
+  libpff_item_t*	pff_orphan_item 	= NULL;
+
+  if (libpff_file_get_number_of_orphan_items(this->pff_file, &(number_of_orphan_items), &(this->pff_error)) != 1)
+    return ;
+  if (number_of_orphan_items > 0)
+  {
+     Node* orphansNode = new Node(std::string("orphans"), 0, NULL, this);
+     for (orphan_item_iterator = 0; orphan_item_iterator < number_of_orphan_items; orphan_item_iterator++)
+     {
+        if (libpff_file_get_orphan_item(this->pff_file, orphan_item_iterator, &pff_orphan_item, &(this->pff_error)) == 1)
+        {
+          if (pff_orphan_item != NULL)
+          {
+            this->export_item(pff_orphan_item, orphan_item_iterator, orphansNode, 1);
+	    libpff_item_free(&pff_orphan_item, &(this->pff_error));
+	    number_of_found_orphan_items++;
+          }
+        } 
+     }
+     this->registerTree(this->parent, orphansNode); 
+     this->res["Number of orphan items"] = new Variant(number_of_found_orphan_items);
+  } 
 }
 
 void	pff::create_unallocated(void)
@@ -76,9 +144,6 @@ void	pff::create_unallocated(void)
 
 void pff::create_item()
 {
-  if (libpff_file_recover_items(this->pff_file, 0, &(this->pff_error)) != 1)
-    throw vfsError(std::string("Unable to recover items."));
-	
    libpff_item_t *pff_root_item = NULL;
    int number_of_sub_items      = 0;
 
