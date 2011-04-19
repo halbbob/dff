@@ -46,7 +46,7 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
     def fillMap(self, parent, vmap):
         for key in vmap.iterkeys():
             item = QTreeWidgetItem(parent)
-            item.setText(0, str(key))
+            item.setText(0, QString.fromUtf8(key))
             vval = vmap[key]
             expand = True
 	    if vval == None:
