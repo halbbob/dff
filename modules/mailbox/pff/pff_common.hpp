@@ -21,6 +21,7 @@
 #include "mfso.hpp"
 #include "node.hpp"
 #include "variant.hpp"
+#include "typesconv.hpp"
 
 #include <libpff.h>
 #include <libpff/codepage.h>

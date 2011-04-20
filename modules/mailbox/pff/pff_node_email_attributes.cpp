@@ -18,8 +18,6 @@
 
 libpff_macro32_s LIBPFF_MESSAGE_FLAG[9] = 
 {
-    //{ LIBPFF_MESSAGE_FLAG_READ, "Read" },
-    // "Unread" },
     { LIBPFF_MESSAGE_FLAG_UNMODIFIED, "Unmodified" },
     { LIBPFF_MESSAGE_FLAG_SUBMIT, "Submit" },
     { LIBPFF_MESSAGE_FLAG_UNSENT, "Unsent" },
@@ -62,39 +60,13 @@ libpff_macro32_s LIBPFF_MESSAGE_SENSITIVITY_TYPE[4] =
     { LIBPFF_MESSAGE_SENSITIVITY_TYPE_CONFIDENTIAL, "Confidential"}
 }; 
 
-
-
-bool         msDateToVTime(uint64_t value, vtime *setMe)
-{
-  if (value > 0) {
-    value -= NANOSECS_1601_TO_1970;
-    value /= 10000000;
-    struct tm   *date;
-
-    date = gmtime((time_t *)&value);
-    setMe->year = date->tm_year + 1900;
-    setMe->month = date->tm_mon + 1;
-    setMe->day = date->tm_mday;
-    setMe->hour = date->tm_hour;
-    setMe->minute = date->tm_min;
-    setMe->second = date->tm_sec;
-    setMe->dst = date->tm_isdst;
-    setMe->wday = date->tm_wday;
-    setMe->yday = date->tm_yday;
-    setMe->usecond = 0;
-    return true;
-  }
-  return false;
-}
-
-
 Attributes PffNodeEMail::allAttributes(libpff_item_t*	item)
 {
   Attributes 		attr;
 
   Attributes messageHeader;
   this->attributesMessageHeader(&messageHeader, item);
-  attr["Message Headers"] = new Variant(messageHeader);
+  attr["Message headers"] = new Variant(messageHeader);
 
   Attributes recipients;
   this->attributesRecipients(&recipients, item);
@@ -102,7 +74,11 @@ Attributes PffNodeEMail::allAttributes(libpff_item_t*	item)
 
   Attributes transportHeaders;
   this->attributesTransportHeaders(&transportHeaders, item);
-  attr["Transport Headers"] = new Variant(transportHeaders);
+  attr["Transport headers"] = new Variant(transportHeaders);
+
+  Attributes conversationIndex;
+  this->attributesMessageConversationIndex(&conversationIndex, item);
+  attr["Conversation index"] = new Variant(conversationIndex);
 
   return (attr);
 }
@@ -221,19 +197,12 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
   uint32_t 		entry_value_32bit		= 0;
   int 			recipient_iterator		= 0;
 
-//XXX fix me unicode doit display de l unicode ds les variant pas fait pour 
-// soit just afficher les variant en string8 (coter python /qt) ou utiliser wchar_t ? + python qt
-// autre probleme on fait un for pour les differents recipients ex: mail inbox 000007 il y en a 
-// seulement le dernier apparait car les attributs on le meme nom donc ca doit ecraser....
-// faire des liste et sous liste genre recipient1 : ... recipient2: /// -> refactor
-
   if (libpff_message_get_recipients(item, &recipients, this->pff_error) == 1)
   {
      if (libpff_item_get_number_of_sets(recipients, (uint32_t*) &number_of_recipients, this->pff_error) != 1)
       return ; 
      if (number_of_recipients > 0)
      {
-	//XXX export_item_values 
         for (recipient_iterator = 0; recipient_iterator < number_of_recipients; recipient_iterator++)
 	{
 	   if (libpff_item_get_entry_value_utf8_string_size(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_DISPLAY_NAME, &entry_value_string_size, 0, NULL) == 1)
@@ -259,22 +228,23 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 		maximum_entry_value_string_size = entry_value_string_size;
            }
 	   if ((maximum_entry_value_string_size == 0))
-		return ; //break ? 
+		continue ;
+
+	   Attributes	attrRecipient;
+
 	   entry_value_string = (uint8_t*) new uint8_t[maximum_entry_value_string_size];
 
-
-
 	   if (libpff_item_get_entry_value_utf8_string(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_DISPLAY_NAME, entry_value_string, maximum_entry_value_string_size, 0, NULL) == 1)
-	    (*attr)["Display Name"] = new Variant(std::string((char *)entry_value_string));
+	    attrRecipient["Display Name"] = new Variant(std::string((char *)entry_value_string));
 
 	   if (libpff_recipients_get_display_name(recipients, recipient_iterator, entry_value_string, maximum_entry_value_string_size, NULL) == 1)
-	     (*attr)["Recipient display name"] = new Variant(std::string((char*)entry_value_string));
+	     attrRecipient["Recipient display name"] = new Variant(std::string((char*)entry_value_string));
 
 	   if (libpff_item_get_entry_value_utf8_string(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_ADDRESS_TYPE, entry_value_string, maximum_entry_value_string_size, 0, NULL) == 1)
-	     (*attr)["Address type"] = new Variant((char*) entry_value_string);
+	     attrRecipient["Address type"] = new Variant((char*) entry_value_string);
 
 	   if (libpff_item_get_entry_value_utf8_string(recipients, recipient_iterator, LIBPFF_ENTRY_TYPE_EMAIL_ADDRESS, entry_value_string, maximum_entry_value_string_size, 0, NULL) == 1)
-	     (*attr)["Email address"] = new Variant((char*)entry_value_string);
+	     attrRecipient["Email address"] = new Variant((char*)entry_value_string);
 
 	   if (libpff_recipients_get_type(recipients, recipient_iterator, &entry_value_32bit, NULL) == 1)
 	   {
@@ -282,69 +252,108 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 	      {
 		 if (n == 5)
 	         {
-		   (*attr)["Recipient type"] = new Variant(std::string("Unknown"));
+		   attrRecipient["Recipient type"] = new Variant(std::string("Unknown"));
 		 }
 		 if (entry_value_32bit == LIBPFF_RECIPIENT_TYPE[n].type)
 		 {
-		   (*attr)["Recipient type"] = new Variant(std::string(LIBPFF_RECIPIENT_TYPE[n].message));
+		   attrRecipient["Recipient type"] = new Variant(std::string(LIBPFF_RECIPIENT_TYPE[n].message));
 		   break;
 		 }
 	      }
 	   }
+	   std::ostringstream keyRecipient;
+
+	   keyRecipient << "Recipient " << recipient_iterator + 1;
+	   (*attr)[keyRecipient.str()] = new Variant(attrRecipient);
 	   delete entry_value_string;
 	}	
      }	 
   }
 }
 
-
 void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr, libpff_item_t* item)
 {
-//  cout << "Message conversation" << endl;//Conversation index.txt
-//4953
-/*
-  uint8_t 	*entry_value		= NULL;
-  uint8_t 	*entry_value_pointer	= NULL;
-  size_t 	entry_value_size	= 0;
+  uint8_t*	entry_value 		= NULL;
+  uint32_t	entry_value_index	= 0;
+  size_t   	entry_value_size 	= 0;
   uint64_t 	entry_value_64bit	= 0;
-  uint32_t 	entry_value_iterator	= 0;
-  int 		list_iterator		= 0;
-  int	 	result			= 0;
+  uint64_t	current_time		= 0;
+  int		list_iterator		= 0;
+  int		result			= 0;
 
-  if (!(libpff_message_get_conversation_index_size(*(this->item), &entry_value_size, this->pff_error)))
-	return;
-  if (entry_value_size > 0)
+  result = libpff_message_get_conversation_index_size(item, &entry_value_size, this->pff_error);
+  if (result == -1 || result == 0 || entry_value_size == 0)
+    return ;
+ 
+  entry_value = (uint8_t *)malloc(sizeof(uint8_t) * entry_value_size);
+  if (entry_value == NULL)
+    return ;
+  result = libpff_message_get_conversation_index(item, entry_value, entry_value_size, this->pff_error);
+  if (result != 1)
   {
-     entry_value = (uint8_t *) new uint8_t[entry_value_size];
-     result = libpff_message_get_conversation_index(*(this->item), entry_value, entry_value_size, this->pff_error);
-     if (result == -1)
-       return ;
-     else if (result != 0)
-     {
-        if (entry_value_size >= 22)
-        {
-	   if (entry_value[0] == 0x01)
-           {
-              filetime_buffer[ 0 ] = 0;
-	      filetime_buffer[ 1 ] = 0;
-	      filetime_buffer[ 2 ] = entry_value[ 5 ];
-	      filetime_buffer[ 3 ] = entry_value[ 4 ];
-	      filetime_buffer[ 4 ] = entry_value[ 3 ];
-	      filetime_buffer[ 5 ] = entry_value[ 2 ];
-	      filetime_buffer[ 6 ] = entry_value[ 1 ];
-	      filetime_buffer[ 7 ] = entry_value[ 0 ];
-
-
-
-           }
-	}    
-     }
+    free(entry_value);
+    return ;
   }
- */ 
+
+  if (entry_value_size < 22)
+  {
+     free(entry_value);
+     return ;
+  }
+  if (entry_value[0] != 0x01)
+  {
+    free(entry_value);
+    return ;
+  }
+  Attributes		headerBlock;
+  std::ostringstream 	guid;
+
+  entry_value_64bit = bytes_swap64(*((uint64_t*)(entry_value)));
+  *((uint8_t*)&entry_value_64bit) = 0;
+  *(((uint8_t*)&entry_value_64bit) + 1) = 0;
+
+  current_time = entry_value_64bit;
+  vtime*  value_filetime = new vtime(entry_value_64bit);
+  Variant* variant_filetime = new Variant(value_filetime);
+  headerBlock["File time"] = variant_filetime;
+
+  entry_value_64bit = bytes_swap64(*((uint64_t*) (entry_value + 6))); 
+  guid << hex << entry_value_64bit;
+  entry_value_64bit = bytes_swap64(*((uint64_t*) (entry_value + 14)));
+  guid << entry_value_64bit;
+
+  headerBlock["GUID"] = new Variant(guid.str());
+  (*attr)["Header block"] = new Variant(headerBlock);
+
+  list_iterator = 1;
+  for (entry_value_index = 22; entry_value_index < entry_value_size; entry_value_index += 5)
+  {
+     Attributes		 childBlock;
+     std::ostringstream  childBlockId;
+
+     entry_value_64bit = 0;
+     entry_value_64bit = *((uint32_t*) (entry_value + entry_value_index));
+     entry_value_64bit &= 0x07fffffffUL;
+     if ((*(entry_value + entry_value_index) & 0x80) == 0)
+       entry_value_64bit <<= 18;
+     else
+       entry_value_64bit <<= 23;
+     current_time += entry_value_64bit;
+
+     childBlock["File time"] = new Variant(new vtime(current_time));
+     childBlock["Random number"] = new Variant((*(entry_value + entry_value_index + 4) & 0xf0) >> 4);
+     childBlock["Sequence count"] = new Variant(*(entry_value + entry_value_index + 4) & 0x0f);
+     childBlockId << "Child block " << list_iterator; 
+     (*attr)[childBlockId.str()] = new Variant(childBlock);
+
+     list_iterator++;
+  }
+  free(entry_value);
 }
 
 void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item)
 {
+  std::ostringstream		flags;
   char*				entry_value_string 		= NULL;
   size_t			entry_value_string_size 	= 0;
   size_t 			maximum_entry_value_string_size	= 0;
@@ -353,17 +362,12 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item
   uint8_t 			entry_value_boolean 		= 0;
   int 				result 				= 0;
 
-//OUTLOOKMESSAGE.HEADERS TEXT -> Refacto sous formes de list est sous list !!
-// virer ERROR si pas besoin et le mettre a NULL tous le temps...
-//  libpff_file_get_item_by_identifier();
   maximum_entry_value_string_size = 24;
-
   check_maximum_size(libpff_item_get_display_name_size)
   check_maximum_size(libpff_message_get_conversation_topic_size)
   check_maximum_size(libpff_message_get_subject_size)
   check_maximum_size(libpff_message_get_sender_name_size)
   check_maximum_size(libpff_message_get_sender_email_address_size)
-
   if (!(maximum_entry_value_string_size))
     return ; 
 
@@ -373,19 +377,25 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item
   value_time_to_attribute(libpff_message_get_delivery_time, "Delivery time")
   value_time_to_attribute(libpff_message_get_creation_time, "Creation time")
   value_time_to_attribute(libpff_message_get_modification_time, "Modification time")
-//3340 XXX libpff_message_get_size -> file size !! ??? message size ? set attr ou set as file size ?
   value_uint32_to_attribute(libpff_message_get_size, "Message size")  
 
   if (libpff_message_get_flags(item, &entry_value_32bit, NULL) == 1)
   {
      if ((entry_value_32bit & LIBPFF_MESSAGE_FLAG_READ) == LIBPFF_MESSAGE_FLAG_READ)
-       (*attr)["is readed"] = new Variant(std::string("Yes"));
+       (*attr)["Is readed"] = new Variant(std::string("Yes"));
      else
-       (*attr)["is readed"] = new Variant(std::string("No"));
+       (*attr)["Is readed"] = new Variant(std::string("No"));
      for (uint32_t n = 0; n < 9; n ++)
+     {
 	if ((entry_value_32bit & LIBPFF_MESSAGE_FLAG[n].type) == LIBPFF_MESSAGE_FLAG[n].type)
-	  (*attr)["flags"] = new Variant(std::string(LIBPFF_MESSAGE_FLAG[n].message));
-	  //XXX flags REFACTO sous formes de list ! ???  //les var sont telle bien delete par python ?   
+	{
+	   if (flags.str().size())
+	     flags << ", ";
+	   flags << LIBPFF_MESSAGE_FLAG[n].message;
+	}
+     }	
+     if (flags.str().size())
+	  (*attr)["Flags"] = new Variant(flags.str());
   }
 
   value_string_to_attribute(libpff_item_get_display_name, "Display name")

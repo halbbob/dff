@@ -52,8 +52,6 @@ libpff_macro_s FILE_ENCRYPTION_TYPE[3] =
     { LIBPFF_ENCRYPTION_TYPE_HIGH, "high" }
 }; 
 
-
-
 void pff::info()
 {
    this->info_file();

@@ -17,15 +17,7 @@
 #ifndef __PFF_NODE_HH__
 #define __PFF_NODE_HH__
 
-#if __WORDSIZE == 64
-#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000UL)
-#else
-#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000ULL)
-#endif
-
 #include "pff.hpp"
-
-bool         msDateToVTime(uint64_t value, vtime *setMe); //XXX api XXX ntfs XXX windows
 
 class PffNodeFolder : public Node
 {
