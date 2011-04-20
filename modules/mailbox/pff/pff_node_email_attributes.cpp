@@ -65,20 +65,20 @@ Attributes PffNodeEMail::allAttributes(libpff_item_t*	item)
   Attributes 		attr;
 
   Attributes messageHeader;
-  this->attributesMessageHeader(&messageHeader, item);
-  attr["Message headers"] = new Variant(messageHeader);
+  if (this->attributesMessageHeader(&messageHeader, item))
+    attr["Message headers"] = new Variant(messageHeader);
 
   Attributes recipients;
-  this->attributesRecipients(&recipients, item);
-  attr["Recipients"] = new Variant(recipients);
+  if (this->attributesRecipients(&recipients, item))
+    attr["Recipients"] = new Variant(recipients);
 
   Attributes transportHeaders;
-  this->attributesTransportHeaders(&transportHeaders, item);
-  attr["Transport headers"] = new Variant(transportHeaders);
+  if (this->attributesTransportHeaders(&transportHeaders, item))
+    attr["Transport headers"] = new Variant(transportHeaders);
 
   Attributes conversationIndex;
-  this->attributesMessageConversationIndex(&conversationIndex, item);
-  attr["Conversation index"] = new Variant(conversationIndex);
+  if (this->attributesMessageConversationIndex(&conversationIndex, item))
+    attr["Conversation index"] = new Variant(conversationIndex);
 
   return (attr);
 }
@@ -145,49 +145,48 @@ void PffNodeEMail::splitTextToAttributes(std::string text, Attributes* attr)
  
      next_eol = text.rfind("\n", next_splitter);
      if (next_eol == string::npos)
-       next_eol = buff_size; //it was == but now does it work ? fixed during appointment work
-                
+       next_eol = buff_size;
    }
    value = text.substr(splitter + 2,  next_eol - splitter - 3); 
 
    if (value.length() > 256)
-     (*attr)[key] = new Variant(std::string("Value too long")); //XXX too field sometimes too long must be truncated 
+     (*attr)[key] = new Variant(std::string("Value too long"));
    else
    {
      (*attr)[key] = new Variant(value);
    }
-
    splitter = next_eol + 2; 
  }
 
 }
 
-void PffNodeEMail::attributesTransportHeaders(Attributes* attr, libpff_item_t* item)
+int PffNodeEMail::attributesTransportHeaders(Attributes* attr, libpff_item_t* item)
 {
   size_t message_transport_headers_size  = 0; 
   uint8_t *entry_string = NULL;
 
   if (libpff_message_get_transport_headers_size(item, &message_transport_headers_size,
 	          				     this->pff_error) != 1)
-    return ;
+    return (0);
 
   if (message_transport_headers_size <= 0)
-    return ;
+    return (0);
 
   entry_string =  new uint8_t [message_transport_headers_size];
 
   if (libpff_message_get_transport_headers(item, entry_string, message_transport_headers_size, this->pff_error ) != 1 )
   {
     delete entry_string;
-    return ;
+    return (0);
   }
   this->splitTextToAttributes(std::string((char *)entry_string), attr);
 
   delete entry_string;
+  return (1);
 }
 
 
-void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
+int PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 {
   libpff_item_t*	recipients			= NULL;
   uint8_t*		entry_value_string          	= NULL;
@@ -200,7 +199,7 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
   if (libpff_message_get_recipients(item, &recipients, this->pff_error) == 1)
   {
      if (libpff_item_get_number_of_sets(recipients, (uint32_t*) &number_of_recipients, this->pff_error) != 1)
-      return ; 
+      return (0); 
      if (number_of_recipients > 0)
      {
         for (recipient_iterator = 0; recipient_iterator < number_of_recipients; recipient_iterator++)
@@ -267,11 +266,16 @@ void PffNodeEMail::attributesRecipients(Attributes* attr, libpff_item_t* item)
 	   (*attr)[keyRecipient.str()] = new Variant(attrRecipient);
 	   delete entry_value_string;
 	}	
-     }	 
+     }
+     else
+       return (0);
   }
+  else 
+    return (0);
+  return (1);   
 }
 
-void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr, libpff_item_t* item)
+int PffNodeEMail::attributesMessageConversationIndex(Attributes* attr, libpff_item_t* item)
 {
   uint8_t*	entry_value 		= NULL;
   uint32_t	entry_value_index	= 0;
@@ -283,28 +287,18 @@ void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr, libpff_i
 
   result = libpff_message_get_conversation_index_size(item, &entry_value_size, this->pff_error);
   if (result == -1 || result == 0 || entry_value_size == 0)
-    return ;
+    return (0);
  
   entry_value = (uint8_t *)malloc(sizeof(uint8_t) * entry_value_size);
   if (entry_value == NULL)
-    return ;
+    return (0);
   result = libpff_message_get_conversation_index(item, entry_value, entry_value_size, this->pff_error);
-  if (result != 1)
+  if ((result != 1) || (entry_value_size < 22) || (entry_value[0] != 0x01))
   {
     free(entry_value);
-    return ;
+    return (0);
   }
 
-  if (entry_value_size < 22)
-  {
-     free(entry_value);
-     return ;
-  }
-  if (entry_value[0] != 0x01)
-  {
-    free(entry_value);
-    return ;
-  }
   Attributes		headerBlock;
   std::ostringstream 	guid;
 
@@ -349,9 +343,10 @@ void PffNodeEMail::attributesMessageConversationIndex(Attributes* attr, libpff_i
      list_iterator++;
   }
   free(entry_value);
+  return (1);
 }
 
-void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item)
+int PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item)
 {
   std::ostringstream		flags;
   char*				entry_value_string 		= NULL;
@@ -369,7 +364,7 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item
   check_maximum_size(libpff_message_get_sender_name_size)
   check_maximum_size(libpff_message_get_sender_email_address_size)
   if (!(maximum_entry_value_string_size))
-    return ; 
+    return (0); 
 
   entry_value_string = (char *) new char[maximum_entry_value_string_size];
 
@@ -453,5 +448,6 @@ void PffNodeEMail::attributesMessageHeader(Attributes* attr, libpff_item_t* item
       (*attr)["Is private"] = new Variant(std::string("yes"));	 
   }
 
-  delete entry_value_string; 
+  delete entry_value_string;
+  return (1);
 }

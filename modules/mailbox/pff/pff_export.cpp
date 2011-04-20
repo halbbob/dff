@@ -197,6 +197,7 @@ int pff::export_email(libpff_item_t* email, int email_index, Node *parent, bool 
   size_t 	email_html_body_size = 0;
   size_t 	email_rtf_body_size = 0;
   size_t 	email_text_body_size = 0;
+  size_t	transport_headers_size = 0;
   int 		has_html_body = 0;
   int 		has_rtf_body = 0;
   int 		has_text_body = 0;
@@ -210,8 +211,11 @@ int pff::export_email(libpff_item_t* email, int email_index, Node *parent, bool 
   
   PffNodeFolder* nodeFolder = new PffNodeFolder(messageName.str(), parent, this);
 
-  new PffNodeEmailTransportHeaders("Transport Headers", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);
-
+  if (libpff_message_get_transport_headers_size(email, &transport_headers_size, &(this->pff_error)))
+  {
+    if (transport_headers_size > 0)
+      new PffNodeEmailTransportHeaders("Transport Headers", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);
+  }
   if (has_text_body)
   {
     new PffNodeEmailMessageText("Message", nodeFolder, this, email, &(this->pff_error), &(this->pff_file), clone);

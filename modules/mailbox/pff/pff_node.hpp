@@ -45,10 +45,10 @@ public:
 class PffNodeEMail : public PffNodeData
 {
 private:
-  void 			        attributesMessageHeader(Attributes* attr, libpff_item_t* item);
-  void 			        attributesMessageConversationIndex(Attributes* attr, libpff_item_t* item);
-  void			        attributesRecipients(Attributes* attr, libpff_item_t* item);
-  void			        attributesTransportHeaders(Attributes* attr, libpff_item_t* item);
+  int			        attributesMessageHeader(Attributes* attr, libpff_item_t* item);
+  int 			        attributesMessageConversationIndex(Attributes* attr, libpff_item_t* item);
+  int			        attributesRecipients(Attributes* attr, libpff_item_t* item);
+  int			        attributesTransportHeaders(Attributes* attr, libpff_item_t* item);
   void 			        splitTextToAttributes(std::string text, Attributes* attr);
 public:
   Attributes			allAttributes(libpff_item_t* item);	
