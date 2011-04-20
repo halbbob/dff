@@ -60,6 +60,7 @@ class MagicHandler(DataTypeHandler):
       return filemime
     except IOError:
 	return "None"
+    return "None"
 
 try:
   magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")

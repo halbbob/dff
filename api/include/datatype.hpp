@@ -27,7 +27,7 @@ class DataTypeHandler
 public:
   EXPORT		DataTypeHandler(std::string);
   EXPORT  virtual 	~DataTypeHandler();
-  EXPORT  virtual	std::string* type(class Node*) = 0;
+  EXPORT  virtual	std::string	 type(class Node*) = 0;
   std::string		name;
 }; 
 
