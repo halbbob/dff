@@ -78,11 +78,11 @@ int pff::export_item(libpff_item_t* item, int item_index, Node* parent, bool clo
   }
   else if (item_type == LIBPFF_ITEM_TYPE_MEETING)
   {
-    result = this->export_message_default(item, item_index, parent, clone, std::string("Meeting")); 
+    result = this->export_meeting(item, item_index, parent, clone); 
   }
   else if (item_type == LIBPFF_ITEM_TYPE_NOTE)
   {
-    result = this->export_message_default(item, item_index, parent, clone, std::string("Note"));	
+    result = this->export_note(item, item_index, parent, clone);	
   }
   else if (item_type == LIBPFF_ITEM_TYPE_RSS_FEED)
   {
@@ -100,15 +100,38 @@ int pff::export_item(libpff_item_t* item, int item_index, Node* parent, bool clo
  return (result);
 }
 
-
-int pff::export_message_default(libpff_item_t* note, int note_index, Node* parent, bool clone, std::string item_type_name)
+int pff::export_message_default(libpff_item_t* item, int item_index, Node* parent, bool clone, std::string item_type_name)
 {
   std::ostringstream folderName;
 
-  folderName << std::string(item_type_name) << note_index + 1;
+  folderName << std::string(item_type_name) << item_index + 1;
   PffNodeFolder* nodeFolder = new PffNodeFolder(folderName.str(), parent, this);
 
-  new PffNodeEmailMessageText(std::string(item_type_name), nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
+  new PffNodeEmailMessageText(std::string(item_type_name), nodeFolder, this, item, &(this->pff_error), &(this->pff_file), clone);
+
+  return (1);
+}
+
+int pff::export_note(libpff_item_t* note, int note_index, Node* parent, bool clone)
+{
+  std::ostringstream folderName;
+
+  folderName << "Note" << note_index + 1;
+  PffNodeFolder* nodeFolder = new PffNodeFolder(folderName.str(), parent, this);
+
+  new PffNodeNote("Note", nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
+
+  return (1);
+}
+
+int pff::export_meeting(libpff_item_t* note, int note_index, Node* parent, bool clone)
+{
+  std::ostringstream folderName;
+
+  folderName << "Meeting" << note_index + 1;
+  PffNodeFolder* nodeFolder = new PffNodeFolder(folderName.str(), parent, this);
+
+  new PffNodeMeeting("Meeting", nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
 
   return (1);
 }
@@ -230,8 +253,6 @@ int pff::export_email(libpff_item_t* email, int email_index, Node *parent, bool 
   }
 
   this->export_attachments(email, nodeFolder, clone);
- //didn't do an export format FTK seems a binary reconstructed mode
- // != EXPORT_FORMAT_FTK
 
   return (1);
 }

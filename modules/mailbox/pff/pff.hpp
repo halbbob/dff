@@ -37,7 +37,6 @@ public:
   void		        info();
   void		        info_file();
   void		        info_message_store();
-  void		        info_unallocated_blocks();
   void		        create_item();
   void			create_recovered();
   void			create_orphan();
@@ -46,9 +45,11 @@ public:
   int 		        export_item(libpff_item_t* item, int item_index, Node* parent, bool clone = 0);
   int			export_attachments(libpff_item_t* item, Node* parent, bool clone);
   int			export_task(libpff_item_t* item, int item_index, Node* parent, bool clone);	
+  int			export_note(libpff_item_t* item, int item_index, Node* parent, bool clone);	
   int 		        export_email(libpff_item_t* item, int item_index, Node* parent, bool clone);
   int 		        export_folder(libpff_item_t* item, int item_index, Node* parent, bool clone);
   int 		        export_contact(libpff_item_t* item, int item_index, Node* parent, bool clone);
+  int 		        export_meeting(libpff_item_t* item, int item_index, Node* parent, bool clone);
   int			export_appointment(libpff_item_t* item, int item_index, Node* parent, bool clone);
   int			export_message_default(libpff_item_t* item, int item_index, Node* parent, bool clone, std::string item_type_name);
   int		        export_sub_folders(libpff_item_t* folder, PffNodeFolder* nodeFolder);

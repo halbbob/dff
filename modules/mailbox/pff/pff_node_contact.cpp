@@ -20,6 +20,11 @@ PffNodeContact::PffNodeContact(std::string name, Node* parent, fso* fsobj, libpf
 {
 }
 
+std::string PffNodeContact::icon(void)
+{
+  return (":contact");
+}
+
 Attributes	PffNodeContact::_attributes(void)
 {
   Attributes		attr;

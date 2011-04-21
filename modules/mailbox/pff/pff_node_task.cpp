@@ -20,6 +20,11 @@ PffNodeTask::PffNodeTask(std::string name, Node* parent, fso* fsobj, libpff_item
 {
 }
 
+std::string	PffNodeTask::icon(void)
+{
+  return (":tasks");
+}
+
 Attributes	PffNodeTask::_attributes(void)
 {
   Attributes		attr;

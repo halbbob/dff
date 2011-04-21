@@ -52,4 +52,5 @@ class PFF(Module):
                            "description":"managed mime type",
                            "values":["Outlook"]})
     self.tags = "Mailbox"
+    self.icon = ":mailbox" 
 %}

@@ -139,3 +139,21 @@ uint8_t*	PffNodeEmailMessageRTF::dataBuffer(void)
     libpff_item_free(&item, this->pff_error);
   return (entry_string);
 }
+
+PffNodeNote::PffNodeNote(std::string name, Node* parent, fso* fsobj, libpff_item_t* item, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEmailMessageText(name, parent, fsobj, item, error, file, clone)
+{
+}
+
+std::string PffNodeNote::icon()
+{
+  return (":notes");
+}
+
+PffNodeMeeting::PffNodeMeeting(std::string name, Node* parent, fso* fsobj, libpff_item_t* item, libpff_error_t** error, libpff_file_t** file, bool clone) : PffNodeEmailMessageText(name, parent, fsobj, item, error, file, clone)
+{
+}
+
+std::string PffNodeMeeting::icon()
+{
+  return (":meeting");
+}

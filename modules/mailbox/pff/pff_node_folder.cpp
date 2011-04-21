@@ -28,12 +28,16 @@ PffNodeFolder::~PffNodeFolder()
 
 std::string	PffNodeFolder::icon()
 {
- //inbox
- //deleted
- //outbox 
- //sent items
-//contacts
-//XXX 
+  if (this->name().find("Mailbox") != std::string::npos)
+    return (":mailbox");
+  if (this->name().find("Tasks") != std::string::npos)
+    return (":tasks");
+  if (this->name().find("Notes") != std::string::npos)
+    return (":notes");
+  if (this->name().find("Calendar") != std::string::npos)
+    return (":appointment");
+  if (this->name().find("Contacts") != std::string::npos)
+    return (":contact");
   if (this->name().find("Sent") != std::string::npos)
     return (":folder_sent_mail");
   if (this->name().find("Outbox") != std::string::npos)

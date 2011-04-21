@@ -31,6 +31,11 @@ PffNodeUnallocatedBlocks::PffNodeUnallocatedBlocks(std::string name, Node *paren
 
   if (libpff_file_get_number_of_unallocated_blocks(*(this->pff_file), this->block_type, &number_of_unallocated_blocks, this->pff_error) != 1)
     return ;
+  if (block_type == LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE)
+    fsobj->res["Number of unallocated page blocks"] = new Variant(number_of_unallocated_blocks);
+  else
+    fsobj->res["Number of unallocated data blocks"] = new Variant(number_of_unallocated_blocks);
+  
 
   if (number_of_unallocated_blocks > 0)
   {

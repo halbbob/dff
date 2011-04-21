@@ -157,7 +157,6 @@ void PffNodeEMail::splitTextToAttributes(std::string text, Attributes* attr)
    }
    splitter = next_eol + 2; 
  }
-
 }
 
 int PffNodeEMail::attributesTransportHeaders(Attributes* attr, libpff_item_t* item)

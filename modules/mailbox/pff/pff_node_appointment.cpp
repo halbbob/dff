@@ -41,6 +41,10 @@ PffNodeAppointment::PffNodeAppointment(std::string name, Node* parent, fso* fsob
   this->pff_error = error;
 }
 
+std::string PffNodeAppointment::icon(void)
+{
+  return (":appointment");
+}
 
 void  PffNodeAppointment::attributesAppointment(Attributes* attr, libpff_item_t* item)
 {

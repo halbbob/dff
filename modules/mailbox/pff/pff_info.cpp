@@ -56,7 +56,6 @@ void pff::info()
 {
    this->info_file();
    this->info_message_store();
-   this->info_unallocated_blocks();
 }
 
 
@@ -69,13 +68,13 @@ void pff::info_file()
 
 
   if (libpff_file_get_size(this->pff_file, &file_size, &(this->pff_error)) != 1)
-    throw vfsError(std::string("unable to retrieve size."));
+    return ;
   if (libpff_file_get_content_type(this->pff_file, &file_content_type, &(this->pff_error)) != 1)
-    throw vfsError(std::string("unable to retrieve file content type."));
+    return ;
   if (libpff_file_get_type(this->pff_file, &file_type, &(this->pff_error)) != 1)
-    throw vfsError(std::string("unable to retrieve file type."));
+    return ;
   if (libpff_file_get_encryption_type(this->pff_file, &encryption_type, &(this->pff_error)) != 1)
-    throw vfsError(std::string("unable to retrieve encryption type."));
+    return ;
  
   std::string message = ""; 
   for (uint8_t n = 0;  n <  3; n++)
@@ -86,10 +85,10 @@ void pff::info_file()
       break;
     }
   } 
-  if (message != "") 
-    cout << "file type content : " << message << endl;
+  if (message != "")
+    this->res["File type content"] = new Variant(message);
   else
-    cout << "file type content unknown" << file_type << endl;
+    this->res["File type content"] = new Variant(std::string("Unknown"));
 
   message = "";
   for (uint8_t n = 0;  n <  2; n++)
@@ -101,12 +100,10 @@ void pff::info_file()
     }
   } 
   if (message != "") 
-    cout << "file type : " << message << endl;
+    this->res["PFF file type"] = new Variant(message);
   else
-    cout << "file type unknown" << file_type << endl;
-
+    this->res["PFF file type"] = new Variant(std::string("Unknown"));
  
-  cout << "Encryption type:" << endl;
   message = "";
   for (uint8_t n = 0;  n <  3; n++)
   {
@@ -117,78 +114,26 @@ void pff::info_file()
     }
   } 
   if (message != "") 
-    cout << "file encryption type : " << message << endl;
+    this->res["Encryption type"] = new Variant(message);
   else
-    cout << "file encryption type unknown" << encryption_type << endl;
+    this->res["Encryption type"] = new Variant(std::string("Unknown"));
 }
 
 void pff::info_message_store()
 {
   libpff_item_t *message_store = NULL;
   uint32_t 	password_checksum   = 0;
-  uint32_t 	valid_folder_mask   = 0;
-
 
   if (libpff_file_get_message_store(this->pff_file, &message_store, &(this->pff_error)) == -1)
-    throw vfsError(std::string("Unable to retrieve message store"));
-
-  cout << "message store:" << endl; 
-  if (libpff_message_store_get_valid_folder_mask(message_store, &valid_folder_mask, NULL) == 1)
-  {
-     for (uint8_t n = 0; n < 8 ; n++)
-     {
-       if ((valid_folder_mask & LIBPFF_VALID_FOLDER_MASK[n].type) == LIBPFF_VALID_FOLDER_MASK[n].type)
-         cout << LIBPFF_VALID_FOLDER_MASK[n].message << endl;
-     }
-  }
+    return ;
 
   if (libpff_message_store_get_password_checksum(message_store, &password_checksum, NULL) == 1)
   {
-     cout << "Password checksum" << endl;
      if (password_checksum == 0)
-       cout << "N/A" << endl;
+       this->res["Password checksum"] = new Variant(std::string("N/A"));
      else
-       printf("0x%08x\n", password_checksum);
+       this->res["Password checksum"] = new Variant(password_checksum);
   }
   if (libpff_item_free(&message_store, &(this->pff_error)) != 1)
-    throw vfsError(std::string("Unable to free message store item."));
-
-  return;
+    return ;
 }
-
-
-void pff::info_unallocated_blocks()
-{
-  off64_t offset                   = 0;
-  size64_t size                    = 0;
-  int number_of_unallocated_blocks = 0;
-  int block_iterator               = 0;
-
-  if (libpff_file_get_number_of_unallocated_blocks(this->pff_file, LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, &number_of_unallocated_blocks, &(this->pff_error)) != 1)
-    throw vfsError(std::string("unable to retrieve number of unallocated page blocks."));
-  cout << "Found " << number_of_unallocated_blocks << " unallocated page blocks" << endl;
-
-  if (number_of_unallocated_blocks > 0)
-  {
-     for (block_iterator = 0; block_iterator < number_of_unallocated_blocks; block_iterator++)
-     {
-	if (libpff_file_get_unallocated_block(this->pff_file, LIBPFF_UNALLOCATED_BLOCK_TYPE_PAGE, block_iterator, &offset, &size, &(this->pff_error)) == 1)
-	  printf("%016llx - %016llx size : %lld\n", offset, offset + size, size);	
-     }
-  }
-
- if (libpff_file_get_number_of_unallocated_blocks(this->pff_file, LIBPFF_UNALLOCATED_BLOCK_TYPE_DATA, &number_of_unallocated_blocks, &(this->pff_error)) != 1)
-    throw vfsError(std::string("unable to retrieve number of unallocated data blocks."));
-  cout << "Found " << number_of_unallocated_blocks << " unallocated data blocks" << endl;
-
-  if (number_of_unallocated_blocks > 0)
-  {
-     for (block_iterator = 0; block_iterator < number_of_unallocated_blocks; block_iterator++)
-     {
-	if (libpff_file_get_unallocated_block(this->pff_file, LIBPFF_UNALLOCATED_BLOCK_TYPE_DATA, block_iterator, &offset, &size, &(this->pff_error)) == 1)
-	  printf("%016llx - %016llx size : %lld\n", offset, offset + size, size);	
-     }
-  }
-
-}
-

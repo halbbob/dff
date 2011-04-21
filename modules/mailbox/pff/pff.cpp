@@ -24,6 +24,8 @@ pff::pff() : mfso("pff")
 
 pff::~pff()
 {
+  libpff_file_close(this->pff_file, &(this->pff_error));
+  libpff_file_free(&(this->pff_file),  &(this->pff_error));
 }
 
 void pff::start(std::map<std::string, Variant*> args)
@@ -35,9 +37,9 @@ void pff::start(std::map<std::string, Variant*> args)
   else
     throw envError("pff need a file argument.");
   try 
-  {
+  {  //options ds le .i ?
     this->initialize(this->parent->absolute());
-//    this->info(); // optional return as variant results ?
+    this->info(); 
     this->stateinfo = std::string("Searching unallocated data"); 
     this->create_unallocated();
     this->stateinfo = std::string("Searching recoverable items");
@@ -46,7 +48,6 @@ void pff::start(std::map<std::string, Variant*> args)
     this->create_orphan();
     this->stateinfo = std::string("Creating mailbox items");
     this->create_item();
-    this->stateinfo = std::string("Mailbox parsed successfully");
   }
   catch (vfsError e)
   {
@@ -54,20 +55,11 @@ void pff::start(std::map<std::string, Variant*> args)
      this->stateinfo = std::string(e.error);
      return ;
   }
- //XXX
-// this->registerTree(parent, son); 
-//    libpff_file_close(this->pff_file, *(this->error));
-  //  libpff_file_free(this->pff_file, *(this->error));
-/*
-  if (libpff_file_info_fprint(stdout, pff_file) != 1)
-  {
-     res->add_const("error", "Can't print file info.");
-     return; 
-  }
-*/
-  res["result"] = new Variant(std::string("Mailbox parsed successfully."));
+  this->stateinfo = std::string("Mailbox parsed successfully");
+  res["Result"] = new Variant(std::string("Mailbox parsed successfully."));
 }
 
+//use clone mode, use lot more memory but more than passing a flag and iterator
 void    pff::create_recovered(void)
 {
   int 				number_of_recovered_items 	= 0; 
@@ -90,9 +82,6 @@ void    pff::create_recovered(void)
          if (pff_recovered_item != NULL)
          {
 	   this->export_item(pff_recovered_item, recovered_item_iterator, recoveredNode, 1);
-//ask to clone because can't get by id for sure .....
-//must use somethings other than clone like a flag 
-// flags_copy == CLONE / flags_copy == RECOVERED_ITEM to use recover by iterator etc...
            libpff_item_free(&pff_recovered_item, &(this->pff_error));  
            number_of_found_recovered_items++; 
          }
@@ -153,9 +142,9 @@ void pff::create_item()
       throw vfsError(std::string("Unable to retrive number of sub items."));
    if (number_of_sub_items > 0)
    {
-     Node* mbox = new Node(std::string("mailbox"), 0, NULL, this);
+     PffNodeFolder* mbox = new PffNodeFolder(std::string("Mailbox"), NULL, this);
      this->export_sub_items(pff_root_item, mbox);
-//     if (libpff_item_free(&pff_root_item, &(this->pff_error)) != 1)
+//     if (libpff_item_free(&pff_root_item, &(this->pff_error)) != 1) //XXX test de le free?
   //     throw vfsError(std::string("Unable to free root item."));
      this->registerTree(this->parent, mbox);
    }  
