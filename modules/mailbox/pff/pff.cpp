@@ -37,17 +37,29 @@ void pff::start(std::map<std::string, Variant*> args)
   else
     throw envError("pff need a file argument.");
   try 
-  {  //options ds le .i ?
+  {
     this->initialize(this->parent->absolute());
-    this->info(); 
-    this->stateinfo = std::string("Searching unallocated data"); 
-    this->create_unallocated();
-    this->stateinfo = std::string("Searching recoverable items");
-    this->create_recovered();
-    this->stateinfo = std::string("Searching orphan items");
-    this->create_orphan();
-    this->stateinfo = std::string("Creating mailbox items");
-    this->create_item();
+    this->info();
+    if (args["unallocated"] == NULL)
+    {
+      this->stateinfo = std::string("Searching unallocated data"); 
+      this->create_unallocated();
+    }
+    if (args["recoverable"] == NULL)
+    {
+      this->stateinfo = std::string("Searching recoverable items");
+      this->create_recovered();
+    }
+    if (args["orphan"] == NULL)
+    {
+      this->stateinfo = std::string("Searching orphan items");
+      this->create_orphan();
+    }
+    if (args["default"] == NULL)
+    {
+      this->stateinfo = std::string("Creating mailbox items");
+      this->create_item();
+    }
   }
   catch (vfsError e)
   {
@@ -144,8 +156,7 @@ void pff::create_item()
    {
      PffNodeFolder* mbox = new PffNodeFolder(std::string("Mailbox"), NULL, this);
      this->export_sub_items(pff_root_item, mbox);
-//     if (libpff_item_free(&pff_root_item, &(this->pff_error)) != 1) //XXX test de le free?
-  //     throw vfsError(std::string("Unable to free root item."));
+     libpff_item_free(&pff_root_item, &(this->pff_error)); 
      this->registerTree(this->parent, mbox);
    }  
 }

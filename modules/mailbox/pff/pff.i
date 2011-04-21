@@ -41,12 +41,24 @@
 from api.module.module import *
 from api.types.libtypes import *
 class PFF(Module):
-  """Extract PST mailbox content."""
+  """Extract PST/PAB/OST mailbox content."""
   def __init__(self):
     Module.__init__(self, 'pff', pff)
     self.conf.addArgument({"input":Argument.Required|Argument.Single|typeId.Node,
                            "name": "file",
-                           "description": "Path to the file mailbox file"})
+                           "description": "Path to mailbox file"})
+    self.conf.addArgument({"name":"unallocated",
+                           "description":"Don't search for unallocated data",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name":"recoverable",
+                           "description":"Don't search for recoverable items",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name":"orphan",
+                           "description":"Don't search for oprhan items",
+                           "input": Argument.Empty})
+    self.conf.addArgument({"name":"default",
+                           "description":"Don't create (allocated) items",
+                           "input": Argument.Empty})
     self.conf.addConstant({"name":"mime-type",
                            "type":typeId.String,
                            "description":"managed mime type",
