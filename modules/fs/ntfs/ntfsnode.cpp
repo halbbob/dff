@@ -334,51 +334,66 @@ void		NtfsNode::_offsetFromRunList(FileMapping *fm)
 
     newSize = (run->runLength - registeredClusters) * currentData.clusterSize();
 
-    if (run->runOffset) {
-      if (currentOffset + newSize > currentData.getSize()) {
-	// XXX if > initSize, need to create shadow node
-	fm->push(currentOffset, newSize - (currentOffset + newSize - currentData.getSize()),
-		 _node, run->runOffset * currentData.clusterSize());
+    if (run->runOffset) {						//1.1 + 2.1 + 3.1
+      if (currentOffset + newSize > currentData.getSize()) {		//1.1
+	if ((currentOffset + newSize) > currentData.getInitSize() && currentData.getSize() > currentData.getInitSize()) {
+	  // > initSize, need to create shadow node
+	  fm->push(currentOffset, currentData.getInitSize() - currentOffset,
+		   _node, run->runOffset * currentData.clusterSize());
+	  fm->push(currentOffset + (currentData.getInitSize() - currentOffset),
+		   newSize - (currentData.getInitSize() - currentOffset), NULL, 0);
 #if __WORDSIZE == 64
-	DEBUG(CRITICAL, "FM1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, newSize - (currentOffset + newSize - currentData.getSize()), run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM0.1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM0.1 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
 #else
-	DEBUG(CRITICAL, "FM1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, newSize - (currentOffset + newSize - currentData.getSize()), run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM0.1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM0.1 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
 #endif
+	}
+	else {
+	  fm->push(currentOffset, newSize - (currentOffset + newSize - currentData.getSize()),
+		   _node, run->runOffset * currentData.clusterSize());
+#if __WORDSIZE == 64
+	  DEBUG(CRITICAL, "FM1.1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, newSize - (currentOffset + newSize - currentData.getSize()), run->runOffset * currentData.clusterSize());
+#else
+	  DEBUG(CRITICAL, "FM1.1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, newSize - (currentOffset + newSize - currentData.getSize()), run->runOffset * currentData.clusterSize());
+#endif
+	}
       }
-      else {
-	if ((currentOffset + newSize) > currentData.getInitSize()) {
+      else {								//2.1 + 3.1
+	if ((currentOffset + newSize) > currentData.getInitSize()) {	//2.1
 	  // > initSize, need to create shadow node
 	  fm->push(currentOffset, currentData.getInitSize() - currentOffset,
 		   _node, run->runOffset * currentData.clusterSize());
 #if __WORDSIZE == 64
-	  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM2.1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
 #else
-	  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM2.1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, currentData.getInitSize() - currentOffset, run->runOffset * currentData.clusterSize());
 #endif
 	  fm->push(currentOffset + (currentData.getInitSize() - currentOffset),
 		   newSize - (currentData.getInitSize() - currentOffset), NULL, 0);
 #if __WORDSIZE == 64
-	  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
+	  DEBUG(CRITICAL, "FM2.1 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
 #else
-	  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
+	  DEBUG(CRITICAL, "FM2.1 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset + (currentData.getInitSize() - currentOffset), newSize - (currentData.getInitSize() - currentOffset));
 #endif
 	}
-	else {
+	else {								//3.1
 	  fm->push(currentOffset, newSize, _node, run->runOffset * currentData.clusterSize());
 #if __WORDSIZE == 64
-	  DEBUG(CRITICAL, "FM3 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, newSize, run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM3.1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", currentOffset, newSize, run->runOffset * currentData.clusterSize());
 #else
-	  DEBUG(CRITICAL, "FM3 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, newSize, run->runOffset * currentData.clusterSize());
+	  DEBUG(CRITICAL, "FM3.1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", currentOffset, newSize, run->runOffset * currentData.clusterSize());
 #endif
 	}
       }
     }
-    else { // shadow
+    else { // shadow							//4.1
       fm->push(currentOffset, newSize, NULL, 0);
 #if __WORDSIZE == 64
-      DEBUG(CRITICAL, "FM4 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset, newSize);
+      DEBUG(CRITICAL, "FM4.1 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", currentOffset, newSize);
 #else
-      DEBUG(CRITICAL, "FM4 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset, newSize);
+      DEBUG(CRITICAL, "FM4.1 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", currentOffset, newSize);
 #endif
     }
 
@@ -391,7 +406,7 @@ void		NtfsNode::_offsetFromRunList(FileMapping *fm)
       // We also have to take care of $DATA attribute's name because of ADS
       // feature, we should rely of next valid VCN.
 #if __WORDSIZE == 64
-      DEBUG(CRITICAL, "starting VCN 0x%llx ending VCN 0x%lx\n", currentData.nonResidentDataHeader()->startingVCN, currentData.nonResidentDataHeader()->endingVCN);
+      DEBUG(CRITICAL, "starting VCN 0x%lx ending VCN 0x%lx\n", currentData.nonResidentDataHeader()->startingVCN, currentData.nonResidentDataHeader()->endingVCN);
 #else
       DEBUG(CRITICAL, "starting VCN 0x%llx ending VCN 0x%llx\n", currentData.nonResidentDataHeader()->startingVCN, currentData.nonResidentDataHeader()->endingVCN);
 #endif
@@ -461,9 +476,9 @@ void					NtfsNode::_setNextAttrData(FileMapping *fm, uint64_t totalOffset) {
 		fm->push(totalOffset, newSize - (currentOffset + newSize - totalSize),
 			 _node, run->runOffset * data->clusterSize());
 #if __WORDSIZE == 64
-		DEBUG(CRITICAL, "FM1 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, newSize - (currentOffset + newSize - totalSize), run->runOffset * data->clusterSize());
+		DEBUG(CRITICAL, "FM1.2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, newSize - (currentOffset + newSize - totalSize), run->runOffset * data->clusterSize());
 #else
-		DEBUG(CRITICAL, "FM1 for offset 0x%llx push size 0x%llx at origin offset 0x%llx, runLength 0x%x clustSize 0x%x\n", totalOffset, newSize - (currentOffset + newSize - totalSize), run->runOffset * data->clusterSize(), run->runLength, data->clusterSize());
+		DEBUG(CRITICAL, "FM1.2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx, runLength 0x%x clustSize 0x%x\n", totalOffset, newSize - (currentOffset + newSize - totalSize), run->runOffset * data->clusterSize(), run->runLength, data->clusterSize());
 #endif
 	      }
 	      else {
@@ -472,24 +487,24 @@ void					NtfsNode::_setNextAttrData(FileMapping *fm, uint64_t totalOffset) {
 		  fm->push(totalOffset, initSize - currentOffset,
 			   _node, run->runOffset * data->clusterSize());
 #if __WORDSIZE == 64
-		  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, initSize - currentOffset, run->runOffset * data->clusterSize());
+		  DEBUG(CRITICAL, "FM2.2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, initSize - currentOffset, run->runOffset * data->clusterSize());
 #else
-		  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", totalOffset, initSize - currentOffset, run->runOffset * data->clusterSize());
+		  DEBUG(CRITICAL, "FM2.2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", totalOffset, initSize - currentOffset, run->runOffset * data->clusterSize());
 #endif
 		  fm->push(totalOffset + (initSize - currentOffset),
 			   newSize - (initSize - currentOffset), NULL, 0);
 #if __WORDSIZE == 64
-		  DEBUG(CRITICAL, "FM2 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", totalOffset + (initSize - currentOffset), newSize - (initSize - currentOffset));
+		  DEBUG(CRITICAL, "FM2.2 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", totalOffset + (initSize - currentOffset), newSize - (initSize - currentOffset));
 #else
-		  DEBUG(CRITICAL, "FM2 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", totalOffset + (initSize - currentOffset), newSize - (initSize - currentOffset));
+		  DEBUG(CRITICAL, "FM2.2 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", totalOffset + (initSize - currentOffset), newSize - (initSize - currentOffset));
 #endif
 		}
 		else {
 		  fm->push(totalOffset, newSize, _node, run->runOffset * data->clusterSize());
 #if __WORDSIZE == 64
-		  DEBUG(CRITICAL, "FM3 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, newSize, run->runOffset * data->clusterSize());
+		  DEBUG(CRITICAL, "FM3.2 for offset 0x%lx push size 0x%lx at origin offset 0x%lx\n", totalOffset, newSize, run->runOffset * data->clusterSize());
 #else
-		  DEBUG(CRITICAL, "FM3 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", totalOffset, newSize, run->runOffset * data->clusterSize());
+		  DEBUG(CRITICAL, "FM3.2 for offset 0x%llx push size 0x%llx at origin offset 0x%llx\n", totalOffset, newSize, run->runOffset * data->clusterSize());
 #endif
 		}
 	      }
@@ -497,9 +512,9 @@ void					NtfsNode::_setNextAttrData(FileMapping *fm, uint64_t totalOffset) {
 	    else { // shadow
 	      fm->push(totalOffset, newSize, NULL, 0);
 #if __WORDSIZE == 64
-	      DEBUG(CRITICAL, "FM4 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", totalOffset, newSize);
+	      DEBUG(CRITICAL, "FM4.2 for offset 0x%lx push size 0x%lx as shadow (empty content)\n", totalOffset, newSize);
 #else
-	      DEBUG(CRITICAL, "FM4 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", totalOffset, newSize);
+	      DEBUG(CRITICAL, "FM4.2 for offset 0x%llx push size 0x%llx as shadow (empty content)\n", totalOffset, newSize);
 #endif
 	    }
 	    
