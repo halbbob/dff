@@ -36,6 +36,7 @@ set(pff_srcs
     pff_node_email_message.cpp
     pff_node_email_attributes.cpp
     pff_node_email_transport_headers.cpp
+    libbfio_wrapper.cpp
 )
 
 SET_SOURCE_FILES_PROPERTIES(pff.i PROPERTIES CPLUSPLUS ON)

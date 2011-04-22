@@ -20,8 +20,11 @@
 #include "pff_common.hpp"
 #include "pff_node.hpp"
 #include "pff_macro.hpp"
+#include "libbfio_wrapper.hpp"
 
 using namespace std;
+
+int libpff_file_open_file_io_handle(libpff_file_t*, libbfio_handle_t*, int, libpff_error_t**);
 
 class pff : public mfso
 {
@@ -33,7 +36,7 @@ private:
 public:
                          pff();
                         ~pff();
-  void		        initialize(std::string path);
+  void		        initialize(Node* parent);
   void		        info();
   void		        info_file();
   void		        info_message_store();

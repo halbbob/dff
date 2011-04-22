@@ -38,7 +38,7 @@ void pff::start(std::map<std::string, Variant*> args)
     throw envError("pff need a file argument.");
   try 
   {
-    this->initialize(this->parent->absolute());
+    this->initialize(this->parent);
     this->info();
     if (args["unallocated"] == NULL)
     {
@@ -161,15 +161,19 @@ void pff::create_item()
    }  
 }
 
-
-void pff::initialize(string path)
+void pff::initialize(Node* parent)
 {
+  libbfio_handle_t 	*handle = NULL;
+  libbfio_error_t	*error = NULL; 
+
   this->pff_file = NULL;
   this->pff_error = NULL;
   if (libpff_file_initialize(&(this->pff_file), &(this->pff_error)) != 1)
     throw vfsError(std::string("Unable to initialize system values."));
-  if (libpff_file_open(this->pff_file, path.c_str(), LIBPFF_OPEN_READ , &(this->pff_error)) != 1)
-    throw vfsError(std::string("error", "Can't open pff file."));
+  if (dff_libbfio_file_initialize(&handle, &error, parent) != 1)
+    throw vfsError(std::string("Can't initialize libbfio wrapper for dff"));
+  if (libpff_file_open_file_io_handle(this->pff_file, handle, LIBPFF_OPEN_READ, &(this->pff_error)) != 1)
+    throw vfsError(std::string("Can't open file with libbfio"));
 }
 
 
