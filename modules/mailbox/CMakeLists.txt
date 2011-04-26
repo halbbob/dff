@@ -13,7 +13,7 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-add_subdirectory (pff)
+#add_subdirectory (pff)
 
 set(mailbox_srcs
   __init__.py
