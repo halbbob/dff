@@ -300,7 +300,7 @@ class ImageView(QWidget, Script):
 
 
   def setImage(self, node):
-    self.imagelabel.setText(str(node.absolute()) + " (" + str(self.curIdx + 1) + " / " + str(len(self.images)) + ")")
+    self.imagelabel.setText(QString.fromUtf8(str(node.absolute()) + " (" + str(self.curIdx + 1) + " / " + str(len(self.images)) + ")"))
     self.loadedImage.load(node)
     self.metadata.process(node)
 
