@@ -56,12 +56,12 @@ void aff::start(std::map<std::string, Variant* > args)
 	std::string nname = path.substr(path.rfind('/') + 1);
 	node = new AffNode(nname, af_get_imagesize(affile), NULL, this, path);
 	af_close(affile);
+   	this->registerTree(this->parent, node);   
 	this->res[path] = new Variant(std::string("added successfully by aff module"));
      }
      else 
         this->res[path] = new Variant(std::string("can't be added by aff module"));
   }
-  this->registerTree(this->parent, node);   
 
   return ;
 
