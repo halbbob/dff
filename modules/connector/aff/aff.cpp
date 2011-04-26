@@ -16,11 +16,15 @@
 
 #include "aff.hpp"
 #include "affnode.hpp"
+#include <pthread.h>
+
+pthread_mutex_t io_mutex = PTHREAD_MUTEX_INITIALIZER; //this->io_mutex ? plutot que global ? opu pas pasque ds la thread ! 
+
 
 aff::aff() : fso("aff")
 {
   this->__fdm = new FdManager();
-  setenv("AFFLIB_CACHE_PAGES", "2", 1);
+  setenv("AFFLIB_CACHE_PAGES", "2", 1); //rajouter une option pour le nombre de page ds le cache -> Pour accellerer ! 
 }
 
 aff::~aff()
@@ -82,10 +86,16 @@ int aff::vopen(Node *node)
 
 int aff::vread(int fd, void *buff, unsigned int size)
 {
+  int	result = 0;
+
   fdinfo* fi = this->__fdm->get(fd);  
   AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
 
-  return (af_read(affile, (unsigned char*)buff, size));
+  pthread_mutex_lock(&io_mutex);
+  result = af_read(affile, (unsigned char*)buff, size);
+  pthread_mutex_unlock(&io_mutex);
+
+  return (result);
 }
 
 int aff::vclose(int fd)
@@ -100,10 +110,16 @@ int aff::vclose(int fd)
 
 uint64_t aff::vseek(int fd, uint64_t offset, int whence)
 {
+  uint64_t  result = 0;
+
+
   fdinfo* fi = this->__fdm->get(fd);
   AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
 
-  return (af_seek(affile, (int64_t)offset, whence));
+  pthread_mutex_lock(&io_mutex);
+  result = af_seek(affile, (int64_t)offset, whence);
+  pthread_mutex_unlock(&io_mutex);
+  return (result);
 }
 
 uint64_t	aff::vtell(int32_t fd)
