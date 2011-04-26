@@ -18,13 +18,13 @@
 #include "affnode.hpp"
 #include <pthread.h>
 
-pthread_mutex_t io_mutex = PTHREAD_MUTEX_INITIALIZER; //this->io_mutex ? plutot que global ? opu pas pasque ds la thread ! 
+pthread_mutex_t io_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 aff::aff() : fso("aff")
 {
   this->__fdm = new FdManager();
-  setenv("AFFLIB_CACHE_PAGES", "2", 1); //rajouter une option pour le nombre de page ds le cache -> Pour accellerer ! 
+  setenv("AFFLIB_CACHE_PAGES", "2", 1);
 }
 
 aff::~aff()
@@ -72,8 +72,9 @@ int aff::vopen(Node *node)
   AffNode* affnode = dynamic_cast<AffNode* >(node);
   AFFILE*  affile;
 
-  
+  pthread_mutex_lock(&io_mutex);
   affile = af_open(affnode->originalPath.c_str(), O_RDONLY, 0);
+  pthread_mutex_unlock(&io_mutex);
   if (affile)
   {
     fdinfo* fi = new fdinfo();
@@ -86,10 +87,9 @@ int aff::vopen(Node *node)
 
 int aff::vread(int fd, void *buff, unsigned int size)
 {
-  int	result = 0;
-
-  fdinfo* fi = this->__fdm->get(fd);  
-  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  int	 	result;
+  fdinfo* 	fi = this->__fdm->get(fd);  
+  AFFILE*  	affile = (AFFILE*)fi->id->value<void* >();
 
   pthread_mutex_lock(&io_mutex);
   result = af_read(affile, (unsigned char*)buff, size);
@@ -100,34 +100,41 @@ int aff::vread(int fd, void *buff, unsigned int size)
 
 int aff::vclose(int fd)
 {
-  fdinfo* fi = this->__fdm->get(fd);
-  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  fdinfo* 	fi = this->__fdm->get(fd);
+  AFFILE*  	affile = (AFFILE*)fi->id->value<void* >();
 
   this->__fdm->remove(fd);
+  pthread_mutex_lock(&io_mutex);
   af_close(affile);
+  pthread_mutex_unlock(&io_mutex);
+
   return (0);
 }
 
 uint64_t aff::vseek(int fd, uint64_t offset, int whence)
 {
-  uint64_t  result = 0;
-
-
-  fdinfo* fi = this->__fdm->get(fd);
-  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  uint64_t	result;
+  fdinfo* 	fi = this->__fdm->get(fd);
+  AFFILE*  	affile = (AFFILE*)fi->id->value<void* >();
 
   pthread_mutex_lock(&io_mutex);
   result = af_seek(affile, (int64_t)offset, whence);
   pthread_mutex_unlock(&io_mutex);
+
   return (result);
 }
 
 uint64_t	aff::vtell(int32_t fd)
 {
-  fdinfo* fi = this->__fdm->get(fd);
-  AFFILE*  affile = (AFFILE*)fi->id->value<void* >();
+  uint64_t  	result;
+  fdinfo*	fi = this->__fdm->get(fd);
+  AFFILE*  	affile = (AFFILE*)fi->id->value<void* >();
 
-  return (af_tell(affile));
+  pthread_mutex_lock(&io_mutex);
+  result = af_tell(affile);
+  pthread_mutex_unlock(&io_mutex);
+
+  return (result);
 }
 
 unsigned int aff::status(void)
