@@ -546,14 +546,15 @@ void				Ntfs::_createRegularNode(Node *currentDir,
   uint32_t			extAttrData;
   NtfsNode			*newNode = NULL;
   uint32_t			ads = 0;
+  std::list<uint64_t>		dataOffsets;
 
   while ((attribute = _mftEntry->getNextAttribute())) {
-#if __WORDSIZE == 64
-    DEBUG(INFO, "\tattr @ 0x%x, type: 0x%x: %s, non resident: 0x%x, attribute length: 0x%x\n", attribute->attributeOffset() - attribute->attributeHeader()->attributeLength, attribute->attributeHeader()->attributeTypeIdentifier, attribute->getName(attribute->attributeHeader()->attributeTypeIdentifier).c_str(), attribute->attributeHeader()->nonResidentFlag, attribute->attributeHeader()->attributeLength);
-#else
-    DEBUG(INFO, "\tattr @ 0x%x, type: 0x%x: %s, non resident: 0x%x, attribute length: 0x%x\n", attribute->attributeOffset() - attribute->attributeHeader()->attributeLength, attribute->attributeHeader()->attributeTypeIdentifier, attribute->getName(attribute->attributeHeader()->attributeTypeIdentifier).c_str(), attribute->attributeHeader()->nonResidentFlag, attribute->attributeHeader()->attributeLength);
-#endif
     attribute->readHeader();
+#if __WORDSIZE == 64
+    DEBUG(INFO, "\tattr @ 0x%x, type: 0x%x: %s, non resident: 0x%x, attribute length: 0x%x\n", attribute->attributeOffset(), attribute->attributeHeader()->attributeTypeIdentifier, attribute->getName(attribute->attributeHeader()->attributeTypeIdentifier).c_str(), attribute->attributeHeader()->nonResidentFlag, attribute->attributeHeader()->attributeLength);
+#else
+    DEBUG(INFO, "\tattr @ 0x%x, type: 0x%x: %s, non resident: 0x%x, attribute length: 0x%x\n", attribute->attributeOffset(), attribute->attributeHeader()->attributeTypeIdentifier, attribute->getName(attribute->attributeHeader()->attributeTypeIdentifier).c_str(), attribute->attributeHeader()->nonResidentFlag, attribute->attributeHeader()->attributeLength);
+#endif
     if (attribute->getType() == ATTRIBUTE_STANDARD_INFORMATION) {
       metaSI = new AttributeStandardInformation(*attribute);
       if (metaSI->data()->flags & ATTRIBUTE_SI_FLAG_DIRECTORY) {
@@ -591,14 +592,17 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 	  size = metaFileName->data()->realSizeOfFile;
 #if __WORDSIZE == 64
 	  DEBUG(INFO, "size from filename %lu\n", size);
+	  DEBUG(INFO, "size from data attr %lu\n", metaFileName->data()->allocatedSizeOfFile);
 #else
 	  DEBUG(INFO, "size from filename %llu\n", size);
+	  DEBUG(INFO, "size from data attr %llu\n", metaFileName->data()->allocatedSizeOfFile);
 #endif
 	}
 	DEBUG(INFO, "filename is %s\n", metaFileName->getFileName().c_str());
       }
     }
     if (attribute->getType() == ATTRIBUTE_DATA) {
+      // XXX delete previous data ?
       data = new AttributeData(*attribute);
       if (!size) {
 	size = data->getSize();
@@ -615,27 +619,45 @@ void				Ntfs::_createRegularNode(Node *currentDir,
   }
 
 #if __WORDSIZE == 64
-  DEBUG(INFO, "data size before %lu\n", data->getSize());
+  DEBUG(INFO, "data size before %lu size is %lu\n", data->getSize(), size);
 #else
-  DEBUG(INFO, "data size before %llu\n", data->getSize());
+  DEBUG(INFO, "data size before %llu sise is %llu\n", data->getSize(), size);
 #endif
-  if (attributeList && size && !data->getOffset()) {
-    extAttrData = attributeList->getExternalAttributeData();
-    if (extAttrData &&
-	_mftEntry->decode(_mftMainFile->data()->offsetFromID(extAttrData))) {
-      while ((attribute = _mftEntry->getNextAttribute())) {
-	attribute->readHeader();
-	if (attribute->getType() == ATTRIBUTE_DATA) {
-	  data = new AttributeData(*attribute);
-	  if (!data->attributeHeader()->nonResidentFlag) {
-	    data->offset(data->getOffset() + offset + data->attributeOffset());
+  if (attributeList && (fileType == 1) && !data->getOffset()) {
+    while ((extAttrData = attributeList->getExternalAttributeData())) {
+      // Fetch every offsets of external $DATA attributes
+      if (extAttrData) {
+	dataOffsets.push_back(_mftMainFile->data()->offsetFromID(extAttrData));
+ 	DEBUG(INFO, "External attrdata: 0x%x @ size: 0x%x latest addr pushed: 0x%llx\n", extAttrData, dataOffsets.size(), dataOffsets.back());
+      }
+    }
+
+    if (dataOffsets.size()) {
+      if (_mftEntry->decode(dataOffsets.front())) {
+	// Set data from the first $DATA attribute
+	while ((attribute = _mftEntry->getNextAttribute())) {
+	  attribute->readHeader();
+	  if (attribute->getType() == ATTRIBUTE_DATA) {
+	    data = new AttributeData(*attribute);
+	    if (!data->attributeHeader()->nonResidentFlag) {
+	      data->offset(data->getOffset() + offset + data->attributeOffset());
+	    }
+	    if (!size && data->attributeHeader()->nonResidentFlag) {
+	      // Here we assume this first external $DATA attr holds real size of file !
+	      size = data->nonResidentDataHeader()->attributeContentActualSize;
+#if __WORDSIZE == 64
+	      DEBUG(INFO, "sizes from external attr $DATA are: %lu (alloc), %lu (actual), %lu (init)\n", data->nonResidentDataHeader()->attributeContentAllocatedSize, data->nonResidentDataHeader()->attributeContentActualSize, data->nonResidentDataHeader()->attributeContentInitializedSize);
+#else
+	      DEBUG(INFO, "sizes from external attr $DATA are: %llu (alloc), %llu (actual), %llu (init)\n", data->nonResidentDataHeader()->attributeContentAllocatedSize, data->nonResidentDataHeader()->attributeContentActualSize, data->nonResidentDataHeader()->attributeContentInitializedSize);
+#endif
+	    }
+	    ads++;
 	  }
-	  //	  break;
-	  ads++;
 	}
       }
     }
   }
+
 
 #if __WORDSIZE == 64
   DEBUG(INFO, "data size after %lu\n", data->getSize());
@@ -659,9 +681,13 @@ void				Ntfs::_createRegularNode(Node *currentDir,
 	newNode->node(_node);
 	if (fileType == 1 && newNode) {
 	  newNode->data(data);
+	  if (dataOffsets.size() > 1) {
+	    newNode->dataOffsets(dataOffsets);
+	  }
 	}
       }
       else {
+	// XXX Case of heavy fragmented file + ADS ignored
 	newNode = _createRegularADSNodes(offset, ads, curMftEntry, metaSI, currentDir, fullFileName);
       }
 	
@@ -872,6 +898,7 @@ void				Ntfs::_parseDirTree(Node *currentDir,
 	   * Create file or dir and recurse if needed.
 	   */
 	  _createRegularNode(currentDir, dirMftEntry, offset, curMftEntry);
+
 	}
       }
     }
@@ -1030,10 +1057,10 @@ void					Ntfs::_checkOrphanEntries()
 
   while (i < mftAmountOfRecords) {
     if (it == entryMap.end() || i != it->first) {
-      DEBUG(CRITICAL, "Checking id 0x%x\n", i);
+      DEBUG(INFO, "Checking id 0x%x\n", i);
       _mftMainFile->entryDiscovered(i);
       if ((offset = _mftMainFile->data()->offsetFromID(i))) {
-	DEBUG(CRITICAL, "Parsing id 0x%x\n", i);
+	DEBUG(INFO, "Parsing id 0x%x\n", i);
 	if (_mftEntry->decode(offset)) {
 	  AttributeFileName		*metaFileName = NULL;
 	  AttributeFileName		*fullFileName = NULL;
@@ -1044,9 +1071,9 @@ void					Ntfs::_checkOrphanEntries()
 	  uint32_t			ads = 0;
 	  
 #if __WORDSIZE == 64
-	  DEBUG(CRITICAL, "Offset is 0x%lx\n", offset);
+	  DEBUG(INFO, "Offset is 0x%lx\n", offset);
 #else
-	  DEBUG(CRITICAL, "Offset is 0x%llx\n", offset);
+	  DEBUG(INFO, "Offset is 0x%llx\n", offset);
 #endif
 	  while ((attribute = _mftEntry->getNextAttribute())) {
 	    attribute->readHeader();
@@ -1102,7 +1129,7 @@ void					Ntfs::_checkOrphanEntries()
       }
     }
     if (it != entryMap.end() && i == it->first) {
-	  DEBUG(CRITICAL, "inc it\n");
+	  DEBUG(INFO, "inc it\n");
       it++;
     }
     i++;

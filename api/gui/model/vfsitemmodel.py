@@ -86,7 +86,7 @@ class TypeWorker(QThread):
   def __init__(self, *args):
     QThread.__init__(self)
     self.typeQueue = Queue()
-    self.regImage = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+    self.regImage = re.compile("(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|BMP|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM|TIFF|tiff).*", re.IGNORECASE)
     self.typeQueue = []
     self.setUniq = set()
     self.qmutex = QMutex()

@@ -41,16 +41,52 @@ custom search algorithms.
 %include "std_list.i"
 %include "windows.i"
 
+%typemap(in) unsigned char *
+{
+if (!PyString_Check($input)) 
+   {
+      	 PyErr_SetString(PyExc_ValueError,"Expected a string");
+   	 return NULL;
+   }
+else
+   {
+	$1 = (unsigned char*)PyString_AsString($input);
+   }
+}
+
+%typemap(in) unsigned char
+{
+if (!PyString_Check($input))
+   {
+      	 PyErr_SetString(PyExc_ValueError,"Expected a string");
+   	 return NULL;
+   }
+else
+   {
+	if (PyString_Size($input) == 1)
+	   {
+		$1 = (unsigned char)PyString_AsString($input)[0];
+   	   }
+	else
+	  {
+		$1 = (unsigned char)PyString_AsString($input)[0];
+	  }
+   }
+}
+
 %{
 #include "../include/export.hpp"
 #include "../include/search.hpp"
 #include "boyer_moore.hpp"
+#include "pattern.hpp"
 %}
+
 %import "../include/export.hpp"
 %include "../include/search.hpp"
 %include "boyer_moore.hpp"
+%include "pattern.hpp"
 
 namespace std
 {
-  %template(Listuint64) list<uint64_t>;
+  %template(ListUI64) list<uint64_t>;
 };

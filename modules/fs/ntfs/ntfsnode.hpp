@@ -40,6 +40,7 @@ public:
   void				contentOffset(uint64_t offset) { _contentOffset = offset; };
   void				data(AttributeData *data) { _data = data; };
   uint32_t			getMftEntry() { return _mftEntry; };
+  void				dataOffsets(std::list<uint64_t> d) { _dataOffsets = d; };
   Attributes			_attributes(void);
 private:
   bool						_isFile;
@@ -51,11 +52,13 @@ private:
   MftEntry					*_mft;
   std::map<std::string, class Variant *>	_headerToAttribute(Attribute *);
   void						_standardInformation(std::map<std::string, class Variant *> *, AttributeStandardInformation *);
+  void						_setNextAttrData(FileMapping *fm, uint64_t totalOffset);
 
-  FileMapping	*_fm;
-  Node		*_node;
-  AttributeData	*_data;
-  uint64_t	_contentOffset;
+  FileMapping		*_fm;
+  Node			*_node;
+  AttributeData		*_data;
+  uint64_t		_contentOffset;
+  std::list<uint64_t>	_dataOffsets;
 
   void		_offsetResident(FileMapping *);
   void		_offsetFromRunList(FileMapping *);

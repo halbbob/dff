@@ -39,8 +39,6 @@ class LoadedImage(QLabel):
     self.maxsize = 1024*10*10*10*25
     self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored);
     self.setAlignment(Qt.AlignCenter)
-    #self.setScaledContents(True);
-    
 
   def setParent(self, parent):
     self.parent = parent
@@ -211,7 +209,7 @@ class ImageView(QWidget, Script):
     self.type = "imageview"
     self.icon = None
     self.vfs = vfs.vfs()
-    self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM).*", re.IGNORECASE)
+    self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM|TIFF|tiff).*", re.IGNORECASE)
     self.sceneWidth = 0
 
 
@@ -231,16 +229,11 @@ class ImageView(QWidget, Script):
   def isImage(self, node):
     if node.size() != 0:
       try:
-        #XXX temporary patch for windows magic
-        #f = str(node.staticAttributes().attributes()["mime-type"])
         type = node.dataType()
       except (IndexError, AttributeError, IOError):
-        #XXX temporary patch for windows magic
-        #self.ft.filetype(node)
 	return False
-        #f = str(node.staticAttributes().attributes()["mime-type"]) #XXX
       if  self.reg_viewer.search(str(type)):
-           return True
+        return True
     return False
 
 
@@ -362,6 +355,6 @@ class viewerimage(Module):
     self.conf.addConstant({"name": "mime-type", 
  	                   "type": typeId.String,
  	                   "description": "managed mime type",
- 	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap"]})
+ 	                   "values": ["JPEG", "GIF", "PNG", "PC bitmap", "TIFF", "PBM", "PGM", "PPM", "XBM", "XPM"]})
     self.tags = "Viewers"
     self.icon = ":lphoto"
