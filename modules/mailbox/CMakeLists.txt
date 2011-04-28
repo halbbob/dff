@@ -15,8 +15,4 @@
 
 #add_subdirectory (pff)
 
-set(mailbox_srcs
-  __init__.py
-)
-
 install_file(mailbox ${mailbox_srcs})
