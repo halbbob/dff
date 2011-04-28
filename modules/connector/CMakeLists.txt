@@ -16,6 +16,7 @@
 add_subdirectory (local)
 add_subdirectory (libewf)
 add_subdirectory(devices)
+#add_subdirectory(aff)
 
 if(HAVE_FUSE)
   add_subdirectory (fuse)
