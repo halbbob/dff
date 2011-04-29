@@ -60,18 +60,18 @@ class vfs():
     def getnode(self, path):
         if not path:
             return self.getcwd()
-        if type(path) != type(""):
-	   return path
+        #if type(path) != type(""):
+	   #return path
         if path and path[0] != "/":
             abspath = self.getcwd().absolute()
-            path = str(abspath + "/" + path).replace("//", "/")
+            path = unicode(abspath + "/" + path).replace("//", "/")
         # Avoid trailing '/'
         while len(path) > 1 and path[-1:] == "/":
             path = path[:-1]
 	node = self.libvfs.GetNode(path)
         if node:
 	  return node
-        return
+        return None
 
     def open(self, path):
 	if type(path) == type(""):

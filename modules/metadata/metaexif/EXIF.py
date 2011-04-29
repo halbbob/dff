@@ -1357,7 +1357,7 @@ class EXIF_header:
                     # special case: null-terminated ASCII string
                     # XXX investigate
                     # sometimes gets too big to fit in int value
-                    if count != 0 and count < (2**31):
+                    if count != 0 and count < self.file.node().size():
                         self.file.seek(self.offset + offset)
                         values = self.file.read(count)
                         #print values

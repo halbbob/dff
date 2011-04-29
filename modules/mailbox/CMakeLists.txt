@@ -13,17 +13,6 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-add_subdirectory (local)
-add_subdirectory (libewf)
-add_subdirectory(devices)
-#add_subdirectory(aff)
+#add_subdirectory (pff)
 
-if(HAVE_FUSE)
-  add_subdirectory (fuse)
-endif(HAVE_FUSE)
-
-set(connector_files
-   __init__.py
-)
-
-install_file(connector ${connector_files})
+install_file(mailbox ${mailbox_srcs})

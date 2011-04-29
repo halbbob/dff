@@ -29,11 +29,10 @@
 #include <vector>
 #include <string>
 
-
-
 class vtime
 {
 public:
+  EXPORT		vtime(uint64_t value); //ms 64bits time
   EXPORT		vtime();
   EXPORT virtual	~vtime();
   EXPORT 		vtime(int, int, int, int, int, int, int);
@@ -80,9 +79,6 @@ private:
   vtime *	__vtime;
   std::vector<std::pair<std::string, uint32_t> > __months_days;
 };
-
-
-
 
 #endif
 

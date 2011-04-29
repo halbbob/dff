@@ -16,6 +16,38 @@
 
 #include "vtime.hpp"
 
+#if __WORDSIZE == 64
+#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000UL)
+#else
+#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000ULL)
+#endif
+
+//Convert from microsoft 64bits time stamp
+vtime::vtime(uint64_t value) 
+{
+  if (value > 0) 
+  {
+    value -= NANOSECS_1601_TO_1970;
+    value /= 10000000;
+    struct tm   *date;
+
+    date = gmtime((time_t *)&value);
+    this->year = date->tm_year + 1900;
+    this->month = date->tm_mon + 1;
+    this->day = date->tm_mday;
+    this->hour = date->tm_hour;
+    this->minute = date->tm_min;
+    this->second = date->tm_sec;
+    this->dst = date->tm_isdst;
+    this->wday = date->tm_wday;
+    this->yday = date->tm_yday;
+    this->usecond = 0;
+  }
+  else
+   year = month = day = hour = minute = second = usecond = 0; 
+}
+
+
 vtime::vtime()
 {
    year = month = day = hour = minute = second = usecond = 0; 

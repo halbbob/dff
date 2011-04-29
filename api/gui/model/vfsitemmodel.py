@@ -14,7 +14,7 @@
 #  Romain Bertholon <rbe@digital-forensic.org>
 # 
 
-from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize, QThread, QMutex, QSemaphore
+from PyQt4.QtCore import SIGNAL, QAbstractItemModel, QModelIndex, QVariant, Qt, QDateTime, QSize, QThread, QMutex, QSemaphore, QString
 from PyQt4.QtGui import QColor, QIcon, QImage, QImageReader, QPixmap, QPixmapCache, QStandardItemModel, QStandardItem
 from PyQt4 import QtCore
 
@@ -315,7 +315,7 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     if role == Qt.DisplayRole :
       # return name, size and eventually module columns
       if column == HNAME:
-        return QVariant(node.name())
+        return QVariant(QString.fromUtf8(node.name()))
       if column == HSIZE:
         return QVariant(node.size())
       if (self.disp_module != 0) and (column == HMODULE):
@@ -711,7 +711,7 @@ class TreeModel(QStandardItemModel, EventHandler):
       if node.isDeleted():
         return  QVariant(QColor(Qt.red))
     if role == Qt.DisplayRole :
-      return QVariant(node.name())
+      return QVariant(QString.fromUtf8(node.name()))
     if role == Qt.DecorationRole:
       return QVariant(QIcon(node.icon()))
     return QVariant()
@@ -874,7 +874,7 @@ class CompleterModel(VFSItemModel):
             res = node.absolute()[len(self.currentPath):]
           else:
             res = node.absolute()
-          return QVariant(res)
+          return QVariant(QString.fromUtf8(res))
         if role == Qt.DecorationRole and column == HNAME:
           return QVariant(QIcon(node.icon()))
         else:

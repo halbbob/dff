@@ -14,7 +14,7 @@
 
 #from PyQt4.QtCore import 
 from PyQt4.QtGui import QLineEdit, QCompleter, QWidget
-from PyQt4.QtCore import Qt, QObject, SIGNAL
+from PyQt4.QtCore import Qt, QObject, QString, SIGNAL
 
 
 from api.gui.model.vfsitemmodel import CompleterModel
@@ -27,7 +27,7 @@ class Completer(QCompleter):
         self.__model = CompleterModel()
         self.currentNode = self.vfs.getnode("/")
         self.currentPath = self.currentNode
-        self.setCompletionPrefix(self.currentNode.absolute())
+        self.setCompletionPrefix(QString.fromUtf8(self.currentNode.absolute()))
         self.__model.setRootPath(self.currentNode)
         self.__model.setCurrentPath("/")
         self.setModel(self.__model)
@@ -39,7 +39,7 @@ class Completer(QCompleter):
 
 
     def updatePath(self, path):
-        path = str(path)
+        path = unicode(path)
         self.curpath = path
         if path == "":
             abspath = "/"
@@ -54,9 +54,9 @@ class Completer(QCompleter):
                 idx = path.rfind("/")
                 if idx != -1:
                     abspath += path[:idx]
-        self.currentNode = self.vfs.getnode(abspath)
+        self.currentNode = self.vfs.getnode(unicode(abspath).encode('utf-8'))
         self.__model.setRootPath(self.currentNode)
-        self.setCompletionPrefix(self.currentNode.absolute())
+        self.setCompletionPrefix(QString.fromUtf8(self.currentNode.absolute()))
 
 
 class CompleterWidget(QLineEdit):
@@ -73,9 +73,9 @@ class CompleterWidget(QLineEdit):
         #if keyev.key() == 
 
     def editFinished(self):
-        text = str(self.text())
-        self.completer.updatePath(text)
+        text = self.text()
+        self.completer.updatePath(QString.fromUtf8(text))
         
     def pathChanged(self, path):
-        self.setText(path)
+        self.setText(QString.fromUtf8(path))
         self.completer.pathChanged(path)
