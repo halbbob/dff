@@ -16,6 +16,7 @@
  */
 
 #include "node.hpp"
+#include "attributesindexer.hpp"
 
 Node::Node()
 {
@@ -123,7 +124,7 @@ void 	Node::attributesByTypeFromVariant(Variant* variant, uint8_t type, Attribut
    }
 }
 
-void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Variant** result)
+void 	Node::attributesByTypeFromVariant(Variant* variant, uint8_t type, Attributes* result, std::string current)
 {
    if (!(variant))
      return ;
@@ -132,23 +133,82 @@ void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Varia
      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
      std::list<Variant*>::iterator it = lvariant.begin();
      for (; it != lvariant.end(); it++)
-	this->attributesByNameFromVariant((*it), name, result); 
+       this->attributesByTypeFromVariant((*it), type, result, current);
    }
    else if (variant->type() == typeId::Map)
    {
      Attributes mvariant = variant->value<Attributes >();
      Attributes::iterator it = mvariant.begin();
+     std::string	abs;
      for (; it != mvariant.end(); it++)
-     {
-       if ((*it).first == name)
        {
-	  *result = (*it).second;
-	  return;
+	 if (current.empty())
+	   abs = (*it).first;
+	 else
+	   abs = current + '.' + (*it).first;
+	 if ((*it).second->type() == type)
+	   (*result)[abs] = (*it).second;
+	 else
+	   this->attributesByTypeFromVariant((*it).second, type, result, abs);
        }
-       else
-	 this->attributesByNameFromVariant((*it).second, name, result);
-     }
    }
+}
+
+void	Node::attributesByNameFromVariant(Variant* variant, std::string name, Variant** result)
+{
+  if (!(variant))
+    return ;
+  if (variant->type() == typeId::List)
+    {
+      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+      std::list<Variant*>::iterator it = lvariant.begin();
+      for (; it != lvariant.end(); it++)
+	this->attributesByNameFromVariant((*it), name, result);
+    }
+  else if (variant->type() == typeId::Map)
+    {
+      Attributes mvariant = variant->value<Attributes >();
+      Attributes::iterator it = mvariant.begin();
+      for (; it != mvariant.end(); it++)
+	{
+	  if ((*it).first == name)
+	    {
+	      *result = (*it).second;
+	      return;
+	    }
+	  else
+	    this->attributesByNameFromVariant((*it).second, name, result);
+	}
+    }
+}
+
+
+void	Node::attributesNamesAndTypesFromVariant(Variant* variant, std::map<std::string, uint8_t> *namestypes, std::string current)
+{
+  if (!(variant))
+    return ;
+  if (variant->type() == typeId::List)
+    {
+      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+      std::list<Variant*>::iterator it = lvariant.begin();
+      for (; it != lvariant.end(); it++)
+	this->attributesNamesAndTypesFromVariant((*it), namestypes, current);
+    }
+  else if (variant->type() == typeId::Map)
+    {
+      Attributes mvariant = variant->value<Attributes >();
+      Attributes::iterator it = mvariant.begin();
+      std::string	abs;
+      for (; it != mvariant.end(); it++)
+	{
+	  if (current.empty())
+	    abs = (*it).first;
+	  else
+	    abs = current + '.' + (*it).first;
+	  namestypes->insert(std::pair<std::string, uint8_t>(abs, (*it).second->type()));
+	  this->attributesNamesAndTypesFromVariant((*it).second, namestypes, abs);
+	}
+    }  
 }
 
 void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > *names)
@@ -160,7 +220,7 @@ void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > 
      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
      std::list<Variant*>::iterator it = lvariant.begin();
      for (; it != lvariant.end(); it++)
-	this->attributesNamesFromVariant((*it), names); 
+       this->attributesNamesFromVariant((*it), names); 
    }
    else if (variant->type() == typeId::Map)
    {
@@ -172,42 +232,134 @@ void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > 
 	 this->attributesNamesFromVariant((*it).second, names);
      }
    }
+}
 
+void	Node::attributesNamesFromVariant(Variant* variant, std::list<std::string > *names, std::string current)
+{
+  if (!(variant))
+    return ;
+  if (variant->type() == typeId::List)
+    {
+      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+      std::list<Variant*>::iterator it = lvariant.begin();
+      for (; it != lvariant.end(); it++)
+	this->attributesNamesFromVariant((*it), names, current);
+    }
+  else if (variant->type() == typeId::Map)
+    {
+      Attributes mvariant = variant->value<Attributes >();
+      Attributes::iterator it = mvariant.begin();
+      std::string	abs;
+      for (; it != mvariant.end(); it++)
+	{
+	  if (current.empty())
+	    abs = (*it).first;
+	  else
+	    abs = current + '.' + (*it).first;
+	  names->push_back(abs);
+	  this->attributesNamesFromVariant((*it).second, names, abs);
+	}
+    }
 }
 
 
-std::list<std::string>*  	Node::attributesNames(void)
+std::list<std::string>*  	Node::attributesNames(attributeNameType tname)
 {
  std::list<std::string>*	result = new std::list<std::string>;
  Attributes*			attr = this->attributes();
  Variant*			var = new Variant(*attr);
 
- this->attributesNamesFromVariant(var, result);
-
+ if (tname == ABSOLUTE_ATTR_NAME)
+   this->attributesNamesFromVariant(var, result, "");
+ else
+   this->attributesNamesFromVariant(var, result);
+ delete var;
  return (result);
 }
 
-Variant*			Node::attributesByName(std::string name)
+void		Node::attributeByAbsoluteNameFromVariant(Variant* variant, std::string name, Variant** result)
 {
- Attributes*			attr = this->attributes();
- Variant*			var = new Variant(*attr);
- Variant**			result = new Variant *; 
+  std::string	subname;
+  std::string	subabs;
+  size_t	idx;
 
- *result = NULL; 
- this->attributesByNameFromVariant(var, name, result);
-
- return (*result);
+  idx = name.find(".");
+  if (idx != std::string::npos)
+    {
+      subname = name.substr(0, idx);
+      subabs = name.substr(idx+1, name.size());
+    }
+  else
+    {
+      subname = name;
+      subabs = "";
+    }
+  //std::cout << "name: " << name << " -- subname: " << subname << " -- subabs: " << subabs << std::endl;
+  if (!(variant))
+    return ;
+  if ((variant->type() == typeId::List) && (!subabs.empty()))
+    {
+      std::list<Variant*> lvariant = variant->value<std::list< Variant*> >();
+      std::list<Variant*>::iterator it = lvariant.begin();
+      for (; it != lvariant.end(); it++)
+	this->attributeByAbsoluteNameFromVariant((*it), subabs, result);
+    }
+  else if (variant->type() == typeId::Map)
+    {
+      Attributes mvariant = variant->value<Attributes >();
+      Attributes::iterator it;
+      
+      it = mvariant.find(subname);
+      if (it != mvariant.end())
+	{
+	  if (!subabs.empty())
+	    this->attributeByAbsoluteNameFromVariant((*it).second, subabs, result);
+	  else
+	    *result = (*it).second;
+	}
+    }
 }
 
-Attributes*			Node::attributesByType(uint8_t type)
+Variant*			Node::attributesByName(std::string name, attributeNameType tname)
 {
- Attributes*			result = new Attributes;
- Attributes*			attr = this->attributes();
- Variant*			var = new Variant(*attr);
+  Attributes*			attr = this->attributes();
+  Variant*			var = new Variant(*attr);
+  Variant**			result = new Variant *;
   
- this->attributesByTypeFromVariant(var, type, result);
+  *result = NULL;
+  if (tname == ABSOLUTE_ATTR_NAME)
+    this->attributeByAbsoluteNameFromVariant(var, name, result);
+  else
+    this->attributesByNameFromVariant(var, name, result);
+  //delete var;
+  return (*result);
+}
 
- return result;
+Attributes*			Node::attributesByType(uint8_t type, attributeNameType tname)
+{
+  Attributes*			result = new Attributes;
+  Attributes*			attr = this->attributes();
+  Variant*			var = new Variant(*attr);
+  
+
+  if (tname == ABSOLUTE_ATTR_NAME)
+    this->attributesByTypeFromVariant(var, type, result, "");
+  else
+    this->attributesByTypeFromVariant(var, type, result);
+  //delete var;
+  return result;
+}
+
+
+std::map<std::string, uint8_t>*	Node::attributesNamesAndTypes()
+{
+  std::map<std::string, uint8_t>*	result = new std::map<std::string, uint8_t>;
+  Attributes*				attr = this->attributes();
+  Variant*				var = new Variant(*attr);
+
+  this->attributesNamesAndTypesFromVariant(var, result, "");
+  delete var;
+  return result;
 }
 
 
@@ -222,7 +374,6 @@ Attributes*			Node::attributes()
   Attributes	nodeAttributes = this->_attributes();
   if (!(nodeAttributes.empty()))
     (*attr)[this->fsobj()->name] = new Variant(nodeAttributes);
-
 
   std::set<AttributesHandler*>::iterator handler;
   for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
@@ -293,7 +444,14 @@ AttributesHandler::~AttributesHandler()
 
 bool			Node::registerAttributes(AttributesHandler* ah)
 {
-   return (this->__attributesHandlers.insert(ah).second);
+  bool	ret;
+
+  event* e = new event;
+  e->value = new Variant(this);
+  
+  ret = this->__attributesHandlers.insert(ah).second;
+  AttributesIndexer::Get().Event(e);
+  return ret;
 }
 
 uint64_t	Node::size()

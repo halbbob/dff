@@ -698,6 +698,7 @@ Open the node and return a pointer to a VFile instance
 
 %newobject Node::open();
 %newobject VFile::search();
+%newobject Node::attributesTypesAndNames();
 
 
 %exception Node::dataType
@@ -762,20 +763,20 @@ Open the node and return a pointer to a VFile instance
   delete $1;
 }
 
-%typecheck(SWIG_TYPECHECK_CHAR) unsigned char 
-{
-  $1 = (PyString_Check($input) && (PyString_Size($input) == 1)) ? 1 : 0;
-}
+/* %typecheck(SWIG_TYPECHECK_CHAR) unsigned char  */
+/* { */
+/*   $1 = (PyString_Check($input) && (PyString_Size($input) == 1)) ? 1 : 0; */
+/* } */
 
-%typemap(in) (unsigned char wildcard)
-{
-  if (!PyString_Check($input) && (PyString_Size($input) > 1))
-    {
-      PyErr_SetString(PyExc_ValueError, "Expecting a string");
-      return NULL;
-    }
-  $1 = (unsigned char) PyString_AsString($input)[0];
-}
+/* %typemap(in) (unsigned char wildcard) */
+/* { */
+/*   if (!PyString_Check($input) && (PyString_Size($input) > 1)) */
+/*     { */
+/*       PyErr_SetString(PyExc_ValueError, "Expecting a string"); */
+/*       return NULL; */
+/*     } */
+/*   $1 = (unsigned char) PyString_AsString($input)[0]; */
+/* } */
 
 %ignore   VFile::find(unsigned char* needle, uint32_t nlen);
 %ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
@@ -802,6 +803,7 @@ Open the node and return a pointer to a VFile instance
 
 #include "eventhandler.hpp"
 #include "vfs.hpp"
+#include "attributesindexer.hpp"
 #include "exceptions.hpp"
 #include "fdmanager.hpp"
 #include "filemapping.hpp"
@@ -819,6 +821,7 @@ Open the node and return a pointer to a VFile instance
 %import "../events/libevents.i"
 
 %include "../include/vfs.hpp"
+%include "../include/attributesindexer.hpp"
 %include "../include/export.hpp"
 %include "../include/fdmanager.hpp"
 %include "../include/filemapping.hpp"
@@ -831,13 +834,14 @@ Open the node and return a pointer to a VFile instance
 
 namespace std
 {
-  %template(VecNode)    vector<Node*>;
-  %template(ListNode)   list<Node*>;
-  %template(SetNode)    set<Node *>;
-  %template(VectChunck)  vector<chunck *>;
-  %template(Listui64)	list<uint64_t>;
-  %template(ListString) list<std::string>;
-  %template(MapTime)	map<string, vtime*>;
+  %template(VecNode)		vector<Node*>;
+  %template(ListNode)		list<Node*>;
+  %template(SetNode)		set<Node *>;
+  %template(VectChunck)		vector<chunck *>;
+  %template(Listui64)		list<uint64_t>;
+  %template(ListString)		list<std::string>;
+  %template(MapTime)		map<string, vtime*>;
+  %template(MapNameTypes)	map<string, uint8_t>;
   /* %template(MapAttributes) map<std::string, Variant*>; */
 };
 
