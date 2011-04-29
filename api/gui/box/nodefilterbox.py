@@ -36,7 +36,8 @@ try:
   IndexerFound = True
 except ImportError:
   IndexerFound = False
-from ui.conf import Conf
+from ui.conf import Conf    
+
 
 class NodeFilterBox(QWidget, Ui_NodeFBox):
   # for the progress bar
@@ -54,37 +55,17 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
     self.translation()
     self.opt = ModifIndex(self, model)
     self.vfs = vfs()
-    self.adv = AdvSearch(self)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
       self.notIndexed.linkActivated.connect(self.index_opt2)
       self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
-      self.adv.launchSearchButton.clicked.connect(self.launchSearch)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
       QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
       QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
-      QtCore.QObject.connect(self.adv.launchSearchButton, SIGNAL("clicked(bool)"), self.launchSearch)
 
-  def launchSearch(self, changed):
-    clause = {}
-
-    if not self.adv.searchName.text().isEmpty():
-      clause["name"] =  "re(\'" + str(self.adv.searchName.text()) + "\') "
-    for i in range(0, self.adv.advancedOptions.count()):
-      widget = self.adv.advancedOptions.itemAt(i).widget()
-      if not len(widget.edit.text()):
-        continue
-      try:
-        if len(clause[widget.edit.field]):
-          clause[widget.edit.field] += widget.edit.operator()
-      except KeyError:
-        clause[widget.edit.field] = ""
-      clause[widget.edit.field] += (widget.edit.text())
-    print clause
-    return clause
 
   def index_opt2(self, url):
     self.explain_this_odd_behavior()
@@ -200,7 +181,8 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
   def adv_search(self, changed):
 
     # parent is an instance of NodeBrowser
-    self.parent.parent.addSearchTab(self.adv)
+    
+    self.parent.parent.addSearchTab(AdvSearch(self))
     return
 
     ret = self.adv.show()

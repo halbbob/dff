@@ -27,8 +27,8 @@ import traceback
 
 from api.vfs.vfs import vfs, VFS
 from api.vfs.libvfs import ABSOLUTE_ATTR_NAME, AttributesIndexer
-from api.events.libevents import EventHandler
-from api.types.libtypes import typeId, VMap
+from api.events.libevents import EventHandler, event
+from api.types.libtypes import typeId, VMap, Variant
 import time, datetime
 
 class BooleanFilter():
@@ -75,9 +75,9 @@ class StringFilter():
                 f2 = f2.replace("*", ".*")
                 f2 += "$"
                 res.append((f, "re.search(\""+ f2 + "\"," + "\"" + val + "\")"))
-            if f.startswith("f(") and f[:-1] == ")":
-                res.append((f, "val==" + f[2:-2]))
-            if f.startswith("re(") and f[:-1] == ")":
+            if f.startswith("f(") and f[-1] == ")":
+                res.append((f, "val==" + f[2:-1]))
+            if f.startswith("re("): #and f[:-1] == ")":
                 regexp = re.compile(f[3:-2])
                 res.append(regexp)
         return res
@@ -220,8 +220,9 @@ BaseAttributesMapping = {"name": ("name", StringFilter),
                          "folder": ("isDir", BooleanFilter),
                          "size": ("size", NumericFilter)}
 
-class Filters():
+class Filters(EventHandler):
     def __init__(self, root=None, filtersParam=None, recursive=True):
+        EventHandler.__init__(self)
         self.filters = {}
         self.root = root
         self.recursive = recursive
@@ -249,7 +250,12 @@ class Filters():
         pass
 
 
+    def Event(self, e):
+        pass
+
+
     def compile(self, filters):
+        self.filters = {}
         if type(filters) == types.DictType:
             attrNamesAndTypes = self.ai.attrNamesAndTypes()
             for key in filters.keys():
@@ -291,4 +297,10 @@ class Filters():
                 for filter in self.filters[priority]:
                     if not filter[0].match(node, filter[1]):
                         return False
+        e = event()
+        e.thisown = False
+        vnode = Variant(node)
+        vnode.thisown = False
+        e.value = vnode
+        self.notify(e)
         return True

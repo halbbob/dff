@@ -16,16 +16,36 @@
 from PyQt4 import QtCore, QtGui
 
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton
-from PyQt4.QtCore import QVariant
+from PyQt4.QtCore import QVariant, SIGNAL, QThread
 
-from api.gui.model.vfsitemmodel import VFSItemModel
+from api.events.libevents import EventHandler
+from api.search.find import Filters
+
+from api.gui.model.vfsitemmodel import ListNodeModel
 from api.vfs.libvfs import VFS
+from api.vfs.vfs import vfs
 from api.types.libtypes import Variant, typeId
 
 from ui.gui.resources.ui_search import Ui_SearchTab
 from ui.gui.resources.ui_search_size import Ui_SearchSize
 from ui.gui.resources.ui_search_empty import Ui_SearchEmpty
 from ui.gui.resources.ui_search_date import Ui_SearchDate
+
+
+class FilterThread(QThread):
+  def __init__(self):
+    QThread.__init__(self)
+    self.filters = Filters()
+
+
+  def setContext(self, clauses, rootnode):
+    self.filters.setRootNode(rootnode)
+    self.filters.compile(clauses)
+
+
+  def run(self):
+    matches = self.filters.process()
+
 
 class SearchStr(QLineEdit):
   def __init__(self, parent = None):
@@ -43,9 +63,9 @@ class SearchStr(QLineEdit):
     if QLineEdit.text(self).isEmpty():
       return ""
     if self.no:
-      return " not re(\'" + str(QLineEdit.text(self)) + "\')"
+      return " not f(\'" + str(QLineEdit.text(self)) + "\')"
     else:
-      return " re(\'" + str(QLineEdit.text(self)) + "\')"
+      return " f(\'" + str(QLineEdit.text(self)) + "\')"
 
 class SearchD(QWidget, Ui_SearchDate):
   def __init__(self, parent = None):
@@ -178,17 +198,26 @@ class OptWidget(QWidget):
   def translation(self):
     self.delTr = self.tr("Remove")
 
-class AdvSearch(QWidget, Ui_SearchTab):
+
+class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def __init__(self, parent):
     super(QWidget, self).__init__()
+    EventHandler.__init__(self)
+    self.filterThread = FilterThread()
+    self.filterThread.filters.connection(self)
     self.parent = parent
+    self.vfs = vfs()
     self.name = "Advanced search"
     self.setupUi(self)
     self.translation()
 
-    self.model = VFSItemModel()
+    self.model = ListNodeModel(self)
     self.searchResults.setModel(self.model)
     self.searchResults.horizontalHeader().setStretchLastSection(True)
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.launchSearchButton.clicked.connect(self.launchSearch)
+    else:
+      QtCore.QObject.connect(self.launchSearchButton, SIGNAL("clicked(bool)"), self.launchSearch)
 
     self.optionList.addItem(self.textTr, QVariant(typeId.String))
     self.optionList.addItem(self.notNameTr, QVariant(typeId.String + 100))
@@ -210,6 +239,33 @@ class AdvSearch(QWidget, Ui_SearchTab):
     else:
       QtCore.QObject.connect(self.moreOptionsButton, SIGNAL("clicked(bool)"), self.showMoreOption)
       QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
+
+
+  def Event(self, e):
+    self.emit(SIGNAL("NodeMatched"), e)
+
+
+  def launchSearch(self, changed):
+    clause = {}
+
+    if not self.searchName.text().isEmpty():
+      clause["name"] =  "w(" + str(self.searchName.text()) + ") "
+    for i in range(0, self.advancedOptions.count()):
+      widget = self.advancedOptions.itemAt(i).widget()
+      if not len(widget.edit.text()):
+        continue
+      try:
+        if len(clause[widget.edit.field]):
+          clause[widget.edit.field] += widget.edit.operator()
+      except KeyError:
+        clause[widget.edit.field] = ""
+      clause[widget.edit.field] += (widget.edit.text())
+    self.filterThread.setContext(clause, self.vfs.getnode("/"))
+    self.filterThread.start()
+    print clause
+    return clause
+
+
 
   def showMoreOptions(self, changed):
     self.optionList.setVisible(not self.optionList.isVisible())
