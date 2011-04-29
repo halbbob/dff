@@ -39,6 +39,8 @@ if(EXISTS ${CLUCENE_CONFIG_INCLUDE_PATH} AND EXISTS ${CLUCENE_LIBRARY})
   
   set(index_srcs
     __init__.py
+    index.cpp
+    index_search.cpp
     libindex.py
     )
   

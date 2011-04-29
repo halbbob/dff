@@ -38,8 +38,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
     self.setupUi(self)
-    if not INDEX_ENABLED:
-      self.search.hide()
+#    if not INDEX_ENABLED:
+#    self.search.hide()
     self.vfs = vfs()
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
@@ -81,14 +81,12 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     
     self.tableActivated()
 
-
   def completerChanged(self):
     path = self.completerWidget.text()
     node = self.vfs.getnode(unicode(path).encode('utf-8'))
     if node:
       self.emit(SIGNAL("pathChanged"), node)
       self.parent.model.setRootPath(node)      
-
 
   def viewboxChanged(self, index):
     if index == 0:
@@ -224,11 +222,10 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      self.thumbSize.setEnabled(True)
 
   def searchActivated(self):
-     if self.parent.nodeFilterBox.isVisible():
-       self.parent.nodeFilterBox.setVisible(False) 
-     else:
-       self.parent.nodeFilterBox.setVisible(True) 
-
+    if self.parent.nodeFilterBox.isVisible():
+      self.parent.nodeFilterBox.setVisible(False) 
+    else:
+      self.parent.nodeFilterBox.setVisible(True) 
 
   def rootpathchanged(self, node):
     path = node.absolute()
@@ -236,10 +233,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     if len(self.history) > 0 and  self.history[len(self.history) - 1] != path:
       if not self.pathInHistory(path, self.history):
         self.history.append(str(node.absolute()))
-
     self.currentPathId = len(self.history) - 1
     self.changeNavigationState()
-
 
   def changeNavigationState(self):
     self.setPrevMenu()

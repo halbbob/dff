@@ -27,12 +27,27 @@
 Index::Index()
   : __location(""), __writer(NULL), __doc(NULL), __an(NULL), __content(NULL)
 {
+  index_content = false;
+  index_attr = false;
 }
 
 Index::Index(const std::string & location)
   : __writer(NULL), __doc(NULL), __an(NULL)
 {
   this->__location = location;
+
+  index_content = false;
+  index_attr = false;
+}
+
+void	Index::setIndexContent(bool index)
+{
+  index_content = index;
+}
+
+void	Index::setIndexAttr(bool index)
+{
+  index_attr = index;
 }
 
 Index::~Index()
@@ -99,7 +114,8 @@ void	Index::closeIndex()
     }
   catch(CLuceneError & e)
     {
-      std::cerr << "caught a CLuceneError" << std::endl;
+      std::cerr << "In Index::ClauseIndex() : Caught a CLuceneError : "
+		<< e.what() << std::endl;
       return ;
     }
   catch(...)
@@ -110,11 +126,18 @@ void	Index::closeIndex()
 
 bool	Index::indexData(Node * data)
 {
+  TCHAR *	w_path = NULL;
+  TCHAR *	w_name = NULL;
+
   try
     {
-      lucene::document::Field * 	content;
-      lucene::document::Field * 	path;
-      TCHAR *	w_path = (TCHAR *)operator new((data->absolute().size() + 1) * sizeof(w_path));
+      lucene::document::Field * content = NULL;
+      lucene::document::Field * path = NULL;
+      lucene::document::Field * name = NULL;
+      std::string name_lower = data->name();
+
+      this->__doc = NULL;
+      w_path = (TCHAR *)operator new((data->absolute().size() + 1) * sizeof(w_path));
 
       STRCPY_AtoT(w_path, data->absolute().c_str(), data->absolute().size());
       w_path[data->absolute().size()] = 0;
@@ -124,21 +147,53 @@ bool	Index::indexData(Node * data)
       path = _CLNEW lucene::document::Field(_T("path"), w_path,
 					    lucene::document::Field::STORE_YES
 					    | lucene::document::Field::INDEX_UNTOKENIZED);
-      __indexContent(data, content);
+
+      for (unsigned int i = 0; i < name_lower.size(); ++i)
+	name_lower[i] = tolower(name_lower[i]);
+
+      w_name = (TCHAR *)operator new((data->name().size() + 1) * sizeof(w_name));
+      STRCPY_AtoT(w_name, name_lower.c_str(), data->name().size());
+      w_name[data->name().size()] = 0;
+      name = _CLNEW lucene::document::Field(_T("name"), w_name,
+					    lucene::document::Field::STORE_YES
+					    | lucene::document::Field::INDEX_UNTOKENIZED);
+      this->__doc->add(*name);
+      if (index_content == true)
+	{
+	  __indexContent(data, content);
+	  this->__doc->add(*__content);
+	}
       this->__doc->add(*path);
-      this->__doc->add(*__content);
       this->__writer->addDocument((this->__doc), (this->__an));
- 
+      
+      delete w_path;
+      delete w_name;
       _CLDELETE (this->__doc);
+    }
+  catch(CLuceneError & e)
+    {
+      std::cout << "Exception caught in Index::indexData() : "
+		<< e.what() << std::endl;
+      delete w_path;
+      delete w_name;
+      _CLDELETE (this->__doc);
+      return false;
     }
   catch(std::exception & e)
     {
       std::cout << "Exception caught in Index::indexData() : "
 		<< e.what() << std::endl;
+      delete w_path;
+      delete w_name;
+      _CLDELETE (this->__doc);
       return false;
     }
   catch(...)
     {
+      std::cout << "Some weird shit happened. rofl!" << std::endl;
+      delete w_path;
+      delete w_name;
+      _CLDELETE (this->__doc);
       return false;
     }
   return true;
@@ -163,7 +218,7 @@ void	Index::__indexContent(Node * data, lucene::document::Field * content)
       str.append(tmp);
       tot_read += nb_read;
     }
-  __content = _CLNEW lucene::document::Field(_T("contents"), str.getBuffer(),
+  __content = _CLNEW lucene::document::Field(_T("text"), str.getBuffer(),
 				lucene::document::Field::STORE_YES
 				| lucene::document::Field::INDEX_TOKENIZED);
   vf->close();

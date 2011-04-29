@@ -81,7 +81,7 @@ class NodeLinkTreeView(QTreeView):
   displayed.
 
   """
-  def __init__(self, parent):
+  def __init__(self, parent = None, coord = False):
     """
     Constructor
     """
@@ -91,6 +91,7 @@ class NodeLinkTreeView(QTreeView):
     self.setSelectionBehavior(QAbstractItemView.SelectItems)
     self.setUniformRowHeights(True)
     self.setSortingEnabled(False)
+    self.coord = coord
 
   def mousePressEvent(self, e):
     """
@@ -117,13 +118,17 @@ class NodeLinkTreeView(QTreeView):
 
       # calculate coordinates to know if the '+' button in the tree was clicked
       self.model().nb_pop = 0
-      v_rect = self.visualRect(index)
-      indentation = v_rect.x() - self.visualRect(self.rootIndex()).x()
-      rect = QRect(self.header().sectionViewportPosition(0) + indentation - self.indentation(), \
+      if self.coord == False:
+        v_rect = self.visualRect(index)
+        indentation = v_rect.x() - self.visualRect(self.rootIndex()).x()
+        rect = QRect(self.header().sectionViewportPosition(0) + indentation - self.indentation(), \
                      v_rect.y(), self.indentation(), v_rect.height())
-      if rect.contains(e.pos()):
-        self.insertRows(index, node)
-      self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
+        if rect.contains(e.pos()):
+          self.insertRows(index, node)
+      else:
+         self.insertRows(index, node)
+      if not self.model().ch:
+        self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
       self.resizeColumnToContents(0)
       QTreeView.mousePressEvent(self, e)
 
@@ -169,6 +174,7 @@ class NodeLinkTreeView(QTreeView):
         if i.isDir() or i.hasChildren():
           new_item = QStandardItem(i.name())
           new_item.setData(long(i.this), Qt.UserRole + 1)
+          new_item.setData(Qt.Unchecked, Qt.CheckStateRole)
           item_list.append(new_item)
       if len(item_list) != 0:
         c_item.appendRows(item_list)
@@ -176,7 +182,6 @@ class NodeLinkTreeView(QTreeView):
 
   def indexRowSizeHint(self, index):
     return 2
-
 
 class NodeTreeView(QTreeView, NodeViewEvent):
   def __init__(self, parent):
@@ -188,7 +193,6 @@ class NodeTreeView(QTreeView, NodeViewEvent):
      self.setExpandsOnDoubleClick(False)
      self.setUniformRowHeights(True)
      self.setSortingEnabled(False)
-
 
 class NodeTableView(QTableView, NodeViewEvent):
   def __init__(self, parent):

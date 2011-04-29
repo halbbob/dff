@@ -36,7 +36,7 @@ class gui():
         self.app.installTranslator(self.translator.getGeneric())
         self.app.installTranslator(self.translator.getDFF())
         self.app.setApplicationName("Digital Forensics Framework")
-        self.app.setApplicationVersion("${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+        self.app.setApplicationVersion("1.0.0")
         pixmap = QPixmap(":splash.png")
         self.splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
         self.splash.setMask(pixmap.mask()) 

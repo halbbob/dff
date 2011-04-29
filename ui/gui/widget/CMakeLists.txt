@@ -16,6 +16,9 @@ set(widget_srcs
   __init__.py
   help.py
   taskmanager.py
+  modif_index.py
+  SelectMimeTypes.py
+  mime_types.py
   modules.py
   interpreter.py
   shell.py

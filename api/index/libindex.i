@@ -40,4 +40,18 @@ public:
   IndexSearch();
   IndexSearch(const std::string& location);
   void  exec_query(const std::string& query, const std::string& must_contain_query = "");
+  static bool	deleteDoc(std::string path, std::string location);
+};
+
+class	Index
+{
+ public:
+  Index(const std::string & loc);
+  ~Index();
+  
+  bool	createIndex();
+  void	closeIndex();
+  bool	indexData(Node * data);
+  void	setIndexContent(bool index);
+  void	setIndexAttr(bool index);
 };

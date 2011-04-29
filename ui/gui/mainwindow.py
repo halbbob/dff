@@ -51,7 +51,6 @@ from ui.gui.resources.ui_mainwindow import Ui_MainWindow
 # Documentation
 from ui.gui.widget.help import Help
 
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self,  app, debug = False):
         super(MainWindow,  self).__init__()
@@ -171,6 +170,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             nb = NodeBrowser(self)
             nb.model.setRootPath(nb.vfs.getnode(rootpath))
             self.addDockWidgets(nb, 'nodeBrowser')
+
+    def addSearchTab(self, search):
+        self.addDockWidgets(search, 'Searchr')
 
     def addHelpWidget(self):
         conf = Conf()
