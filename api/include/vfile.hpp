@@ -29,6 +29,7 @@
 #include "node.hpp"
 #include "export.hpp"
 #include "search.hpp"
+#include "eventhandler.hpp"
 
 #define BUFFSIZE 1024*1024*10
 
@@ -39,7 +40,7 @@ typedef struct _pdata
 }		pdata;
 
 
-class VFile
+class VFile: public EventHandler
 {
 private:
   FastSearch	*__fs;
@@ -64,6 +65,7 @@ public:
   EXPORT int32_t		dfileno();
   EXPORT uint64_t		tell();
   EXPORT int32_t		close();
+  EXPORT virtual void		Event(event* e) {};
   EXPORT std::string		readline(uint32_t size=0) throw (std::string);
   EXPORT int64_t		find(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=0) throw (std::string);
   EXPORT int64_t		rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=0) throw (std::string);

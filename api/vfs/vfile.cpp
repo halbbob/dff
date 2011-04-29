@@ -434,6 +434,7 @@ std::list<uint64_t>	VFile::indexes(unsigned char* needle, uint32_t nlen, unsigne
     end = this->__node->size();
   totalread = this->seek(start);
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  event*	e = new event;
   while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end))
     {
       buffpos = 0;
@@ -450,6 +451,9 @@ std::list<uint64_t>	VFile::indexes(unsigned char* needle, uint32_t nlen, unsigne
 	totalread = this->seek(this->tell() - nlen);
       else
 	totalread = this->seek(this->tell());
+      
+      e->value = new Variant(totalread);
+      this->notify(e);
     }
   free(buffer);
   return indexes;
