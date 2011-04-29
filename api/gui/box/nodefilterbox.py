@@ -11,19 +11,22 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+#  Romain Bertholon <rbe@digital-forensic.org>
 # 
 
 import thread
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog, QMessageBox, QDialog, QProgressBar
+from PyQt4.QtGui import QWidget, QDialog
 
-from api.vfs.libvfs import VFS
+from api.vfs.vfs import vfs
+
+from api.types.libtypes import typeId
 from api.index.libindex import IndexSearch, Index
+from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch
 
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
-from ui.gui.resources.ui_advance_search import Ui_AdvanceSearch
 from ui.conf import Conf
 
 from ui.gui.widget.modif_index import ModifIndex
@@ -35,22 +38,10 @@ except ImportError:
   IndexerFound = False
 from ui.conf import Conf
 
-class AdvSearch(QDialog, Ui_AdvanceSearch):
-  def __init__(self, parent):
-    super(QDialog, self).__init__()
-    self.parent = parent
-    self.setupUi(self)
-    if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.resetForm.clicked.connect(self.reset_form)
-    else:
-      QtCore.QObject.connect(self.resetForm, SIGNAL("clicked(bool)"), self.reset_form)
-
-  def reset_form(self, changed):
-    self.allWords.setText("")
-    self.noneWord.setText("")
-    self.oneWord.setText("")
-
 class NodeFilterBox(QWidget, Ui_NodeFBox):
+  # for the progress bar
+  number_indexed = QtCore.pyqtSignal(int)
+  number_max = QtCore.pyqtSignal(int)
   """
   This class is designed to perform searches on nodes in the VFS or a part of the VFS.
   """
@@ -62,19 +53,38 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
     self.model = model
     self.translation()
     self.opt = ModifIndex(self, model)
-
+    self.vfs = vfs()
     self.adv = AdvSearch(self)
-
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
       self.notIndexed.linkActivated.connect(self.index_opt2)
       self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
+      self.adv.launchSearchButton.clicked.connect(self.launchSearch)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
       QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
       QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
+      QtCore.QObject.connect(self.adv.launchSearchButton, SIGNAL("clicked(bool)"), self.launchSearch)
+
+  def launchSearch(self, changed):
+    clause = {}
+
+    if not self.adv.searchName.text().isEmpty():
+      clause["name"] =  "re(\'" + str(self.adv.searchName.text()) + "\') "
+    for i in range(0, self.adv.advancedOptions.count()):
+      widget = self.adv.advancedOptions.itemAt(i).widget()
+      if not len(widget.edit.text()):
+        continue
+      try:
+        if len(clause[widget.edit.field]):
+          clause[widget.edit.field] += widget.edit.operator()
+      except KeyError:
+        clause[widget.edit.field] = ""
+      clause[widget.edit.field] += (widget.edit.text())
+    print clause
+    return clause
 
   def index_opt2(self, url):
     self.explain_this_odd_behavior()
@@ -108,16 +118,34 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
       else:
        index.setIndexAttr(False)
 
+      value = 0
+      for i in self.opt.un_index:
+        recurse = self.opt.indexed_items[long(i)]
+        node = VFS.Get().getNodeFromPointer(i)
+        for (root_dir, files, dirs) in self.vfs.walk(node, True, 1):
+          value += len(files)
+      
+      for i in self.opt.tmp_indexed_items:
+        recurse = self.opt.tmp_indexed_items[long(i)]
+        node = VFS.Get().getNodeFromPointer(i)
+        for (root_dir, files, dirs) in self.vfs.walk(node, True, 1):
+          value += len(files)
+      self.emit(SIGNAL("number_max"), value)
+
       # delete doc from index (if any stuff are to be deleted)
+      value = 0
       for i in self.opt.un_index:
         recurse = self.opt.indexed_items[long(i)]
         node = VFS.Get().getNodeFromPointer(i)
         if recurse == True:
           tmp = node.children()
           for j in tmp:
+            value += 1
             IndexSearch.deleteDoc(str(j.absolute()).lower(), str(index_path).lower())
         else:
+          value += 1
           self.deleteRecurse(node, index, index_path)
+        self.emit(SIGNAL("number_indexed"), value)
         self.opt.indexed_items.pop(i)
 
       # adding new selected nodes in index
@@ -129,9 +157,12 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
         if self.opt.indexed_items[i] == True:
           tmp = node.children()
           for ii in tmp:
+            value += 1
             index.indexData(ii)
         else: #index recursively
+          value += 1
           self.recurseNode(node, index)
+        self.emit(SIGNAL("number_indexed"), value)
       self.opt.tmp_indexed_items.clear()
 
       index.closeIndex()
@@ -167,13 +198,21 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
         self.recurseNode(i, index);
 
   def adv_search(self, changed):
+
+    # parent is an instance of NodeBrowser
+    self.parent.parent.addSearchTab(self.adv)
+    return
+
+    ret = self.adv.show()
+    return
+
     ret = self.adv.exec_()
     if ret == QDialog.Accepted:
       all_word = str(self.adv.allWords.text())
       none_word = str(self.adv.noneWord.text())
       one_word = str(self.adv.oneWord.text())
 
-      # LOL
+      # LOL : to avoid a weird crash. Attempting to input the "t" string to clucene results in a crash
       if all_word == "t":
         all_word = ""
       if none_word == "t":
@@ -182,6 +221,7 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
         one_word = ""
       if all_word == "" and none_word == "" and one_word == "":
         return
+
       query = ""
       query += one_word
       none_word = none_word.lstrip()
@@ -223,7 +263,6 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
   def searching(self, changed):
     if not self.searchClause.text().isEmpty():
       try:
-        # testing shit
         useless = self.opt.indexed_items[long(self.vfs_model.rootItem.this)]
 
         # prepare stuff to fo the query

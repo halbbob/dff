@@ -127,7 +127,8 @@ class NodeLinkTreeView(QTreeView):
           self.insertRows(index, node)
       else:
          self.insertRows(index, node)
-      # self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
+      if not self.model().ch:
+        self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
       self.resizeColumnToContents(0)
       QTreeView.mousePressEvent(self, e)
 

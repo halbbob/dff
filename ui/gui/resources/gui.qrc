@@ -160,6 +160,9 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="mail_replyall">icons/mailbox/mail_replyall.png</file>
     <file alias="mail_send">icons/mailbox/mail_send.png</file>
 
+    <file alias="db_opt.png">icons/actions/db_opt.png</file>
+    <file alias="search_small.png">icons/actions/search_small.png</file>
+    <file alias="search_advance.png">icons/actions/search_advance.png</file>
 
 </qresource>
 </RCC>
