@@ -39,6 +39,7 @@ set(ui_resources_files
   search_date.ui
   search_empty.ui
   search_size.ui
+  SearchStr.ui
   shell.ui
   taskmanager.ui
   selectattrs.ui
@@ -82,6 +83,7 @@ set(resources_srcs
   ui_search_date.py
   ui_search_empty.py
   ui_search_size.py
+  ui_SearchStr.py
   ui_shell.py
   ui_taskmanager.py
   ui_selectattrs.py

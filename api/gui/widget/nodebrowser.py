@@ -48,7 +48,7 @@ class SimpleNodeBrowser(QWidget):
     self.vfs = vfs.vfs()
 
     self.model = VFSItemModel(self, True)
-    self.model.setRootPath(self.vfs.getnode('/'))
+    self.model.setRootPath(self.vfs.getnode('/'))1
     self.model.setThumbnails(True)
 
     self.view = view(self)

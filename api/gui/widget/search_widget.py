@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QComboBox
 from PyQt4.QtCore import QVariant
 
 from api.gui.model.vfsitemmodel import VFSItemModel
@@ -26,26 +26,43 @@ from ui.gui.resources.ui_search import Ui_SearchTab
 from ui.gui.resources.ui_search_size import Ui_SearchSize
 from ui.gui.resources.ui_search_empty import Ui_SearchEmpty
 from ui.gui.resources.ui_search_date import Ui_SearchDate
+from ui.gui.resources.ui_SearchStr import Ui_SearchStr
 
-class SearchStr(QLineEdit):
+class SearchStr(Ui_SearchStr, QWidget):
   def __init__(self, parent = None):
-    super(QLineEdit, self).__init__()
+    super(QWidget, self).__init__()
+    self.setupUi(self)
     self.no = False
     self.field = "data"
 
+    self.type.addItem("Fixed string", QVariant("f"))
+    self.type.addItem("Wildcard", QVariant("w"))
+    self.type.addItem("Fuzzy", QVariant("fz"))
+    self.type.addItem("Reg exp", QVariant("r"))
+
   def setNo(self, no):
     self.no = no
-    
+
   def operator(self):
     return " and "
 
   def text(self):
-    if QLineEdit.text(self).isEmpty():
+    if self.name.text().isEmpty():
       return ""
+    search = ""
     if self.no:
-      return " not re(\'" + str(QLineEdit.text(self)) + "\')"
+      search += "not "
+
+    idx = self.type.currentIndex()
+    data_type = self.type.itemData(idx)
+    search += str(data_type.toString())
+
+    search += ("(\'" + str(self.name.text()) + "\'")
+    if not self.caseSensitive.isChecked():
+      search += ",i)"
     else:
-      return " re(\'" + str(QLineEdit.text(self)) + "\')"
+      search += ")"
+    return str(search)
 
 class SearchD(QWidget, Ui_SearchDate):
   def __init__(self, parent = None):
@@ -184,6 +201,7 @@ class AdvSearch(QWidget, Ui_SearchTab):
     self.parent = parent
     self.name = "Advanced search"
     self.setupUi(self)
+    self.icon = ":search.png"
     self.translation()
 
     self.model = VFSItemModel()
@@ -220,6 +238,9 @@ class AdvSearch(QWidget, Ui_SearchTab):
     else:
       self.moreOptionsButton.setText("+")
 
+  def setCurrentNode(self, path):
+    self.search_in_node = path
+    
   def addSearchOptions(self, changed):
     # removing from combo box
     text = self.optionList.currentText()

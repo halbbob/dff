@@ -201,6 +201,8 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
 
     # parent is an instance of NodeBrowser
     self.parent.parent.addSearchTab(self.adv)
+    self.adv.setCurrentNode(self.parent.model.rootItem)
+    self.adv.path.setText(self.adv.search_in_node.absolute())
     return
 
     ret = self.adv.show()

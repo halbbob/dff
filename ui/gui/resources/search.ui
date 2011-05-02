@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="gui.qrc">
+    <normaloff>:/filefind.png</normaloff>:/filefind.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QSplitter" name="splitter">
@@ -37,6 +41,20 @@
         <string>Search options</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Path</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="path"/>
+          </item>
+         </layout>
+        </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
@@ -113,7 +131,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>338</width>
-                <height>377</height>
+                <height>342</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout">

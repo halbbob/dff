@@ -29,7 +29,6 @@ from Queue import *
 HNAME = 0
 HSIZE = 1
 HMODULE = 2
-
 HCHANGED = 3
 HMODIFIED = 4
 HACCESSED = 5
@@ -229,6 +228,7 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     self.fetchedItems = 0
     typeWorker.clear()
     self.rootItem = node
+
     if node != None:
       self.sort(HNAME, Qt.AscendingOrder)
     if kompleter == None:

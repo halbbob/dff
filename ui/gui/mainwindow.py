@@ -292,7 +292,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for tabGroup in allTabs:
             for i in range(tabGroup.count()):
                 for v in self.dockWidget.values():
-                    if tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
+                    if v.widget() and tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
                         tabGroup.setTabIcon(i, v.widget().windowIcon()) 
 
 #############  END OF DOCKWIDGETS FUNCTIONS ###############
