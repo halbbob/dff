@@ -64,11 +64,13 @@ class vfs():
 	   #return path
         if path and path[0] != "/":
             abspath = self.getcwd().absolute()
-            path = unicode(abspath + "/" + path).replace("//", "/")
+            path = str(abspath + "/" + path).replace("//", "/")
         # Avoid trailing '/'
         while len(path) > 1 and path[-1:] == "/":
             path = path[:-1]
-	node = self.libvfs.GetNode(path.encode('utf-8'))
+	if type(path) == unicode:
+	   path = str(path)
+	node = self.libvfs.GetNode(path)
         if node:
 	  return node
         return None
