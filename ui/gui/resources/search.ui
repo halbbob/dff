@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>597</height>
+    <width>934</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
        <enum>QTabWidget::East</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -65,7 +65,17 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="searchName"/>
+           <widget class="QLineEdit" name="nameContain"/>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="caseSensitiveName">
+            <property name="text">
+             <string>Case sensitive</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="typeName"/>
           </item>
          </layout>
         </item>
@@ -130,8 +140,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>338</width>
-                <height>342</height>
+                <width>532</width>
+                <height>391</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout">

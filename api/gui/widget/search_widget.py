@@ -15,7 +15,6 @@
 
 from PyQt4 import QtCore, QtGui
 
-
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton
 from PyQt4.QtCore import QVariant, SIGNAL, QThread
 
@@ -33,21 +32,17 @@ from ui.gui.resources.ui_search_empty import Ui_SearchEmpty
 from ui.gui.resources.ui_search_date import Ui_SearchDate
 from ui.gui.resources.ui_SearchStr import Ui_SearchStr
 
-
 class FilterThread(QThread):
   def __init__(self):
     QThread.__init__(self)
     self.filters = Filters()
 
-
   def setContext(self, clauses, rootnode):
     self.filters.setRootNode(rootnode)
     self.filters.compile(clauses)
 
-
   def run(self):
     matches = self.filters.process()
-
 
 class SearchStr(Ui_SearchStr, QWidget):
   def __init__(self, parent = None):
@@ -246,6 +241,11 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.optionList.addItem(self.dateMaxTr, QVariant(typeId.VTime + 100))
     self.optionList.addItem(self.dateMinTr, QVariant(typeId.VTime))
 
+    self.typeName.addItem("Fixed string", QVariant("f"))
+    self.typeName.addItem("Wildcard", QVariant("w"))
+    self.typeName.addItem("Fuzzy", QVariant("fz"))
+    self.typeName.addItem("Reg exp", QVariant("re"))
+
     self.optionList.hide()
     self.addOption.hide()
     self.advOptBox.hide()
@@ -259,16 +259,24 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       QtCore.QObject.connect(self.moreOptionsButton, SIGNAL("clicked(bool)"), self.showMoreOption)
       QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
 
-
   def Event(self, e):
     self.emit(SIGNAL("NodeMatched"), e)
-
 
   def launchSearch(self, changed):
     clause = {}
 
-    if not self.searchName.text().isEmpty():
-      clause["name"] =  "w(" + str(self.searchName.text()) + ") "
+    ##if not self.nameContain.text().isEmpty():
+    #  clause["name"] =  "w(" + str(self.nameContain.text()) + ") "
+    idx = self.typeName.currentIndex()
+    data_type = self.typeName.itemData(idx)
+    search = str(data_type.toString())
+    search += ("(\'" + str(self.nameContain.text()) + "\'")
+    if not self.caseSensitiveName.isChecked():
+      search += ",i)"
+    else:
+      search += ")"
+    clause["name"] = search
+
     for i in range(0, self.advancedOptions.count()):
       widget = self.advancedOptions.itemAt(i).widget()
       if not len(widget.edit.text()):
@@ -283,8 +291,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.filterThread.start()
     print clause
     return clause
-
-
 
   def showMoreOptions(self, changed):
     self.optionList.setVisible(not self.optionList.isVisible())

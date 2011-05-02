@@ -66,7 +66,6 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
       QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
 
-
   def index_opt2(self, url):
     self.explain_this_odd_behavior()
 
