@@ -26,10 +26,12 @@ from api.loader import loader
 from api.taskmanager.taskmanager import TaskManager
 from api.datatype.magichandler import MagicHandler
 from api.tree import libtree
+from api.vfs.libvfs import AttributesIndexer
 
 class ApiManager():
    class __ApiManager():
       def __init__(self):
+         self.ai = AttributesIndexer.Get()
          self.vfs = vfs.vfs
          self.TaskManager = TaskManager
          #self.argument = libtypes.Arguments
