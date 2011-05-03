@@ -18,13 +18,6 @@
     <widget class="QDateTimeEdit" name="dateTimeEdit"/>
    </item>
    <item>
-    <widget class="QLineEdit" name="format">
-     <property name="text">
-      <string>dd.MM.yyyy</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QRadioButton" name="timestamp">
      <property name="text">
       <string>Timestamp</string>

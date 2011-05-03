@@ -32,20 +32,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="recurse">
-     <property name="text">
-      <string>Recurse</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="checkBox">
-     <property name="text">
-      <string>Search in files content</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QPushButton" name="search">
      <property name="toolTip">
       <string>Search</string>
@@ -86,6 +72,19 @@
        <normaloff>:/db_opt.png</normaloff>:/db_opt.png</iconset>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

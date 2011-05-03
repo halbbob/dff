@@ -22,6 +22,7 @@ from api.events.libevents import EventHandler
 from api.search.find import Filters
 
 from api.gui.model.vfsitemmodel import ListNodeModel
+from api.gui.widget.propertytable import PropertyTable
 from api.vfs.libvfs import VFS
 from api.vfs.vfs import vfs
 from api.types.libtypes import Variant, typeId
@@ -101,10 +102,10 @@ class SearchD(QWidget, Ui_SearchDate):
       prefix += " >= "
     date_time = self.dateTimeEdit.dateTime()
     if self.date_str.isChecked():
-      if self.format.text().isEmpty():
-        return prefix + str(date_time.toString("dd.MM.yyyy"))
-      else:
-        return prefix + str(date_time.toString(self.format.text()))
+#      if self.format.text().isEmpty():
+      return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
+      #else:
+      #  return prefix + str(date_time.toString(self.format.text()))
     return prefix + str(date_time.toTime_t())
 
 class SearchS(QWidget, Ui_SearchSize):
@@ -211,7 +212,6 @@ class OptWidget(QWidget):
   def translation(self):
     self.delTr = self.tr("Remove")
 
-
 class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def __init__(self, parent):
     super(QWidget, self).__init__()
@@ -224,6 +224,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.setupUi(self)
     self.icon = ":search.png"
     self.translation()
+
+    self.attrsTree.addWidget(PropertyTable(None))
 
     self.model = ListNodeModel(self)
     self.searchResults.setModel(self.model)
@@ -265,17 +267,16 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def launchSearch(self, changed):
     clause = {}
 
-    ##if not self.nameContain.text().isEmpty():
-    #  clause["name"] =  "w(" + str(self.nameContain.text()) + ") "
     idx = self.typeName.currentIndex()
     data_type = self.typeName.itemData(idx)
-    search = str(data_type.toString())
-    search += ("(\'" + str(self.nameContain.text()) + "\'")
-    if not self.caseSensitiveName.isChecked():
-      search += ",i)"
-    else:
-      search += ")"
-    clause["name"] = search
+    if not self.nameContain.text().isEmpty():
+      search = str(data_type.toString())
+      search += ("(\'" + str(self.nameContain.text()) + "\'")
+      if not self.caseSensitiveName.isChecked():
+        search += ",i)"
+      else:
+        search += ")"
+      clause["name"] = search
 
     for i in range(0, self.advancedOptions.count()):
       widget = self.advancedOptions.itemAt(i).widget()
@@ -334,9 +335,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       self.addOption.setEnabled(False)
 
   def translation(self):
-    self.textTr = self.tr("Contains the text")
-    self.notNameTr = self.tr("Name does not contain the text")
-    self.notContains = self.tr("Does not contain the text")
+    self.textTr = self.tr("Contains")
+    self.notNameTr = self.tr("Name does not contain")
+    self.notContains = self.tr("Does not contain")
     self.sizeMinTr = self.tr("Size at least")
     self.sizeMaxTr = self.tr("Size at most")
     self.dateMaxTr = self.tr("Date less than")

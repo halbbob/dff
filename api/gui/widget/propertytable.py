@@ -103,7 +103,6 @@ class PropertyTable(VariantTreeWidget):
         self.fillMap(itemExtendedAttr, vmap)
         self.expandItem(itemExtendedAttr)
 
-
   def fill(self, node = None):
     if not node:
       node = self.node
@@ -114,7 +113,6 @@ class PropertyTable(VariantTreeWidget):
       self.fillAttributes(node)
       self.resizeColumnToContents(0)
       self.resizeColumnToContents(1)
-
 
   def translation(self):
     self.nameText = self.tr('name')

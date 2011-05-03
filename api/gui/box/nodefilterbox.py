@@ -38,7 +38,6 @@ except ImportError:
   IndexerFound = False
 from ui.conf import Conf    
 
-
 class NodeFilterBox(QWidget, Ui_NodeFBox):
   # for the progress bar
   number_indexed = QtCore.pyqtSignal(int)
