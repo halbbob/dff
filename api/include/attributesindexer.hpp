@@ -42,13 +42,14 @@ private:
   AttributesIndexer&    operator=(AttributesIndexer&);
   AttributesIndexer(const AttributesIndexer&);
   std::map<std::string, uint8_t>	__attrNamesAndTypes;
-  EXPORT void				__mapAttrNamesAndTypes(Node* node);
+  EXPORT void				__mapAttrNamesAndTypes(Node* node, std::map<std::string, uint8_t>* attrsmapping);
 
 public:
   EXPORT static AttributesIndexer&   Get();
 
   EXPORT virtual void	Event(event *e);
   EXPORT std::map<std::string, uint8_t>	attrNamesAndTypes();
+  EXPORT void				registerAttributes(Node* n);
 };
 
 #endif

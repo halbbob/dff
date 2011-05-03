@@ -354,9 +354,10 @@ Attributes*			Node::attributesByType(uint8_t type, attributeNameType tname)
 std::map<std::string, uint8_t>*	Node::attributesNamesAndTypes()
 {
   std::map<std::string, uint8_t>*	result = new std::map<std::string, uint8_t>;
-  Attributes*				attr = this->attributes();
-  Variant*				var = new Variant(*attr);
+  Attributes*				attr;
 
+  attr = this->attributes();
+  Variant*				var = new Variant(*attr);
   this->attributesNamesAndTypesFromVariant(var, result, "");
   delete var;
   return result;
@@ -367,9 +368,7 @@ Attributes*			Node::attributes()
 {
   Attributes* attr = new std::map<std::string, Variant*>;
 
-
   (*attr)[std::string("type")] = this->dataType();
-
 
   Attributes	nodeAttributes = this->_attributes();
   if (!(nodeAttributes.empty()))
@@ -379,8 +378,7 @@ Attributes*			Node::attributes()
   for (handler = this->__attributesHandlers.begin(); handler != this->__attributesHandlers.end(); handler++)
   {
     (*attr)[(*handler)->name()] = new Variant((*handler)->attributes(this));	
-  } 	
-
+  }
   return attr;
 }
 
@@ -445,12 +443,9 @@ AttributesHandler::~AttributesHandler()
 bool			Node::registerAttributes(AttributesHandler* ah)
 {
   bool	ret;
-
-  event* e = new event;
-  e->value = new Variant(this);
   
   ret = this->__attributesHandlers.insert(ah).second;
-  AttributesIndexer::Get().Event(e);
+  AttributesIndexer::Get().registerAttributes(this);
   return ret;
 }
 
@@ -635,8 +630,7 @@ Variant*	Node::dataType(void)
   std::map<std::string, Variant*>	attributes;
 
   class DataTypeManager*	typeDB = DataTypeManager::Get();
-  types = typeDB->type(this); 
-
+  types = typeDB->type(this);
   return types; 
 }
 

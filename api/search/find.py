@@ -67,19 +67,31 @@ class StringFilter():
         lstr = strexpr.split()
         res = []
         for f in lstr:
-            if f.startswith("w(") and f[-1] == ")":
-                #res.append((f, wildre.match))
-                f2 = f[2:-1]
+            regex = ""
+            if f[-3:] == ",i)":
+                casei = True
+                pattern = f[:-3]
+            else:
+                casei = False
+                pattern = f[:-1]
+            if pattern.startswith("w("):
+                s = pattern[2:]
                 for c in ["\\", ".", "^", "$", "+", "?", "{", "[", "]", "|", "(", ")"]:
-                    f2 = f2.replace(c, "\\"+c)
-                f2 = f2.replace("*", ".*")
-                f2 += "$"
-                res.append((f, "re.search(\""+ f2 + "\"," + "\"" + val + "\")"))
-            if f.startswith("f(") and f[-1] == ")":
-                res.append((f, "val==" + f[2:-1]))
-            if f.startswith("re("): #and f[:-1] == ")":
-                regexp = re.compile(f[3:-2])
-                res.append(regexp)
+                    s = s.replace(c, "\\"+c)
+                s = s.replace("*", ".*")
+                regex = "re.search(" + s
+            if pattern.startswith("f("):
+                regex = "re.match(" + pattern[2:]
+            if pattern.startswith("re("):
+                regex = "re.search(" + pattern[3:]
+            if regex != "":
+                regex += ", '" + val + "'"
+                if casei:
+                    regex += ", re.I)"
+                else:
+                    regex += ")"
+                res.append((f, regex))
+        #print res
         return res
 
 
@@ -116,35 +128,55 @@ class TimeFilter():
         pass
 
 
-    def strToDate(self, strexpr):
-        res = []
-        expr = re.compile("\d{4,4}/{1,1}\d{1,2}/{1,1}\d{1,2}")
-        for d in expr.findall(strexpr):
-            res.append((d, datetime.datetime(*tuple(map(lambda x: int(x), d.split("/"))))))
-        return res
-
-
     def match(self, node, filter):
         ret = False
         field = filter[0]
         expr = filter[1]
         val = None
-        attr = node.attributesByName(field, ABSOLUTE_ATTR_NAME)
-        if attr != None:
-            val = attr.value()
-            if val != None:
-                dates = self.strToDate(expr)
-                for i in xrange(len(dates)):
-                    expr = expr.replace(dates[i][0], "dates[" + str(i) + "][1]")
-                for operator in ["<", ">", "==", "in"]:
-                    expr = expr.replace(operator, "val.get_time() " + operator)
-                try:
-                    #print expr
-                    ret = eval(expr)
-                except:
-                    print traceback.print_exc()
-                    ret = False
-        return ret
+        try:
+            dtregex = re.compile("[<>]= *\d{4}-{1}\d{1,2}-{1}\d{1,2}T\d{1,2}:\d{1,2}:\d{1,2}")
+            tsregex = re.compile("[<>]=* ts\(\d+\)")
+            if field == "time":
+                attrs = node.attributesByType(typeId.VTime)
+                if len(attrs) == 0:
+                    return False
+                vvals = attrs.values()
+            else:
+                vvals = node.attributesByName(field, ABSOLUTE_ATTR_NAME)
+            for vval in vvals:
+                vt = vval.value()
+                evalexpr = expr
+                dates = []
+                for dtiter in dtregex.finditer(expr):
+                    begidx = dtiter.start(0)
+                    endidx = dtiter.end(0)
+                    match = dtiter.group(0)
+                    eqidx = match.find("=")
+                    operator = ""
+                    if eqidx != -1:
+                        operator = match[:eqidx+1]
+                        strdt = match[eqidx+1:].strip()
+                    #print strdt, operator
+                    dt = datetime.datetime.strptime(strdt, "%Y-%m-%dT%H:%M:%S")
+                    dates.append(dt)
+                    evalexpr = evalexpr.replace(match, "vt.get_time()" + operator + "dates[" + str(len(dates)-1) + "]")
+                for tsiter in tsregex.finditer(expr):
+                    begidx = tsiter.start(0)
+                    endidx = tsiter.end(0)
+                    match = tsiter.group(0)
+                    eqidx = match.find("=")
+                    operator = ""
+                    if eqidx != -1:
+                        operator = match[:eqidx+1]
+                        strts = match[eqidx+1:].strip()[3:-1]
+                    dt = datetime.datetime.fromtimestamp(int(strts))
+                    dates.append(dt)
+                    evalexpr = evalexpr.replace(match, "vt.get_time()" + operator + "dates[" + str(len(dates)-1) + "]")
+                if eval(evalexpr):
+                    return True
+            return False
+        except (re.error, ValueError):
+            return False
 
 
     def priority(self):
@@ -218,7 +250,8 @@ BaseAttributesMapping = {"name": ("name", StringFilter),
                          "deleted": ("isDeleted", BooleanFilter),
                          "file": ("isFile", BooleanFilter),
                          "folder": ("isDir", BooleanFilter),
-                         "size": ("size", NumericFilter)}
+                         "size": ("size", NumericFilter),
+                         "time": ("time", TimeFilter)}
 
 class Filters(EventHandler):
     def __init__(self, root=None, filtersParam=None, recursive=True):

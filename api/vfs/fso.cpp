@@ -15,6 +15,7 @@
  */
 
 #include "fso.hpp"
+#include "attributesindexer.hpp"
 
 fso::fso(std::string name)
 {
@@ -36,6 +37,7 @@ void	fso::registerTree(Node* parent, Node* head)
   event*  e = new event;
   e->value = new Variant(head);
 
+  AttributesIndexer::Get().registerAttributes(head);
   parent->addChild(head);
   VFS::Get().notify(e);
 }

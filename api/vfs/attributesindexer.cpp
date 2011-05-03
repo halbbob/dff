@@ -11,10 +11,13 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
+ *  Frederic Bagueline. <fba@digital-forensic.org>
  */
 
 #include "attributesindexer.hpp"
+#include <pthread.h>
+
+pthread_mutex_t attrsmutex = PTHREAD_MUTEX_INITIALIZER;
 
 AttributesIndexer&	AttributesIndexer::Get()
 {
@@ -24,14 +27,14 @@ AttributesIndexer&	AttributesIndexer::Get()
 
 AttributesIndexer::AttributesIndexer()
 {
-  VFS::Get().connection(this);
+  //VFS::Get().connection(this);
 }
 
 AttributesIndexer::~AttributesIndexer()
 {
 }
 
-void	AttributesIndexer::__mapAttrNamesAndTypes(Node* node)
+void	AttributesIndexer::__mapAttrNamesAndTypes(Node* node, std::map<std::string, uint8_t>* attrsmapping)
 {
   std::vector<Node*>				children;
   std::map<std::string, uint8_t>*		attrsnamestypes;
@@ -40,7 +43,7 @@ void	AttributesIndexer::__mapAttrNamesAndTypes(Node* node)
 
   attrsnamestypes = node->attributesNamesAndTypes();
   for (mit = attrsnamestypes->begin(); mit != attrsnamestypes->end(); mit++)
-    this->__attrNamesAndTypes[mit->first] = mit->second;
+    attrsmapping->insert(pair<std::string, uint8_t>(mit->first, mit->second));
   delete attrsnamestypes;
   if (node->hasChildren())
     {
@@ -49,9 +52,27 @@ void	AttributesIndexer::__mapAttrNamesAndTypes(Node* node)
       int i;
       size = children.size();
       for (i = 0; i != size; i++)
-	this->__mapAttrNamesAndTypes(children[i]);
+	this->__mapAttrNamesAndTypes(children[i], attrsmapping);
     }
 }
+
+
+void	AttributesIndexer::registerAttributes(Node *n)
+{
+  std::map<std::string, uint8_t>*	attrsmapping;
+  std::map<std::string, uint8_t>::iterator	mit;
+
+  if (n != NULL)
+    {
+      attrsmapping = new   std::map<std::string, uint8_t>;
+      this->__mapAttrNamesAndTypes(n, attrsmapping);
+      pthread_mutex_lock(&attrsmutex);
+      for (mit = attrsmapping->begin(); mit != attrsmapping->end(); mit++)
+	this->__attrNamesAndTypes[mit->first] = mit->second;
+      pthread_mutex_unlock(&attrsmutex);
+    }
+}
+
 
 void	AttributesIndexer::Event(event* e)
 {
@@ -60,12 +81,8 @@ void	AttributesIndexer::Event(event* e)
   if ((e->value != NULL) && (e->value->type() == typeId::Node))
     {
       node = e->value->value<Node*>();
-      this->__mapAttrNamesAndTypes(node);
+      this->registerAttributes(node);
     }
-    //   std::map<std::string, uint8_t>::iterator	mit;
-    //   for (mit = this->__attrNamesAndTypes.begin(); mit != this->__attrNamesAndTypes.end(); mit++)
-    // 	std::cout << mit->first << " --> " << (int)mit->second << std::endl;
-    // }
 }
 
 std::map<std::string, uint8_t>	AttributesIndexer::attrNamesAndTypes()

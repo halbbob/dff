@@ -102,11 +102,8 @@ class SearchD(QWidget, Ui_SearchDate):
       prefix += " >= "
     date_time = self.dateTimeEdit.dateTime()
     if self.date_str.isChecked():
-#      if self.format.text().isEmpty():
       return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
-      #else:
-      #  return prefix + str(date_time.toString(self.format.text()))
-    return prefix + str(date_time.toTime_t())
+    return prefix + "ts(" + str(date_time.toTime_t()) + ")"
 
 class SearchS(QWidget, Ui_SearchSize):
   def __init__(self, parent = None):

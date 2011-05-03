@@ -205,11 +205,12 @@ Variant::Variant(bool b)
 
 Variant::Variant(vtime *vt)
 {
-  vtime*	vt2;
+  //vtime*	vt2;
 
-  vt2 = new vtime(vt->year, vt->month, vt->day, vt->hour, vt->minute, vt->second, vt->usecond);
+  //vt2 = new vtime(vt->year, vt->month, vt->day, vt->hour, vt->minute, vt->second, vt->usecond);
   //delete vt;
-  this->__data.ptr = (void*)vt2;
+  //this->__data.ptr = (void*)vt2;
+  this->__data.ptr = (void*)vt;
   //std::cout << "Variant(vtime)" << std::endl;
   this->_type = typeId::VTime;
 }
