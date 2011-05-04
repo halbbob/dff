@@ -287,7 +287,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       clause[widget.edit.field] += (widget.edit.text())
     self.filterThread.setContext(clause, self.vfs.getnode("/"))
     self.filterThread.start()
-    print clause
+
     return clause
 
   def showMoreOptions(self, changed):
