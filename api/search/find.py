@@ -267,6 +267,13 @@ class Filters(EventHandler):
             self.compile(self.filtersParam)
 
 
+    def setRecursive(self, rec):
+        if type(rec) == types.BooleanType:
+            self.recursive = rec
+        else:
+            raise TypeError("Filters setRecursive method provided argument <rec> is not of type bool")
+
+
     def setRootNode(self, node):
         self.root = node
 
@@ -315,12 +322,18 @@ class Filters(EventHandler):
 
     def process(self):
         matchedNodes = []
-        if self.root != None and len(self.filters) != 0:
-            if self.matchFilter(self.root):
-                matchedNodes.append(self.root.this)
-            for (top, dirs, files) in self.vfs.walk(self.root):
-                matchedNodes.extend([f.this for f in files if self.matchFilter(f)])
-                matchedNodes.extend([d.this for d in dirs if self.matchFilter(d)])
+        if self.recursive:
+            if self.root != None and len(self.filters) != 0:
+                if self.matchFilter(self.root):
+                    matchedNodes.append(self.root.this)
+                for (top, dirs, files) in self.vfs.walk(self.root):
+                    matchedNodes.extend([f.this for f in files if self.matchFilter(f)])
+                    matchedNodes.extend([d.this for d in dirs if self.matchFilter(d)])
+        else:
+            children = self.root.children()
+            for child in children:
+                if self.matchFilter(child):
+                    matchedNodes.append(child.this)
         return matchedNodes
 
 
