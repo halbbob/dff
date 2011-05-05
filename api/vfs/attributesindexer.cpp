@@ -61,7 +61,7 @@ void	AttributesIndexer::registerAttributes(Node *n)
 {
   std::map<std::string, uint8_t>*	attrsmapping;
   std::map<std::string, uint8_t>::iterator	mit;
-
+  /*
   if (n != NULL)
     {
       attrsmapping = new   std::map<std::string, uint8_t>;
@@ -70,7 +70,7 @@ void	AttributesIndexer::registerAttributes(Node *n)
       for (mit = attrsmapping->begin(); mit != attrsmapping->end(); mit++)
 	this->__attrNamesAndTypes[mit->first] = mit->second;
       pthread_mutex_unlock(&attrsmutex);
-    }
+      } */
 }
 
 

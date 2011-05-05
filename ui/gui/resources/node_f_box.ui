@@ -25,6 +25,13 @@
     <widget class="QLineEdit" name="searchClause"/>
    </item>
    <item>
+    <widget class="QCheckBox" name="recurse">
+     <property name="text">
+      <string>Search recursively</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="notIndexed">
      <property name="text">
       <string/>

@@ -37,13 +37,25 @@ class FilterThread(QThread):
   def __init__(self):
     QThread.__init__(self)
     self.filters = Filters()
+    self.model = None
 
-  def setContext(self, clauses, rootnode):
+  def setContext(self, clauses, rootnode, model=None):
+    if model:
+      self.model = model
+      self.connect(self, SIGNAL("started"), self.model.launch_search)
+      self.connect(self, SIGNAL("finished"), self.model.end_search)
+
     self.filters.setRootNode(rootnode)
     self.filters.compile(clauses)
 
   def run(self):
+    self.emit(SIGNAL("started"))
     matches = self.filters.process()
+    self.emit(SIGNAL("finished"))
+    if self.model:
+      pass #disconnect
+
+    self.model = None
 
 class SearchStr(Ui_SearchStr, QWidget):
   def __init__(self, parent = None):
@@ -285,9 +297,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       except KeyError:
         clause[widget.edit.field] = ""
       clause[widget.edit.field] += (widget.edit.text())
+    print clause
     self.filterThread.setContext(clause, self.vfs.getnode("/"))
     self.filterThread.start()
-
     return clause
 
   def showMoreOptions(self, changed):

@@ -176,7 +176,6 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
 
     self.cacheAttr = (None, None)
 
-
   def addNode(self, e):
     """
     This method is called when an event is emitted by the VFS (when a node is added into the
@@ -264,7 +263,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     * the name of the module who generated the node
     * the MAC time of the nodes (if any)
     * the mimi-type of the node
-    * all dynamic extended attributes of the node.
+7    * all dynamic extended attributes of the node.
     * a flag indicating if the node is deleted or not
 
     Sorting can be performed on all the data by clicking in the correponding header.
@@ -590,6 +589,8 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     QAbstractItemModel.__init__(self, __parent)
     EventHandler.__init__(self)
 
+    self.searching = False
+
     # init root + some values
     self.rootItem = None
     self.__parent = __parent
@@ -619,6 +620,26 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     # connect the mode to the VFS to receive its events
     if event:
       self.VFS.connection(self)
+
+  def launch_search(self):
+    self.searching = True
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    print "startiong..."
+    self.node_list = []
+    self.reset()
+    self.emit(SIGNAL("layoutChanged()"))
+    
+  def end_search(self):
+    self.searching = False
+
+  def fillingList(self, node):
+    n = self.VFS.getNodeFromPointer(long(node))
+
+    print "found : " + n.name()
+
+    self.node_list.append(n)
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    self.emit(SIGNAL("layoutChanged()"))
 
   def setFilterRegExp(self, regExp):
     return
@@ -671,7 +692,7 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
 
   def qMin(self, x, y):
     """
-    Return `x` if it inferior to `y`, `y` otherwise.
+    Return `x` if it is inferior to `y`, `y` otherwise.
     """
     if x < y:
       return x

@@ -69,7 +69,6 @@ class SimpleNodeBrowser(QWidget):
     else:
       QWidget.changeEvent(self, event)
 
-
 class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def __init__(self, parent):
     super(QWidget, self).__init__()
