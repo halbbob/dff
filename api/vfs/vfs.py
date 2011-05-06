@@ -41,9 +41,13 @@ class vfs():
             elif isinstance(top, Node):
                 item = child
             if child.hasChildren() or child.isDir():
+                if child.size():
+                    files.append(item)
                 dirs.append(item)
-            if child.size() > 0:
+            else:
                 files.append(item)
+            #if child.size() > 0:
+            #    files.append(item)
         if topdown:
             yield top, dirs, files
         for name in dirs:
@@ -68,7 +72,7 @@ class vfs():
         # Avoid trailing '/'
         while len(path) > 1 and path[-1:] == "/":
             path = path[:-1]
-	node = self.libvfs.GetNode(path)
+	node = self.libvfs.GetNode(str(path))
         if node:
 	  return node
         return None

@@ -21,23 +21,105 @@ fso::fso(std::string name)
 {
   this->name = name;
   this->stateinfo = "";
+  this->__uid = VFS::Get().registerFsobj(this);
+  this->__parent = NULL;
 }
 
 fso::~fso()
 {
 }
 
-std::list<Node *>	fso::updateQueue()
+uint64_t	fso::nodeCount()
 {
-  return this->__update_queue;
+  return this->__nodes.size();
 }
+
+std::vector<fso*>	fso::children()
+{
+  return this->__children;
+}
+
+bool	fso::hasChildren()
+{
+  return this->__children.size() > 0;
+}
+
+uint32_t	fso::childCount()
+{
+  return this->__children.size();
+}
+
+void		fso::setParent(fso* parent)
+{
+  if (parent != NULL)
+    {
+      this->__parent = parent;
+    }
+}
+
+fso*	fso::parent()
+{
+  return this->__parent;
+}
+
+void		fso::addChild(fso* child)
+{
+  if (child != NULL)
+    {
+      child->setParent(this);
+      this->__children.push_back(child);
+    }
+}
+
 
 void	fso::registerTree(Node* parent, Node* head)
 {
   event*  e = new event;
   e->value = new Variant(head);
+  fso*	pfsobj;
 
-  AttributesIndexer::Get().registerAttributes(head);
+  if (((pfsobj = parent->fsobj()) != NULL) && (pfsobj != this))
+    pfsobj->addChild(this);
+  //AttributesIndexer::Get().registerAttributes(head);
   parent->addChild(head);
   VFS::Get().notify(e);
+}
+
+std::vector<Node*>	fso::nodes()
+{
+  return this->__nodes;
+}
+
+uint16_t	fso::uid()
+{
+  return this->__uid;
+}
+
+Node*		fso::getNodeById(uint64_t id)
+{
+  uint64_t	nid;
+  uint16_t	fsoid;
+
+  fsoid = id >> 48;
+  if (fsoid == this->__uid)
+    {
+      nid = id & 0x0000ffffffffffffLL;
+      if (nid < this->__nodes.size())
+	return this->__nodes[nid];
+      else
+	return NULL;
+    }
+  else
+    return NULL;
+}
+
+uint64_t	fso::registerNode(Node* n)
+{
+  uint64_t	nid;
+
+  nid = this->__uid;
+  nid = nid << 48;
+  this->__nodes.push_back(n);
+  nid |= this->__nodes.size() - 1;
+  return nid;
 }

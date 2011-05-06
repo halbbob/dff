@@ -32,6 +32,7 @@
 #include "export.hpp"
 #include "exceptions.hpp"
 #include "node.hpp"
+#include "fso.hpp"
 
 #include <vector>
 #include <deque>
@@ -45,14 +46,18 @@ private:
   EXPORT                ~VFS();
   VFS&          operator=(VFS&);
                 VFS(const VFS&);
+  std::vector<class fso*>	__fsobjs;
+  std::vector<Node*>		__orphanednodes;
 
 public:
-  class Node*           cwd;	
+  class Node*           cwd;
   Node*		        root;
   set<Node*>            Tree;
 
   EXPORT static VFS&   Get();
 
+  EXPORT uint16_t	registerFsobj(fso* fsobj) throw (vfsError);
+  EXPORT uint64_t	registerOrphanedNode(Node* n) throw (vfsError);
   EXPORT virtual void	Event(event *e);
   EXPORT set<Node*>*    GetTree(void);
   EXPORT void 	        cd(Node *);
@@ -60,6 +65,9 @@ public:
   EXPORT Node*	        GetNode(string path);
   EXPORT Node*	        GetNode(string path, Node* where);
   EXPORT void		AddNode(Node *parent, Node* head);
+  EXPORT std::vector<fso*>	fsobjs();
+  EXPORT uint64_t	totalNodes();
+  EXPORT Node*		getNodeById(uint64_t id);
 };
 
 #endif

@@ -842,6 +842,7 @@ namespace std
   %template(ListString)		list<std::string>;
   %template(MapTime)		map<string, vtime*>;
   %template(MapNameTypes)	map<string, uint8_t>;
+  %template(FsoVect)		vector<fso*>;
   /* %template(MapAttributes) map<std::string, Variant*>; */
 };
 

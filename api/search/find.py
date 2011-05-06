@@ -262,6 +262,7 @@ class Filters(EventHandler):
         self.matchingNodes = []
         self.vfs = vfs()
         self.ai = AttributesIndexer.Get()
+        self.__stop = False
         if filtersParam != None:
             self.filtersParam = filtersParam
             self.compile(self.filtersParam)
@@ -291,7 +292,7 @@ class Filters(EventHandler):
 
 
     def Event(self, e):
-        pass
+        self.__stop = True
 
 
     def compile(self, filters):
@@ -322,18 +323,75 @@ class Filters(EventHandler):
 
     def process(self):
         matchedNodes = []
+        e = event()
+        e.thisown = False
+        self.__stop = False
         if self.recursive:
             if self.root != None and len(self.filters) != 0:
+                #if self.root & 0x0000ffffffffffff == 0:
+                #    nodes = self.root.fsobj()
+                count = 0
+                totalnodes = self.root.totalChildrenCount()
+                vmax = Variant(totalnodes)
+                vmax.thisown = False
+                e.type = 0x200
+                e.value = vmax
+                self.notify(e)
                 if self.matchFilter(self.root):
+                    count += 1
                     matchedNodes.append(self.root.this)
+                #fsobjs = self.libvfs.fsobjs()
+                #for fsobj in fsobjs:
+                #    nodes = fsobjs.nodes()
+                #    for node in nodes:
+                #        if self.matchFilter(node):
+                #            matchedNodes.append(node.this)
+                #        count += 1
+                e.type = 0x201
                 for (top, dirs, files) in self.vfs.walk(self.root):
-                    matchedNodes.extend([f.this for f in files if self.matchFilter(f)])
-                    matchedNodes.extend([d.this for d in dirs if self.matchFilter(d)])
+                    if self.__stop:
+                        return matchedNodes
+                    for d in dirs:
+                        if self.__stop:
+                            return matchedNodes
+                        if self.matchFilter(d):
+                            matchedNodes.append(d.this)
+                        count += 1
+                        vcount = Variant(count)
+                        vcount.thisown = False
+                        e.value = vcount
+                        self.notify(e)
+                        #print count, "/", totalnodes
+                    for f in files:
+                        if self.__stop:
+                            return matchedNodes
+                        if self.matchFilter(f):
+                            matchedNodes.append(f.this)
+                        count += 1
+                        vcount = Variant(count)
+                        vcount.thisown = False
+                        e.value = vcount
+                        self.notify(e)
+                        #print count, "/", totalnodes
         else:
             children = self.root.children()
+            count = 0
+            totalnodes = len(children)
+            vmax = Variant(totalnodes)
+            vmax.thisown = False
+            e.type = 0x200
+            e.value = vmax
+            self.notify(e)
             for child in children:
+                if self.__stop:
+                    return matchedNodes
                 if self.matchFilter(child):
                     matchedNodes.append(child.this)
+                count += 1
+                vcount = Variant(count)
+                vcount.thisown = False
+                e.value = vcount
+                self.notify(e)
         return matchedNodes
 
 
@@ -344,6 +402,7 @@ class Filters(EventHandler):
                     if not filter[0].match(node, filter[1]):
                         return False
         e = event()
+        e.type = 0x202
         e.thisown = False
         vnode = Variant(node)
         vnode.thisown = False

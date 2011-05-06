@@ -31,6 +31,12 @@ Node::Node(std::string name, uint64_t size, Node* parent, fso* fsobj)
   this->__fsobj = fsobj;
   this->__size = size;
   this->__parent = parent;
+  if (this->__fsobj != NULL)
+    this->__uid = this->__fsobj->registerNode(this);
+  else if (parent != NULL)
+    this->__uid = VFS::Get().registerOrphanedNode(this);
+  else
+    this->__uid = 0;
   if (this->__parent != NULL)
     this->__parent->addChild(this);
   this->__name = name;
@@ -91,6 +97,11 @@ void		Node::setParent(Node *parent)
 
 void   Node::fileMapping(FileMapping *)
 {
+}
+
+uint64_t	Node::uid()
+{
+  return this->__uid;
 }
 
 Attributes	Node::_attributes(void)
@@ -445,7 +456,7 @@ bool			Node::registerAttributes(AttributesHandler* ah)
   bool	ret;
   
   ret = this->__attributesHandlers.insert(ah).second;
-  AttributesIndexer::Get().registerAttributes(this);
+  //AttributesIndexer::Get().registerAttributes(this);
   return ret;
 }
 
@@ -566,6 +577,17 @@ uint32_t	Node::childCount()
   return this->__childcount;
 }
 
+uint64_t	Node::totalChildrenCount()
+{
+  uint64_t	totalsub;
+  int		i;
+
+  totalsub = this->__childcount;
+  for (i = 0; i != this->__children.size(); i++)
+    if (this->__children[i]->hasChildren())
+      totalsub += this->__children[i]->totalChildrenCount();
+  return totalsub;
+}
 
 uint32_t	Node::at()
 {

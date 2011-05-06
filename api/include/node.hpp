@@ -71,7 +71,8 @@ protected:
   class fso*				__fsobj;
   uint64_t				__common_attributes;
   //unsigned char			__checkState;
-  uint32_t				__id; 
+  uint32_t				__id;
+  uint64_t				__uid;
   EXPORT virtual Attributes		_attributes();
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*, std::string current);
@@ -123,10 +124,12 @@ public:
   EXPORT bool				addChild(class Node* child);
   EXPORT bool				hasChildren();
   EXPORT uint32_t			childCount();
+  EXPORT uint64_t			totalChildrenCount();
 
   EXPORT virtual class VFile*		open();
   EXPORT uint32_t			at();
 
+  EXPORT uint64_t			uid();
 
   EXPORT bool					registerAttributes(AttributesHandler*);
   EXPORT virtual class Variant*			dataType(void); 
