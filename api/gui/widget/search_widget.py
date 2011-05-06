@@ -20,7 +20,7 @@ from PyQt4.QtCore import QVariant, SIGNAL, QThread
 
 from api.events.libevents import EventHandler
 from api.search.find import Filters
-
+from api.gui.widget.SearchNodeBrowser import SearchNodeBrowser
 from api.gui.model.vfsitemmodel import ListNodeModel
 from api.gui.widget.propertytable import PropertyTable
 from api.vfs.libvfs import VFS
@@ -44,6 +44,7 @@ class FilterThread(QThread):
       self.model = model
       self.connect(self, SIGNAL("started"), self.model.launch_search)
       self.connect(self, SIGNAL("finished"), self.model.end_search)
+      self.connect(self.model, SIGNAL("stop_search()"), self.quit)
 
     self.filters.setRootNode(rootnode)
     self.filters.compile(clauses)
@@ -52,10 +53,11 @@ class FilterThread(QThread):
     self.emit(SIGNAL("started"))
     matches = self.filters.process()
     self.emit(SIGNAL("finished"))
-    if self.model:
-      pass #disconnect
-
     self.model = None
+
+  def quit(self):
+    self.emit(SIGNAL("finished"))
+    QThread.quit(self)
 
 class SearchStr(Ui_SearchStr, QWidget):
   def __init__(self, parent = None):
@@ -237,8 +239,12 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.attrsTree.addWidget(PropertyTable(None))
 
     self.model = ListNodeModel(self)
-    self.searchResults.setModel(self.model)
-    self.searchResults.horizontalHeader().setStretchLastSection(True)
+    self.searchResults = SearchNodeBrowser(None)
+    self.nodeBrowserLayout.addWidget(self.searchResults)
+    self.searchResults.addTableView()
+    self.searchResults.tableView.setModel(self.model)
+#    self.searchResults.horizontalHeader().setStretchLastSection(True)
+
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.launchSearchButton.clicked.connect(self.launchSearch)
     else:
@@ -297,7 +303,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       except KeyError:
         clause[widget.edit.field] = ""
       clause[widget.edit.field] += (widget.edit.text())
-    print clause
     self.filterThread.setContext(clause, self.vfs.getnode("/"))
     self.filterThread.start()
     return clause

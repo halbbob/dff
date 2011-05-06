@@ -263,7 +263,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     * the name of the module who generated the node
     * the MAC time of the nodes (if any)
     * the mimi-type of the node
-7    * all dynamic extended attributes of the node.
+    * all dynamic extended attributes of the node.
     * a flag indicating if the node is deleted or not
 
     Sorting can be performed on all the data by clicking in the correponding header.
@@ -582,6 +582,7 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
   * http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/qabstractitemmodel.html
   """
 
+  stop_search = QtCore.pyqtSignal()
   def __init__(self, __parent = None, event=False, fm = False):
     """
     Constructor.
@@ -624,7 +625,6 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
   def launch_search(self):
     self.searching = True
     self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    print "startiong..."
     self.node_list = []
     self.reset()
     self.emit(SIGNAL("layoutChanged()"))
@@ -633,13 +633,11 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     self.searching = False
 
   def fillingList(self, node):
-    n = self.VFS.getNodeFromPointer(long(node))
-
-    print "found : " + n.name()
-
-    self.node_list.append(n)
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
-    self.emit(SIGNAL("layoutChanged()"))
+    if self.searching == True:
+      n = self.VFS.getNodeFromPointer(long(node))
+      self.node_list.append(n)
+      self.emit(SIGNAL("layoutAboutToBeChanged()"))
+      self.emit(SIGNAL("layoutChanged()"))
 
   def setFilterRegExp(self, regExp):
     return
@@ -680,6 +678,10 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     """
     Set the path of the root node.
     """
+    if self.searching == True:
+      self.searching = False
+      self.emit(SIGNAL("stop_search()"))
+
     self.fetchedItems = 0
     typeWorker.clear()
     self.rootItem = node

@@ -402,5 +402,3 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       self.treeModel.translation()
     else:
       QWidget.changeEvent(self, event)
-
-
