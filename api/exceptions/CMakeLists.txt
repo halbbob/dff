@@ -28,6 +28,8 @@ SWIG_ADD_MODULE(libexceptions python libexceptions.i exceptions.cpp)
 SWIG_LINK_LIBRARIES(libexceptions ${PYTHON_LIBRARIES})
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_libexceptions_REAL_NAME} PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_SOURCE_DIR}"
+  RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_SOURCE_DIR}"
   PREFIX "../"
   SUFFIX ".pyd"
 )

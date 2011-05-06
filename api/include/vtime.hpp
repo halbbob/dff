@@ -25,6 +25,8 @@
 # include "wstdint.h"
 #endif
 
+#include <time.h>
+
 #include <stdlib.h>
 #include <vector>
 #include <string>

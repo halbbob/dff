@@ -16,9 +16,12 @@
  */
 
 #include "local.hpp"
+#include "typesconv.hpp"
+
 #include <String>
 #include <windows.h>
 #include <shlwapi.h>
+
 
 void				local::frec(const char *name, Node *rfv)
 {
