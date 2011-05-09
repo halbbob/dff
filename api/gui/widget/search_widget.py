@@ -233,6 +233,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.vfs = vfs()
     self.name = "Advanced search"
     self.setupUi(self)
+    self.searchBar.hide()
+
     self.icon = ":search.png"
     self.translation()
 
@@ -243,7 +245,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.nodeBrowserLayout.addWidget(self.searchResults)
     self.searchResults.addTableView()
     self.searchResults.tableView.setModel(self.model)
-#    self.searchResults.horizontalHeader().setStretchLastSection(True)
+    #self.searchResults.horizontalHeader().setStretchLastSection(True)
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.launchSearchButton.clicked.connect(self.launchSearch)
@@ -277,10 +279,12 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
 
   def Event(self, e):
+    print "OK received " , e.type
     self.emit(SIGNAL("NodeMatched"), e)
 
   def launchSearch(self, changed):
     clause = {}
+    self.searchBar.show()
 
     idx = self.typeName.currentIndex()
     data_type = self.typeName.itemData(idx)
