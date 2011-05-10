@@ -280,7 +280,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
   def Event(self, e):
     print "OK received " , e.type
-    self.emit(SIGNAL("NodeMatched"), e)
+    if e.type == 0x201:
+      self.emit(SIGNAL("NodeMatched"), e)
 
   def launchSearch(self, changed):
     clause = {}
