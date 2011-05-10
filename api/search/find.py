@@ -31,6 +31,44 @@ from api.events.libevents import EventHandler, event
 from api.types.libtypes import typeId, VMap, Variant
 import time, datetime
 
+
+class DataFilter():
+    def __init__(self):
+        pass
+
+    def match(self, node, filter):
+        ret = False
+        expr = filter[1]
+        invertmatch = False
+        if expr.startswith("not f('"):
+            invertmatch = True
+            expr = expr[7:]
+        elif expr.startswith("f('"):
+            expr = expr[3:]
+        if expr.endswith("',i)"):
+            expr = expr[:-4]
+        if node.size():
+            f = node.open()
+            if invertmatch:
+                idxs = f.find(expr)
+                if idxs != -1:
+                    return False
+                else:
+                    return True
+            else:
+                idxs = f.indexes(expr)
+                if len(idxs):
+                    return True
+                else:
+                    return False
+        else:
+            return False
+
+        
+    def priority(self):
+        return 3
+
+
 class BooleanFilter():
     def __init__(self):
         pass
@@ -76,12 +114,16 @@ class StringFilter():
                 pattern = f[:-1]
             if pattern.startswith("w("):
                 s = pattern[2:]
-                for c in ["\\", ".", "^", "$", "+", "?", "{", "[", "]", "|", "(", ")"]:
-                    s = s.replace(c, "\\"+c)
-                s = s.replace("*", ".*")
+                for c in ["\\", ".", "^", "$", "+", "{", "[", "]", "|", "(", ")"]:
+                    s = s.replace(c, "\\" + c)
+                s = re.sub('(?<!\\\)\*', ".*", s)
+                s = re.sub('(?<!\\\)\?', ".", s)
                 regex = "re.search(" + s
             if pattern.startswith("f("):
-                regex = "re.match(" + pattern[2:]
+                s = pattern[2:]
+                for c in ["\\", ".", "^", "$", "?", "*", "+", "{", "[", "]", "|", "(", ")"]:
+                    s = s.replace(c, "\\" + c)
+                regex = "re.match(" + s
             if pattern.startswith("re("):
                 regex = "re.search(" + pattern[3:]
             if regex != "":
@@ -251,7 +293,8 @@ BaseAttributesMapping = {"name": ("name", StringFilter),
                          "file": ("isFile", BooleanFilter),
                          "folder": ("isDir", BooleanFilter),
                          "size": ("size", NumericFilter),
-                         "time": ("time", TimeFilter)}
+                         "time": ("time", TimeFilter),
+                         "data": ("data", DataFilter)}
 
 class Filters(EventHandler):
     def __init__(self, root=None, filtersParam=None, recursive=True):
@@ -337,9 +380,9 @@ class Filters(EventHandler):
                 e.type = 0x200
                 e.value = vmax
                 self.notify(e)
-                if self.matchFilter(self.root):
-                    count += 1
-                    matchedNodes.append(self.root.this)
+                #if self.matchFilter(self.root):
+                #    count += 1
+                #    matchedNodes.append(self.root.this)
                 #fsobjs = self.libvfs.fsobjs()
                 #for fsobj in fsobjs:
                 #    nodes = fsobjs.nodes()
@@ -396,7 +439,7 @@ class Filters(EventHandler):
 
 
     def matchFilter(self, node):
-        for priority in [0, 1, 2]:
+        for priority in [0, 1, 2, 3]:
             if priority in self.filters.keys():
                 for filter in self.filters[priority]:
                     if not filter[0].match(node, filter[1]):
