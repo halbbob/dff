@@ -72,7 +72,8 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
 
   def Event(self, e):
     node = e.value.value()
-    self.emit(SIGNAL("add_node"), long(node.this))
+    if e.type == 514:
+      self.emit(SIGNAL("add_node"), long(node.this))
 
   def index_opt2(self, url):
     self.explain_this_odd_behavior()

@@ -49,7 +49,7 @@
          <widget class="QWidget" name="verticalLayoutWidget">
           <layout class="QVBoxLayout" name="nodeBrowserLayout"/>
          </widget>
-         <widget class="QWidget" name="layoutWidget">
+         <widget class="QWidget" name="">
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -150,7 +150,7 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>529</width>
+                   <width>468</width>
                    <height>316</height>
                   </rect>
                  </property>
@@ -175,72 +175,76 @@
                 </widget>
                </widget>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5">
-                <item>
-                 <widget class="QProgressBar" name="searchBar">
-                  <property name="value">
-                   <number>0</number>
-                  </property>
-                  <property name="textDirection">
-                   <enum>QProgressBar::TopToBottom</enum>
-                  </property>
-                  <property name="format">
-                   <string>%p%</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="totalHits">
-                  <property name="text">
-                   <string>match(s)</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="exportButton">
-                  <property name="text">
-                   <string>Export</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="stopSearchButton">
-                  <property name="text">
-                   <string>Stop</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="launchSearchButton">
-                  <property name="text">
-                   <string>Find</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
              </layout>
             </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QProgressBar" name="searchBar">
+               <property name="value">
+                <number>0</number>
+               </property>
+               <property name="textDirection">
+                <enum>QProgressBar::TopToBottom</enum>
+               </property>
+               <property name="format">
+                <string>%p%</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="totalHits">
+               <property name="text">
+                <string>match(s)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="exportButton">
+               <property name="text">
+                <string>Export</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="stopSearchButton">
+               <property name="text">
+                <string>Stop</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="launchSearchButton">
+               <property name="text">
+                <string>Find</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
         </widget>
        </item>
       </layout>
+      <zorder>splitter</zorder>
+      <zorder></zorder>
+      <zorder>label</zorder>
+      <zorder>totalHits</zorder>
      </widget>
     </widget>
    </item>
