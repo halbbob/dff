@@ -143,8 +143,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>531</width>
-               <height>318</height>
+               <width>541</width>
+               <height>343</height>
               </rect>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout">
@@ -178,6 +178,19 @@
            <property name="value">
             <number>0</number>
            </property>
+           <property name="textDirection">
+            <enum>QProgressBar::TopToBottom</enum>
+           </property>
+           <property name="format">
+            <string>%p%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="totalHits">
+           <property name="text">
+            <string>match(s)</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -192,6 +205,20 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exportButton">
+           <property name="text">
+            <string>Export</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="stopSearchButton">
+           <property name="text">
+            <string>Stop</string>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QPushButton" name="launchSearchButton">

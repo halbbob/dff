@@ -154,6 +154,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     # init root + some values
     self.rootItem = None
     self.__parent = __parent
+    self.connect(self.__parent, SIGNAL("NewSearch"), self.clean)
     self.connect(self.__parent, SIGNAL("NodeMatched"), self.addNode)
     self.VFS = VFS.Get()
     self.map = {}
@@ -187,6 +188,12 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
       # emit signals to redraw the gui
       self.emit(SIGNAL("layoutAboutToBeChanged()"))
       self.emit(SIGNAL("layoutChanged()"))
+
+
+  def clean(self):
+    self.emit(SIGNAL("modelAboutToBeReset()"))
+    self.node_list = []
+    self.emit(SIGNAL("modelReset()"))
 
 
   def setHeaderData(self, section, orientation, value, role):

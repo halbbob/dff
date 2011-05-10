@@ -15,15 +15,15 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QInputDialog
 from PyQt4.QtCore import QVariant, SIGNAL, QThread
 
-from api.events.libevents import EventHandler
+from api.events.libevents import EventHandler, event
 from api.search.find import Filters
 from api.gui.widget.SearchNodeBrowser import SearchNodeBrowser
 from api.gui.model.vfsitemmodel import ListNodeModel
 from api.gui.widget.propertytable import PropertyTable
-from api.vfs.libvfs import VFS
+from api.vfs.libvfs import VFS, Node, VLink
 from api.vfs.vfs import vfs
 from api.types.libtypes import Variant, typeId
 
@@ -34,10 +34,12 @@ from ui.gui.resources.ui_search_date import Ui_SearchDate
 from ui.gui.resources.ui_SearchStr import Ui_SearchStr
 
 class FilterThread(QThread):
-  def __init__(self):
+  def __init__(self, parent=None):
     QThread.__init__(self)
+    self.__parent = parent
     self.filters = Filters()
     self.model = None
+
 
   def setContext(self, clauses, rootnode, model=None):
     if model:
@@ -45,9 +47,11 @@ class FilterThread(QThread):
       self.connect(self, SIGNAL("started"), self.model.launch_search)
       self.connect(self, SIGNAL("finished"), self.model.end_search)
       self.connect(self.model, SIGNAL("stop_search()"), self.quit)
-
+    elif self.__parent:
+      self.connect(self.__parent, SIGNAL("stop_search()"), self.quit)
     self.filters.setRootNode(rootnode)
     self.filters.compile(clauses)
+
 
   def run(self):
     self.emit(SIGNAL("started"))
@@ -55,9 +59,16 @@ class FilterThread(QThread):
     self.emit(SIGNAL("finished"))
     self.model = None
 
+
   def quit(self):
+    e = event()
+    e.thisown = False
+    e.type = 0
+    e.value = None
+    self.filters.Event(e)
     self.emit(SIGNAL("finished"))
     QThread.quit(self)
+
 
 class SearchStr(Ui_SearchStr, QWidget):
   def __init__(self, parent = None):
@@ -227,13 +238,16 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def __init__(self, parent):
     super(QWidget, self).__init__()
     EventHandler.__init__(self)
-    self.filterThread = FilterThread()
+    self.filterThread = FilterThread(self)
     self.filterThread.filters.connection(self)
     self.parent = parent
     self.vfs = vfs()
     self.name = "Advanced search"
     self.setupUi(self)
-    self.searchBar.hide()
+    
+    self.__totalnodes = 0
+    self.__totalhits = 0
+    self.__processednodes = 0
 
     self.icon = ":search.png"
     self.translation()
@@ -249,8 +263,12 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.launchSearchButton.clicked.connect(self.launchSearch)
+      self.stopSearchButton.clicked.connect(self.stopSearch)
+      self.exportButton.clicked.connect(self.export)
     else:
       QtCore.QObject.connect(self.launchSearchButton, SIGNAL("clicked(bool)"), self.launchSearch)
+      QtCore.QObject.connect(self.stopSearchButton, SIGNAL("clicked(bool)"), self.stopSearch)
+      QtCore.QObject.connect(self.exportButton, SIGNAL("clicked(bool)"), self.export)
 
     self.optionList.addItem(self.textTr, QVariant(typeId.String))
     self.optionList.addItem(self.notNameTr, QVariant(typeId.String + 100))
@@ -260,6 +278,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.optionList.addItem(self.dateMaxTr, QVariant(typeId.VTime + 100))
     self.optionList.addItem(self.dateMinTr, QVariant(typeId.VTime))
 
+
     self.typeName.addItem("Fixed string", QVariant("f"))
     self.typeName.addItem("Wildcard", QVariant("w"))
     self.typeName.addItem("Fuzzy", QVariant("fz"))
@@ -268,6 +287,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.optionList.hide()
     self.addOption.hide()
     self.advOptBox.hide()
+    self.stopSearchButton.hide()
+
+    self.exportButton.setEnabled(False)
 
     self.addedOpt = []
 
@@ -278,14 +300,68 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       QtCore.QObject.connect(self.moreOptionsButton, SIGNAL("clicked(bool)"), self.showMoreOption)
       QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
 
+    self.connect(self, SIGNAL("TotalNodes"), self.searchBar.setMaximum)
+    self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
+    self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
+
+
   def Event(self, e):
-    print "OK received " , e.type
-    self.emit(SIGNAL("NodeMatched"), e)
+    if e.type == 0x200:
+      self.__totalnodes = e.value.value()
+      self.emit(SIGNAL("TotalNodes"), int(e.value.value()))
+    if e.type == 0x201:
+      self.__processednodes += 1
+      self.emit(SIGNAL("CountNodes"), int(e.value.value()))
+    if e.type == 0x202:
+      self.__totalhits += 1
+      self.totalHits.setText(str(self.__totalhits) + "/" + str(self.__totalnodes) + " " + self.tr("match(s)"))
+      self.emit(SIGNAL("NodeMatched"), e)
+
+
+  def searchFinished(self):
+    #self.searchBar.hide()
+    if self.__totalhits:
+      self.exportButton.setEnabled(True)
+    self.stopSearchButton.hide()
+    self.launchSearchButton.show()
+
+
+
+  def export(self):
+    text, ok = QInputDialog.getText(self, "Advanced search", "Filter export name", QLineEdit.Normal, "") 
+    if ok and text != "":
+      siNode = self.vfs.getnode("/Searched items")
+      filtersNode = Node(str(text), 0, siNode, None)
+      filtersNode.__disown__()
+      filtersNode.setDir()
+      e = event()
+      e.thisown = False
+      vnode = Variant(filtersNode)
+      vnode.thisown = False
+      e.value = vnode
+      VFS.Get().notify(e)
+      for node in self.model.node_list:
+        n = VFS.Get().getNodeFromPointer(int(node))
+        l = VLink(n, filtersNode)
+        l.__disown__()
+
+    else:
+      box = QMessageBox(QMessageBox.Warning, "Error", "Error node already exists", QMessageBox.NoButton, self)
+      box.exec_()
+
+
+  def stopSearch(self, changed):
+    self.emit(SIGNAL("stop_search()"))
+
 
   def launchSearch(self, changed):
     clause = {}
-    self.searchBar.show()
 
+    self.emit(SIGNAL("NewSearch"))
+    self.__totalhits = 0
+    self.__processednodes = 0
+    self.totalHits.setText("0 " + self.tr(" match(s)"))
+    self.exportButton.setEnabled(False)
     idx = self.typeName.currentIndex()
     data_type = self.typeName.itemData(idx)
     if not self.nameContain.text().isEmpty():
@@ -308,8 +384,12 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         clause[widget.edit.field] = ""
       clause[widget.edit.field] += (widget.edit.text())
     self.filterThread.setContext(clause, self.vfs.getnode("/"))
+    self.searchBar.show()
+    self.launchSearchButton.hide()
+    self.stopSearchButton.show()
     self.filterThread.start()
     return clause
+
 
   def showMoreOptions(self, changed):
     self.optionList.setVisible(not self.optionList.isVisible())
