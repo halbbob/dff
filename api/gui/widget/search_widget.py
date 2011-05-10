@@ -353,7 +353,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def stopSearch(self, changed):
     self.emit(SIGNAL("stop_search()"))
 
-
   def launchSearch(self, changed):
     clause = {}
 
