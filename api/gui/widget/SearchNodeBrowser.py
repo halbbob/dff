@@ -77,29 +77,14 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.baseLayout.insertWidget(0, self.browserLayout)
     self.baseLayout.setStretchFactor(self.browserLayout, 1)
 
-  def addNodeLinkTreeView(self):
-    self.treeModel = TreeModel(self, True)
-    self.treeModel.setRootPath(self.vfs.getnode("/"))
-    self.treeProxyModel = self.treeModel
-    self.treeView = NodeLinkTreeView(self)
-    self.treeView.setModel(self.treeProxyModel)
-
-    self.browserLayout.addWidget(self.treeView)
-
-    self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
-
-    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.treeModel.nodeClicked)
-
   def addNodeView(self):
     self.addTableView()
     self.addThumbsView()
 
   def addTableView(self): 
     self.tableView = NodeTableView(self)
-
     self.tableView.horizontalHeader().setStretchLastSection(True)
-#    self.tableView.setModel(self.model)
+    # self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))

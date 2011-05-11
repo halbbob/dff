@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QInputDialog
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QInputDialog, QIcon
 from PyQt4.QtCore import QVariant, SIGNAL, QThread
 
 from api.events.libevents import EventHandler, event
@@ -207,7 +207,8 @@ class OptWidget(QWidget):
     self.layout.addWidget(self.label)
     self.edit = self.value(w_type)
     self.layout.addWidget(self.edit)
-    self.button = QPushButton(self.delTr, self)
+    self.button = QPushButton(QIcon(":remove.png"), "", self)
+    self.button.setToolTip(self.delTr)
     self.layout.addWidget(self.button)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.button.clicked.connect(self.removeOption)
@@ -257,9 +258,15 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.model = ListNodeModel(self)
     self.searchResults = SearchNodeBrowser(self)
     self.nodeBrowserLayout.addWidget(self.searchResults)
+    self.node_name = QLineEdit()
+    self.node_name.setReadOnly(True)
+    self.nodeBrowserLayout.addWidget(self.node_name)
+
     self.searchResults.addTableView()
     self.searchResults.tableView.setModel(self.model)
     #self.searchResults.horizontalHeader().setStretchLastSection(True)
+    self.connect(self.searchResults.tableView, SIGNAL("nodeClicked"), self.change_node_name)
+    
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.launchSearchButton.clicked.connect(self.launchSearch)
@@ -277,7 +284,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.optionList.addItem(self.sizeMaxTr, QVariant(typeId.UInt64 + 100))
     self.optionList.addItem(self.dateMaxTr, QVariant(typeId.VTime + 100))
     self.optionList.addItem(self.dateMinTr, QVariant(typeId.VTime))
-
 
     self.typeName.addItem("Fixed string", QVariant("f"))
     self.typeName.addItem("Wildcard", QVariant("w"))
@@ -304,6 +310,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
 
+  def change_node_name(self, button, node):
+    self.node_name.setText(node.absolute())
 
   def Event(self, e):
     if e.type == 0x200:

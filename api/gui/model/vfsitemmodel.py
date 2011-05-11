@@ -291,7 +291,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     if role == Qt.DisplayRole :
       # return name, size and eventually module columns
       if column == HNAME:
-        return QVariant(QString.fromUtf8(node.absolute()))
+        return QVariant(QString.fromUtf8(node.name()))
       if column == HSIZE:
         return QVariant(node.size())
       if (self.disp_module != 0) and (column == HMODULE):
