@@ -60,7 +60,8 @@ class TaskManager():
 	    self.postProcess(child, True)      
 
     def Event(self, e):
-      self.postProcess(e.value.value(), True) 
+      if e != None and e.value != None:
+        self.postProcess(e.value.value(), True) 
 
     def add(self, cmd, args, exec_flags):
       mod = self.loader.modules[cmd] 

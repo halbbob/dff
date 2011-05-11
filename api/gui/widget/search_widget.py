@@ -255,7 +255,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.attrsTree.addWidget(PropertyTable(None))
 
     self.model = ListNodeModel(self)
-    self.searchResults = SearchNodeBrowser(None)
+    self.searchResults = SearchNodeBrowser(self)
     self.nodeBrowserLayout.addWidget(self.searchResults)
     self.searchResults.addTableView()
     self.searchResults.tableView.setModel(self.model)
@@ -382,7 +382,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       except KeyError:
         clause[widget.edit.field] = ""
       clause[widget.edit.field] += (widget.edit.text())
-    self.filterThread.setContext(clause, self.vfs.getnode("/"))
+    self.filterThread.setContext(clause, self.vfs.getnode(str(self.path.text())))
     self.searchBar.show()
     self.launchSearchButton.hide()
     self.stopSearchButton.show()

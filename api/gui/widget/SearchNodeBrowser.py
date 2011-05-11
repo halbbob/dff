@@ -60,18 +60,11 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
     self.createSubMenu()
     self.createLayout()
-#    self.addModel("/")
-#   self.addNodeLinkTreeView()
-#   self.addNodeView()
-#    self.addTableView()
-
-#   self.addOptionsView()
 
   def Event(self, e):
     self.model.emit(SIGNAL("layoutAboutToBeChanged()")) 
     self.model.emit(SIGNAL("layoutChanged()"))
- #   self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()")) 
- #   self.treeModel.emit(SIGNAL("layoutChanged()"))
+
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
@@ -83,22 +76,6 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.browserLayout = QSplitter(self)
     self.baseLayout.insertWidget(0, self.browserLayout)
     self.baseLayout.setStretchFactor(self.browserLayout, 1)
- 
-#  def addOptionsView(self):
-#    self.nodeViewBox = NodeViewBox(self)
-#    self.nodeFilterBox = NodeFilterBox(self, self.treeModel)
-#    self.nodeFilterBox.vfs_item_model(self.model)
-#    self.baseLayout.insertWidget(0,self.nodeFilterBox)
-#    self.baseLayout.insertWidget(0, self.nodeViewBox)
-#    self.nodeFilterBox.setVisible(False)
-
-#  def addModel(self, path):
-#    self.model = VFSItemModel(self, True, True)
-#    self.model.setRootPath(self.vfs.getnode(path))
-  ###### View searhing #####
- # def addSearchView(self):
- #   self.search_model = VfsSearchItemModel(self, True)
-#    self.treeModel.setRootPath(self.vfs.getnode("/"))
 
   def addNodeLinkTreeView(self):
     self.treeModel = TreeModel(self, True)
@@ -214,7 +191,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       return
     if self.currentView().enterInDirectory:
       if node.hasChildren() or node.isDir():
-        self.currentModel().setRootPath(node) 
+        self.openAsNewTab()
       else:
         self.openDefault(node)
     else:  
@@ -305,7 +282,8 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def openAsNewTab(self):
     node = self.currentNode()
-    self.mainwindow.addNodeBrowser(node)
+    self.parent.parent.parent.parent.addNodeBrowser(node.absolute())
+#mainwindow.
 
   def launchHexedit(self):
      nodes = self.currentNodes()

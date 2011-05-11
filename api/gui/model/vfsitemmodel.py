@@ -1271,10 +1271,15 @@ class TreeModel(QStandardItemModel, EventHandler):
     or is a directory).
 
     """
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+
     value = e.value
+    if value == None:
+      return
     node = value.value()
-    if node != None and (node.hasChildren() or node.isDir()):
+    if node == None:
+      return
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    if (node.hasChildren() or node.isDir()):
       if node.parent().name() == "/":
         item = QStandardItem(node.name())
         item.setData(long(node.this), Qt.UserRole + 1)
