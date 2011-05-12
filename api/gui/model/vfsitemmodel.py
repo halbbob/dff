@@ -218,7 +218,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
      return self.imagesthumbnails
 
 
-  def rowCount(self, parent):
+  def rowCount(self, parent = None):
     """
     \returns the number of children of lines of the index `parent`.
     """
@@ -351,12 +351,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
             return QVariant(QIcon(node.icon()))
     if role == Qt.CheckStateRole:
       if column == HNAME:
-	if (long(node.this), 0) in self.checkedNodes:
-	  if node.hasChildren():
-	    return Qt.PartiallyChecked
-          else:
-   	    return Qt.Checked
-	elif (long(node.this), 1) in self.checkedNodes:
+	if (long(node.this), 1) in self.checkedNodes:
    	    return Qt.Checked
         else:
 	    return Qt.Unchecked
@@ -434,13 +429,6 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     \return `True` if index `parent` has at least one child, `False` the otherwise.
     """
     return False
-    #if not parent.isValid():
-    #  self.parentItem = self.rootItem
-    #  return self.rootItem.hasChildren()
-    #else:
-    #  self.parentItem = self.VFS.getNodeFromPointer(parent.internalId())
-    #  return self.parentItem.hasChildren()
-
 
   def setData(self, index, value, role):
     """
@@ -452,26 +440,16 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     """
     if not index.isValid():
       return QVariant()
+    column = index.column()
     if role == Qt.CheckStateRole:
-      column = index.column()
       if column == HNAME:
-        node = self.VFS.getNodeFromPointer(index.internalId())
+        node = self.VFS.getNodeFromPointer(index.internalId())      
         if value == Qt.Unchecked:
-          if (long(node.this), 0) in self.checkedNodes:
-            self.checkedNodes.remove((long(node.this), 0))
-          else:
-            self.checkedNodes.remove((long(node.this), 1))	
-        elif value == Qt.PartiallyChecked:
-          self.checkedNodes.add((long(node.this), 0)) 
-        elif value == Qt.Checked:
-          if node.hasChildren():
-            if (long(node.this), 0) not in self.checkedNodes:
-              self.checkedNodes.add((long(node.this), 0))
-            else:
-              self.checkedNodes.remove((long(node.this), 0))
-              self.checkedNodes.add((long(node.this), 1))
-          else:
-            self.checkedNodes.add((long(node.this) , 1))
+          if (long(node.this), 1) in self.checkedNodes:
+            self.checkedNodes.remove((long(node.this), 1))
+        else:
+          self.checkedNodes.add((long(node.this) , 1))
+    QAbstractItemModel.setData(self, index, value, role)
     return True #return true if ok 	
 
 
@@ -1047,8 +1025,6 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
     self.MTimeTr = self.tr('Modified time')
     self.moduleTr = self.tr('Module')
     self.deletedTr = self.tr('Deleted')
-
-
 
 
 class TreeModel(QStandardItemModel, EventHandler):

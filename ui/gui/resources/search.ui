@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>577</height>
+    <width>1065</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,9 +47,20 @@
           <enum>Qt::Horizontal</enum>
          </property>
          <widget class="QWidget" name="verticalLayoutWidget">
-          <layout class="QVBoxLayout" name="nodeBrowserLayout"/>
+          <layout class="QVBoxLayout" name="nodeBrowserLayout">
+           <item>
+            <widget class="QCheckBox" name="selectAll">
+             <property name="toolTip">
+              <string>Check all results</string>
+             </property>
+             <property name="text">
+              <string>Select all</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -127,8 +138,15 @@
              </item>
              <item>
               <widget class="QPushButton" name="addOption">
-               <property name="text">
+               <property name="toolTip">
                 <string>Add</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset resource="gui.qrc">
+                 <normaloff>:/add.png</normaloff>:/add.png</iconset>
                </property>
               </widget>
              </item>
@@ -150,8 +168,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>468</width>
-                   <height>316</height>
+                   <width>870</width>
+                   <height>366</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout">
@@ -241,10 +259,6 @@
         </widget>
        </item>
       </layout>
-      <zorder>splitter</zorder>
-      <zorder></zorder>
-      <zorder>label</zorder>
-      <zorder>totalHits</zorder>
      </widget>
     </widget>
    </item>

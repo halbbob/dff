@@ -16,7 +16,7 @@
 from PyQt4 import QtCore, QtGui
 
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QInputDialog, QIcon
-from PyQt4.QtCore import QVariant, SIGNAL, QThread
+from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt
 
 from api.events.libevents import EventHandler, event
 from api.search.find import Filters
@@ -267,7 +267,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     #self.searchResults.horizontalHeader().setStretchLastSection(True)
     self.connect(self.searchResults.tableView, SIGNAL("nodeClicked"), self.change_node_name)
     
-
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.launchSearchButton.clicked.connect(self.launchSearch)
       self.stopSearchButton.clicked.connect(self.stopSearch)
@@ -309,6 +308,20 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.connect(self, SIGNAL("TotalNodes"), self.searchBar.setMaximum)
     self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
+    QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
+
+  def select_all(self, state):
+    checked = Qt.Unchecked
+    if state == Qt.Checked:
+      checked = Qt.Checked
+    nb_row = self.model.rowCount()
+    self.model.emit(SIGNAL("layoutAboutToBeChanged()"))
+    for i in range(0, nb_row):
+      index = self.model.index(i, 0)
+      if not index.isValid():
+        continue
+      self.model.setData(index, checked, Qt.CheckStateRole)
+    self.model.emit(SIGNAL("layoutChanged()"))
 
   def change_node_name(self, button, node):
     self.node_name.setText(node.absolute())
@@ -334,7 +347,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.launchSearchButton.show()
 
 
-
   def export(self):
     text, ok = QInputDialog.getText(self, "Advanced search", "Filter export name", QLineEdit.Normal, "") 
     if ok and text != "":
@@ -348,11 +360,16 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       vnode.thisown = False
       e.value = vnode
       VFS.Get().notify(e)
-      for node in self.model.node_list:
-        n = VFS.Get().getNodeFromPointer(int(node))
-        l = VLink(n, filtersNode)
-        l.__disown__()
-
+      nb_row = self.model.rowCount()
+      for i in range(0, nb_row):
+        index = self.model.index(i, 0)
+        if not index.isValid():
+          continue
+        data = self.model.data(index, Qt.CheckStateRole)
+        if data == Qt.Checked or data == Qt.PartiallyChecked:
+          n = VFS.Get().getNodeFromPointer(long(index.internalId()))
+          l = VLink(n, filtersNode)
+          l.__disown__()
     else:
       box = QMessageBox(QMessageBox.Warning, "Error", "Error node already exists", QMessageBox.NoButton, self)
       box.exec_()
