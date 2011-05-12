@@ -255,7 +255,6 @@ int32_t 	mfso::vclose(int32_t fd)
 	this->__origins.erase(fdit);
      }
      delete fi->fm;
-     delete fi;
      this->__fdmanager->remove(fd);
   }
   catch (vfsError e)
