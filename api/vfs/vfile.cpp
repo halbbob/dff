@@ -276,12 +276,12 @@ int64_t		VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcar
   uint64_t		totalread;
   int64_t		pos;
 
+  if (end > this->__node->size())
+    end = this->__node->size();
   if ((end != 0) && (end < start))
     throw std::string("VFile::find 'end' argument must be greater than 'start' argument");
   if (nlen == 0)
     return 0;
-  if (end == 0)
-    end = this->__node->size();
   idx = -1;
   totalread = this->seek(start);
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
@@ -318,12 +318,12 @@ int64_t		VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildca
   uint64_t		rpos;
   int64_t		pos;
 
+  if (end > this->__node->size())
+    end = this->__node->size();
   if ((end != 0) && (end < start))
     throw std::string("VFile::rfind 'end' argument must be greater than 'start' argument");
   if (nlen == 0)
     return 0;
-  if (end == 0)
-    end = this->__node->size();
   idx = -1;
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   if (end < start + BUFFSIZE)
@@ -370,29 +370,19 @@ int32_t		VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildca
   int32_t		count;
   int32_t		hlen;
 
+  if (end > this->__node->size())
+    end = this->__node->size();
   if ((end != 0) && (end < start))
     throw std::string("VFile::count 'end' argument must be greater than 'start' argument");
   if (nlen == 0)
     {
       if (start == 0)
-	{
-	  if (end == 0)
-	    return (this->__node->size());
-	  else
-	    return (end + 1);
-	}
+	return (end + 1);
       else
-	{
-	  if (end == 0)
-	    return (this->__node->size() - start + 1);
-	  else
-	    return (end - start + 1);
-	}
+	return (end - start + 1);
     }
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   count = 0;
-  if (end == 0)
-    end = this->__node->size();
   totalread = this->seek(start);
   while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0))
     {
@@ -426,12 +416,12 @@ std::list<uint64_t>	VFile::indexes(unsigned char* needle, uint32_t nlen, unsigne
   uint64_t		totalread;
   int32_t		hlen;
 
+  if (end > this->__node->size())
+    end = this->__node->size();
   if ((end != 0) && (end < start))
     throw std::string("VFile::indexes 'end' argument must be greater than 'start' argument");
   if (nlen == 0)
     return indexes;
-  if (end == 0)
-    end = this->__node->size();
   totalread = this->seek(start);
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   event*	e = new event;

@@ -70,9 +70,9 @@ class ImageThumb():
      if node.size() > 6:
        try:
          file = node.open()
-         head = file.find("\xff\xd8\xff", 3, "", 3)
+         head = file.find("\xff\xd8\xff", "", 3)
          if head > 0 and head < node.size():
-           foot = file.find("\xff\xd9", 2, "", long(head))
+           foot = file.find("\xff\xd9", "", long(head))
            if foot > 0 and foot < node.size():
              file.seek(head)
              buff = file.read(foot + 2 - head)
@@ -291,7 +291,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     if role == Qt.DisplayRole :
       # return name, size and eventually module columns
       if column == HNAME:
-        return QVariant(QString.fromUtf8(node.absolute()))
+        return QVariant(QString.fromUtf8(node.name()))
       if column == HSIZE:
         return QVariant(node.size())
       if (self.disp_module != 0) and (column == HMODULE):
@@ -1271,10 +1271,15 @@ class TreeModel(QStandardItemModel, EventHandler):
     or is a directory).
 
     """
-    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+
     value = e.value
+    if value == None:
+      return
     node = value.value()
-    if node != None and (node.hasChildren() or node.isDir()):
+    if node == None:
+      return
+    self.emit(SIGNAL("layoutAboutToBeChanged()"))
+    if (node.hasChildren() or node.isDir()):
       if node.parent().name() == "/":
         item = QStandardItem(node.name())
         item.setData(long(node.this), Qt.UserRole + 1)

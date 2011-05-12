@@ -24,16 +24,14 @@ from api.vfs.vfs import vfs
 from api.events.libevents import EventHandler
 from api.types.libtypes import typeId
 from api.search.find import Filters
-from api.index.libindex import IndexSearch, Index
 from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch, FilterThread
 
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
 from ui.conf import Conf
 
-from ui.gui.widget.modif_index import ModifIndex
-
 try:
-  from api.index.libindex import *
+  from api.index.libindex import IndexSearch, Index
+  from ui.gui.widget.modif_index import ModifIndex
   IndexerFound = True
 except ImportError:
   IndexerFound = False
@@ -54,19 +52,22 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
     self.setupUi(self)
     self.model = model
     self.translation()
-    self.opt = ModifIndex(self, model)
+    if IndexerFound:
+      self.opt = ModifIndex(self, model)
     self.vfs = vfs()
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
-      self.notIndexed.linkActivated.connect(self.index_opt2)
-      self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
+      if IndexerFound:
+        self.notIndexed.linkActivated.connect(self.index_opt2)
+        self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
 
       self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
-      QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
-      QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
+      if IndexerFound:
+        QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
+        QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
       self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
 
