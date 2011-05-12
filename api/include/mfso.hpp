@@ -37,14 +37,14 @@
 class mfso: public fso
 {
 private:
-  std::map<Node*, class VFile*>			__origins;
+  std::map<fdinfo *, map <Node*, class VFile*> >			__origins;
   class VFile*					__vfile;
   std::list<class mfso*>			__children;
   class mfso					*__parent;
 
   bool						__verbose;
 
-  class VFile*					vfileFromNode(Node* n);
+  class VFile*					vfileFromNode(fdinfo* fi, Node* n);
   int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
 
 public:

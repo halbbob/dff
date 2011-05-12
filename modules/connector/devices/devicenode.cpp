@@ -24,3 +24,8 @@ DeviceNode::DeviceNode(std::string devname, uint64_t size, fso* fsobj,std::strin
     this->__name = devname;
   this->__devname = devname;
 }
+
+std::string DeviceNode::icon()
+{
+  return (":dev_hd.png");
+}

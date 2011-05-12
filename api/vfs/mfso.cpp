@@ -29,20 +29,35 @@ mfso::~mfso()
 {
 }
 
-VFile*		mfso::vfileFromNode(Node* n)
-{
-  std::map<Node*, class VFile*>::iterator	it;
-  VFile*					vfile;
+VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
+{//vfilefromnodeandfi ! attention delete le cache de fi quand y a un close !
+  std::map<fdinfo*, map<Node*,  class VFile* > >::iterator	fdit;
+  std::map<Node*, VFile* >::iterator						ndit;
+  VFile*	vfile = NULL;
 
-  it = this->__origins.find(n);
-  if (it != this->__origins.end())
-    return it->second;
-  else
-    {
-      vfile = n->open();
-      this->__origins[n] = vfile;
-      return vfile;
-    }    
+  fdit = this->__origins.find(fi);
+  if (fdit != this->__origins.end())
+  {
+    ndit = fdit->second.find(node);
+	if (ndit != fdit->second.end())
+	{
+		return ndit->second;   
+	}
+	else
+	{
+	  vfile = node->open();
+	  fdit->second[node] = vfile;
+	}
+
+  }
+  else 
+  {
+    map<Node*, VFile*> mnode = this->__origins[fi];
+	vfile = node->open();
+	mnode[node] = vfile; 
+	this->__origins[fi] = mnode;
+  }
+  return (vfile);
 }
 
 
@@ -124,7 +139,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 			    << " mapped @ " << hexlify(relativeoffset) << "-" << hexlify(relativeoffset + relativesize)
 			    << " in " << current->origin->absolute() << std::endl;
 		}
-	      vfile = this->vfileFromNode(current->origin);
+	      vfile = this->vfileFromNode(fi, current->origin);
 	      vfile->seek(relativeoffset);
 	      if ((currentread = vfile->read(((uint8_t*)buff)+totalread, relativesize)) == 0)
 		eof = true;
@@ -152,6 +167,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	  eof = true;
 	}
     }
+
   return totalread;
 }
 
@@ -218,11 +234,27 @@ int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 int32_t 	mfso::vclose(int32_t fd)
 {
   fdinfo*	fi;
+  std::map<fdinfo*, map<Node*,  class VFile* > >::iterator fdit;
+  std::map<Node*, VFile* >::iterator						ndit;
 
   try
     {
       fi = this->__fdmanager->get(fd);
+	  fdit = this->__origins.find(fi);
+	  if (fdit != this->__origins.end())
+	  {
+         ndit = fdit->second.begin();
+		 for (; ndit != fdit->second.end(); ndit++)
+		 {
+			ndit->second->close();
+			delete ndit->second;
+		 }
+		 fdit->second.clear();
+		 this->__origins.erase(fdit);
+	  }
+
       delete fi->fm;
+	  delete fi;
       this->__fdmanager->remove(fd);
     }
   catch (vfsError e)
