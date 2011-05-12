@@ -144,6 +144,7 @@ class NodeLinkTreeView(QTreeView):
     """
     self.nb_pop = 0
     index = self.indexAt(e.pos())
+    node = None
     if index.isValid():
 
       # getting node from index
