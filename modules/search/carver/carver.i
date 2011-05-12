@@ -23,6 +23,7 @@
 %include "windows.i"
 
 %{
+#include "attributesindexer.hpp"
 #include "variant.hpp"
 #include "vtime.hpp"
 #include "fso.hpp"
