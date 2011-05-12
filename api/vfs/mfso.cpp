@@ -30,33 +30,34 @@ mfso::~mfso()
 }
 
 VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
-{//vfilefromnodeandfi ! attention delete le cache de fi quand y a un close !
+{
   std::map<fdinfo*, map<Node*,  class VFile* > >::iterator	fdit;
-  std::map<Node*, VFile* >::iterator						ndit;
-  VFile*	vfile = NULL;
+  std::map<Node*, VFile* >::iterator				ndit;
+  VFile*							vfile = NULL;
 
   fdit = this->__origins.find(fi);
   if (fdit != this->__origins.end())
   {
-    ndit = fdit->second.find(node);
-	if (ndit != fdit->second.end())
-	{
-		return ndit->second;   
-	}
-	else
-	{
+     ndit = fdit->second.find(node);
+     if (ndit != fdit->second.end())
+     {
+ 	return ndit->second;   
+     }
+     else
+     {
 	  vfile = node->open();
 	  fdit->second[node] = vfile;
-	}
-
+     }
   }
   else 
   {
     map<Node*, VFile*> mnode = this->__origins[fi];
-	vfile = node->open();
-	mnode[node] = vfile; 
-	this->__origins[fi] = mnode;
+
+    vfile = node->open();
+    mnode[node] = vfile; 
+    this->__origins[fi] = mnode;
   }
+
   return (vfile);
 }
 
@@ -234,32 +235,33 @@ int32_t 	mfso::vwrite(int32_t fd, void *buff, unsigned int size)
 int32_t 	mfso::vclose(int32_t fd)
 {
   fdinfo*	fi;
-  std::map<fdinfo*, map<Node*,  class VFile* > >::iterator fdit;
-  std::map<Node*, VFile* >::iterator						ndit;
+  std::map<fdinfo*, map<Node*,  class VFile* > >::iterator 	fdit;
+  std::map<Node*, VFile* >::iterator				ndit;
 
   try
-    {
-      fi = this->__fdmanager->get(fd);
-	  fdit = this->__origins.find(fi);
-	  if (fdit != this->__origins.end())
-	  {
-         ndit = fdit->second.begin();
-		 for (; ndit != fdit->second.end(); ndit++)
-		 {
-			ndit->second->close();
-			delete ndit->second;
-		 }
-		 fdit->second.clear();
-		 this->__origins.erase(fdit);
-	  }
+  {
+     fi = this->__fdmanager->get(fd);
+     fdit = this->__origins.find(fi);
 
-      delete fi->fm;
-	  delete fi;
-      this->__fdmanager->remove(fd);
-    }
+     if (fdit != this->__origins.end())
+     {
+        ndit = fdit->second.begin();
+ 	for (; ndit != fdit->second.end(); ndit++)
+	{
+	  ndit->second->close();
+ 	  delete ndit->second;
+	}
+	fdit->second.clear();
+	this->__origins.erase(fdit);
+     }
+     delete fi->fm;
+     delete fi;
+     this->__fdmanager->remove(fd);
+  }
   catch (vfsError e)
-    {
-    }
+  {
+  }
+
   return 0;
 }
 
