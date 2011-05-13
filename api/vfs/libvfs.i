@@ -763,20 +763,21 @@ Open the node and return a pointer to a VFile instance
   delete $1;
 }
 
-/* %typecheck(SWIG_TYPECHECK_CHAR) unsigned char  */
-/* { */
-/*   $1 = (PyString_Check($input) && (PyString_Size($input) == 1)) ? 1 : 0; */
-/* } */
+%typecheck(SWIG_TYPECHECK_CHAR) unsigned char
+{
+  $1 = (((PyString_Check($input) && ((PyString_Size($input) == 1) || PyString_Size($input) == 0))) 
+	|| (PyInt_Check($input) && ((PyInt_AsLong($input) >= 0) && (PyInt_AsLong($input) <= 255)))) ? 1 : 0;
+}
 
-/* %typemap(in) (unsigned char wildcard) */
-/* { */
-/*   if (!PyString_Check($input) && (PyString_Size($input) > 1)) */
-/*     { */
-/*       PyErr_SetString(PyExc_ValueError, "Expecting a string"); */
-/*       return NULL; */
-/*     } */
-/*   $1 = (unsigned char) PyString_AsString($input)[0]; */
-/* } */
+%typemap(in) (unsigned char wildcard)
+{
+  if (!PyString_Check($input) || (PyString_Size($input) > 1))
+    {
+      PyErr_SetString(PyExc_ValueError, "Expecting a string");
+      return NULL;
+    }
+  $1 = (unsigned char) PyString_AsString($input)[0];
+}
 
 %ignore   VFile::find(unsigned char* needle, uint32_t nlen);
 %ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard);

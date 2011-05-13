@@ -70,9 +70,9 @@ class ImageThumb():
      if node.size() > 6:
        try:
          file = node.open()
-         head = file.find("\xff\xd8\xff", 3, "", 3)
+         head = file.find("\xff\xd8\xff", "", 3)
          if head > 0 and head < node.size():
-           foot = file.find("\xff\xd9", 2, "", long(head))
+           foot = file.find("\xff\xd9", "", long(head))
            if foot > 0 and foot < node.size():
              file.seek(head)
              buff = file.read(foot + 2 - head)

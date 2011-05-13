@@ -23,7 +23,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
 
 SET_SOURCE_FILES_PROPERTIES(libsearch.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(libsearch python libsearch.i search.cpp)
+SWIG_ADD_MODULE(libsearch python libsearch.i search.cpp boyer_moore.cpp)
 SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES})
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
