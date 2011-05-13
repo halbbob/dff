@@ -24,7 +24,7 @@ from api.vfs.vfs import vfs
 from api.events.libevents import EventHandler
 from api.types.libtypes import typeId
 from api.search.find import Filters
-from api.index.libindex import IndexSearch, Index
+#from api.index.libindex import IndexSearch, Index
 from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch, FilterThread
 
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox

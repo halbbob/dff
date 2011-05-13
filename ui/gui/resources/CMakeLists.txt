@@ -37,6 +37,7 @@ set(ui_resources_files
   varianttreewidget.ui
   search.ui
   search_date.ui
+  search_dict.ui
   search_empty.ui
   search_size.ui
   SearchStr.ui
@@ -81,6 +82,7 @@ set(resources_srcs
   ui_varianttreewidget.py
   ui_search.py
   ui_search_date.py
+  ui_search_dict.py
   ui_search_empty.py
   ui_search_size.py
   ui_SearchStr.py

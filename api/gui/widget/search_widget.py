@@ -15,8 +15,8 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QInputDialog, QIcon
-from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QInputDialog, QIcon, QFileDialog, QErrorMessage, QListWidget
+from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList
 
 from api.events.libevents import EventHandler, event
 from api.search.find import Filters
@@ -32,6 +32,7 @@ from ui.gui.resources.ui_search_size import Ui_SearchSize
 from ui.gui.resources.ui_search_empty import Ui_SearchEmpty
 from ui.gui.resources.ui_search_date import Ui_SearchDate
 from ui.gui.resources.ui_SearchStr import Ui_SearchStr
+from ui.gui.resources.ui_search_dict import Ui_SearchDict
 
 class FilterThread(QThread):
   def __init__(self, parent=None):
@@ -39,7 +40,6 @@ class FilterThread(QThread):
     self.__parent = parent
     self.filters = Filters()
     self.model = None
-
 
   def setContext(self, clauses, rootnode, model=None):
     if model:
@@ -52,13 +52,11 @@ class FilterThread(QThread):
     self.filters.setRootNode(rootnode)
     self.filters.compile(clauses)
 
-
   def run(self):
     self.emit(SIGNAL("started"))
     matches = self.filters.process()
     self.emit(SIGNAL("finished"))
     self.model = None
-
 
   def quit(self):
     e = event()
@@ -106,6 +104,54 @@ class SearchStr(Ui_SearchStr, QWidget):
       search += ")"
     return str(search)
 
+class SearchDict(QWidget, Ui_SearchDict):
+  def __init__(self, parent = None):
+    super(QWidget, self).__init__()
+    self.setupUi(self)
+    self.translation()
+    self.word_list = []
+    self.listWord.hide()
+
+    self.field = "dict"
+
+    QtCore.QObject.connect(self.openDict, SIGNAL("clicked(bool)"), self.open_dict)
+
+  def open_dict(self, changed):
+    """
+    Open a dialog box where the user can chose wich file to load.
+    """
+    dialog = QFileDialog()
+    ret = dialog.exec_()
+
+    # if the user validate its choice
+    if ret:
+      # get te path and set it in the line edit
+      path = dialog.selectedFiles()[0]
+      self.pathToDict.setText(path)
+      dict_file = QFile(path)
+      opened = dict_file.open(QIODevice.ReadOnly)
+      if not opened:
+        print "cannot open file"  
+        return
+      buf = dict_file.readLine()
+      if len(buf):
+        self.word_list.append(str(buf).rstrip('\n'))
+        self.listWord.addItem(str(buf).rstrip('\n'))
+      while buf != "":
+        buf = ""
+        buf = dict_file.readLine()
+        if len(buf):
+          self.word_list.append(str(buf).rstrip('\n'))
+          self.listWord.addItem(str(buf).rstrip('\n'))
+      self.listWord.show()
+      dict_file.close()
+
+  def text(self):
+    return self.word_list
+
+  def translation(self):
+    self.errTr = "Cannot read the file."
+
 class SearchD(QWidget, Ui_SearchDate):
   def __init__(self, parent = None):
     super(QWidget, self).__init__()
@@ -152,8 +198,6 @@ class SearchS(QWidget, Ui_SearchSize):
     else:
       prefix += " >= "
 
-    print "unit : " + str(self.unit.currentText())
-
     if self.unit.currentText() == self.kiloTr:
       return prefix + str(self.size.value() * 1024)
     if self.unit.currentText() == self.megaTr:
@@ -183,8 +227,8 @@ class OptWidget(QWidget):
                        typeId.UInt64: SearchS,
                        typeId.String: SearchStr,
                        typeId.CArray: SearchStr,
-                       typeId.Node: SearchStr,
-                       typeId.Path: SearchStr,
+                       typeId.Node: SearchDict,
+                       typeId.Path: SearchDict,
                        typeId.VTime: SearchD,
 
                        # MEGALOL - NEED TO BE CHANGED
@@ -197,8 +241,8 @@ class OptWidget(QWidget):
                        typeId.UInt64 + 100: SearchS,
                        typeId.String + 100: SearchStr,
                        typeId.CArray + 100: SearchStr,
-                       typeId.Node + 100: SearchStr,
-                       typeId.Path + 100: SearchStr,
+                       typeId.Node + 100: SearchDict,
+                       typeId.Path + 100: SearchDict,
                        typeId.VTime + 100: SearchD}
 
     self.parent = parent
@@ -283,6 +327,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.optionList.addItem(self.sizeMaxTr, QVariant(typeId.UInt64 + 100))
     self.optionList.addItem(self.dateMaxTr, QVariant(typeId.VTime + 100))
     self.optionList.addItem(self.dateMinTr, QVariant(typeId.VTime))
+    self.optionList.addItem(self.fromDictTr, QVariant(typeId.Path))
 
     self.typeName.addItem("Fixed string", QVariant("f"))
     self.typeName.addItem("Wildcard", QVariant("w"))
@@ -404,9 +449,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       try:
         if len(clause[widget.edit.field]):
           clause[widget.edit.field] += widget.edit.operator()
+          clause[widget.edit.field] += (widget.edit.text())
       except KeyError:
-        clause[widget.edit.field] = ""
-      clause[widget.edit.field] += (widget.edit.text())
+        clause[widget.edit.field] = (widget.edit.text())
     self.filterThread.setContext(clause, self.vfs.getnode(str(self.path.text())))
     self.searchBar.show()
     self.launchSearchButton.hide()
@@ -449,6 +494,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.optionList.removeItem(self.optionList.currentIndex())
 
     widget.label.setText(text)
+    #widget.label.setAlignment(Qt.AlignTop)
     widget.id = len(self.addedOpt)
     self.advancedOptions.addWidget(widget)
     self.addedOpt.append(widget)
@@ -459,6 +505,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def translation(self):
     self.textTr = self.tr("Contains")
     self.notNameTr = self.tr("Name does not contain")
+    self.fromDictTr = self.tr("From dictionnary")
     self.notContains = self.tr("Does not contain")
     self.sizeMinTr = self.tr("Size at least")
     self.sizeMaxTr = self.tr("Size at most")
