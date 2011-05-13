@@ -266,6 +266,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
       selectedBookName = selectedCategory
       selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName.toUtf8()))
+
       for (pnode, state) in self.parent.model.checkedNodes:
         p = self.VFS.getNodeFromPointer(pnode)
         n = VLink(p, selectedBookmark)

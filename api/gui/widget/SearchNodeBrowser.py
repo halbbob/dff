@@ -257,7 +257,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      self.submenuRelevant = self.submenuFile.addMenu(self.actionRelevant_module.icon(), self.actionRelevant_module.text())
      self.menu = {}
      self.menuModule = self.submenuFile.addMenu(self.actionOpen_with.icon(), self.actionOpen_with.text())
-     self.menuTags = MenuTags(self, self.parent, self.currentNodes)
+     self.menuTags = MenuTags(self,     self.parent.parent.parent.parent, self.currentNodes)
      self.submenuFile.addSeparator()
      self.submenuFile.addAction(self.actionHex_viewer)
      self.connect(self.actionHex_viewer, SIGNAL("triggered()"), self.launchHexedit)
