@@ -80,6 +80,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
     self.tableActivated()
+    self.translation()
 
 
   def completerChanged(self):
@@ -258,6 +259,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.nextdrop.setEnabled(False)
 
   def bookmark(self):
+    if len(self.parent.model.checkedNodes) == 0:
+      QMessageBox.warning(self, "Bookmark", self.bookmarkWarningMessage, QMessageBox.Ok)
+      return
     bookdiag = bookmarkDialog(self)
     iReturn = bookdiag.exec_()
     if iReturn == 1:
@@ -268,7 +272,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       except ValueError:
         if not self.createCategory(selectedCategory):
           return
-
       selectedBookName = selectedCategory
       selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName.toUtf8()))
       for (pnode, state) in self.parent.model.checkedNodes:
@@ -345,6 +348,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     else:
       return False
 
+  def translation(self):
+    self.bookmarkWarningMessage = self.tr("You must specify at least one node")
+
   def changeEvent(self, event):
     """ Search for a language change event
     
@@ -353,6 +359,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     """
     if event.type() == QEvent.LanguageChange:
       self.retranslateUi(self)
+      self.translation()
     else:
       QWidget.changeEvent(self, event)
 
