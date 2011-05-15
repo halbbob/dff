@@ -33,11 +33,10 @@
 
 typedef struct
 {
-  class FileMapping*		fm;
   Node*				node;
   class Variant*		id;
   uint64_t			offset;
-  VFile*				file;
+  VFile*			file;
 }				fdinfo;
 
 class FdManager

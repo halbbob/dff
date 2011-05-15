@@ -37,18 +37,20 @@
 class mfso: public fso
 {
 private:
-  std::map<fdinfo *, map <Node*, class VFile*> >			__origins;
-  class VFile*					__vfile;
-  std::list<class mfso*>			__children;
-  class mfso					*__parent;
-
-  bool						__verbose;
-
-  class VFile*					vfileFromNode(fdinfo* fi, Node* n);
-  int32_t					readFromMapping(fdinfo* fi, void* buff, uint32_t size);
-
+  uint64_t						__cacheHits;
+  uint32_t						__cacheSize;
+  FileMapping**						__cacheSlot;
+  bool							__verbose;
+  std::map<fdinfo *, map <Node*, class VFile*> >	__origins;
+  class VFile*						__vfile;
+  std::list<class mfso*>				__children;
+  class mfso*						__parent;
+  class VFile*						vfileFromNode(fdinfo* fi, Node* n);
+  int32_t						readFromMapping(fdinfo* fi, void* buff, uint32_t size);
+  std::map< Node*, FileMapping* >			__fmCache;
+  FileMapping*						mapFile(Node* node);
 public:
-  FdManager*					__fdmanager;
+  FdManager*						__fdmanager;
   EXPORT mfso(std::string name);
   EXPORT virtual ~mfso();
   EXPORT virtual void		start(std::map<std::string, Variant*> args) = 0;
@@ -59,10 +61,9 @@ public:
   EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence);
   EXPORT virtual uint32_t	status(void);
   EXPORT virtual uint64_t	vtell(int32_t fd);
-
-
   EXPORT virtual void		setVerbose(bool verbose);
   EXPORT virtual bool		verbose();
+  EXPORT int32_t 		allocCache(uint32_t cacheSize);	
 };
 
 #endif

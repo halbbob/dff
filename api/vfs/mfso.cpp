@@ -18,15 +18,80 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <pthread.h>
+
+pthread_mutex_t map_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 mfso::mfso(std::string name): fso(name)
 {
   this->__fdmanager = new FdManager();
   this->__verbose = false;
+  this->__cacheHits = 0;
+  allocCache(20); 
 }
 
 mfso::~mfso()
 {
+}
+
+int32_t	mfso::allocCache(uint32_t cacheSize)
+{
+  this->__cacheSize = cacheSize;
+  this->__cacheSlot = (FileMapping**)malloc(sizeof(FileMapping *) *cacheSize); 
+  memset(this->__cacheSlot, 0, sizeof(FileMapping*) * cacheSize);
+
+  return (1);
+}
+
+FileMapping*		mfso::mapFile(Node* node)
+{
+  FileMapping*	fm;
+  uint32_t	i;
+
+  for (i = 0; i < this->__cacheSize; i++)
+  {
+     if (this->__cacheSlot[i] != NULL)
+     {
+       if (node == this->__cacheSlot[i]->node())
+       {
+	  this->__cacheSlot[i]->setCacheHits(this->__cacheHits++);
+	  return (this->__cacheSlot[i]);
+       }
+     }
+  }
+ 
+  for (i = 0; i < this->__cacheSize; i++)
+  {
+     if (this->__cacheSlot[i] == NULL)
+     {
+	fm = new FileMapping(node);
+        node->fileMapping(fm);
+	this->__cacheSlot[i] = fm;
+	fm->setCacheHits(this->__cacheHits++);
+	return (fm);
+     }
+  }
+
+  uint64_t  oldest = (this->__cacheSlot[0])->cacheHits(); 
+  int32_t   oldestIt = 0;
+  for (i = 1; i < this->__cacheSize; i++)
+  {
+     if (this->__cacheSlot[i] != NULL)
+     {
+       if ((this->__cacheSlot[i])->cacheHits() < oldest)
+       {
+          oldest = (this->__cacheSlot[i])->cacheHits();
+	  oldestIt = i;
+       }
+     }
+  }
+  delete (this->__cacheSlot[oldestIt]);
+  this->__cacheSlot[oldestIt] = NULL;
+  fm = new FileMapping(node);
+  node->fileMapping(fm);
+  this->__cacheSlot[oldestIt] = fm;
+  fm->setCacheHits(this->__cacheHits++);
+  return (fm);
 }
 
 VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
@@ -41,21 +106,24 @@ VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
      ndit = fdit->second.find(node);
      if (ndit != fdit->second.end())
      {
- 	return ndit->second;   
+        return ndit->second;   
      }
      else
      {
-	  vfile = node->open();
-	  fdit->second[node] = vfile;
+        vfile = node->open();
+	pthread_mutex_lock(&map_mutex);
+ 	fdit->second[node] = vfile;
+        pthread_mutex_unlock(&map_mutex);
      }
   }
   else 
   {
-    map<Node*, VFile*> mnode = this->__origins[fi];
-
-    vfile = node->open();
-    mnode[node] = vfile; 
-    this->__origins[fi] = mnode;
+     map<Node*, VFile*> mnode;
+     vfile = node->open();
+     pthread_mutex_lock(&map_mutex);
+     mnode[node] = vfile; 
+     this->__origins[fi] = mnode;
+     pthread_mutex_unlock(&map_mutex);
   }
 
   return (vfile);
@@ -64,7 +132,6 @@ VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
 
 int32_t 	mfso::vopen(Node *node)
 {
-  FileMapping		*fm;
   fdinfo*		fi;
   int32_t		fd;
 
@@ -73,11 +140,8 @@ int32_t 	mfso::vopen(Node *node)
       try
 	{
 	  fi = new fdinfo;
-          fm = new FileMapping;
-	  node->fileMapping(fm);
 	  fi->offset = 0;
 	  fi->node = node;
-	  fi->fm = fm;
 	  fd = this->__fdmanager->push(fi);
 	  return fd;
 	}
@@ -125,7 +189,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
     {
       try
 	{
-	  current = fi->fm->chunckFromOffset(fi->offset);
+	  current = this->mapFile(fi->node)->chunckFromOffset(fi->offset);
 	  relativeoffset = current->originoffset + (fi->offset - current->offset);
 	  if ((size - totalread) < (current->offset + current->size - fi->offset))
 	    relativesize = size - totalread;
@@ -182,9 +246,9 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
   try
     {
       fi = this->__fdmanager->get(fd);
-      if ((fi->node != NULL) && (fi->fm != NULL))
+      if ((fi->node != NULL) && (this->mapFile(fi->node) != NULL))
 	{
-	  if (fi->node->size() <= fi->fm->mappedFileSize())
+	  if (fi->node->size() <= this->mapFile(fi->node)->mappedFileSize())
 	    {
 	      if (size <= (fi->node->size() - fi->offset))
 		realsize = size;
@@ -193,10 +257,10 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
 	    }
 	  else
 	    {
-	      if (size <= (fi->fm->mappedFileSize() - fi->offset))
+	      if (size <= (this->mapFile(fi->node)->mappedFileSize() - fi->offset))
 		realsize = size;
 	      else
-		realsize = fi->fm->mappedFileSize() - fi->offset;
+		realsize = this->mapFile(fi->node)->mappedFileSize() - fi->offset;
 	    }
 	  bytesread = this->readFromMapping(fi, buff, realsize);
 	  return bytesread;
@@ -251,10 +315,11 @@ int32_t 	mfso::vclose(int32_t fd)
 	  ndit->second->close();
  	  delete ndit->second;
 	}
+	pthread_mutex_lock(&map_mutex);
 	fdit->second.clear();
 	this->__origins.erase(fdit);
+	pthread_mutex_unlock(&map_mutex);
      }
-     delete fi->fm;
      this->__fdmanager->remove(fd);
   }
   catch (vfsError e)
@@ -274,19 +339,19 @@ uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int32_t whence)
       switch (whence)
 	{
 	case 0:
-	  if (offset > fi->fm->mappedFileSize())
+	  if (offset > this->mapFile(fi->node)->mappedFileSize())
 	    return (uint64_t)-1;
 	  else
 	    fi->offset = offset;
 	  break;
 	case 1:
-	  if ((fi->offset + offset) > fi->fm->mappedFileSize())
+	  if ((fi->offset + offset) > this->mapFile(fi->node)->mappedFileSize())
 	    return (uint64_t)-1;
 	  else
 	    fi->offset += offset;
 	  break;
 	case 2:
-	  fi->offset = fi->fm->mappedFileSize();
+	  fi->offset = this->mapFile(fi->node)->mappedFileSize();
 	  break;
 	}
       return fi->offset;
