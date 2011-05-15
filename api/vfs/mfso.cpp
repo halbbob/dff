@@ -253,7 +253,8 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
       fi = this->__fdmanager->get(fd);
       if ((fi->node != NULL) && (this->mapFile(fi->node) != NULL))
 	{
-	  if (fi->node->size() <= this->mapFile(fi->node)->mappedFileSize())
+	  uint64_t fileSize = this->mapFile(fi->node)->mappedFileSize();
+	  if (fi->node->size() <= fileSize)
 	    {
 	      if (size <= (fi->node->size() - fi->offset))
 		realsize = size;
@@ -262,10 +263,10 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
 	    }
 	  else
 	    {
-	      if (size <= (this->mapFile(fi->node)->mappedFileSize() - fi->offset))
+	      if (size <= (fileSize - fi->offset))
 		realsize = size;
 	      else
-		realsize = this->mapFile(fi->node)->mappedFileSize() - fi->offset;
+		realsize = fileSize - fi->offset;
 	    }
 	  bytesread = this->readFromMapping(fi, buff, realsize);
 	  return bytesread;
