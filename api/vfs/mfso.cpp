@@ -85,7 +85,12 @@ FileMapping*		mfso::mapFile(Node* node)
        }
      }
   }
-  delete (this->__cacheSlot[oldestIt]);
+  if (this->__cacheSlot[oldestIt] != NULL)
+  {
+     fm = this->__cacheSlot[oldestIt];
+     this->__cacheSlot[oldestIt] = NULL;
+     delete fm;
+  }
   this->__cacheSlot[oldestIt] = NULL;
   fm = new FileMapping(node);
   node->fileMapping(fm);
