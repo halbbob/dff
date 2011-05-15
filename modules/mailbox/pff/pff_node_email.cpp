@@ -45,7 +45,7 @@ fdinfo* PffNodeEMail::vopen(void)
    if (buff == NULL)
      return (NULL);
 
-   fi->fm = (FileMapping*) (buff);
+   fi->id = new Variant((void*)buff);
    fi->node = this;
    fi->offset = 0;
 
@@ -56,7 +56,7 @@ int32_t  PffNodeEMail::vread(fdinfo* fi, void *buff, unsigned int size)
 {
   uint8_t*	rbuff;
  
-  rbuff = (uint8_t*)fi->fm;
+  rbuff = (uint8_t*)fi->id->value<void* >();
 
   if (fi->offset > this->size())
   {
@@ -102,7 +102,7 @@ int32_t PffNodeEMail::vclose(fdinfo *fi)
 {
   uint8_t*	rbuff;
 
-  rbuff = (uint8_t*)fi->fm;
+  rbuff = (uint8_t*)fi->id->value<void* >();
   delete rbuff;
 
   return (0);
