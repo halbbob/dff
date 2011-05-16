@@ -728,7 +728,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../api/gui/box/nodeviewbox.py" line="354"/>
         <source>You must specify at least one node.</source>
-        <translation type="unfinished"></translation>
+        <translation>Debe especificar al menos un nodo.</translation>
     </message>
 </context>
 <context>
