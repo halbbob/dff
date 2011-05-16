@@ -15,12 +15,12 @@
  */
 
 #include "mfso.hpp"
+#include "threading.hpp"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-#include <pthread.h>
 
-pthread_mutex_t map_mutex = PTHREAD_MUTEX_INITIALIZER;
+mutex_init(map_mutex)
 
 mfso::mfso(std::string name): fso(name)
 {
@@ -116,19 +116,19 @@ VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
      else
      {
         vfile = node->open();
-	pthread_mutex_lock(&map_mutex);
+	mutex_lock(&map_mutex);
  	fdit->second[node] = vfile;
-        pthread_mutex_unlock(&map_mutex);
+        mutex_unlock(&map_mutex);
      }
   }
   else 
   {
      map<Node*, VFile*> mnode;
      vfile = node->open();
-     pthread_mutex_lock(&map_mutex);
+     mutex_lock(&map_mutex);
      mnode[node] = vfile; 
      this->__origins[fi] = mnode;
-     pthread_mutex_unlock(&map_mutex);
+     mutex_unlock(&map_mutex);
   }
 
   return (vfile);
@@ -321,10 +321,10 @@ int32_t 	mfso::vclose(int32_t fd)
 	  ndit->second->close();
  	  delete ndit->second;
 	}
-	pthread_mutex_lock(&map_mutex);
+	mutex_lock(&map_mutex);
 	fdit->second.clear();
 	this->__origins.erase(fdit);
-	pthread_mutex_unlock(&map_mutex);
+	mutex_unlock(&map_mutex);
      }
      this->__fdmanager->remove(fd);
   }
