@@ -151,7 +151,6 @@ void	Index::__indexContent(Node * data, lucene::document::Field * content)
   TCHAR		tmp[8193];
   lucene::util::StringBuffer	str;
   unsigned int	nb_read = 0, tot_read = 0;
-  TCHAR *	tbuff;
 
   str.reserve(data->size() + 1);
   vf = data->open();

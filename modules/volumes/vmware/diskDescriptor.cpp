@@ -205,7 +205,7 @@ char*	diskDescriptor::getLinesDiskDescriptor(char *descData)
 	  pTmp++;
 	}
     }
-  return (""); //? XXX FIX ME !
+  return ((char*)""); //? XXX FIX ME !
 }
 
 
