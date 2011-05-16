@@ -12,7 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-
-#add_subdirectory (pff)
-
-install_file(mailbox ${mailbox_srcs})
+if(PFF_MAIN_LIBRARY AND PFF_BFIO_LIBRARY)
+  add_subdirectory (pff)
+endif(PFF_MAIN_LIBRARY AND PFF_BFIO_LIBRARY)
