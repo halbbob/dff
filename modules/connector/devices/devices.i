@@ -35,11 +35,6 @@
 
 %include "devices.hpp"
 
-namespace std
-{
-  %template(ListString)         list<string>;
-};
-
 %pythoncode
 %{
 
