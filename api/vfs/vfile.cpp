@@ -243,7 +243,7 @@ list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_
     {
       if (window != (uint64_t)-1)
 	{
-	  if (window < bytes_read)
+	  if (window < (uint64_t)bytes_read)
 	    {
 	      hslen = window;
 	      stop = true;
