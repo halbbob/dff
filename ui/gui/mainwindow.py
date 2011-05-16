@@ -169,7 +169,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.addDockWidgets(NodeBrowser(self), 'nodeBrowser')
         else:
             nb = NodeBrowser(self)
-            nb.model.setRootPath(nb.vfs.getnode(rootpath))
+            nb.model.setRootPath(nb.vfs.getnode(rootpath.absolute()))
             self.addDockWidgets(nb, 'nodeBrowser')
 
     def addHelpWidget(self):
