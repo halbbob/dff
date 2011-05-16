@@ -33,6 +33,7 @@
 #include "fso.hpp"
 #include "fdmanager.hpp"
 #include "vfile.hpp"
+#include "threading.hpp"
 
 class mfso: public fso
 {

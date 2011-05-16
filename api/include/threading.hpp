@@ -20,12 +20,14 @@
 #ifdef WIN32
   #define mutex_lock EnterCriticalSection
   #define mutex_unlock LeaveCriticalSection
-  #define mutex_init(var)  CRITICAL_SECTION var;
+  #define mutex_def(var)	   CRITICAL_SECTION var;
+  #define mutex_init(var)  InitializeCriticalSection(var);
 #else
   #include <pthread.h>
   #define mutex_lock pthread_mutex_lock
   #define mutex_unlock pthread_mutex_unlock
-  #define mutex_init(var) pthread_mutex_t var = PTHREAD_MUTEX_INITIALIZER;
+  #define mutex_def(var)	   pthread_mutex_t var = PTHREAD_MUTEX_INITIALIZER;	
+  #define mutex_init(var)		
 #endif
 
 #endif
