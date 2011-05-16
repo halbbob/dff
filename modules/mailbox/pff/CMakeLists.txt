@@ -41,7 +41,7 @@ set(pff_srcs
 
 SET_SOURCE_FILES_PROPERTIES(pff.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(PFF python pff.i ${pff_srcs})
-SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs pff)
+SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${PFF_MAIN_LIBRARY} ${PFF_BFIO_LIBRARY})
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_PFF_REAL_NAME} PROPERTIES
