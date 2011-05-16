@@ -351,7 +351,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       return False
 
   def translation(self):
-    self.bookmarkWarningMessage = self.tr("You must specify at least one node")
+    self.bookmarkWarningMessage = self.tr("You must specify at least one node.")
 
   def changeEvent(self, event):
     """ Search for a language change event
