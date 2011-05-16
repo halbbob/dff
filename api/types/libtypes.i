@@ -11,8 +11,8 @@
  * and IRC channels for your use.
  * 
  * Author(s):
- *  Solal J. <sja@digital-forensic.org>
  *  Frederic Baguelin <fba@digital-forensic.org>
+ *  Solal J. <sja@digital-forensic.org>
  */
 
 %module(package="api.types") libtypes
@@ -382,30 +382,27 @@
     if ((arg != NULL) && (obj != NULL))
       {
         if ((arg->parametersType() == Parameter::NotEditable) && (!Config_matchNotEditable(self, arg->parameters(), obj)))
-        {
-          SWIG_PYTHON_THREAD_END_BLOCK;
-          throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
-        }
-        if ((v = new_Variant__SWIG_18(obj, arg->type())))
+	  {
+	    SWIG_PYTHON_THREAD_END_BLOCK;
+	    throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
+	  }
+        if ((v = new_Variant__SWIG_18(obj, arg->type())) == NULL)
           {
-            if (v == NULL)
-            {
-              SWIG_PYTHON_THREAD_END_BLOCK;
-              throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
-            }
-            else if ((v->type() == typeId::String) && (v->toString().empty()))
-              {
-                delete v;
-                SWIG_PYTHON_THREAD_END_BLOCK;
-                throw(std::string("Argument < " + arg->name() + " >\nprovided string cannot be empty"));    
-              }
-          }
+	    SWIG_PYTHON_THREAD_END_BLOCK;
+	    throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
+	  }
+	if ((v->type() == typeId::String) && (v->toString().empty()))
+	  {
+	    delete v;
+	    SWIG_PYTHON_THREAD_END_BLOCK;
+	    throw(std::string("Argument < " + arg->name() + " >\nprovided string cannot be empty"));    
+	  }
       }
     else
-    {
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      throw(std::string("values provided to generateSingleInput are not valid"));
-    }
+      {
+	SWIG_PYTHON_THREAD_END_BLOCK;
+	throw(std::string("values provided to generateSingleInput are not valid"));
+      }
     SWIG_PYTHON_THREAD_END_BLOCK;
     return v;
   }
@@ -754,7 +751,7 @@
     if (PyDict_Check(obj))
       {
         //printf("std::map<std::string, Variant*>::operator==(PyObject* obj) ---> obj == PyDict\n");
-        if (self->size() == PyDict_Size(obj))
+        if (self->size() == (unsigned int)PyDict_Size(obj))
           {
             std::map<std::string, Variant *>::const_iterator it;
             PyObject *value;
@@ -793,7 +790,10 @@
           {
             arg1 = reinterpret_cast< std::map<std::string, Variant * > * >(argp1);
             if (arg1->size() != self->size())
-              return false;
+	      {
+		SWIG_PYTHON_THREAD_END_BLOCK;
+		return false;
+	      }
             else
               {
                 std::map<std::string, Variant* >::iterator smit;
@@ -818,9 +818,12 @@
         }
       }
     else
-      SWIG_PYTHON_THREAD_END_BLOCK;
-      return false;
-  SWIG_PYTHON_THREAD_END_BLOCK;
+      {
+	SWIG_PYTHON_THREAD_END_BLOCK;
+	return false;
+      }
+    SWIG_PYTHON_THREAD_END_BLOCK;
+    return false;
   }
 };
 
@@ -833,7 +836,7 @@
     if (PyList_Check(obj))
       {
         //printf("std::list<Variant*>::operator==(PyObject* obj) ---> obj == PyList\n");
-        if (self->size() == PyList_Size(obj))
+        if (self->size() == (unsigned int) PyList_Size(obj))
           {
             std::list<Variant *>::const_iterator it;
             int i;
@@ -896,6 +899,7 @@
       return false;
     }
     SWIG_PYTHON_THREAD_END_BLOCK;
+    return false;
   }
 };
 
@@ -1136,9 +1140,9 @@
         {
           Py_ssize_t            size = PyList_Size(obj);
           Py_ssize_t            it;
-          PyObject*             item;
+          PyObject*             item = NULL;
           std::list<Variant *>  vlist;
-          Variant*              vitem;
+          Variant*              vitem = NULL;
           bool                  lbreak = false;
 
           for (it = 0; it != size; it++)
@@ -1164,17 +1168,13 @@
           SWIG_PYTHON_THREAD_END_BLOCK;
           throw(std::string("Cannot create Variant, Provided PyObject and requested type are not compatible"));
         }
-      else
-      {
-        SWIG_PYTHON_THREAD_END_BLOCK;
-        return v;
-      }
       SWIG_PYTHON_THREAD_END_BLOCK;
+      return v;
     }
 
   bool  operator==(PyObject* obj)
   {
-    Variant*    v;
+    Variant*    v = NULL;
     uint8_t     type;
 
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
