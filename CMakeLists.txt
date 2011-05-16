@@ -221,6 +221,21 @@ if (ENABLE_INDEXER)
    endif(CLUCENE_CONFIG_INCLUDE_PATH)
 endif(ENABLE_INDEXER)
 
+## LibPFF check for PFF module
+# Need libbfio separate installation for DFF to be able to use PFF.
+find_library(PFF_MAIN_LIBRARY NAMES pff)
+if(PFF_MAIN_LIBRARY)
+  message(STATUS "PFF library found: ${PFF_MAIN_LIBRARY}")
+  find_library(PFF_BFIO_LIBRARY NAMES bfio)
+  if(PFF_BFIO_LIBRARY)
+    message(STATUS "Separate PFF bfio library found: ${PFF_BFIO_LIBRARY}")
+  else(PFF_BFIO_LIBRARY)
+    message(STATUS "Separate PFF bfio library not found, unable to use PFF library, PFF module will not be build.")
+  endif(PFF_BFIO_LIBRARY)
+else(PFF_MAIN_LIBRARY)
+  message(STATUS "PFF library not found, PFF module will not be build.")
+endif(PFF_MAIN_LIBRARY)
+
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})
 # Install prefix used by Python installer.
