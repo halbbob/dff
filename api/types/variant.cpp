@@ -699,13 +699,13 @@ char	Variant::toChar() throw (std::string)
       err << "value [ " << this->__data.us;
 
   else if (this->_type == typeId::UInt32)
-    if ((this->__data.ui >= INT8_MIN) && (this->__data.ui <= INT8_MAX))
+    if (this->__data.ui <= INT8_MAX)
       res = static_cast<char>(this->__data.ui);
     else
       err << "value [ " << this->__data.ui;
 
   else if (this->_type == typeId::UInt64)
-    if ((this->__data.ull >= INT8_MIN) && (this->__data.ull <= INT8_MAX))
+    if(this->__data.ull <= INT8_MAX)
       res = static_cast<char>(this->__data.ull);
     else
       err << "value [ " << this->__data.ull;
@@ -939,6 +939,7 @@ bool	Variant::operator>(Variant* v)
       else
 	return true;
     }
+  return false;
 }
 
 bool	Variant::operator>=(Variant* v)
