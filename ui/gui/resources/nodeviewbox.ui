@@ -1,20 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-DFF - An Open Source Digital Forensics Framework
-Copyright (C) 2011 ArxSys
-
-This program is free software, distributed under the terms of
-the GNU General Public License Version 2. See the LICENSE file
-at the top of the source tree.
-
-See http://www.digital-forensic.org for more information about this
-project. Please do not directly contact any of the maintainers of
-DFF for assistance; the project provides a web site, mailing lists
-and IRC channels for your use.
-
-Author(s):
-Christophe Malinge cma@digital-forensic.org
--->
 <ui version="4.0">
  <class>NodeViewBox</class>
  <widget class="QWidget" name="NodeViewBox">
@@ -216,22 +200,25 @@ Christophe Malinge cma@digital-forensic.org
         <normaloff>:/view_icon.png</normaloff>:/view_icon.png</iconset>
       </property>
      </item>
-     <item>
-      <property name="text">
-       <string>Tree</string>
-      </property>
-      <property name="icon">
-       <iconset resource="gui.qrc">
-        <normaloff>:/view_choose.png</normaloff>:/view_choose.png</iconset>
-      </property>
-     </item>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="attrSelect">
+    <widget class="QPushButton" name="imagethumb">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="contextMenuPolicy">
+      <enum>Qt::NoContextMenu</enum>
+     </property>
+     <property name="toolTip">
+      <string>Activate thumbnails</string>
+     </property>
      <property name="icon">
       <iconset resource="gui.qrc">
-       <normaloff>:/list.png</normaloff>:/list.png</iconset>
+       <normaloff>:/image.png</normaloff>:/image.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -241,13 +228,6 @@ Christophe Malinge cma@digital-forensic.org
      </property>
      <property name="flat">
       <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="checkboxAttribute">
-     <property name="text">
-      <string>Attributes</string>
      </property>
     </widget>
    </item>
@@ -279,6 +259,9 @@ Christophe Malinge cma@digital-forensic.org
    </item>
    <item>
     <widget class="QPushButton" name="search">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="maximumSize">
       <size>
        <width>32</width>
@@ -304,22 +287,10 @@ Christophe Malinge cma@digital-forensic.org
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="imagethumb">
-     <property name="maximumSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="contextMenuPolicy">
-      <enum>Qt::NoContextMenu</enum>
-     </property>
-     <property name="toolTip">
-      <string>Activate thumbnails</string>
-     </property>
+    <widget class="QPushButton" name="attrSelect">
      <property name="icon">
       <iconset resource="gui.qrc">
-       <normaloff>:/image.png</normaloff>:/image.png</iconset>
+       <normaloff>:/list.png</normaloff>:/list.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -329,6 +300,13 @@ Christophe Malinge cma@digital-forensic.org
      </property>
      <property name="flat">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkboxAttribute">
+     <property name="text">
+      <string>Attributes</string>
      </property>
     </widget>
    </item>
