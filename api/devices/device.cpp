@@ -26,17 +26,17 @@ Device::~Device()
 
 wchar_t*	Device::blockDevice(void)
 {
-  return (L"Not available");
+  return ((wchar_t*)L"Not available");
 }
 
 wchar_t*	 Device::serialNumber(void)
 {
-  return (L"Not available");
+  return ((wchar_t*)L"Not available");
 }
 
 wchar_t*	Device::model(void)
 {
-  return (L"Not available");
+  return ((wchar_t*)L"Not available");
 }
 
 uint64_t	Device::size(void)

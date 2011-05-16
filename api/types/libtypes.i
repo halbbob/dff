@@ -386,7 +386,7 @@
           SWIG_PYTHON_THREAD_END_BLOCK;
           throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
         }
-        if (v = new_Variant__SWIG_18(obj, arg->type()))
+        if ((v = new_Variant__SWIG_18(obj, arg->type())))
           {
             if (v == NULL)
             {
@@ -640,7 +640,6 @@
     PyObject*   input_obj = 0;
     PyObject*   param_obj = 0;
     PyObject*   descr_obj = 0;
-    PyObject*   rtime_obj = 0;
 
     uint16_t    input;
     std::string name;
@@ -1139,7 +1138,6 @@
           Py_ssize_t            it;
           PyObject*             item;
           std::list<Variant *>  vlist;
-          Variant*              vvlist;
           Variant*              vitem;
           bool                  lbreak = false;
 
@@ -1386,7 +1384,6 @@
 
   bool  operator>(PyObject* obj)
   {
-    Variant*    v;
     uint8_t     type;
 
     type = self->type();

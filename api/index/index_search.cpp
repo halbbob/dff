@@ -134,7 +134,7 @@ void	IndexSearch::__displayResults(lucene::search::Hits * h)
       if (node == NULL)
 	std::cerr << "Node '" << node_name << "' does not exist." << std::endl;
       else
-	VLink * l = new VLink(node, query, node->name());
+	new VLink(node, query, node->name());
     }
 
   // to refresh the gui, otherwise results never appear in the VFS.

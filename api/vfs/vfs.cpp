@@ -84,7 +84,7 @@ Node* VFS::GetNode(string path)
   Node* tmp = root;
   do
   {
-     if (rpath.find('/') != -1)	
+     if (rpath.find('/') != string::npos)	
      {
        lpath = rpath.substr(0, rpath.find('/'));
        rpath = rpath.substr(rpath.find('/') + 1); 
