@@ -53,7 +53,7 @@ pdata* VFile::read(void)
     {
       data->buff = malloc(size);
 	  if (data->buff == NULL)
-	     throw vfsError("VFile::read() can't allocate memory\n" + e.error);
+	     throw vfsError("VFile::read() can't allocate memory\n");
       memset(data->buff, 0, size);
       n = this->__fsobj->vread(this->__fd, (void*)data->buff, size);
       data->len = n;
