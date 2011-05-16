@@ -20,10 +20,11 @@
 #include <iomanip>
 #include <sstream>
 
-mutex_init(map_mutex)
+mutex_def(map_mutex);
 
 mfso::mfso(std::string name): fso(name)
 {
+  mutex_init(&map_mutex);
   this->__fdmanager = new FdManager();
   this->__verbose = false;
   this->__cacheHits = 0;
@@ -116,19 +117,19 @@ VFile*		mfso::vfileFromNode(fdinfo* fi, Node* node)
      else
      {
         vfile = node->open();
-	mutex_lock(&map_mutex);
- 	fdit->second[node] = vfile;
-        mutex_unlock(&map_mutex);
+		mutex_lock(&map_mutex);
+ 		fdit->second[node] = vfile;
+		mutex_unlock(&map_mutex);
      }
   }
   else 
   {
      map<Node*, VFile*> mnode;
      vfile = node->open();
-     mutex_lock(&map_mutex);
+	 mutex_lock(&map_mutex);
      mnode[node] = vfile; 
      this->__origins[fi] = mnode;
-     mutex_unlock(&map_mutex);
+	 mutex_unlock(&map_mutex);
   }
 
   return (vfile);
