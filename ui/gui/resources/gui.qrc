@@ -60,6 +60,7 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="presentation.png">icons/mime/presentation.png</file>
     <file alias="spreadsheet.png">icons/mime/spreadsheet.png</file>
     <file alias="image.png">icons/mime/image.png</file>
+    <file alias="image_disable.png">icons/mime/image_disable.png</file>
     <file alias="shell.png">icons/devices/chardevice.png</file>
     <file alias="interpreter.png">icons/devices/interpreter.png</file>
     <file alias="help.png">icons/actions/help.png</file>

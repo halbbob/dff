@@ -197,9 +197,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
       self.parent.model.setImagesThumbnails(False)
+      self.imagethumb.setIcon(QIcon(QPixmap(":image.png")))
       self.parent.model.reset()
     else:
       self.parent.model.setImagesThumbnails(True)
+      self.imagethumb.setIcon(QIcon(QPixmap(":image_disable.png")))
       self.parent.model.reset()
 
  
