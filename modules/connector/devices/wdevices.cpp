@@ -53,7 +53,7 @@ void DeviceBuffer::fillBuff(uint64_t offset)
 	SetFilePointerEx(this->__handle, sizeConv, &newOffset, 0);
 	DWORD gsize;
 	if (this->__offset + this->__size > this->__devSize)
-		gsize = this->__devSize - this->__offset;
+		gsize = (DWORD)(this->__devSize - this->__offset);
 	else
 		gsize = this->__size;
 	ReadFile(this->__handle, (void*)(this->__buffer), gsize,  &(this->__currentSize) ,0);
@@ -69,7 +69,7 @@ uint32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 
 	uint64_t leak = offset - this->__offset;
 	if (size > this->__currentSize - leak)
-		size = this->__currentSize - leak;
+		size = (uint32_t)(this->__currentSize - leak);
 	memcpy(buff, (((char*)this->__buffer) + leak), size);
 
 	return (size);
