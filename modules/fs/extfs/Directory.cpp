@@ -99,7 +99,7 @@ uint8_t		Directory::searchDirEntries(uint64_t content_addr,
 	      std::ostringstream oss;
 	      oss << dir_e->inode_value();
 
-	      Node * node = new ExtfsRawDataNode(oss.str(),
+	      new ExtfsRawDataNode(oss.str(),
 		 _SB->inodes_struct_size(),
 		 _extfs->suspiscious_inodes(), _extfs,
 		 inode_addr + _SB->offset() - __BOOT_CODE_SIZE);

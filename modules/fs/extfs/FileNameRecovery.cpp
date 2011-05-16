@@ -112,7 +112,7 @@ ExtfsNode *	FileNameRecovery::retrieve_inode(Directory * inode_dir,
       std::ostringstream oss;
       oss << del_dirent->inode_value();
       
-      Node * node = new ExtfsRawDataNode(oss.str(),
+      new ExtfsRawDataNode(oss.str(),
 	 inode_dir->extfs()->SB()->inodes_struct_size(),
 	 inode_dir->extfs()->suspiscious_inodes(), inode_dir->extfs(),
 	 inode_addr + inode_dir->extfs()->SB()->offset() - __BOOT_CODE_SIZE);
