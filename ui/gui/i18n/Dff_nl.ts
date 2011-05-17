@@ -728,7 +728,7 @@ Bram Mooij bram4n6@hotmail.com
     <message>
         <location filename="../../../api/gui/box/nodeviewbox.py" line="354"/>
         <source>You must specify at least one node.</source>
-        <translation type="unfinished"></translation>
+        <translation>Specificeer tenminste 1 node</translation>
     </message>
 </context>
 <context>
