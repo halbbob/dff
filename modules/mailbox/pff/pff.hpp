@@ -24,8 +24,6 @@
 
 using namespace std;
 
-int libpff_file_open_file_io_handle(libpff_file_t*, libbfio_handle_t*, int, libpff_error_t**);
-
 class pff : public mfso
 {
 private:
