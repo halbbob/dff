@@ -69,7 +69,6 @@ class SimpleNodeBrowser(QWidget):
     else:
       QWidget.changeEvent(self, event)
 
-
 class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def __init__(self, parent):
     super(QWidget, self).__init__()
@@ -147,6 +146,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.browserLayout.addWidget(self.treeView)
 
     self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
+
+#    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
 
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
     self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.treeModel.nodeClicked)
@@ -403,5 +404,3 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       self.treeModel.translation()
     else:
       QWidget.changeEvent(self, event)
-
-

@@ -106,7 +106,6 @@ class NodeLinkTreeView(QTreeView):
 
     \param e the event
     """
-
     index = self.indexAt(e.pos())
     if index.isValid():
 
@@ -118,18 +117,13 @@ class NodeLinkTreeView(QTreeView):
 
       # calculate coordinates to know if the '+' button in the tree was clicked
       self.model().nb_pop = 0
-      if self.coord == False:
-        v_rect = self.visualRect(index)
-        indentation = v_rect.x() - self.visualRect(self.rootIndex()).x()
-        rect = QRect(self.header().sectionViewportPosition(0) + indentation - self.indentation(), \
-                     v_rect.y(), self.indentation(), v_rect.height())
-        if rect.contains(e.pos()):
-          self.insertRows(index, node)
-      else:
-         self.insertRows(index, node)
-      # self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
-      self.resizeColumnToContents(0)
+      self.insertRows(index, node)
+      
+      if self.coord:
+        self.resizeColumnToContents(0)
+      self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
       QTreeView.mousePressEvent(self, e)
+ 
 
   def mouseDoubleClickEvent(self, e):
     """
@@ -140,9 +134,10 @@ class NodeLinkTreeView(QTreeView):
     A nodeTreeClicked signal is emitted.
 
     \param e the event
-    """
+    """    
     self.nb_pop = 0
     index = self.indexAt(e.pos())
+    node = None
     if index.isValid():
 
       # getting node from index
@@ -151,9 +146,8 @@ class NodeLinkTreeView(QTreeView):
 
       # inserting new rows
       self.insertRows(index, node)
-    
-    self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
-    QTreeView.mouseDoubleClickEvent(self, e)
+      self.emit(SIGNAL("nodeTreeClicked"), e.button(), node)
+      QTreeView.mouseDoubleClickEvent(self, e)
 
   def insertRows(self, index, node):
     """
