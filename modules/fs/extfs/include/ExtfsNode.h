@@ -40,7 +40,6 @@ class	ExtfsNode : public Node
 
   //! return NULL if an error occurs.
   void		push_block_pointers(Inode * inode, FileMapping * file_mapping);
-  void		setTimeToNull(vtime * t);
   void		set_i_nb(uint64_t i_id);
   uint64_t	i_nb() const;
 

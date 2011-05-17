@@ -29,20 +29,6 @@
 #include <stdint.h>
 #endif
 
-/**
- * Nanoseconds between 01.01.1601 and 01.01.1970
- *  Leap year :
- *   (year modulo 4 is 0 and year modulo 100 is not 0) or year modulo 400 is 0
- *  So, 1700, 1800 and 1900 are not leap years.
- *  ((1970 - 1601) * 365 + int((1970-1601) / 4) - 3) * 24 * 3600 * 10000000
- */
-
-#if __WORDSIZE == 64
-#define NANOSECS_1601_TO_1970	(uint64_t)(116444736000000000UL)
-#else
-#define NANOSECS_1601_TO_1970	(uint64_t)(116444736000000000ULL)
-#endif
-
 #ifdef WIN32
 #define PACK
 #else
@@ -240,7 +226,6 @@ public:
   uint64_t	nextOffset();
   uint64_t	nextMftOffset();
   void		setDateToString(uint64_t, struct tm **, std::string *, bool);
-  bool		setDateToVTime(uint64_t value, vtime *setMe);
   uint32_t	getRunAmount() { return _runAmount; };
 
   // For children copy constructor

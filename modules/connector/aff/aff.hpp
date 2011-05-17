@@ -29,15 +29,18 @@
 #include "vfs.hpp"
 #include "path.hpp"
 #include "fdmanager.hpp"
+#include "threading.hpp"
 #include <fcntl.h>
 #include <afflib/afflib.h>
 #include <afflib/afflib_i.h>
+
 
 class aff : public fso
 {
 private:
   Node		*parent;
   FdManager*	__fdm;
+  AFFILE*	__affile;
 public:
   aff();
   ~aff();
