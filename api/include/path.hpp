@@ -15,29 +15,14 @@
  */
 
 
-#ifndef __TYPE_HPP__
-#define __TYPE_HPP__
+#ifndef __PATH_HPP__
+#define __PATH_HPP__
 
 #include "export.hpp"
 #include <stdlib.h>
 #include <string>
 #include <iostream>
 #include <map>
-
-union s_ull
-{
-  struct 
-  {
-    unsigned long Low;
-    unsigned long High;
-  };
-  struct 
-  {
-    unsigned long Low;
-    unsigned long High;
-  }    u;
-  unsigned long long ull;
-};
 
 class Path
 {

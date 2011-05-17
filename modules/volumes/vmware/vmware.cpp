@@ -118,11 +118,8 @@ int	VMware::detectDiskDescriptor(Node *vmdk)
       if (header.descriptorOffset != 0)
 	  return 1;
     }
-  else
-    {
-      vfile->close();
-      return -1;
-    }
+    vfile->close();
+    return -1;
 }
 
 int	VMware::createLinks(Node *vmdkroot, string pcid)
@@ -186,7 +183,7 @@ int	VMware::createLinks(Node *vmdkroot, string pcid)
       if (!lnk->isBase())
 	{
 	  Node *bnode = new Node(id, 0, this->_snaproot);
-	  Node *vnode = new VMNode("VirtualHDD", vs, bnode, this, lnk);
+	  new VMNode("VirtualHDD", vs, bnode, this, lnk);
 	  this->_baseNodes.push_back(bnode);
 	}
       else

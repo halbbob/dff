@@ -16,6 +16,38 @@
 
 #include "vtime.hpp"
 
+#if __WORDSIZE == 64
+#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000UL)
+#else
+#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000ULL)
+#endif
+
+//Convert from microsoft 64bits time stamp
+vtime::vtime(uint64_t value) 
+{
+  if (value > 0) 
+  {
+    value -= NANOSECS_1601_TO_1970;
+    value /= 10000000;
+    struct tm   *date;
+
+    date = gmtime((time_t *)&value);
+    this->year = date->tm_year + 1900;
+    this->month = date->tm_mon + 1;
+    this->day = date->tm_mday;
+    this->hour = date->tm_hour;
+    this->minute = date->tm_min;
+    this->second = date->tm_sec;
+    this->dst = date->tm_isdst;
+    this->wday = date->tm_wday;
+    this->yday = date->tm_yday;
+    this->usecond = 0;
+  }
+  else
+   year = month = day = hour = minute = second = usecond = 0; 
+}
+
+
 vtime::vtime()
 {
    year = month = day = hour = minute = second = usecond = 0; 
@@ -32,24 +64,24 @@ vtime::vtime(int y, int mo, int d, int h, int mi, int s, int us)
 }
 
 
-Time::Time(uint64_t timestamp) : __months_days(12), __tm(NULL), __vtime(NULL)
+Time::Time(uint64_t timestamp) //: __months_days(12), __tm(NULL), __vtime(NULL)
 {
   this->__timestamp = timestamp;
   this->__tm = new tm_t;
   this->__vtime = new vtime();
 
-  __months_days[0] = std::make_pair("Jan", 31);
-  __months_days[1] = std::make_pair("Feb", 28);
-  __months_days[2] = std::make_pair("Mar", 31);
-  __months_days[3] = std::make_pair("Apr", 30);
-  __months_days[4] = std::make_pair("May", 31);
-  __months_days[5] = std::make_pair("Jun", 30);
-  __months_days[6] = std::make_pair("Jul", 31);
-  __months_days[7] = std::make_pair("Aug", 31);
-  __months_days[8] = std::make_pair("Sep", 30);
-  __months_days[9] = std::make_pair("Oct", 31);
-  __months_days[10] = std::make_pair("Nov", 30);
-  __months_days[11] = std::make_pair("Dec", 31);
+  this->__months_days[0] = std::make_pair("Jan", 31);
+  this->__months_days[1] = std::make_pair("Feb", 28);
+  this->__months_days[2] = std::make_pair("Mar", 31);
+  this->__months_days[3] = std::make_pair("Apr", 30);
+  this->__months_days[4] = std::make_pair("May", 31);
+  this->__months_days[5] = std::make_pair("Jun", 30);
+  this->__months_days[6] = std::make_pair("Jul", 31);
+  this->__months_days[7] = std::make_pair("Aug", 31);
+  this->__months_days[8] = std::make_pair("Sep", 30);
+  this->__months_days[9] = std::make_pair("Oct", 31);
+  this->__months_days[10] = std::make_pair("Nov", 30);
+  this->__months_days[11] = std::make_pair("Dec", 31);
 
   __convert();
 }

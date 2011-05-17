@@ -132,7 +132,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.maximizeDockwidget()
         dockwidget = DockWidget(self, widget, widget.name)
         docIndex, docTitle = self.getWidgetName(widget.name)
-        dockwidget.setWindowTitle(docTitle)
+        dockwidget.setWindowTitle(QString.fromUtf8(docTitle))
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
         self.addDockWidget(self.masterArea, dockwidget)
@@ -169,7 +169,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.addDockWidgets(NodeBrowser(self), 'nodeBrowser')
         else:
             nb = NodeBrowser(self)
-            nb.model.setRootPath(nb.vfs.getnode(rootpath))
+            nb.model.setRootPath(nb.vfs.getnode(rootpath.absolute()))
             self.addDockWidgets(nb, 'nodeBrowser')
 
     def addHelpWidget(self):

@@ -52,6 +52,8 @@ pdata* VFile::read(void)
   try
     {
       data->buff = malloc(size);
+	  if (data->buff == NULL)
+	     throw vfsError("VFile::read() can't allocate memory\n");
       memset(data->buff, 0, size);
       n = this->__fsobj->vread(this->__fd, (void*)data->buff, size);
       data->len = n;
@@ -241,7 +243,7 @@ list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_
     {
       if (window != (uint64_t)-1)
 	{
-	  if (window < bytes_read)
+	  if (window < (uint64_t)bytes_read)
 	    {
 	      hslen = window;
 	      stop = true;

@@ -30,7 +30,7 @@ fdinfo*		FdManager::get(int32_t fd)
 {
   fdinfo*	fi;
 
-  if (fd > this->fds.size())
+  if (fd > (int32_t)this->fds.size())
     throw(vfsError("fdmanager::get -> Provided fd is too high"));
   else
     {
@@ -44,7 +44,7 @@ fdinfo*		FdManager::get(int32_t fd)
 
 int32_t	FdManager::push(fdinfo* fi)
 {
-  int32_t	i;
+  uint32_t	i;
   bool		empty;
 
   empty = false;
@@ -60,7 +60,7 @@ int32_t	FdManager::push(fdinfo* fi)
 	  else
 	    i++;
 	}
-      if (empty && i < this->fds.size())
+      if (empty && (i < this->fds.size()))
 	{
 	  this->allocated++;
 	  this->fds[i] = fi;
@@ -75,7 +75,7 @@ void		FdManager::remove(int32_t fd)
 {
   fdinfo*	fi;
   
-  if (fd > this->fds.size())
+  if (fd > (int32_t)this->fds.size())
     {
       std::cout << "fdmanager::remove -> fd not allocated" << std::endl;
       //throw(vfsError("fdmanager::remove -> fd not allocated"));

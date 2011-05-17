@@ -32,6 +32,7 @@ add_subdirectory (hash)
 add_subdirectory (metadata)
 add_subdirectory (test)
 add_subdirectory (databases)
+add_subdirectory (mailbox)
 
 set(module_srcs
   __init__.py

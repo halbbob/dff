@@ -17,7 +17,7 @@ __dff_module_viewerimage_version__ = "1.0.0"
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread
-from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem, QAbstractItemView
+from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QLineEdit
 
 from api.vfs import *
 from api.module.module import *
@@ -293,7 +293,8 @@ class ImageView(QWidget, Script):
 
 
   def setImage(self, node):
-    self.imagelabel.setText(str(node.absolute()) + " (" + str(self.curIdx + 1) + " / " + str(len(self.images)) + ")")
+    self.imagelabel.clear()
+    self.imagelabel.insert(QString.fromUtf8(str(node.absolute()) + " (" + str(self.curIdx + 1) + " / " + str(len(self.images)) + ")"))
     self.loadedImage.load(node)
     self.metadata.process(node)
 
@@ -310,12 +311,15 @@ class ImageView(QWidget, Script):
     self.scrollArea.setWidget(self.loadedImage)
     self.scrollArea.setAlignment(Qt.AlignCenter)
     self.createActions()
-    self.imagelabel = QLabel()
+    self.imagelabelbox = QVBoxLayout()
+    self.imagelabelbox.setSpacing(0)
+    self.imagelabel = QLineEdit()
+    self.imagelabelbox.addWidget(self.imagelabel)
+    self.imagelabel.setReadOnly(True)    
     self.imagebox.addWidget(self.actions)
     self.imagebox.addWidget(self.scrollArea)
     self.imagebox.setAlignment(self.actions, Qt.AlignCenter)
-    self.imagebox.addWidget(self.imagelabel)
-    self.imagebox.setAlignment(self.imagelabel, Qt.AlignCenter)
+    self.imagebox.addLayout(self.imagelabelbox)
 
     self.databox = QVBoxLayout()
     self.metadata = Metadata()

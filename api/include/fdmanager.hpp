@@ -26,16 +26,17 @@
 #include "export.hpp"
 #include "exceptions.hpp"
 #include "filemapping.hpp"
+#include "vfile.hpp"
 
 #include <vector>
 #include <iostream>
 
 typedef struct
 {
-  class FileMapping*		fm;
   Node*				node;
   class Variant*		id;
   uint64_t			offset;
+  VFile*			file;
 }				fdinfo;
 
 class FdManager

@@ -17,8 +17,9 @@
 #include "node.hpp"
 #include "filemapping.hpp"
 
-FileMapping::FileMapping()
+FileMapping::FileMapping(Node* node)
 {
+  this->__node = node;
   this->__mappedFileSize = 0;
   this->__prevChunck = NULL;
 }
@@ -29,6 +30,21 @@ FileMapping::~FileMapping()
 
   for (i = 0; i != this->__chuncks.size(); i++)
     delete this->__chuncks[i];
+}
+
+Node*			FileMapping::node(void)
+{
+  return (this->__node);
+}
+
+void			FileMapping::setCacheHits(uint64_t hits)
+{
+  this->__cacheHits = hits;
+}
+
+uint64_t		FileMapping::cacheHits(void)
+{
+  return (this->__cacheHits);
 }
 
 uint32_t		FileMapping::chunckCount()

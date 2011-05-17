@@ -42,7 +42,7 @@ public:
   void	readMonoDiskDescriptor(Node *nodeDesc);
 
   /* Split _descData into lines*/
-  char*	getLinesDiskDescriptor(char *descData);
+  void	getLinesDiskDescriptor(char *descData);
   /* Fill _descMap (all key=value system) and _descExtents */
   void	parseLineDiskDescriptor();
 

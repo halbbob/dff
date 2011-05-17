@@ -64,7 +64,7 @@ void		FatNode::setCluster(uint32_t cluster)
 void		FatNode::fileMapping(FileMapping* fm)
 {
   std::vector<uint64_t>	clusters;
-  int			i;
+  unsigned int		i;
   uint64_t		voffset;
   uint64_t		clustsize;
 
@@ -85,7 +85,7 @@ Attributes	FatNode::_attributes()
   Attributes	attr; 
   std::vector<uint32_t>	clusters;
   std::list<Variant*>	clustlist;
-  int			i;
+  unsigned int			i;
 
   //attr->push("dos name", new Variant())
   attr["lfn entries start offset"] =  new Variant(this->lfnmetaoffset);

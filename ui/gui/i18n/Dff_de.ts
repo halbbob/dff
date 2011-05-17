@@ -657,74 +657,79 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>NodeViewBox</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="53"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
         <translation>Vorherige</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
         <translation>Nächste</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="149"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
         <translation>Nach oben verschieben</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="175"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
         <source>Return to root</source>
         <translation>Zurück zum Wurzelverzeichnis</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="203"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
         <source>List</source>
         <translation>Liste</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="212"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
         <source>Icons</source>
         <translation>Symbole</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="221"/>
+        <location filename="../resources/nodeviewbox.ui" line="221"/>
         <source>Tree</source>
-        <translation>Baumstruktur</translation>
+        <translation type="obsolete">Baumstruktur</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="250"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="309"/>
         <source>Attributes</source>
         <translation>Attribute</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="263"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
         <source>Add to bookmarks</source>
         <translation>zu den Lesezeichen hinzufügen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="289"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="272"/>
         <source>Display search engine</source>
         <translation>Zeige Suchmaschine</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="342"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="320"/>
         <source>Small</source>
         <translation>Klein</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="347"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="325"/>
         <source>Medium</source>
         <translation>Mittel</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="352"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="330"/>
         <source>Large</source>
         <translation>Groß</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="217"/>
         <source>Activate thumbnails</source>
         <translation>Aktiviere Miniaturbilder</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/box/nodeviewbox.py" line="354"/>
+        <source>You must specify at least one node.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -738,17 +743,17 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="336"/>
         <source>Create directory</source>
         <translation>Erstelle Verzeichnis</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Directory creation failure</source>
         <translation>Erstellung des Verzeichnisses fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>History file is not writable</source>
         <translation>History-Datei ist nicht schreibbar</translation>
     </message>

@@ -74,6 +74,7 @@ int	Extent::readSparseHeader()
 
       return 1;
     }
+  return 0;
 }
 
 int	Extent::createBackupHeader(int type)
@@ -129,5 +130,5 @@ int	Extent::createBackupHeader(int type)
 
   unsigned int GDEs = (this->sectors + (sPerGDE -1)) / sPerGDE;
   this->GDEntries = GDEs;
-    
+  return 0;
 }

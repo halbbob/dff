@@ -656,74 +656,79 @@ Bram Mooij bram4n6@hotmail.com
 <context>
     <name>NodeViewBox</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="53"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
         <translation>Vorige</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
         <translation>Volgende</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="149"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
         <translation>Ga naar boven</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="175"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
         <source>Return to root</source>
         <translation>Terug naar de root</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="203"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
         <source>List</source>
         <translation>Lijst</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="212"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
         <source>Icons</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="221"/>
+        <location filename="../resources/nodeviewbox.ui" line="221"/>
         <source>Tree</source>
-        <translation>Boom structuur</translation>
+        <translation type="obsolete">Boom structuur</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="250"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="309"/>
         <source>Attributes</source>
         <translation>Attributen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="263"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
         <source>Add to bookmarks</source>
         <translation>Toevoegen aan bookmarks</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="289"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="272"/>
         <source>Display search engine</source>
         <translation>Zoekmachine</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="342"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="320"/>
         <source>Small</source>
         <translation>Klein</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="347"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="325"/>
         <source>Medium</source>
         <translation>Middelmatig</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="352"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="330"/>
         <source>Large</source>
         <translation>Groot</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="217"/>
         <source>Activate thumbnails</source>
         <translation>Activeer thumbnails</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/box/nodeviewbox.py" line="354"/>
+        <source>You must specify at least one node.</source>
+        <translation>Specificeer tenminste 1 node</translation>
     </message>
 </context>
 <context>
@@ -737,17 +742,17 @@ Bram Mooij bram4n6@hotmail.com
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="336"/>
         <source>Create directory</source>
         <translation>Maak een directorie</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Directory creation failure</source>
         <translation>Het maken van de directorie is mislukt</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>History file is not writable</source>
         <translation>Historie bestand is niet beschrijfbaar</translation>
     </message>

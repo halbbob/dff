@@ -55,7 +55,8 @@ class loader():
                     try:
                         mode = os.stat(module_path+filename)[ST_MODE]
                     except:
-                        print "File doesn't exist"
+                        print "Can't access " + str(module_path+filename)
+			return     
                     if mode:
                         if S_ISDIR(mode):
                             self.LoadDir(module_path+filename)

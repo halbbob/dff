@@ -80,7 +80,7 @@ void		Extfs::launch(std::map<std::string, Variant*> args)
   bool		sb_check = false;
   uint64_t	sb_force_addr;
   bool		run_driver = true;
-  bool		check_alloc;
+  bool		check_alloc = false;
   uint64_t	root_i_nb = ROOT_INODE;
   std::map<std::string, Variant*>::iterator it;
 

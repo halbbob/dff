@@ -85,6 +85,7 @@ class Dialog(QObject):
                  terr.append(errw)
                  detailerr.append(err)
              self.messageBox(terr, detailerr)
+       del dev
 
   def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """

@@ -243,42 +243,54 @@ std::vector<uint32_t>	FileAllocationTable::listFreeClusters(uint8_t which)
 
 uint32_t		FileAllocationTable::freeClustersCount(uint8_t which)
 {
+  uint32_t		freeclust;
+
+  freeclust = 0;
   if (which > this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
-    ;
+    return freeclust;
 }
 
 std::list<uint32_t>	FileAllocationTable::listAllocatedClusters(uint8_t which)
 {
+  std::list<uint32_t>	alloc;
+
   if (which > this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
-    ;
+    return alloc;
 }
 
 uint32_t		FileAllocationTable::allocatedClustersCount(uint8_t which)
 {
+  uint32_t		alloc;
+
+  alloc = 0;
   if (which > this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
-    ;
+    return alloc;
 }
 
 std::list<uint32_t>	FileAllocationTable::listBadClusters(uint8_t which)
 {
+  std::list<uint32_t>	badclust;
+
   if (which > this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
-    ;
+    return badclust;
 }
 
 std::list<uint32_t>	FileAllocationTable::listBadClustersCount(uint8_t which)
 {
+  std::list<uint32_t>	badclust;
+
   if (which > this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
-    ;
+    return badclust;
 }
 
 uint64_t		FileAllocationTable::clusterToOffset(uint32_t cluster)
@@ -297,8 +309,8 @@ uint64_t		FileAllocationTable::clusterToOffset(uint32_t cluster)
 
 uint32_t		FileAllocationTable::offsetToCluster(uint64_t offset)
 {
-	//FIXME
-	return 0;
+  //FIXME
+  return 0;
 }
 
 void			FileAllocationTable::diffFats()

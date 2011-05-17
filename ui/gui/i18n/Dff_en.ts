@@ -654,73 +654,73 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>NodeViewBox</name>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="53"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="102"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="149"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="175"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
         <source>Return to root</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="203"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
         <source>List</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="212"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
         <source>Icons</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="221"/>
-        <source>Tree</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="250"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="309"/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="263"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
         <source>Add to bookmarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="289"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="272"/>
         <source>Display search engine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="342"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="320"/>
         <source>Small</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="347"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="325"/>
         <source>Medium</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="352"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="330"/>
         <source>Large</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="217"/>
         <source>Activate thumbnails</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/box/nodeviewbox.py" line="354"/>
+        <source>You must specify at least one node.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -735,17 +735,17 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="336"/>
         <source>Create directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Directory creation failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="339"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>History file is not writable</source>
         <translation type="unfinished"></translation>
     </message>

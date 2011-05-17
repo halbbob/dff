@@ -100,7 +100,8 @@ void	diskDescriptor::readMonoDiskDescriptor(Node *nodeDesc)
 void	diskDescriptor::parseLineDiskDescriptor()
 {
   list<char*>::iterator	i;
-  int cp = 0;
+  unsigned int cp = 0;
+  unsigned int len;
   // Is Key Value structure 
   bool	isKV = false;
   // Is Extent structure : 'R'W SPARSE ....
@@ -123,7 +124,8 @@ void	diskDescriptor::parseLineDiskDescriptor()
 	isEX = true;
 
       // Get key len
-      while (cp != strlen(*i))
+      len = strlen(*i);
+      while (cp != len)
 	{
 	  if (*pTmp == '=')
 	    {
@@ -147,7 +149,7 @@ void	diskDescriptor::parseLineDiskDescriptor()
 	      cp++;
 	      pTmp++;
 	    }
-	  int vsize = strlen(*i) - cp;	  
+	  int vsize = len - cp;	  
 	  char* value = (char*)malloc(vsize + 1);
 	  memset(value, '\0', vsize + 1);
 	  memcpy(value, pTmp, vsize);
@@ -178,7 +180,7 @@ void	diskDescriptor::parseLineDiskDescriptor()
 
 }
 
-char*	diskDescriptor::getLinesDiskDescriptor(char *descData)
+void	diskDescriptor::getLinesDiskDescriptor(char *descData)
 {
   char* pTmp = descData;
   int	llen = 0;
@@ -205,7 +207,6 @@ char*	diskDescriptor::getLinesDiskDescriptor(char *descData)
 	  pTmp++;
 	}
     }
-  return (""); //? XXX FIX ME !
 }
 
 

@@ -151,12 +151,14 @@ void		Carver::createContexts(std::list<Variant*> patterns)
   std::list<Variant*>::iterator		it;
   std::map<std::string, Variant*>	vpattern;
   context				*cctx;
-  int					i;
+  unsigned int					i;
   description*				descr;
+  unsigned int				ctxsize;
   
   this->aligned = aligned;
-  if (this->ctx.size())
-    for (i = 0; i != this->ctx.size(); i++)
+  ctxsize = this->ctx.size();
+  if (ctxsize)
+    for (i = 0; i != ctxsize; i++)
       {
   	free(this->ctx[i]->headerBcs);
   	free(this->ctx[i]->footerBcs);
@@ -188,7 +190,7 @@ void		Carver::createContexts(std::list<Variant*> patterns)
 
 void		Carver::mapper()
 {
-  int		i;
+  unsigned int	i;
   char		*buffer;
   int		bytes_read;
   int		offset;
@@ -197,6 +199,7 @@ void		Carver::mapper()
   uint64_t	total_headers;
   uint64_t	offpos;
   std::stringstream	percent;
+  unsigned int		ctxsize;
 
   e = new event;
   e1 = new event;
@@ -205,13 +208,15 @@ void		Carver::mapper()
   e->type = event::SEEK;
   e1->type = event::OTHER;
   total_headers = 0;
+  ctxsize = this->ctx.size();
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
     {
       offpos = this->tell();
       percent.str("");
       percent << ((offpos * 100) / this->inode->size()) << " %";
       this->stateinfo = percent.str();
-      for (i = 0; i != this->ctx.size(); i++)
+      
+      for (i = 0; i != ctxsize; i++)
 	{
 	  offset = this->bm->search((unsigned char*)buffer, bytes_read, this->ctx[i]->descr->header, this->ctx[i]->headerBcs);
 	  seek = offset;
@@ -226,7 +231,7 @@ void		Carver::mapper()
 		total_headers += 1;
 	      this->ctx[i]->headers.push_back(this->tell() - bytes_read + seek);
 	      seek += ctx[i]->descr->header->size;
-	      if (seek + ctx[i]->descr->header->size >= bytes_read)
+	      if (seek + ctx[i]->descr->header->size >= (uint64_t)bytes_read)
 		break;
 	      else
 		{
@@ -243,7 +248,7 @@ void		Carver::mapper()
 		  this->ctx[i]->footers.push_back(this->tell() - bytes_read + seek);
 		  seek += ctx[i]->descr->footer->size;
 		  offpos = this->tell();
-		  if (seek + ctx[i]->descr->footer->size >= bytes_read)
+		  if (seek + ctx[i]->descr->footer->size >= (uint64_t)bytes_read)
 		    break;
 		  else
 		    {
