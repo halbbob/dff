@@ -1096,7 +1096,6 @@ class TreeModel(QStandardItemModel, EventHandler):
     self.rootItem = node
     if kompleter == None:
       self.emit(SIGNAL("rootPathChanged"), node)
-    self.reset()
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     """

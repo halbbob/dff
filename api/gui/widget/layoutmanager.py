@@ -200,13 +200,13 @@ class DialogNodeBrowser(QDialog):
 
     def createModels(self):
         self.treeModel = TreeModel(self)
+        # self.treeModel.coord = True
         self.tableModel = VFSItemModel(self)
         self.treeModel.setRootPath(self.vfs.getnode("/"))
         self.tableModel.setRootPath(self.vfs.getnode("/"))
         self.tableModel.connect(self.navBar, SIGNAL("pathChanged"), self.tableModel.setRootPath)
 
 
-  
     def createViews(self):
         self.treeView = NodeLinkTreeView(self)
         self.treeView.setModel(self.treeModel)
@@ -222,6 +222,7 @@ class DialogNodeBrowser(QDialog):
 
     def nodeTreeClicked(self, mouseButton, node, index = None):
         self.treeView.model().setRootPath(node)
+        self.tableView.model().setRootPath(node)
         
 
     def nodeDoubleClicked(self, mouseButton, node, index = None):
