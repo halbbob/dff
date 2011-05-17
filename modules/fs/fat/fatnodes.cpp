@@ -56,8 +56,9 @@ void		FatNode::setDosMetaOffset(uint64_t dosmetaoffset)
   this->dosmetaoffset = dosmetaoffset;
 }
 
-void		FatNode::setCluster(uint32_t cluster)
+void		FatNode::setCluster(uint32_t cluster, bool reallocated)
 {
+  this->__clustrealloc = reallocated;
   this->cluster = cluster;
 }
 
@@ -67,15 +68,34 @@ void		FatNode::fileMapping(FileMapping* fm)
   unsigned int		i;
   uint64_t		voffset;
   uint64_t		clustsize;
+  uint64_t		rsize;
 
-  clusters = this->fs->fat->clusterChainOffsets(this->cluster);
   voffset = 0;
+  rsize = this->size();
   clustsize = this->fs->bs->csize * this->fs->bs->ssize;
-  for (i = 0; i != clusters.size(); i++)
+  if (!this->__clustrealloc)
     {
-      fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
-      voffset += clustsize;
+      clusters = this->fs->fat->clusterChainOffsets(this->cluster);
+      if ((clusters.size() * clustsize) < this->size())
+	{
+	  uint64_t	firstclustoff = this->fs->fat->clusterToOffset(this->cluster);
+	  fm->push(0, rsize, this->fs->parent, firstclustoff);
+	}
+      else
+	{
+	  for (i = 0; i != clusters.size(); i++)
+	    {
+	      if (rsize < clustsize)
+		fm->push(voffset, rsize, this->fs->parent, clusters[i]);
+	      else
+		fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+	      rsize -= clustsize;
+	      voffset += clustsize;
+	    }
+	}
     }
+  else
+    fm->push(0, this->size());
 }
 
 
@@ -84,7 +104,7 @@ Attributes	FatNode::_attributes()
 {
   Attributes	attr; 
   std::vector<uint32_t>	clusters;
-  std::list<Variant*>	clustlist;
+  //std::list<Variant*>	clustlist;
   unsigned int			i;
 
   //attr->push("dos name", new Variant())
@@ -132,14 +152,31 @@ Attributes	FatNode::_attributes()
 
   try
     {
-      clusters = this->fs->fat->clusterChain(this->cluster);
-      for (i = 0; i != clusters.size(); i++)
-	clustlist.push_back(new Variant(clusters[i]));
-      attr["allocated clusters"] = new Variant(clustlist);
+      uint64_t clustsize = this->fs->bs->csize * this->fs->bs->ssize;
+      if (this->__clustrealloc)
+	attr["first cluster (!! reallocated to another existing entry)"] = new Variant(this->cluster);
+      else
+	{
+	  if ((!this->isDeleted()) && (this->size()) && (this->size() % clustsize))
+	    {
+	      std::map<std::string, Variant*>	slackinfo;
+	      clusters = this->fs->fat->clusterChain(this->cluster);
+	      uint32_t	lastclust = clusters.back();
+	      uint64_t	ssize = (((uint64_t)clusters.size()) * clustsize) - this->size();
+	      uint64_t	soffset = this->fs->fat->clusterToOffset(lastclust);
+	      slackinfo["start offset"] = new Variant(soffset + clustsize - ssize);
+	      slackinfo["size"] = new Variant(ssize);
+	      attr["slack space"] = new Variant(slackinfo);	      
+	    }
+	  //for (i = 0; i != clusters.size(); i++)
+	  //clustlist.push_back(new Variant(clusters[i]));
+	  attr["first cluster"] = new Variant(this->cluster);
+	  //attr["allocated clusters"] = new Variant(clustlist);
+	}
     }
   catch(vfsError e)
     {
-	return attr;
+      return attr;
     }
   return attr;
 }

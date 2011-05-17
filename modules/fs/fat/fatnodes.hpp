@@ -33,6 +33,7 @@ private:
   uint64_t	lfnmetaoffset;
   uint64_t	dosmetaoffset;
   uint32_t	cluster;
+  bool		__clustrealloc;
 public:
   void				dosToVtime(vtime* vt, uint16_t dos_time, uint16_t dos_date);
   uint8_t			*readDosEntry();
@@ -40,7 +41,7 @@ public:
   ~FatNode();
   void				setLfnMetaOffset(uint64_t lfnmetaoffset);
   void				setDosMetaOffset(uint64_t dosmetaoffset);
-  void				setCluster(uint32_t cluster);
+  void				setCluster(uint32_t cluster, bool reallocated=false);
   virtual void			fileMapping(FileMapping* fm);
   virtual Attributes		_attributes(void);
 };

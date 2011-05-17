@@ -38,8 +38,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
     self.setupUi(self)
-#    if not INDEX_ENABLED:
-#    self.search.hide()
+    if not INDEX_ENABLED:
+      self.search.hide()
     self.vfs = vfs()
     self.VFS = libvfs.VFS.Get()
     self.parent = parent

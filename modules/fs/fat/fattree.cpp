@@ -147,7 +147,7 @@ Node*	FatTree::allocNode(ctx* c, Node* parent)
       if (this->allocatedClusters->find(c->cluster) == NULL)
 	node->setCluster(c->cluster);
       else
-	node->setCluster(0);
+	node->setCluster(c->cluster, true);
     }
   else
     node->setCluster(c->cluster);

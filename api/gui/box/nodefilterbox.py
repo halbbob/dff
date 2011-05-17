@@ -11,70 +11,74 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+#  Romain Bertholon <rbe@digital-forensic.org>
 # 
 
 import thread
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QWidget, QLineEdit, QLabel, QGridLayout, QPushButton, QCheckBox, QFileDialog, QMessageBox, QDialog, QProgressBar
+from PyQt4.QtGui import QWidget, QDialog
 
-from api.vfs.libvfs import VFS
-from api.index.libindex import IndexSearch, Index
+from api.vfs.vfs import vfs
+from api.events.libevents import EventHandler
+from api.types.libtypes import typeId
 
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
-from ui.gui.resources.ui_advance_search import Ui_AdvanceSearch
 from ui.conf import Conf
 
-from ui.gui.widget.modif_index import ModifIndex
-
 try:
-  from api.index.libindex import *
+  from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch, FilterThread
+  from api.index.libindex import IndexSearch, Index
+  from ui.gui.widget.modif_index import ModifIndex
+  from api.search.find import Filters
   IndexerFound = True
 except ImportError:
   IndexerFound = False
-from ui.conf import Conf
+from ui.conf import Conf    
 
-class AdvSearch(QDialog, Ui_AdvanceSearch):
-  def __init__(self, parent):
-    super(QDialog, self).__init__()
-    self.parent = parent
-    self.setupUi(self)
-    if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.resetForm.clicked.connect(self.reset_form)
-    else:
-      QtCore.QObject.connect(self.resetForm, SIGNAL("clicked(bool)"), self.reset_form)
-
-  def reset_form(self, changed):
-    self.allWords.setText("")
-    self.noneWord.setText("")
-    self.oneWord.setText("")
-
-class NodeFilterBox(QWidget, Ui_NodeFBox):
+class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
   """
   This class is designed to perform searches on nodes in the VFS or a part of the VFS.
   """
   def __init__(self, parent, model):
     QWidget.__init__(self)
     Ui_NodeFBox.__init__(parent)
+
+  def __init__future(self, parent, model):
+    QWidget.__init__(self)
+    Ui_NodeFBox.__init__(parent)
+    EventHandler.__init__(self)
     self.parent = parent
+    self.filterThread = FilterThread()
+    self.filterThread.filters.connection(self)
+
     self.setupUi(self)
     self.model = model
     self.translation()
-    self.opt = ModifIndex(self, model)
-
-    self.adv = AdvSearch(self)
-
+    if IndexerFound:
+      self.opt = ModifIndex(self, model)
+    self.vfs = vfs()
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
-      self.notIndexed.linkActivated.connect(self.index_opt2)
-      self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
+      if IndexerFound:
+        self.notIndexed.linkActivated.connect(self.index_opt2)
+        self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
+
+      self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
-      QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
-      QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
+      if IndexerFound:
+        QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
+        QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
+      self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+
+  def Event(self, e):
+    node = e.value.value()
+    if e.type == 514:
+      self.emit(SIGNAL("add_node"), long(node.this))
 
   def index_opt2(self, url):
     self.explain_this_odd_behavior()
@@ -108,16 +112,34 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
       else:
        index.setIndexAttr(False)
 
+      value = 0
+      for i in self.opt.un_index:
+        recurse = self.opt.indexed_items[long(i)]
+        node = VFS.Get().getNodeFromPointer(i)
+        for (root_dir, files, dirs) in self.vfs.walk(node, True, 1):
+          value += len(files)
+      
+      for i in self.opt.tmp_indexed_items:
+        recurse = self.opt.tmp_indexed_items[long(i)]
+        node = VFS.Get().getNodeFromPointer(i)
+        for (root_dir, files, dirs) in self.vfs.walk(node, True, 1):
+          value += len(files)
+      self.emit(SIGNAL("number_max"), value)
+
       # delete doc from index (if any stuff are to be deleted)
+      value = 0
       for i in self.opt.un_index:
         recurse = self.opt.indexed_items[long(i)]
         node = VFS.Get().getNodeFromPointer(i)
         if recurse == True:
           tmp = node.children()
           for j in tmp:
+            value += 1
             IndexSearch.deleteDoc(str(j.absolute()).lower(), str(index_path).lower())
         else:
+          value += 1
           self.deleteRecurse(node, index, index_path)
+        self.emit(SIGNAL("number_indexed"), value)
         self.opt.indexed_items.pop(i)
 
       # adding new selected nodes in index
@@ -129,9 +151,12 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
         if self.opt.indexed_items[i] == True:
           tmp = node.children()
           for ii in tmp:
+            value += 1
             index.indexData(ii)
         else: #index recursively
+          value += 1
           self.recurseNode(node, index)
+        self.emit(SIGNAL("number_indexed"), value)
       self.opt.tmp_indexed_items.clear()
 
       index.closeIndex()
@@ -167,13 +192,25 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
         self.recurseNode(i, index);
 
   def adv_search(self, changed):
+
+    # parent is an instance of NodeBrowser
+    adv = AdvSearch(self)
+
+    self.parent.parent.addSearchTab(adv)
+    adv.setCurrentNode(self.parent.model.rootItem)
+    adv.path.setText(adv.search_in_node.absolute())
+    return
+
+    ret = self.adv.show()
+    return
+
     ret = self.adv.exec_()
     if ret == QDialog.Accepted:
       all_word = str(self.adv.allWords.text())
       none_word = str(self.adv.noneWord.text())
       one_word = str(self.adv.oneWord.text())
 
-      # LOL
+      # LOL : to avoid a weird crash. Attempting to input the "t" string to clucene results in a crash
       if all_word == "t":
         all_word = ""
       if none_word == "t":
@@ -182,6 +219,7 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
         one_word = ""
       if all_word == "" and none_word == "" and one_word == "":
         return
+
       query = ""
       query += one_word
       none_word = none_word.lstrip()
@@ -222,26 +260,15 @@ class NodeFilterBox(QWidget, Ui_NodeFBox):
 
   def searching(self, changed):
     if not self.searchClause.text().isEmpty():
-      try:
-        # testing shit
-        useless = self.opt.indexed_items[long(self.vfs_model.rootItem.this)]
-
-        # prepare stuff to fo the query
-        conf = Conf()
-        index_path = conf.index_path # get path to the index
-        search_engine = IndexSearch(index_path)
-        qquery = str(self.searchClause.text())
-
-        # strip the query to remove useless char
-        qquery = qquery.lstrip()
-
-        # exec the query
-        search_engine.exec_query(qquery, "")
-      except KeyError:
-        # if the key is not found that means that the current node is not indexed
-        self.notIndexed.setText("<font color='red'>" + self.msg_not_indexed \
-                                  + "</font> <a href=\"\#\">" + self.msg_not_indexed2 \
-                                  + "</a>")
+      if self.recurse.checkState() != Qt.Checked:
+        self.filterThread.filters.setRecursive(False)
+      else:
+        self.filterThread.filters.setRecursive(True)
+      clause = {}
+      clause["name"] = "w(\'*" + str(self.searchClause.text()) + "*\',i)"
+      print clause      
+      self.filterThread.setContext(clause, self.parent.model.rootItem, self.parent.model)
+      self.filterThread.start()
 
   def translation(self):
     self.msg_not_indexed = self.tr("This location is not indexed.")
