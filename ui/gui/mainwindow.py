@@ -249,15 +249,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 dock.hide()
                 if dock.isAncestorOf(focus_widget):
                     self.last_dockwidget = dock
-            self.last_widget = self.last_dockwidget.widget()
-            self.last_dockwidget.toggleViewAction().setDisabled(True)
-            self.setCentralWidget(self.last_dockwidget.widget())
-            self.last_dockwidget.visibility_changed(True)
-            self.actionNodeBrowser.setEnabled(False)
-            self.actionShell.setEnabled(False)
-            self.actionPython_interpreter.setEnabled(False)
-            self.actionIdeOpen.setEnabled(False)
-            self.actionHelp.setEnabled(False)
+            if self.last_dockwidget != None:
+                self.last_widget = self.last_dockwidget.widget()
+                self.last_dockwidget.toggleViewAction().setDisabled(True)
+                self.setCentralWidget(self.last_dockwidget.widget())
+                self.last_dockwidget.visibility_changed(True)
+                self.actionNodeBrowser.setEnabled(False)
+                self.actionShell.setEnabled(False)
+                self.actionPython_interpreter.setEnabled(False)
+                self.actionIdeOpen.setEnabled(False)
+                self.actionHelp.setEnabled(False)
+            else:
+                self.last_state = None
         else:
             self.last_dockwidget.setWidget(self.last_widget)
             self.last_dockwidget.toggleViewAction().setEnabled(True)
