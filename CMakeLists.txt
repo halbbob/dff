@@ -248,6 +248,23 @@ if(UNIX)
   endif(PFF_MAIN_LIBRARY)
 endif(UNIX)
 
+## AFFlib check for AFF connector, added separatly on windows
+# TODO ; we need afflib >= 3.6, this have to be checked
+if(UNIX)
+  if(INSTALL)
+    # Link with static version at install, until AFF >= 3.6 be added to respective packages streams
+    find_library(AFF_LIBRARY NAMES libafflib.a)
+  else(INSTALL)
+    find_library(AFF_LIBRARY NAMES afflib)
+  endif(INSTALL)
+  if(AFF_LIBRARY)
+    message(STATUS "AFF library found: ${AFF_LIBRARY}")
+  else(AFF_LIBRARY)
+    message(STATUS "AFF library not found, AFF connector will not be build.")
+  endif(AFF_LIBRARY)
+endif(UNIX)
+
+
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})
 # Install prefix used by Python installer.

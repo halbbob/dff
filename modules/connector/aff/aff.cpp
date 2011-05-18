@@ -54,7 +54,7 @@ void aff::start(std::map<std::string, Variant* > args)
 #ifndef WIN32
   setenv("AFFLIB_CACHE_PAGES", this->cache_size.c_str(), 1);
 #else
-  _putenv_s("AFFLIB_CACHE_PAGES", this->cache_size.c_str();
+  _putenv_s("AFFLIB_CACHE_PAGES", this->cache_size.c_str());
 #endif
 
   for (vpath = vl.begin(); vpath != vl.end(); vpath++)
