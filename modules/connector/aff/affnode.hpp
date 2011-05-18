@@ -23,10 +23,11 @@
 class AffNode : public Node
 {
 public:
-  AffNode(std::string name, uint64_t size, Node* parent, class aff* fsobj, std::string originalPath);
+  AffNode(std::string name, uint64_t size, Node* parent, class aff* fsobj, std::string originalPath, AFFILE* affFile);
   ~AffNode();
   int			addSegmentAttribute(Attributes* vmap, AFFILE* af, const char* segname);
   std::string		originalPath;
+  AFFILE*               affile;
   virtual Attributes	_attributes();
 };
 #endif

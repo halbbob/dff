@@ -165,9 +165,10 @@ Attributes	AffNode::_attributes()
 }
 
 
-AffNode::AffNode(std::string Name, uint64_t size, Node* parent, aff* fsobj, std::string origPath): Node(Name, size, parent, fsobj)
+AffNode::AffNode(std::string Name, uint64_t size, Node* parent, aff* fsobj, std::string origPath, AFFILE* _affile): Node(Name, size, parent, fsobj)
 {
   this->originalPath = origPath;
+  this->affile = _affile;
 }
 
 AffNode::~AffNode()

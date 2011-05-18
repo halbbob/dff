@@ -49,7 +49,7 @@ maximum_entry_value_string_size, this->pff_error); \
   result = func(item, &entry_value_64bit, this->pff_error); \
   if (result != -1 && result != 0) \
   { \
-     vtime* 	value_time = new vtime(entry_value_64bit, TIME_MS); \
+     vtime* 	value_time = new vtime(entry_value_64bit, TIME_MS_64); \
      Variant*  variant_time = new Variant(value_time); \
      (*attr)[key] = variant_time; \
   }

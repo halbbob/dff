@@ -45,8 +45,8 @@
 #define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000ULL)
 #endif
 
-#define TIME_UNIX 0
-#define TIME_MS   1
+#define TIME_UNIX    0
+#define TIME_MS_64   1
 
 class vtime
 {

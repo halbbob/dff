@@ -21,7 +21,7 @@ vtime::vtime(uint64_t value, uint32_t type = 0)
   if (value > 0)
   {
     struct tm   *date;
-    if (type == TIME_MS)
+    if (type == TIME_MS_64)
     {
       value -= NANOSECS_1601_TO_1970;
       value /= 10000000;

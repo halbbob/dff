@@ -27,7 +27,11 @@ set(aff_srcs
 
 SET_SOURCE_FILES_PROPERTIES(aff.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(AFF python aff.i ${aff_srcs})
-SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs afflib)
+if(WIN32)
+  SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs afflib libeay32 ssleay32 Ws2_32)
+else(WIN32)
+  SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs afflib)
+endif(WIN32)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_AFF_REAL_NAME} PROPERTIES
@@ -38,10 +42,19 @@ set_target_properties (${SWIG_MODULE_AFF_REAL_NAME} PROPERTIES
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
-set(aff_files
-  __init__.py
-  AFF.py
-)
+if(WIN32)
+  set(aff_files
+    __init__.py
+    AFF.py
+    afflib.dll
+    zlib.dll
+  )
+else(WIN32)
+  set(aff_files
+    __init__.py
+    AFF.py
+  )
+endif(WIN32)
 
 install_lib(${SWIG_MODULE_AFF_REAL_NAME})
 install_file(aff ${aff_files})

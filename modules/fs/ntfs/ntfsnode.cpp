@@ -136,9 +136,9 @@ Attributes				NtfsNode::_attributes()
 
   Attribute	*attribute;
 
-  attr["altered"] = new Variant(new vtime(this->_SI->data()->fileAlteredTime, TIME_MS));
-  attr["accessed"] = new Variant(new vtime(this->_SI->data()->fileAccessedTime, TIME_MS));
-  attr["creation"] = new Variant(new vtime(this->_SI->data()->creationTime, TIME_MS));
+  attr["altered"] = new Variant(new vtime(this->_SI->data()->fileAlteredTime, TIME_MS_64));
+  attr["accessed"] = new Variant(new vtime(this->_SI->data()->fileAccessedTime, TIME_MS_64));
+  attr["creation"] = new Variant(new vtime(this->_SI->data()->creationTime, TIME_MS_64));
   /*
   mftData->clusterSize(4096);
   mftData->indexRecordSize(4096);
@@ -243,7 +243,7 @@ Variant	*NtfsNode::_dataToAttr(uint64_t value)
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToVTime(std::string key, uint64_t value)
 {
-  return std::pair<std::string, class Variant *>(key, new Variant(new vtime(value, TIME_MS)));
+  return std::pair<std::string, class Variant *>(key, new Variant(new vtime(value, TIME_MS_64)));
 }
 
 std::pair<std::string, class Variant *>	NtfsNode::_dataToAttr(std::string key, uint16_t value)

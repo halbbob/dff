@@ -58,9 +58,16 @@ set_target_properties (${SWIG_MODULE_PFF_REAL_NAME} PROPERTIES
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
-set(pff_files
-  PFF.py
-)
+if(WIN32)
+  set(pff_files
+    PFF.py
+    libpff.dll
+  )
+else(WIN32)
+  set(pff_files
+    PFF.py
+  )
+endif(WIN32)
 
 install_lib(${SWIG_MODULE_PFF_REAL_NAME})
 install_file(pff ${pff_files})
