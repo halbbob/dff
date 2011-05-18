@@ -20,6 +20,7 @@
 #include "fatfs.hpp"
 #include "node.hpp"
 #include "variant.hpp"
+#include "entries.hpp"
 #ifndef WIN32
 #include <stdint.h>
 #else
@@ -35,8 +36,7 @@ private:
   uint32_t	cluster;
   bool		__clustrealloc;
 public:
-  void				dosToVtime(vtime* vt, uint16_t dos_time, uint16_t dos_date);
-  uint8_t			*readDosEntry();
+  vtime*			dosToVtime(uint16_t dos_time, uint16_t dos_date);
   FatNode(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
   ~FatNode();
   void				setLfnMetaOffset(uint64_t lfnmetaoffset);
