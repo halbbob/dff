@@ -40,7 +40,7 @@ class aff : public fso
 private:
   Node		*parent;
   FdManager*	__fdm;
-  AFFILE*	__affile;
+  std::string   cache_size;
 public:
   aff();
   ~aff();

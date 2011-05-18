@@ -16,16 +16,13 @@
 
 #include "aff.hpp"
 #include "affnode.hpp"
-#include <pthread.h>
 
 mutex_def(io_mutex);
 
 aff::aff() : fso("aff")
 {
   mutex_init(&io_mutex);
-  this->__affile = NULL;
   this->__fdm = new FdManager();
-  setenv("AFFLIB_CACHE_PAGES", "2", 1);
 }
 
 aff::~aff()
@@ -46,17 +43,24 @@ void aff::start(std::map<std::string, Variant* > args)
     vl = args["path"]->value<std::list<Variant* > >();
   else
     throw(envError("aff module requires path argument"));
-//if args['cahe_size'] //set cache size 
+  if (args["cache size"])
+  {
+    std::ostringstream cs;
+    cs << args["cache size"]->value<uint32_t >();
+    this->cache_size = cs.str(); 
+  }
+  else
+    this->cache_size = "2";
+  setenv("AFFLIB_CACHE_PAGES", this->cache_size.c_str(), 1);
 
-//XXX can't open multiple different file !
   for (vpath = vl.begin(); vpath != vl.end(); vpath++)
   {
      std::string path = (*vpath)->value<Path* >()->path;
-     this->__affile = af_open(path.c_str(), O_RDONLY, 0);	
-     if (this->__affile)
+     AFFILE* affile = af_open(path.c_str(), O_RDONLY, 0);
+     if (affile)
      {
 	std::string nname = path.substr(path.rfind('/') + 1);
-	node = new AffNode(nname, af_get_imagesize(this->__affile), NULL, this, path);
+	node = new AffNode(nname, af_get_imagesize(affile), NULL, this, path, affile);
    	this->registerTree(this->parent, node);   
 	this->res[path] = new Variant(std::string("added successfully by aff module"));
      }
@@ -70,7 +74,9 @@ void aff::start(std::map<std::string, Variant* > args)
 
 int aff::vopen(Node *node)
 {
-  if (this->__affile)
+  AffNode* affNode = dynamic_cast<AffNode* >(node);
+
+  if (affNode->affile)
   {
     fdinfo* fi = new fdinfo();
     fi->node = node;
@@ -85,10 +91,12 @@ int aff::vread(int fd, void *buff, unsigned int size)
 {
   int	 	result;
   fdinfo*	fi;
- 
+  AffNode*	affNode = NULL;
+
   try
   {
      fi = this->__fdm->get(fd);
+     affNode = dynamic_cast<AffNode* >(fi->node);
   }
   catch (...)
   {
@@ -96,8 +104,8 @@ int aff::vread(int fd, void *buff, unsigned int size)
   }
 
   mutex_lock(&io_mutex);
-  af_seek(this->__affile, (int64_t)fi->offset, SEEK_SET);
-  result = af_read(this->__affile, (unsigned char*)buff, size);
+  af_seek(affNode->affile, (int64_t)fi->offset, SEEK_SET);
+  result = af_read(affNode->affile, (unsigned char*)buff, size);
   if (result > 0)
     fi->offset += result;
   mutex_unlock(&io_mutex);
