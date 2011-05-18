@@ -132,14 +132,14 @@ uint32_t	AttributeAttributeList::getExternalAttributeIndexRoot()
   uint16_t	contentSize;
 
   if (_attributeHeader->nonResidentFlag) {
-    ;
+    return 0;
   }
   else {
     contentSize = _attributeResidentDataHeader->contentSize;
   }
   while (_dataOffset < contentSize) {
     if (_attributeHeader->nonResidentFlag) {
-      ;
+      return 0;
     }
     else {
       _data = (AttributeAttributeList_t *)(_readBuffer + _bufferOffset + _dataOffset);
@@ -161,14 +161,14 @@ uint32_t	AttributeAttributeList::getExternalAttributeIndexAlloc()
   uint16_t	contentSize;
 
   if (_attributeHeader->nonResidentFlag) {
-    ;
+    return 0;
   }
   else {
     contentSize = _attributeResidentDataHeader->contentSize;
   }
   while (_dataOffset < contentSize) {
     if (_attributeHeader->nonResidentFlag) {
-      ;
+      return 0;
     }
     else {
       _data = (AttributeAttributeList_t *)(_readBuffer + _bufferOffset + _dataOffset);
