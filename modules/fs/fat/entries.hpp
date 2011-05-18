@@ -150,7 +150,6 @@ private:
 
   lfnentry*			toLfn(uint8_t* entry);
   //lfnentry*			LfnFromOffset(uint64_t offset);
-  dosentry*			toDos(uint8_t* entry);
   //dosentry*			DosFromOffset(uint64_t* offset);
   //void				convert(uint8_t* entry, uint64_t offset);
   void				initCtx();
@@ -158,6 +157,8 @@ public:
   EntriesManager(uint8_t fattype);
   ~EntriesManager();
   //void				setContext(Node* origin);
+  std::string			formatDosname(dosentry* dos);
+  dosentry*			toDos(uint8_t* entry);
   bool				push(uint8_t* buff, uint64_t offset);
   ctx*				fetchCtx();
 

@@ -143,7 +143,7 @@ bool	EntriesManager::isDosEntry(uint8_t* buff)
   return this->isDosName(buff);
 }
 
-void	EntriesManager::setDosName(dosentry* dos)
+std::string			EntriesManager::formatDosname(dosentry* dos)
 {
   std::string	name;
   int		i;
@@ -176,7 +176,12 @@ void	EntriesManager::setDosName(dosentry* dos)
 	name += dos->ext[i];
       i++;
     }
-  this->c->dosname = name;
+  return name;
+}
+
+void	EntriesManager::setDosName(dosentry* dos)
+{
+  this->c->dosname = this->formatDosname(dos);
 }
 
 bool	EntriesManager::isChecksumValid(uint8_t* buff)
