@@ -1040,8 +1040,11 @@ void				Ntfs::_deletedNodeWithADS(uint64_t offset,
   for (iADS = 0; iADS < adsAmount; iADS++) {
     std::ostringstream	name;
 
-    name << fullFileName->getFileName() << data[iADS]->getExtName();
-    _createOrphanOrDeleted(name.str(), fullFileName, true, data[iADS], mftID, metaSI, offset);
+	if (fullFileName != NULL){
+		// XXX Added by jmo in order to avoid Segfault when fullFileName == 0
+		name << fullFileName->getFileName() << data[iADS]->getExtName();
+		_createOrphanOrDeleted(name.str(), fullFileName, true, data[iADS], mftID, metaSI, offset);
+	}
   }
   //done before: _setStateInfo(_mftMainFile->discoverPercent());
 }
