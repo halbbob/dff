@@ -129,6 +129,9 @@ void					Ntfs::_createDeletedWithParent(std::string fileNameS,
 	/**
 	 * Read parent directory name
 	 */
+	if (metaFileName != NULL) {
+	  delete metaFileName;
+	}
 	metaFileName = new AttributeFileName(*attribute);
 	
 	if (metaFileName->data()->nameSpace & ATTRIBUTE_FN_NAMESPACE_WIN32 ||
@@ -190,12 +193,12 @@ void	Ntfs::_createOrphanOrDeleted(std::string fileNameS,
 {
   uint64_t		parentRef = fileName->data()->parentDirectoryFileReference;
   uint64_t		prevParentRef = 0;
-  MftEntry		*parent;
+  MftEntry		*parent = NULL;
   Attribute		*attribute;
   bool			orphan = false;
   std::list<uint64_t>	pathRefs;
   NtfsNode		*newFile;
-  AttributeFileName	*metaFileName;
+  AttributeFileName	*metaFileName = NULL;
   /**
    * Create a list of parents
    */
@@ -212,7 +215,7 @@ void	Ntfs::_createOrphanOrDeleted(std::string fileNameS,
       attribute->readHeader();
       DEBUG(INFO, "type 0x%x\n", attribute->getType());
 
-      if (attribute->getType() == ATTRIBUTE_FILE_NAME) {  
+      if (attribute->getType() == ATTRIBUTE_FILE_NAME) {
 	metaFileName = new AttributeFileName(*attribute);
 	
 	DEBUG(INFO, "filename PARENT: %s\n", metaFileName->getFileName().c_str());
@@ -232,9 +235,15 @@ void	Ntfs::_createOrphanOrDeleted(std::string fileNameS,
 	  DEBUG(INFO, "\tIS NOT A DIRECTORY -> Orphan\n");
 	  orphan = true;
 	}
+	if (metaFileName != NULL) {
+	  delete metaFileName;
+	  metaFileName = NULL;
+	}
 	break;
       }
     }
+    delete parent;
+    parent = NULL;
   }
   
   DEBUG(INFO, "over\n");
