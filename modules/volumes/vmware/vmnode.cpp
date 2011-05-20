@@ -76,7 +76,7 @@ void VMNode::fileMapping(FileMapping *fmap)
   int		mapcheck;
   // Parse All extents
 
-  std::cout << "N of Extents : " << nextents << " GDEntries " << extents[curextent]->GDEntries << " GTEntries " << extents[curextent]->GTEntries<< std::endl;
+  //std::cout << "N of Extents : " << nextents << " GDEntries " << extents[curextent]->GDEntries << " GTEntries " << extents[curextent]->GTEntries<< std::endl;
 
   while (curextent < nextents)
     {
