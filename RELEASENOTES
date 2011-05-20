@@ -72,19 +72,20 @@ handling this was fixed by using variant.
      feedback when he was working on the aff4 module.
 
 * NTFS :
+  -  Fix for files-end made of virtual chunks ; full of 0.
+  -  Infinite loop fix when searching for parent of deleted or orphan items.
+  -  Two segfault fixes on metadata parsing due to complex on-disk structure
+     of NTFS attributes.
 
 * GUI :
-
   -  A bug occuring when trying to input a Node as a parameter to modules has
      been fixed : it was not possible to browse in the tree view.
-
   -  The tree view, in the node browser, had an inconsitant behavior : to change
      directories, users had to double-click on nodes names, which used to
      collapse the tree view. This is fixed. The node browser now behaves as a
      classic file browser.
 
 * Variant vtime repr:
-
   -  Dealing with vtime encapsulated in Variant in the Python interpreter, an
      exception were raised because there were no __repr__ or __str__ provided
      for this type.
