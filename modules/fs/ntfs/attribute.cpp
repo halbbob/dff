@@ -40,9 +40,7 @@ Attribute::Attribute(VFile *vfile)
 
 Attribute::~Attribute()
 {
-  if (_fixupIndexes != NULL) {
-    delete _fixupIndexes;
-  }
+  ;
 }
 
 void	Attribute::setOrigin(AttributeHeader *header, uint8_t *readBuffer,
