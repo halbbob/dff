@@ -26,6 +26,7 @@ FatTree::FatTree()
 
 FatTree::~FatTree()
 {
+  this->vfile->close();
 }
 
 //void	FatTree::
@@ -147,7 +148,7 @@ Node*	FatTree::allocNode(ctx* c, Node* parent)
       if (this->allocatedClusters->find(c->cluster) == NULL)
 	node->setCluster(c->cluster);
       else
-	node->setCluster(0);
+	node->setCluster(c->cluster, true);
     }
   else
     node->setCluster(c->cluster);
@@ -240,7 +241,7 @@ void	FatTree::walk(uint32_t cluster, Node* parent)
 
 void	FatTree::walk_free(Node* parent)
 {
-  std::vector<uint64_t>		clusters;
+  std::vector<uint32_t>		clusters;
   uint32_t			cidx;
   uint32_t			bpos;
   uint8_t*			buff;
@@ -251,31 +252,36 @@ void	FatTree::walk_free(Node* parent)
   try
     {
       rootunalloc = NULL;
-      clusters = this->fs->fat->listFreeClustersOffset();
+      clusters = this->fs->fat->listFreeClusters();
       buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize);
       for (cidx = 0; cidx != clusters.size(); cidx++)
 	{
-	  this->vfile->seek(clusters[cidx]);
-	  this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize);
-	  for (bpos = 0; bpos != this->fs->bs->csize * this->fs->bs->ssize; bpos += 32)
+	  if ((this->allocatedClusters->find(clusters[cidx]) == NULL) && (clusters[cidx] != 0))
 	    {
-	      if (*(buff+bpos) == 0xE5)
-		if (this->emanager->push(buff+bpos, clusters[cidx]+bpos))
+	      uint64_t	clustoff;
+	      clustoff = this->fs->fat->clusterToOffset(clusters[cidx]);
+	      this->vfile->seek(clustoff);
+	      this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize);
+	      for (bpos = 0; bpos != this->fs->bs->csize * this->fs->bs->ssize; bpos += 32)
 		{
-		  c = this->emanager->fetchCtx();
-		  if (c->valid)
-		    {
-		      if (rootunalloc == NULL)
-			{
-			  rootunalloc = new Node("unallocated clusters", 0, NULL, this->fs);
-			  rootunalloc->setDir();
-			}
-		      if ((c->size < this->fs->bs->totalsize) && (c->cluster < this->fs->bs->totalcluster))
-			this->allocNode(c, rootunalloc);
-		    }
-		  delete c;
+		  if (*(buff+bpos) == 0xE5)
+		    if (this->emanager->push(buff+bpos, clustoff+bpos))
+		      {
+			c = this->emanager->fetchCtx();
+			if (c->valid)
+			  {
+			    if (rootunalloc == NULL)
+			      {
+				rootunalloc = new Node("$OrphanedFiles", 0, NULL, this->fs);
+				rootunalloc->setDir();
+			      }
+			    if ((c->size < this->fs->bs->totalsize) && (c->cluster < this->fs->bs->totalcluster))
+			      this->allocNode(c, rootunalloc);
+			  }
+			delete c;
+		      }
 		}
- 	    }
+	    }
 	}
       free(buff);
       if (rootunalloc != NULL)

@@ -16,7 +16,9 @@
 add_subdirectory (local)
 add_subdirectory (libewf)
 add_subdirectory(devices)
-#add_subdirectory(aff)
+if(WIN32 OR AFF_LIBRARY)
+  add_subdirectory(aff)
+endif(WIN32 OR AFF_LIBRARY)
 
 if(HAVE_FUSE)
   add_subdirectory (fuse)

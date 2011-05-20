@@ -3,6 +3,885 @@ DFF (Digital Forensics Framework)
 See CHANGES.current file for changes in the current version.
 See RELEASENOTES file for a summary of changes in each release.
 
+Version 1.1.0 (20 May 2011)
+===========================
+
+Author: cma <cma@digital-forensic.org>
+Date:   Fri May 20 13:52:02 2011 +0200
+
+    Adds zh to i18n process. Try to fix mem leaks in NTFS.
+
+Author: jmo <jmo@digital-forensic.org>
+Date:   Thu May 19 17:57:34 2011 +0200
+
+    Double commit :
+    1. DeviceDialog : Change from str() to QString.fromUtf8() for device informations
+    2. Bugfix NTFS issue : check if fullFileName is NULL permit to avoid segfault -> Check XXX && jmo in ntfs.cpp
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu May 19 13:43:29 2011 +0000
+
+    Translation : Chinese languages added thanks to Zhang Jun
+
+Author: jmo <jmo@digital-forensic.org>
+Date:   Wed May 18 18:05:32 2011 +0200
+
+    Change splashscreen to Version 1.1
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed May 18 17:49:20 2011 +0200
+
+    Re-enables app version sets from CMak\e
+
+Author: jmo <jmo@digital-forensic.org>
+Date:   Wed May 18 17:11:03 2011 +0200
+
+    Resolve Segmentation Fault Issue on NTFS module : Parsing Attributes -> resident Flags -> return 0 instead of continue (_data issue)
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed May 18 15:09:24 2011 +0000
+
+    * Better handling of Orphaned files
+    ** if free cluster has already been walked earlier by walkDeleted, it won't be parsed
+    * Better attributes management in created nodes
+    ** dos attributes decoded, dos name provided
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed May 18 15:32:34 2011 +0200
+
+    Adds check for AFFlib, link with static version on linux at install.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed May 18 14:57:16 2011 +0200
+
+    AFF works on Windows. Also modifies CMake rules for thirdparty dll copy.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed May 18 14:27:11 2011 +0000
+
+    Change VTIME TIME_MS flag to TIME_MS_64 as it's already define by ms in some headers
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed May 18 14:05:24 2011 +0000
+
+    AFF: add cache size options and handle multiple input files
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed May 18 12:33:48 2011 +0000
+
+    * removes Nodefilterbox dependencies
+
+Author: jmo <jmo@digital-forensic.org>
+Date:   Wed May 18 13:21:25 2011 +0200
+
+    This commit fixes minor issue #126 by checking focus state of dockwidgets
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed May 18 12:14:52 2011 +0200
+
+    Modifies Visual Studio rule in many CMakeLists.txt, PREFIX .. no longuer needed.
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Tue May 17 19:40:44 2011 +0000
+
+    * FAT module enhancements:
+    ** added slack space as attributes for not deleted files
+    ** for deleted files mapping does not rely on cluster chain:
+    *** get the first cluster and mapped size
+    * nodefilterbox and nodeviewbox patched
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue May 17 17:44:43 2011 +0000
+
+    FIX: use old find API for creating thumbnails
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue May 17 17:37:38 2011 +0000
+
+    PFF : Remove unused definition
+
+Author: cma <cma@digital-forensic.org>
+Date:   Tue May 17 17:57:20 2011 +0200
+
+    CMakeLists.txt update for PFF module to compile on Windows.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue May 17 15:35:42 2011 +0000
+
+    VTIME: add unix 64 bits time stamp to constructor, select between unix and ms 64bits with a flag, default is unix (if not specified)
+    AFF: update use only one open -> to be faster as multi open is really to slow on this lib, need to fix for multi file loading
+
+Author: rbe <rbe@digital-forensic.org>
+Date:   Tue May 17 11:54:35 2011 +0200
+
+    TreeModel / viewModel / *model / *view
+    * Fixes a couple of stuff : https://tracker.digital-forensic.org/issues/125
+
+Author: cma <cma@digital-forensic.org>
+Date:   Tue May 17 09:44:16 2011 +0200
+
+    Dutch translation update about #121, thanks to Bram.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Mon May 16 19:32:59 2011 +0200
+
+    Adds fine check for PFF library ; link with static version of the library in installation mode.
+    Compile without check on Windows because PFF is added separately.
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Mon May 16 19:13:15 2011 +0000
+
+    * vmware compiler warnings remove
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Mon May 16 19:12:44 2011 +0000
+
+    * carver compiler warnings remove
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Mon May 16 19:12:13 2011 +0000
+
+    * API compiler warnings remove
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Mon May 16 18:06:17 2011 +0000
+
+    * removes some Warnings
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Mon May 16 18:05:37 2011 +0000
+
+    * removes some compiltation Warnings
+
+Author: sja <sja@arxsys.fr>
+Date:   Mon May 16 19:19:05 2011 +0200
+
+    FIX bug with WMI Devices with QT FileDialog  who CoInitialize before it, ... must be test under Windows XP
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 16 17:08:33 2011 +0000
+
+    devices StringList  is already define in vfs.i remove this definition
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 16 16:55:42 2011 +0000
+
+    EXTFS: avoid warning
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 16 16:48:27 2011 +0000
+
+    Correct some reported some warning
+
+Author: cma <cma@digital-forensic.org>
+Date:   Mon May 16 18:22:00 2011 +0200
+
+    This commit closes #122 ; typo in ui/conf.py.
+    This commit also adds a check for PFF library installation in top level CMakeLists.txt, remember libbfio from PFF have to be installed separatly. Without separate libbfio installation, usage of libpff
+    through DFF is not possible.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Mon May 16 17:51:29 2011 +0200
+
+    Spanish translation update refs. #121 , thanks to Pablo.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Mon May 16 17:25:51 2011 +0200
+
+    Translatable string in file nodeviewbox.py adds to dff.pro, related to #121.
+    Updates french translation for it.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 16 13:51:51 2011 +0000
+
+    vfile::vread Change error message
+
+Author: sja <sja@arxsys.fr>
+Date:   Mon May 16 14:34:58 2011 +0200
+
+    WDEVICE avoid warning
+
+Author: sja <sja@arxsys.fr>
+Date:   Mon May 16 13:21:50 2011 +0200
+
+    VFile::Read check if there is enough memory to allocate buffer
+
+Author: jmo <jmo@digital-forensic.org>
+Date:   Mon May 16 13:02:06 2011 +0200
+
+    Enhencement : Add a new icon in order to detect when thumbnails are activated or not into the nodebrowser
+
+Author: sja <sja@arxsys.fr>
+Date:   Mon May 16 12:49:12 2011 +0200
+
+    Initialize windows thread
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 16 11:28:30 2011 +0000
+
+    Add threading hpp to define for win thread and pthread
+
+Author: jmo <jmo@digital-forensic.org>
+Date:   Mon May 16 12:24:11 2011 +0200
+
+    Relove Open as New tab bug : pass node.absolute() to getnode function
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun May 15 22:57:57 2011 +0000
+
+    PFF use Variant to store buffer
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun May 15 21:41:20 2011 +0000
+
+    Remove some call to the filemapping cache
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun May 15 20:46:29 2011 +0000
+
+    FIX mfso cache filemapping
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun May 15 18:09:45 2011 +0000
+
+    Add cache for mfso filemapping and lock for mfso opened vfiles
+
+Author: mcleodz <mcleodz@mojo.(none)>
+Date:   Sat May 14 16:30:25 2011 +0200
+
+    Resolve Issue Enhancement #121, now a dialog box pop up when try to bookmark with none selected nodes
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu May 12 23:03:32 2011 +0000
+
+    mfso::close() remove delete fdinfo as it's deleted by fdremove
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu May 12 20:33:29 2011 +0000
+
+    Remove comment and indent correctly
+
+Author: sja <sja@arxsys.fr>
+Date:   Thu May 12 20:28:52 2011 +0200
+
+    DEVICES add icon for nodes
+    MFSO fix big problem with underlaying opened files -> this must be tested
+
+Author: sja <sja@arxsys.fr>
+Date:   Thu May 12 15:57:23 2011 +0200
+
+    FIX Loader print exception but didn't return
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu May 12 15:27:50 2011 +0000
+
+    Must use RELWITHDEBINFO in UPPER case in CMakeLists
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu May 12 15:15:09 2011 +0000
+
+    Add RelWithDebInfo in vs prefix for cmake
+
+Author: sja <sja@arxsys.fr>
+Date:   Fri May 6 18:28:58 2011 +0200
+
+    Change CMakeList to build lib and modules in the right place when compiled with VS2010
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 2 14:06:35 2011 +0000
+
+    getnode unicode fix
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 2 12:46:14 2011 +0000
+
+    LOCAL argument parent is no optional like it was before
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon May 2 12:45:47 2011 +0000
+
+    Fix unicode for console in getnode
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 28 18:04:40 2011 +0000
+
+    Change size of bookmark and search icon to 128x128
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 28 17:59:13 2011 +0000
+
+    Modifit attach.png from size 64x64 to 128x128
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 28 17:38:04 2011 +0000
+
+    Fix memory leak in lib EXIF.py
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 28 12:30:46 2011 +0000
+
+    Remove AFF module from CMakeLists as a check if present but be done before compiling it
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 28 12:29:08 2011 +0000
+
+    Remove unused __init__.py from the CMakeLits
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 17:47:53 2011 +0000
+
+    AFF fix register_tree when list of files is given as argument
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 16:52:54 2011 +0000
+
+    AFF Remove some code comment
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 16:40:14 2011 +0000
+
+    AFF: add basical lock mechanism to avoid crash when used by multiple thread
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 14:18:07 2011 +0000
+
+    Remove PFF from CMakeLists must be build only if libpff with libbfio support is present
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 13:22:41 2011 +0000
+
+    Viewerimage Change  the qlabel that display the name of the picture by a qlineedit to avoid problem with too long absolute path that made wiget to automatically resize
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 11:35:01 2011 +0000
+
+    Vieweriamge Add unicode support in file names display in widget
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 26 11:32:29 2011 +0000
+
+    Add unicode support in module widget name
+
+Author: sja <sja@digital-forensic.org>
+Date:   Fri Apr 22 17:10:36 2011 +0000
+
+    PFF: Add wrapper for DFF IO subsytem to be use with libpff, in order to made libpff module stackable
+    To use this module you must install libbfio before installing libpff (libpff with libbfio external support)
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 21 14:24:09 2011 +0000
+
+    PFF: add options .i (to NOT create default items, recoverable, unallocated, orphans)
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 21 13:06:22 2011 +0000
+
+    ressource: add the needed icon for PFF
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Apr 21 13:05:44 2011 +0000
+
+    PFF: Add more detailed results and some beautifull icons !
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Apr 20 17:40:25 2011 +0000
+
+    VTIME : new contrustor uint64_t convert directly for MS 64bits timestamp format
+    TYPECONV : add some macro to convert endianess
+    PFF : didn't add transport headers if size is 0
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Apr 20 16:24:35 2011 +0000
+
+    PFF: Attribute recipients now handle multiples recipients
+         Add Attribute conversation index
+         Attribute message header now handle multiple flags
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Apr 20 13:03:25 2011 +0000
+
+    * fixes bugs in datatype (datatype + magichandler)
+    * adds thread safe operations for datatype call (libvfs.i)
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 19 16:34:29 2011 +0000
+
+    Add UTF8 display support for key in variant map
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 19 15:47:43 2011 +0000
+
+    PFF: add recovered items (fully deleted) as nodes
+         add orphan items as nodes
+         handle error differenly (set it in result)
+         change stateinfo according to current parsing state
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 18:16:38 2011 +0000
+
+    PFF node_task add percentage complete as attributes
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 17:33:40 2011 +0000
+
+    PFF: add all type not fully handled by libpff (without attributes) as PffNodeEmailMessageText node
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 16:58:51 2011 +0000
+
+    PFF add item type note as node
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 16:38:22 2011 +0000
+
+    Add item type meeting as node
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 16:03:38 2011 +0000
+
+    Contact & task now inherit from PffNodeEmailMessageText to avoid redondant code
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 15:24:45 2011 +0000
+
+    Remove unnecessary comment
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 18 13:38:42 2011 +0000
+
+    FIX appointmnent & attachment for appointment/attachment/appointment & attachment/attachment using identifier whem possible
+
+Author: cma <cma@digital-forensic.org>
+Date:   Mon Apr 18 12:56:22 2011 +0200
+
+    NTFS fix for file contents ending with chunks of 0
+
+Author: sja <sja@digital-forensic.org>
+Date:   Fri Apr 15 12:11:28 2011 +0000
+
+    Modifiy getnode to be functional with unicode
+
+Author: sja <sja@digital-forensic.org>
+Date:   Fri Apr 15 11:40:49 2011 +0000
+
+    PFF now use iterator identifier to use less memory when it's possible
+    Need to fix attachment / attachment / appointment
+    Need to fix attachment / attachment / files
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Thu Apr 14 17:26:31 2011 +0000
+
+    * api.vfs.vfs.py
+    ** added depth argument to manage maximum recursion
+    ** can take as arguments either a node or a string
+
+Author: rbe <rbe@digital-forensic.org>
+Date:   Thu Apr 14 17:04:29 2011 +0200
+
+    indexation
+    * update the CMakeList and add missing files
+
+Author: rbe <rbe@digital-forensic.org>
+Date:   Thu Apr 14 15:51:19 2011 +0200
+
+    indexation
+    * modify index and search
+    * the indexer is not a module anymore
+    * can configure the index a bit
+    * add a form to perform "advanced" searches (wip)
+    * can add / remove content in the index
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Apr 13 23:20:49 2011 +0000
+
+    PFF use macro when possible for attribute, delete some comment
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Apr 13 19:18:23 2011 +0000
+
+    Add task node (not finished yet lacks 2 attributes)
+    Start to use macro to made the code more redable and lot shorter
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Apr 13 16:02:56 2011 +0000
+
+    Change datatype->type to return string rather that string*
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Apr 13 15:23:39 2011 +0000
+
+    PFF add item type contact
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Apr 13 13:24:21 2011 +0200
+
+    NTFS code cleaning, fix warning on 64b
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Apr 13 13:17:57 2011 +0200
+
+    NTFS fix for small content.
+     When content of a file is stored directly in a MFT, fixup (bad block in metadata detection feature) was replaced with an absolute offset instead of physical offset from NTFS image.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 12 19:02:16 2011 +0000
+
+    PFF : Appoinment is now ok
+    PFF : Appointment who as appointment as attachment work ok
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 12 18:58:04 2011 +0000
+
+    add thread block for compatibleModules who call dataType
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 12 18:57:05 2011 +0000
+
+    Improve unicode support
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 12 17:16:51 2011 +0000
+
+    check if str pointer is null and that all path return string in magichandler.py
+
+Author: sja <sja@digital-forensic.org>
+Date:   Tue Apr 12 17:15:26 2011 +0000
+
+    block node->dataType in libvfs.i map insertion is not thread safe and could be the cause of the segfault
+
+Author: cma <cma@digital-forensic.org>
+Date:   Mon Apr 11 18:44:10 2011 +0200
+
+    NTFS beginning of fix for heavy fragmented files, need validation to avoid regression.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Apr 4 12:27:24 2011 +0000
+
+    PFF: Add unallocated data to a node
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Fri Apr 1 20:03:56 2011 +0000
+
+    * enables access from Python to pattern struct in libsearch.i and swig interface to handle unsigned char * type
+    * add method walk in vfs.py. It provides the same behaviour as walk in os module of Python
+    ** for dirpath, dirs, files in v.walk("/", [topdown=True|False]):
+    	do something
+
+Author: sja <sja@digital-forensic.org>
+Date:   Fri Apr 1 16:59:05 2011 +0000
+
+    PFF : add unallocated page as mfso node
+    add icon attach for node attachment
+    modifiy mfso to have fdmanager accessible from inherited class (public) must set an accessor later
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 31 17:57:07 2011 +0000
+
+    Remove some old comment in viewerimage
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 31 17:52:49 2011 +0000
+
+    Add some forgotten type compatible with viewerimage
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 31 16:49:34 2011 +0000
+
+    little fix in aff module
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 31 15:48:22 2011 +0000
+
+    CMakeLists Remove swig optimization (swig -O)
+    Libexceptions remove unlock of thread because is set twice without swig -O
+    Libtypes.i add lock to variant
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Mar 28 00:22:55 2011 +0000
+
+    use delete for pdata* for python read
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:50:10 2011 +0000
+
+    vmware remove unused variable
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:44:24 2011 +0000
+
+    remove unused variable
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:43:48 2011 +0000
+
+    remove unused variable
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:40:43 2011 +0000
+
+    remove unused variable
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:39:30 2011 +0000
+
+    carver.cpp remove unused variable
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:32:45 2011 +0000
+
+    shm module : remove unused variable
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:27:06 2011 +0000
+
+    Now compile with Wall flag in debug mode
+    Remove unitialized variable in ulocalnode
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 04:03:43 2011 +0000
+
+    Add result to AFF Module
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 02:23:59 2011 +0000
+
+    AFF Module is now fully working
+    Add void pointer type to Variant class
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 27 01:05:17 2011 +0000
+
+    New module AFF
+    AffNode Attributes as all info except for encryted blocks
+
+Author: sja <sja@digital-forensic.org>
+Date:   Fri Mar 25 16:19:36 2011 +0000
+
+    FIXES #113  EWF Now the id is set as Variant solve the negative handle problem
+    fix libvfs.i fixes the returned size in vread for python (it returned the readed size rather than the to read size)
+    reset time value in singleton module (could made strange time execution  value in taskmanager)
+
+Author: cma <cma@digital-forensic.org>
+Date:   Fri Mar 25 16:31:49 2011 +0100
+
+    Works on MacOS X.5 32bits, python-magic and libmagic has to be installed separatly.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Fri Mar 25 16:30:50 2011 +0100
+
+    Backward compatibility for Python < 2.6
+
+Author: cma <cma@digital-forensic.org>
+Date:   Fri Mar 25 16:02:43 2011 +0100
+
+    Dutch translation update thanks to Bram Mooij.
+
+Author: Pablo J. Rogina <pablojr@gmail.com>
+Date:   Thu Mar 24 19:17:42 2011 -0300
+
+    Fixed bug #112 - Labels not disabled in Preferences dialog
+    
+    When "No footprint" is checked some labels weren't disabled. Fixed by reviewing several setEnabled() methods to follow the proper logic.
+    
+    Signed-off-by: cma <cma@digital-forensic.org>
+
+Author: cma <cma@digital-forensic.org>
+Date:   Thu Mar 24 15:57:03 2011 +0100
+
+    Fixes NTFS crash or infinite loop when searching for parent of deleted or orphan items.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Sun Mar 20 21:56:01 2011 +0000
+
+    Fix somes strings in italian translation
+
+Author: cma <cma@digital-forensic.org>
+Date:   Thu Mar 17 17:56:09 2011 +0100
+
+    Adds license copyright and header in italian translation file.
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Thu Mar 17 17:40:55 2011 +0000
+
+    * bugfix with output name variable.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Thu Mar 17 17:27:41 2011 +0100
+
+    EWF was not working on Windows. Fixes one missing letter n for Dennis.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 17 18:09:49 2011 +0000
+
+    Add authors of italian translation
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 17 17:41:21 2011 +0000
+
+    Add some missing string in italian translation
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 17 17:34:31 2011 +0000
+
+    Add italian translation to cmakelist and dff.pro
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 17 17:33:17 2011 +0000
+
+    New Italian translation by Francesco Acchiappati
+
+Author: mcleodz <mcleodz@wisky.(none)>
+Date:   Thu Mar 17 17:03:41 2011 +0100
+
+    Layout manager : Change fieldValidator to acces any characters for not INT types
+
+Author: cma <cma@digital-forensic.org>
+Date:   Thu Mar 17 16:12:00 2011 +0100
+
+    Removes useless string in loader when loading module without dependency. Removes LD_PRELOAD from linux launcher for installation, now also useless.
+
+Author: mcleodz <mcleodz@wisky.(none)>
+Date:   Thu Mar 17 16:07:06 2011 +0100
+
+    layoutmanager:Line 541 : Remove retranslateUi in layoutmanager
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Thu Mar 17 14:36:14 2011 +0000
+
+    * update
+
+Author: cma <cma@digital-forensic.org>
+Date:   Thu Mar 17 13:59:11 2011 +0100
+
+    Adds missing spaces in translation files
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 17 12:37:50 2011 +0000
+
+    Fix ewf error message line 91
+
+Author: cma <cma@digital-forensic.org>
+Date:   Thu Mar 17 13:01:52 2011 +0100
+
+    Translation updates. Adds GPL header and copyright to each author.
+    Thanks to Denis for Dff_de.ts, Bram for Dff_nl.ts and Pablo for Dff_es.ts !
+
+Author: sja <sja@digital-forensic.org>
+Date:   Thu Mar 17 13:18:13 2011 +0000
+
+    Updated Spanish translation by Pablo J. Rogina
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 19:38:15 2011 +0100
+
+    Try to fix english.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 18:37:51 2011 +0100
+
+    Hexedit = hex viewer ... Translation update for fr
+
+Author: rbe <rbe@digital-forensic.org>
+Date:   Wed Mar 16 18:21:11 2011 +0100
+
+    RELEASESNOTES' file:
+    * correction of a few typos.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Mar 16 19:00:15 2011 +0000
+
+    RELASENOTES reformat some text
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Mar 16 18:56:32 2011 +0000
+
+    RELEASENOTES wrap underline text
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Mar 16 18:55:21 2011 +0000
+
+    set RELASENOTES to 80 col
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 18:08:45 2011 +0100
+
+    Modifies top level CMakeLists.txt to add manpage, readme and licenses on install
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 17:14:53 2011 +0100
+
+    Adds AUTHORS file
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 17:06:12 2011 +0100
+
+    Modules version OK, modifies remaining ones.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Mar 16 16:52:20 2011 +0000
+
+    Remove ressources directory from top CMakeLists
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 16:17:08 2011 +0000
+
+    * carver.py has been added in versionning but is generated at compile time.
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 15:34:19 2011 +0000
+
+    * remove of long key name in attributes
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 15:33:15 2011 +0000
+
+    * Completer were removed in layoutmanager NavBar
+    * every signals are binded to completerWidget
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 16:19:32 2011 +0100
+
+    Adds version to each module, need test, some modules remains to be converted.
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 15:54:30 2011 +0100
+
+    Dutch translation update, thanks to Bram Mooij.
+
+Author: sja <sja@digital-forensic.org>
+Date:   Wed Mar 16 16:23:30 2011 +0000
+
+    Add changeslog for v1.0 and releasesnotes
+
+Author: cma <cma@digital-forensic.org>
+Date:   Wed Mar 16 15:44:55 2011 +0100
+
+    Licenses and Copyright updates.
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 13:50:24 2011 +0000
+
+    * check if Index section exist. When changing from ENABLE_INDEXER OFF to ON, and having already started DFF, there is no index section in config.cfg which avoids
+    DFF to be started
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 13:39:25 2011 +0000
+
+    * indexing fully optional either in GUI or CMakeLists.txt
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 13:03:05 2011 +0000
+
+    * remove of Indexation in GUI preferences
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Wed Mar 16 12:43:06 2011 +0000
+
+    * hides search button in nodeviewbox
+
+
+
+
 Version 1.0.0 (16 March 2011)
 =============================
 

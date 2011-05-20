@@ -14,7 +14,7 @@
 #  Christophe Malinge <cma@digital-forensic.org>
 
 # please keep the list of supported languages sorted alphabetically
-set(DFF_SUPPORTED_LANGUAGES "de" "en" "es" "fr" "it" "nl")
+set(DFF_SUPPORTED_LANGUAGES "de" "en" "es" "fr" "it" "nl" "zh")
 
 # Please also take care of dff.pro file !
 

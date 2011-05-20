@@ -50,8 +50,8 @@ private:
 public:
   DeviceBuffer(HANDLE handle, uint32_t size, uint32_t BPS,  uint64_t DevSize);
   ~DeviceBuffer();
-   uint32_t			__size;
-  int32_t			getData(void* buff, uint32_t size, uint64_t offset);
+  uint32_t			__size;
+  uint32_t			getData(void* buff, uint32_t size, uint64_t offset);
 };
 #endif
 
@@ -59,6 +59,7 @@ class DeviceNode : public Node
 {
 	
 public:
+	std::string		icon();
 	std::string		__devname;	
 	DeviceNode(std::string devname, uint64_t size, fso* fsobj,std::string name);
 };

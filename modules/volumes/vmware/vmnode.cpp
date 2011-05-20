@@ -59,6 +59,7 @@ Link	*VMNode::getBaseLink()
       if ((*lk)->isBase())
 	return (*lk);
     }
+  return NULL;
 }
 
 

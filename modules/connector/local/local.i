@@ -49,7 +49,7 @@ class LOCAL(Module):
   """Add file from your operating system to the VFS"""
   def __init__(self):
     Module.__init__(self, 'local', local)
-    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.Node, 
 	                   "name": "parent", 
 	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
                        "parameters": {"type": Parameter.Editable,

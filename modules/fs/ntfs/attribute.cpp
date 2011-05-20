@@ -500,30 +500,6 @@ void		Attribute::setDateToString(uint64_t value, struct tm **date, std::string *
   }
 }
 
-bool		Attribute::setDateToVTime(uint64_t value, vtime *setMe)
-{
-  if (value > 0) {
-    value -= NANOSECS_1601_TO_1970;
-    value /= 10000000;
-    struct tm	*date;
-
-    date = gmtime((time_t *)&value);
-    setMe->year = date->tm_year + 1900;
-    setMe->month = date->tm_mon + 1;
-    setMe->day = date->tm_mday;
-    setMe->hour = date->tm_hour;
-    setMe->minute = date->tm_min;
-    setMe->second = date->tm_sec;
-    setMe->dst = date->tm_isdst;
-    setMe->wday = date->tm_wday;
-    setMe->yday = date->tm_yday;
-    //FIXME NTFS has nanosecond precision
-    setMe->usecond = 0;
-    return true;
-  }
-  return false;
-}
-
 void		Attribute::fixupOffsets(uint8_t fixupAmount)
 {
   uint8_t	i = 0;

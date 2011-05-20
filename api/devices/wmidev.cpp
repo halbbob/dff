@@ -110,24 +110,28 @@ WMIDevices::WMIDevices(void)
 
   this->pLoc = NULL; 
   this->pSvc = NULL;
-
-  CoUninitialize();
-  hres =  CoInitializeEx(NULL, COINIT_MULTITHREADED); 
+ 
+  hres =  CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
   if (FAILED(hres))
+  {
 	return;
+  }
 
   hres =  CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT,
 							   RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL );
        
-  if (FAILED(hres))
-    return;
-    
+  if (FAILED(hres) &&  !(hres == RPC_E_TOO_LATE))
+  {
+	 return;
+  }
+ 
+
   hres = CoCreateInstance(CLSID_WbemAdministrativeLocator,
 					  	  NULL, CLSCTX_INPROC_SERVER, IID_IWbemLocator, (LPVOID *) &(this->pLoc));
 
   if (FAILED(hres))
     return ;
-
+  
   hres = pLoc->ConnectServer(_bstr_t(L"ROOT\\CIMV2"), NULL , NULL, 0,
 							 NULL, 0, 0, &(this->pSvc));
 
@@ -171,5 +175,4 @@ WMIDevices::~WMIDevices()
     this->pSvc->Release();
   if (this->pLoc)
     this->pLoc->Release();
-  CoUninitialize();
 }

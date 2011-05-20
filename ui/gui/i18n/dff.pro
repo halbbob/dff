@@ -43,6 +43,7 @@ SOURCES         += ../../../api/gui/widget/propertytable.py
 SOURCES         += ../../../ui/gui/widget/taskmanager.py
 SOURCES         += ../../../ui/gui/mainwindow.py
 SOURCES         += ../../../ui/gui/dialog/preferences.py
+SOURCES         += ../../../api/gui/box/nodeviewbox.py
 
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts
@@ -50,3 +51,5 @@ TRANSLATIONS    += ../../../ui/gui/i18n/Dff_es.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_fr.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_it.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_nl.ts
+TRANSLATIONS    += ../../../ui/gui/i18n/Dff_zh.ts
+

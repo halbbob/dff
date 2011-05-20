@@ -38,8 +38,8 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
     self.setupUi(self)
-#    if not INDEX_ENABLED:
-#    self.search.hide()
+    if not INDEX_ENABLED:
+      self.search.hide()
     self.vfs = vfs()
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
@@ -80,6 +80,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
     self.tableActivated()
+    self.translation()
 
   def completerChanged(self):
     path = self.completerWidget.text()
@@ -194,9 +195,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
       self.parent.model.setImagesThumbnails(False)
+      self.imagethumb.setIcon(QIcon(QPixmap(":image.png")))
       self.parent.model.reset()
     else:
       self.parent.model.setImagesThumbnails(True)
+      self.imagethumb.setIcon(QIcon(QPixmap(":image_disable.png")))
       self.parent.model.reset()
 
  
@@ -253,6 +256,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       self.nextdrop.setEnabled(False)
 
   def bookmark(self):
+    if len(self.parent.model.checkedNodes) == 0:
+      QMessageBox.warning(self, "Bookmark", self.bookmarkWarningMessage, QMessageBox.Ok)
+      return
     bookdiag = bookmarkDialog(self)
     iReturn = bookdiag.exec_()
     if iReturn == 1:
@@ -263,7 +269,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
       except ValueError:
         if not self.createCategory(selectedCategory):
           return
-
       selectedBookName = selectedCategory
       selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName.toUtf8()))
 
@@ -341,6 +346,9 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     else:
       return False
 
+  def translation(self):
+    self.bookmarkWarningMessage = self.tr("You must specify at least one node.")
+
   def changeEvent(self, event):
     """ Search for a language change event
     
@@ -349,6 +357,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     """
     if event.type() == QEvent.LanguageChange:
       self.retranslateUi(self)
+      self.translation()
     else:
       QWidget.changeEvent(self, event)
 

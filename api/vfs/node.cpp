@@ -669,7 +669,7 @@ bool		Node::constantValuesMatch(Constant* constant, Attributes vars)
       values = constant->values();
       for (value = values.begin(); value != values.end(); value++)
 	for (var = vars.begin(); var != vars.end(); var++)
-	  if ((var->second->type() == typeId::String) && (var->second->value<std::string>().find((*value)->toString()) != -1))
+	  if ((var->second->type() == typeId::String) && (var->second->value<std::string>().find((*value)->toString()) != std::string::npos))
 	    match = true;
     }
   return match;

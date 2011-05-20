@@ -20,19 +20,38 @@
 #include "export.hpp"
 
 #ifndef WIN32
-# include <stdint.h>
+  #include <stdint.h>
 #else
-# include "wstdint.h"
+  #include "wstdint.h"
 #endif
+
+#include <time.h>
 
 #include <stdlib.h>
 #include <vector>
 #include <string>
 
+/**
+ * Nanoseconds between 01.01.1601 and 01.01.1970
+ *  Leap year :
+ *   (year modulo 4 is 0 and year modulo 100 is not 0) or year modulo 400 is 0
+ *  So, 1700, 1800 and 1900 are not leap years.
+ *  ((1970 - 1601) * 365 + int((1970-1601) / 4) - 3) * 24 * 3600 * 10000000
+*/
+
+#if __WORDSIZE == 64
+#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000UL)
+#else
+#define NANOSECS_1601_TO_1970   (uint64_t)(116444736000000000ULL)
+#endif
+
+#define TIME_UNIX    0
+#define TIME_MS_64   1
+
 class vtime
 {
 public:
-  EXPORT		vtime(uint64_t value); //ms 64bits time
+  EXPORT		vtime(uint64_t value, uint32_t type);
   EXPORT		vtime();
   EXPORT virtual	~vtime();
   EXPORT 		vtime(int, int, int, int, int, int, int);
@@ -46,38 +65,6 @@ public:
   int			wday;
   int			yday;	
   int			dst;
-};
-
-
-typedef struct	tm_s
-{
-  uint32_t	tm_year;
-  uint32_t	tm_mon;
-  uint32_t	tm_mday;
-  uint32_t	tm_hour;
-  uint32_t	tm_min;
-  uint32_t	tm_sec;
-}		tm_t;
-
-class	Time
-{
-public:
-  EXPORT Time(uint64_t timestamp);
-  EXPORT ~Time();
-
-  EXPORT const tm_t *	tm() const;
-  EXPORT vtime *	Vtime() const;
-  EXPORT void		setVtime(vtime * t);
-
-private:
-  uint32_t	__february(uint32_t years);
-  uint32_t	__calc_year();
-  void		__convert();
-
-  uint32_t	__timestamp;
-  tm_t *	__tm;
-  vtime *	__vtime;
-  std::vector<std::pair<std::string, uint32_t> > __months_days;
 };
 
 #endif

@@ -91,7 +91,6 @@ int32_t	Shm::vopen(Node *node)
   if (node == NULL)
     throw vfsError("[SHM] vopen() provided node is NULL\n"); 
   fi = new fdinfo;
-  fi->fm = NULL;
   fi->node = node;
   fi->offset = 0;
   fd = this->__fdm->push(fi);

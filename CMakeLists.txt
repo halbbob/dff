@@ -167,7 +167,7 @@ endif(NOT PYTHON_QT4_PATH)
 
 ## PyQt linguist transalation updater check, to create or update translation
 ## files
-find_program(PYTHON_QT4_LANGUAGE NAMES pylupdate4 PATHS	${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_LANGUAGE NAMES pylupdate4 PATHS	${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(PYTHON_QT4_LANGUAGE)
   message(STATUS "Python Qt4 linguist translation files updater found: ${PYTHON_QT4_LANGUAGE}")
 else(PYTHON_QT4_LANGUAGE)
@@ -175,7 +175,7 @@ else(PYTHON_QT4_LANGUAGE)
 endif(PYTHON_QT4_LANGUAGE)
 
 ## QT .ts to .qm compiler, used by translator objects
-find_program(QT_LANGUAGE_COMPILER NAMES lrelease lrelease-qt4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH})
+find_program(QT_LANGUAGE_COMPILER NAMES lrelease lrelease-qt4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(QT_LANGUAGE_COMPILER)
   message(STATUS "QT translation compiler found: ${QT_LANGUAGE_COMPILER}")
 else(QT_LANGUAGE_COMPILER)
@@ -183,7 +183,7 @@ else(QT_LANGUAGE_COMPILER)
 endif(QT_LANGUAGE_COMPILER)
 
 ## PyQt UI compiler check, to generate widgets
-find_program(PYTHON_QT4_UIC NAMES pyuic4 pyuic4.bat PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_UIC NAMES pyuic4 pyuic4.bat PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(PYTHON_QT4_UIC)
   message(STATUS "Python Qt4 user interface compiler found: ${PYTHON_QT4_UIC}")
 else(PYTHON_QT4_UIC)
@@ -191,7 +191,7 @@ else(PYTHON_QT4_UIC)
 endif(PYTHON_QT4_UIC)
 
 ## PyQt resource compiler check, to generate icons
-find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(PYTHON_QT4_RCC)
   message(STATUS "Python Qt4 resource compiler found: ${PYTHON_QT4_RCC}")
 else(PYTHON_QT4_RCC)
@@ -221,6 +221,50 @@ if (ENABLE_INDEXER)
   	endif(CLUCENE_CONFIG_INCLUDE_PATH)
    endif(CLUCENE_CONFIG_INCLUDE_PATH)
 endif(ENABLE_INDEXER)
+
+## LibPFF check for PFF module, added separatly on windows
+# Need libbfio separate installation for DFF to be able to use PFF.
+# To summarize, install http://libbfio.sf.net first, before http://libpff.sf.net .
+if(UNIX)
+  if(INSTALL)
+    # Link with static version at install, until PFF be added to respective packages streams
+    find_library(PFF_MAIN_LIBRARY NAMES libpff.a)
+  else(INSTALL)
+    find_library(PFF_MAIN_LIBRARY NAMES pff)
+  endif(INSTALL)
+  if(PFF_MAIN_LIBRARY)
+    message(STATUS "PFF library found: ${PFF_MAIN_LIBRARY}")
+    if(INSTALL)
+      find_library(PFF_BFIO_LIBRARY NAMES libbfio.a)
+    else(INSTALL)
+      find_library(PFF_BFIO_LIBRARY NAMES bfio)
+    endif(INSTALL)
+    if(PFF_BFIO_LIBRARY)
+      message(STATUS "Separate PFF bfio library found: ${PFF_BFIO_LIBRARY}")
+    else(PFF_BFIO_LIBRARY)
+      message(STATUS "Separate PFF bfio library not found, unable to use PFF library, PFF module will not be build.")
+    endif(PFF_BFIO_LIBRARY)
+  else(PFF_MAIN_LIBRARY)
+    message(STATUS "PFF library not found, PFF module will not be build.")
+  endif(PFF_MAIN_LIBRARY)
+endif(UNIX)
+
+## AFFlib check for AFF connector, added separatly on windows
+# TODO ; we need afflib >= 3.6, this have to be checked
+if(UNIX)
+  if(INSTALL)
+    # Link with static version at install, until AFF >= 3.6 be added to respective packages streams
+    find_library(AFF_LIBRARY NAMES libafflib.a)
+  else(INSTALL)
+    find_library(AFF_LIBRARY NAMES afflib)
+  endif(INSTALL)
+  if(AFF_LIBRARY)
+    message(STATUS "AFF library found: ${AFF_LIBRARY}")
+  else(AFF_LIBRARY)
+    message(STATUS "AFF library not found, AFF connector will not be build.")
+  endif(AFF_LIBRARY)
+endif(UNIX)
+
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})
@@ -310,7 +354,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT")
 #  ui/ui.py
 # See corresponding CMakeLists.txt for CONFIGURE_FILE.
 SET(CPACK_PACKAGE_VERSION_MAJOR "1") 
-SET(CPACK_PACKAGE_VERSION_MINOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
@@ -422,8 +466,8 @@ IF(WIN32 AND NOT UNIX)
         ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.7.1.msi\\\" /passive'
         Goto endPython   
        endPython:
-        MessageBox MB_YESNO \\\"Install PyQt 4.8.2-1 ? \\\" /SD IDYES IDNO endPyQt
-        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.2-1.exe\\\"'
+        MessageBox MB_YESNO \\\"Install PyQt 4.8.4-1 ? \\\" /SD IDYES IDNO endPyQt
+        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.4-1.exe\\\"'
         Goto endPyQt
        endPyQt:
        MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS

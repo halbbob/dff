@@ -1,33 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-DFF - An Open Source Digital Forensics Framework
-Copyright (C) 2011 Pablo Rogina pablojr@gmail.com
-Copyright (C) 2011 ArxSys
-
-This program is free software, distributed under the terms of
-the GNU General Public License Version 2. See the LICENSE file
-at the top of the source tree.
-
-See http://www.digital-forensic.org for more information about this
-project. Please do not directly contact any of the maintainers of
-DFF for assistance; the project provides a web site, mailing lists
-and IRC channels for your use.
-
-Author(s):
-Pablo Rogina pablojr@gmail.com
--->
-<!DOCTYPE TS><TS version="1.1" language="es">
+<!DOCTYPE TS>
+<TS version="2.0" language="zh">
 <context>
     <name>About</name>
     <message>
         <location filename="../../../ui/gui/resources/about.ui" line="36"/>
         <source>About Digital Forensics Framework</source>
-        <translation>Acerca de Digital Forensics Framework</translation>
+        <translation>关于数字取证框架</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/about.ui" line="77"/>
         <source>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;If you have any troubles, please visit our &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;support page&lt;/a&gt;.&lt;br&gt;IRC channel: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;More information: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software developed by &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; and &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</source>
-        <translation>&lt;b&gt;Digital Forensics Framework&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;Si tiene problemas, por favor visite nuestra &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;página de soporte&lt;/a&gt;.&lt;br&gt;Canal IRC: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; en la red Freenode.&lt;br&gt;Más información: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;Software desarrollado por &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; y &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;la comunidad DFF&lt;/a&gt;.&lt;br&gt;</translation>
+        <translation>&lt;b&gt;数字取证框架&lt;/b&gt; (version %1)&lt;br&gt;&lt;br&gt;如果你有任何问题，请访问 &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;支持页面&lt;/a&gt;&lt;br&gt;IRC联系: &lt;a href=&quot;https://webchat.freenode.net/?channels=digital-forensic&quot;&gt;#digital-forensic&lt;/a&gt; on Freenode network.&lt;br&gt;更多信息: &lt;a href=&quot;http://www.digital-forensic.org/&quot;&gt;www.digital-forensic.org&lt;/a&gt;.&lt;br&gt;&lt;br&gt;软件开发商 &lt;a href=&quot;http://arxsys.fr/&quot;&gt;ArxSys&lt;/a&gt; 和 &lt;a href=&quot;https://tracker.digital-forensic.org/&quot;&gt;the DFF community&lt;/a&gt;.&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -35,27 +19,27 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="22"/>
         <source>Add bookmark</source>
-        <translation>Agregar marcador</translation>
+        <translation>增加书签</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="42"/>
         <source>Add a bookmark from the Virtual File System</source>
-        <translation>Agregar un marcador desde el Sistema Virtual de Archivos (VFS)</translation>
+        <translation>从VFS增加一个书签</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="66"/>
         <source>Create a new category</source>
-        <translation>Crear nueva categoría</translation>
+        <translation>创建一个新的分类</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="103"/>
         <source>Category name:</source>
-        <translation>Nombre de la categoría:</translation>
+        <translation>分类名称 :</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="91"/>
         <source>Add in an existing category</source>
-        <translation>Agregar a una categoría existente</translation>
+        <translation>增加一个存在的分类</translation>
     </message>
 </context>
 <context>
@@ -63,42 +47,42 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="30"/>
         <source>Select Device</source>
-        <translation>Seleccionar dispositivo</translation>
+        <translation>选择设备</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="84"/>
         <source>Device</source>
-        <translation>Dispositivo</translation>
+        <translation>设备</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="122"/>
         <source>Model</source>
-        <translation>Modelo</translation>
+        <translation>型号</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="154"/>
         <source>Size</source>
-        <translation>Tamaño</translation>
+        <translation>大小</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="54"/>
         <source>Select a local device to add in the Virtual File System</source>
-        <translation>Seleccione un dispositivo local para agregar al Sistema Virtual de Archivos</translation>
+        <translation>选择一个本地设备添加到VFS</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="69"/>
         <source>Warning : You must run the software with Administrator rights</source>
-        <translation>Atención: debe correr la aplicación con permisos de Adminitrador</translation>
+        <translation>警告：你必须用管理员权限运行本软件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="106"/>
         <source>Block device name</source>
-        <translation>Nombre del dispositivo de bloques</translation>
+        <translation>块设备名称</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="138"/>
         <source>Serial</source>
-        <translation>Nro. Serie</translation>
+        <translation>系列号</translation>
     </message>
 </context>
 <context>
@@ -106,7 +90,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/errors.ui" line="36"/>
         <source>Errors</source>
-        <translation>Errores</translation>
+        <translation>错误</translation>
     </message>
 </context>
 <context>
@@ -114,22 +98,22 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="30"/>
         <source>Extract</source>
-        <translation>Extraer</translation>
+        <translation>提取</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="76"/>
         <source>Recursive mode</source>
-        <translation>Modo recursivo</translation>
+        <translation>递归模式</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="89"/>
         <source>Destination folder:</source>
-        <translation>Carpeta destino:</translation>
+        <translation>目标文件夹:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/extractdialog.ui" line="116"/>
         <source>Browse</source>
-        <translation>Navegar</translation>
+        <translation>浏览</translation>
     </message>
 </context>
 <context>
@@ -137,27 +121,27 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="118"/>
         <source>Extraction path is mandatory</source>
-        <translation>El directorio de extracción es obligatorio</translation>
+        <translation>提取路径是强制的</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="119"/>
         <source>Choose the destination folder for extraction</source>
-        <translation>Elija la carpeta destino para extraer</translation>
+        <translation>选择提取的目标文件夹</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="120"/>
         <source>Overwrite attempt</source>
-        <translation>Intento de sobre-escritura</translation>
+        <translation>覆盖尝试</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="121"/>
         <source>Some selected files or folders already exist in the destination folder</source>
-        <translation>Algunos archivos o directorios seleccionados ya existen en el directorio destino</translation>
+        <translation>一些选择的文件或文件夹已经存在于目标文件夹</translation>
     </message>
     <message>
         <location filename="../../../api/gui/dialog/extractor.py" line="122"/>
         <source>Overwrite with selected ones ?</source>
-        <translation>Sobreescribir con los elegidos?</translation>
+        <translation>用选择的文件覆盖吗 ？</translation>
     </message>
 </context>
 <context>
@@ -165,62 +149,62 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="25"/>
         <source>Find file</source>
-        <translation>Encontrar archivo</translation>
+        <translation>查找文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="35"/>
         <source>Pattern:</source>
-        <translation>Patrón:</translation>
+        <translation>类型：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="42"/>
         <source>Syntax:</source>
-        <translation>Sintaxis:</translation>
+        <translation>语法：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="59"/>
         <source>Regular expression</source>
-        <translation>Expresión regular</translation>
+        <translation>正则表达式</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="64"/>
         <source>Fixed string</source>
-        <translation>Cadena fija</translation>
+        <translation>固定的字符串</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="69"/>
         <source>Wildcard</source>
-        <translation>Comodín</translation>
+        <translation>通配符</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="77"/>
         <source>Attribute:</source>
-        <translation>Atributo:</translation>
+        <translation>属性：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="85"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="90"/>
         <source>Size</source>
-        <translation>Tamaño</translation>
+        <translation>大小</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="95"/>
         <source>Date</source>
-        <translation>Fecha</translation>
+        <translation>数据</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="124"/>
         <source>Case sensitive sorting</source>
-        <translation>Ordenamiento sensible a mayúsculas y minúsculas</translation>
+        <translation>大小写敏感排序</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodefilterbox.ui" line="131"/>
         <source>Case sensitive filter</source>
-        <translation>Filtro sensible a mayúsculas y minúsculas</translation>
+        <translation>大小写敏感筛选</translation>
     </message>
 </context>
 <context>
@@ -233,72 +217,72 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="46"/>
         <source>IDE toolbar</source>
-        <translation>Barra de herramientas del IDE</translation>
+        <translation>IDE工具栏</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="67"/>
         <source>New empty file</source>
-        <translation>Nuevo archivo vacío</translation>
+        <translation>新的空文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="79"/>
         <source>Generate skeleton</source>
-        <translation>Generar esqueleto</translation>
+        <translation>生成提纲</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="280"/>
         <source>Open file</source>
-        <translation>Abrir archivo</translation>
+        <translation>打开文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="103"/>
         <source>Save</source>
-        <translation>Guardar</translation>
+        <translation>保存</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="115"/>
         <source>Save as</source>
-        <translation>Guardar como</translation>
+        <translation>保存为</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="127"/>
         <source>Load</source>
-        <translation>Cargar</translation>
+        <translation>加载</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="139"/>
         <source>Undo</source>
-        <translation>Deshacer</translation>
+        <translation>撤销</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="151"/>
         <source>Redo</source>
-        <translation>Rehacer</translation>
+        <translation>重做</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="163"/>
         <source>Comment</source>
-        <translation>Comentar</translation>
+        <translation>注释</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/ide.ui" line="175"/>
         <source>Uncomment</source>
-        <translation>Descomentar</translation>
+        <translation>取消注释</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="278"/>
         <source>Save document ?</source>
-        <translation>Guardar documento?</translation>
+        <translation>保存文档 ？</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="279"/>
         <source>No file found</source>
-        <translation>No se encontró archivo</translation>
+        <translation>没有找到文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/ide.py" line="281"/>
         <source>Save file as</source>
-        <translation>Guardar archivo como</translation>
+        <translation>文件保存为</translation>
     </message>
 </context>
 <context>
@@ -306,102 +290,102 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="30"/>
         <source>Integrated Development Environment Wizard</source>
-        <translation>Asistente del Entorno Integrado de Desarrollo</translation>
+        <translation>集成开发环境向导</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="38"/>
         <source>General Informations</source>
-        <translation>Información general</translation>
+        <translation>一般信息</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="41"/>
         <source>Fill all script information such as name, type and saving location.</source>
-        <translation>Complete toda la información de la secuencia de comandos como nombre, tipo y ubicación de salvado.</translation>
+        <translation>填写所有的脚本信息，例如名称、类型和保存的位置.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="47"/>
         <source>Name:</source>
-        <translation>Nombre:</translation>
+        <translation>名称：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="57"/>
         <source>Category:</source>
-        <translation>Categoría:</translation>
+        <translation>分类：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="71"/>
         <source>Work location:</source>
-        <translation>Ubicación de trabajo:</translation>
+        <translation>工作的位置：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="87"/>
         <source>Browse</source>
-        <translation>Navegar</translation>
+        <translation>浏览</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="99"/>
         <source>Type:</source>
-        <translation>Tipo:</translation>
+        <translation>类型：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="127"/>
         <source>Script</source>
-        <translation>Secuencia de comandos</translation>
+        <translation>脚本</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="137"/>
         <source>Graphical</source>
-        <translation>Gráfico</translation>
+        <translation>图形</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="144"/>
         <source>Driver</source>
-        <translation>Controlador</translation>
+        <translation>驱动器</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="168"/>
         <source>Description</source>
-        <translation>Descripción</translation>
+        <translation>描述</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="171"/>
         <source>Describe here the goal of the module</source>
-        <translation>Describa aquí el objetivo del módulo</translation>
+        <translation>这里描述模块的目标</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="177"/>
         <source>Module&apos;s description</source>
-        <translation>Descripción del módulo</translation>
+        <translation>模块 描述</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="188"/>
         <source>Author informations</source>
-        <translation>Información del autor</translation>
+        <translation>编写者信息</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="191"/>
         <source>Fill all author&apos;s informations in order to complete header</source>
-        <translation>Llene toda la información del autor para completar el encabezado</translation>
+        <translation>填写所有的编写者信息 以便完成头部内容</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="199"/>
         <source>Author&apos;s first name:</source>
-        <translation>Nombre del autor:</translation>
+        <translation>编写者 名:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="206"/>
         <source>Author&apos;s last name:</source>
-        <translation>Apellido del autor:</translation>
+        <translation>编写者 姓:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/idewizard.ui" line="213"/>
         <source>Author&apos;s electronic mail:</source>
-        <translation>Correo electrónico del Autor:</translation>
+        <translation>编写者 电子邮件:</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/ide/idewizard.py" line="59"/>
         <source>Location</source>
-        <translation>Ubicación</translation>
+        <translation>位置</translation>
     </message>
 </context>
 <context>
@@ -409,12 +393,50 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/interpreter.ui" line="100"/>
         <source>Python interpreter</source>
-        <translation>Intérprete Python</translation>
+        <translation>Python 解释器</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/interpreter.ui" line="113"/>
         <source>Python Interpreter</source>
-        <translation>Intérprete Python</translation>
+        <translation>Python 解释器</translation>
+    </message>
+</context>
+<context>
+    <name>ListNodeModel</name>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="545"/>
+        <source>Name</source>
+        <translation>名称</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="546"/>
+        <source>Size</source>
+        <translation>大小</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="547"/>
+        <source>Accessed time</source>
+        <translation>访问时间</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="548"/>
+        <source>Changed time</source>
+        <translation>改变时间</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="549"/>
+        <source>Modified time</source>
+        <translation>修改时间</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="550"/>
+        <source>Module</source>
+        <translation>模块</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="551"/>
+        <source>Deleted</source>
+        <translation>删除的</translation>
     </message>
 </context>
 <context>
@@ -422,42 +444,42 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="44"/>
         <source>File</source>
-        <translation>Archivo</translation>
+        <translation>文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="155"/>
         <source>Exit</source>
-        <translation>Salir</translation>
+        <translation>退出</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="119"/>
         <source>Load</source>
-        <translation>Cargar</translation>
+        <translation>加载</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="131"/>
         <source>Open evidence file(s)</source>
-        <translation>Abrir archivo(s) de evidencia</translation>
+        <translation>打开证据文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="143"/>
         <source>Open local device</source>
-        <translation>Abrir dispositivo local</translation>
+        <translation>打开本地设备</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="30"/>
         <source>Digital Forensics Framework</source>
-        <translation>Digital Forensics Framework</translation>
+        <translation>数字取证框架</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="75"/>
         <source>Edit</source>
-        <translation>Editar</translation>
+        <translation>编辑</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="54"/>
         <source>Module</source>
-        <translation>Módulo</translation>
+        <translation>模块</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="61"/>
@@ -467,7 +489,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="167"/>
         <source>Preferences</source>
-        <translation>Preferencias</translation>
+        <translation>首选项</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="68"/>
@@ -475,79 +497,79 @@ Pablo Rogina pablojr@gmail.com
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="215"/>
-        <source>Shell</source>
-        <translation>Línea de comandos</translation>
-    </message>
-    <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="81"/>
         <source>View</source>
-        <translation>Ver</translation>
+        <translation>视图</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="179"/>
         <source>Maximize</source>
-        <translation>Maximizar</translation>
+        <translation>最大化</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="191"/>
         <source>Fullscreen mode</source>
-        <translation>Modo pantalla completa</translation>
+        <translation>全屏模式</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="215"/>
+        <source>Shell</source>
+        <translation>Shell</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="203"/>
         <source>Browser</source>
-        <translation>Navegador</translation>
+        <translation>浏览器</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="227"/>
         <source>Python interpreter</source>
-        <translation>Intérprete Python</translation>
+        <translation>Python解释器</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="122"/>
         <source>Load module</source>
-        <translation>Cargar Módulos</translation>
+        <translation>加载模块</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="251"/>
         <source>Open</source>
-        <translation>Abrir</translation>
+        <translation>打开</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="103"/>
         <source>Toolbar</source>
-        <translation>Barra de herramientas</translation>
+        <translation>工具栏</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="114"/>
         <source>About DFF ...</source>
-        <translation>Acerca de DFF ...</translation>
+        <translation>关于DFF...</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="239"/>
         <source>DFF Documentation</source>
-        <translation>Documentación de DFF</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="380"/>
-        <source>Error while loading help</source>
-        <translation>Error al cargar la ayuda</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="381"/>
-        <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
-        <translation>&lt;br&gt;Puede revisar la ayuda en línea en &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="382"/>
-        <source>Not an help file.</source>
-        <translation>No es un archivo de ayuda.</translation>
+        <translation>DFF文档</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/mainwindow.py" line="383"/>
+        <source>Error while loading help</source>
+        <translation>加载帮助时的错误</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="384"/>
+        <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
+        <translation>&lt;br&gt;你可以查阅在线帮助 &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="385"/>
+        <source>Not an help file.</source>
+        <translation>不是一个帮助文件.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/mainwindow.py" line="386"/>
         <source>Documentation path not found.</source>
-        <translation>No se encontró la ruta de la ayuda.</translation>
+        <translation>文档路径没有找到.</translation>
     </message>
 </context>
 <context>
@@ -555,32 +577,32 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/modules.ui" line="36"/>
         <source>Modules</source>
-        <translation>Módulos</translation>
+        <translation>模块</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modules.ui" line="47"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modules.ui" line="52"/>
         <source>Key</source>
-        <translation>Clave</translation>
+        <translation>键</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modules.ui" line="57"/>
         <source>Value</source>
-        <translation>Valor</translation>
+        <translation>值</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modules.ui" line="62"/>
         <source>Info</source>
-        <translation>Información</translation>
+        <translation>信息</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modules.ui" line="67"/>
         <source>Type</source>
-        <translation>Tipo</translation>
+        <translation>类型</translation>
     </message>
 </context>
 <context>
@@ -588,69 +610,68 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="41"/>
         <source>Open in new tab</source>
-        <translation>Abrir en una nueva pestaña</translation>
+        <translation>在新标签中打开</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="50"/>
         <source>Open</source>
-        <translation>Abrir</translation>
+        <translation>打开</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="62"/>
         <source>Open with</source>
-        <translation>Abrir con</translation>
+        <translation>用...打开</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="74"/>
         <source>Hex viewer</source>
-        <translation>Visor hexadecimal</translation>
+        <translation>十六进制查看</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="86"/>
         <source>Extract</source>
-        <translation>Extraer</translation>
+        <translation>提取</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="30"/>
         <source>Browser</source>
-        <translation>Navegador</translation>
+        <translation>浏览器</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodebrowser.ui" line="94"/>
         <source>Relevant module</source>
-        <translation>Módulo relevante</translation>
+        <translation>相关模块</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="292"/>
         <source>Apply module</source>
-        <translation>Aplicar módulo</translation>
+        <translation>应用模块</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="292"/>
         <source>Do you want to apply module </source>
-        <translation>Quiere aplicar el módulo </translation>
+        <translation>你希望应用模块</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="289"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="292"/>
         <source> on this node ?</source>
-        <translation> en este nodo?</translation>
+        <translation>在这个节点上 ？</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="290"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="293"/>
         <source>Always</source>
-        <translation>Siempre</translation>
+        <translation>通常</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="365"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="368"/>
         <source>Empty files</source>
-        <translation>Vaciar archivos</translation>
+        <translation>空文件</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="366"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="369"/>
         <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
-        <translation>los siguientes nodos no pueden abrirse con el Visor hexadecimal porque están vacíos o son carpetas
-</translation>
+        <translation>下面节点不能用十六进制打开，因为它们是空的或是文件夹</translation>
     </message>
 </context>
 <context>
@@ -658,77 +679,72 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
         <source>Previous</source>
-        <translation>Previo</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
-        <source>Return to root</source>
-        <translation>Regresar a raíz</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
-        <source>Add to bookmarks</source>
-        <translation>Agregar a marcadores</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="272"/>
-        <source>Display search engine</source>
-        <translation>Mostrar motor de búsqueda</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
-        <source>List</source>
-        <translation>Lista</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
-        <source>Icons</source>
-        <translation>Íconos</translation>
-    </message>
-    <message>
-        <location filename="../resources/nodeviewbox.ui" line="221"/>
-        <source>Tree</source>
-        <translation type="obsolete">Árbol</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="320"/>
-        <source>Small</source>
-        <translation>Pequeño</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="325"/>
-        <source>Medium</source>
-        <translation>Mediano</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="330"/>
-        <source>Large</source>
-        <translation>Grande</translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="309"/>
-        <source>Attributes</source>
-        <translation>Atributos</translation>
+        <translation>前一个</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="86"/>
         <source>Next</source>
-        <translation>Siguiente</translation>
+        <translation>后一个</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="133"/>
         <source>Move to top</source>
-        <translation>Mover al tope</translation>
+        <translation>到顶部</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="159"/>
+        <source>Return to root</source>
+        <translation>返回到根</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
+        <source>List</source>
+        <translation>列表</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
+        <source>Icons</source>
+        <translation>图标</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="309"/>
+        <source>Attributes</source>
+        <translation>属性</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
+        <source>Add to bookmarks</source>
+        <translation>添加到书签</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="272"/>
+        <source>Display search engine</source>
+        <translation>显示搜索引擎</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="320"/>
+        <source>Small</source>
+        <translation>小</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="325"/>
+        <source>Medium</source>
+        <translation>中等</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="330"/>
+        <source>Large</source>
+        <translation>大</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="217"/>
         <source>Activate thumbnails</source>
-        <translation>Activar miniaturas</translation>
+        <translation>激活缩略图</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/box/nodeviewbox.py" line="354"/>
+        <location filename="../../../api/gui/box/nodeviewbox.py" line="349"/>
         <source>You must specify at least one node.</source>
-        <translation>Debe especificar al menos un nodo.</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -736,7 +752,7 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/output.ui" line="36"/>
         <source>Output</source>
-        <translation>Salida</translation>
+        <translation>输出</translation>
     </message>
 </context>
 <context>
@@ -744,17 +760,17 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="336"/>
         <source>Create directory</source>
-        <translation>Crear directorio</translation>
+        <translation>创建目录</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>Directory creation failure</source>
-        <translation>Error en la creación del directorio</translation>
+        <translation>目录创建失败</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
         <source>History file is not writable</source>
-        <translation>No se puede escribir en archivo histórico</translation>
+        <translation>历史文件不可写</translation>
     </message>
 </context>
 <context>
@@ -762,127 +778,127 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="30"/>
         <source>Preferences</source>
-        <translation>Preferencias</translation>
+        <translation>首选项</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="50"/>
         <source>Global</source>
-        <translation>Global</translation>
+        <translation>全局</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="200"/>
         <source>History</source>
-        <translation>Historia</translation>
+        <translation>历史</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="208"/>
         <source>History file full path:</source>
-        <translation>Ruta completa archivo histórico:</translation>
+        <translation>历史文件完整路径：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="225"/>
         <source>No history file</source>
-        <translation>No hay archivo histórico</translation>
+        <translation>没有历史文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="64"/>
         <source>No footprint</source>
-        <translation>No hay huella</translation>
+        <translation>没有足迹</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="270"/>
         <source>Language</source>
-        <translation>Idioma</translation>
+        <translation>语言</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="276"/>
         <source>Interface language</source>
-        <translation>Idioma de la interfase</translation>
+        <translation>界面语言</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="284"/>
         <source>Use interface language:</source>
-        <translation>Usar idioma de interfase:</translation>
+        <translation>使用界面语言：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="329"/>
         <source>Indexation</source>
-        <translation>Indexación</translation>
+        <translation>索引</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="377"/>
         <source>Index files location</source>
-        <translation>Ubicación archivos de índices</translation>
+        <translation>索引文件位置</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="385"/>
         <source>Root index</source>
-        <translation>Índice raíz</translation>
+        <translation>根索引</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="550"/>
         <source>Browse</source>
-        <translation>Navegar</translation>
+        <translation>浏览</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="402"/>
         <source>Index name</source>
-        <translation>Nombre índice</translation>
+        <translation>索引名</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="362"/>
         <source>Please select in which directory you want to save indexes&apos; files. If those directories do not exist they will be created when the changes are applied.</source>
-        <translation>Por favor seleccione en qué directorio quiere guardar los archivos de índices. Si ese directorio no existe será creado cuando se apliquen los cambios.</translation>
+        <translation>请选择你想保存索引文件的目录 如果目录不存在，将会在修改应用时创建。</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="56"/>
         <source>Working environment</source>
-        <translation>Entorno de trabajo</translation>
+        <translation>工作环境</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="71"/>
         <source>DFF user directory:</source>
-        <translation>Directorio de usuario DFF:</translation>
+        <translation>DFF 用户目录：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="526"/>
         <source>Help and documentation</source>
-        <translation>Ayuda y documentación</translation>
+        <translation>帮助和文档</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="538"/>
         <source>Full path of the help and documentation file:</source>
-        <translation>Ruta completa al archivo de ayuda y documentación:</translation>
+        <translation>帮助和文档文件的完整路径：</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="532"/>
         <source>Help and documentation settings</source>
-        <translation>Configuración de ayuda y documentación</translation>
+        <translation>帮助和文档的设定</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="458"/>
         <source>Provided path does not exists, will ask for creation on submit.</source>
-        <translation>La ruta indicada no existe, se pedirá crearla al confirmar.</translation>
+        <translation>提供的路径不存在，在提交时将要求创建.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="502"/>
         <source>Provided path is a readable directory.</source>
-        <translation>La ruta provista es un directorio de solo lectura.</translation>
+        <translation>提供的路径是一个可读的目录.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="564"/>
         <source>Please provide an help.qhc file along with an help.qch file at same directory level.</source>
-        <translation>Por favor provee un archivo help.qhc con un archivo help.qhc en el mismo nivel de directorio.</translation>
+        <translation>请在同一个目录中提供一个help.qhc文件和一个help.qch文件.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="611"/>
         <source>Provided path is not a readable file.</source>
-        <translation>La ruta provista no es un archivo que se pueda leer.</translation>
+        <translation>提供的路径不是一个可读的文件.</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/preferences.ui" line="665"/>
         <source>Provided path is a readable file.</source>
-        <translation>La ruta provista es un archivo que se puede leer.</translation>
+        <translation>提供的路径是一个可读的文件.</translation>
     </message>
 </context>
 <context>
@@ -890,82 +906,82 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
         <source>name</source>
-        <translation>nombre</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
-        <source>file</source>
-        <translation>archivo</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
         <source>folder</source>
-        <translation>carpeta</translation>
+        <translation>文件夹</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
+        <source>file</source>
+        <translation>文件</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
         <source>generated by</source>
-        <translation>generado por</translation>
+        <translation>产生于</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
         <source>size</source>
-        <translation>tamaño</translation>
+        <translation>大小</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
         <source>relevant module(s)</source>
-        <translation>módulo(s) relevante(s)</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
-        <source> with module(s) applied on it</source>
-        <translation> con módulo(s) aplicado(s) a él</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
-        <source> empty</source>
-        <translation> vacío</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
-        <source> deleted</source>
-        <translation> borrado</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
-        <source>children</source>
-        <translation>hijos</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
-        <source>file(s)</source>
-        <translation>archivo(s)</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
-        <source> totalizing </source>
-        <translation> totalizando </translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="133"/>
-        <source> bytes</source>
-        <translation> bytes</translation>
-    </message>
-    <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="134"/>
-        <source>folder(s)</source>
-        <translation>carpeta(s)</translation>
+        <translation>关联的模块</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
         <source>node type</source>
-        <translation>tipo de nodo</translation>
+        <translation>节点类型</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/propertytable.py" line="135"/>
         <source>attributes</source>
-        <translation>atributos</translation>
+        <translation>属性</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
+        <source>children</source>
+        <translation>子节点</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
+        <source>file(s)</source>
+        <translation>文件</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="133"/>
+        <source> bytes</source>
+        <translation>字节</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="134"/>
+        <source>folder(s)</source>
+        <translation>文件夹</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
+        <source> totalizing </source>
+        <translation>总计</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
+        <source> with module(s) applied on it</source>
+        <translation>有模块应用于它</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
+        <source> empty</source>
+        <translation>空的</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
+        <source> deleted</source>
+        <translation>删除的</translation>
     </message>
 </context>
 <context>
@@ -973,12 +989,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/shell.ui" line="100"/>
         <source>Shell</source>
-        <translation>Línea de comandos</translation>
+        <translation>Shell</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/shell.ui" line="113"/>
         <source>Welcome to DFF shell</source>
-        <translation>Bienvenido a la línea de comandos de DFF</translation>
+        <translation>欢迎使用DFF Shell</translation>
     </message>
 </context>
 <context>
@@ -991,73 +1007,73 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="49"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="54"/>
         <source>State</source>
-        <translation>Estado</translation>
+        <translation>状态</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="59"/>
         <source>Info</source>
-        <translation>Información</translation>
+        <translation>信息</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="64"/>
         <source>Exec Time</source>
-        <translation>Tiempo Exec</translation>
+        <translation>执行时间</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/taskmanager.ui" line="36"/>
         <source>Task Manager</source>
-        <translation>Administrador de Tareas</translation>
+        <translation>任务管理器</translation>
     </message>
 </context>
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="851"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1335"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation>名称</translation>
     </message>
 </context>
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="579"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1021"/>
         <source>Name</source>
-        <translation>Nombre</translation>
+        <translation>名称</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="580"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1022"/>
         <source>Size</source>
-        <translation>Tamaño</translation>
+        <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="581"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1023"/>
         <source>Accessed time</source>
-        <translation>Fecha accedido</translation>
+        <translation>访问时间</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="582"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1024"/>
         <source>Changed time</source>
-        <translation>Fecha cambiado</translation>
+        <translation>改变时间</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="583"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1025"/>
         <source>Modified time</source>
-        <translation>Fecha modificado</translation>
+        <translation>修改时间</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="584"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1026"/>
         <source>Module</source>
-        <translation>Módulo</translation>
+        <translation>模块</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="585"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1027"/>
         <source>Deleted</source>
-        <translation>Borrado</translation>
+        <translation>删除的</translation>
     </message>
 </context>
 <context>
@@ -1065,12 +1081,12 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="40"/>
         <source>Key</source>
-        <translation>Clave</translation>
+        <translation>键</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/varianttreewidget.ui" line="45"/>
         <source>Value</source>
-        <translation>Valor</translation>
+        <translation>值</translation>
     </message>
 </context>
 <context>
@@ -1078,37 +1094,37 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="36"/>
         <source>Apply module</source>
-        <translation>Aplicar módulo</translation>
+        <translation>应用模块</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="42"/>
         <source>Informations</source>
-        <translation>Información</translation>
+        <translation>信息</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="110"/>
         <source>Module</source>
-        <translation>Módulo</translation>
+        <translation>模块</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="165"/>
         <source>Type</source>
-        <translation>Tipo</translation>
+        <translation>类型</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="143"/>
         <source>Arguments</source>
-        <translation>Argumentos</translation>
+        <translation>参数</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="158"/>
         <source>Activate</source>
-        <translation>Activar</translation>
+        <translation>活动的</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/applymodule.ui" line="172"/>
         <source>Description</source>
-        <translation>Descripción</translation>
+        <translation>描述</translation>
     </message>
 </context>
 <context>
@@ -1116,32 +1132,32 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="31"/>
         <source>Select evidence type</source>
-        <translation>Seleccione el tipo de evidencia</translation>
+        <translation>选择证据类型</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="129"/>
         <source>Add evidence directory</source>
-        <translation>Agregar directorio de evidencia</translation>
+        <translation>添加证据目录</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="134"/>
         <source>Add evidence files</source>
-        <translation>Agregar archivos de evidencia</translation>
+        <translation>添加证据文件</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="64"/>
         <source>Open local files or directory</source>
-        <translation>Abrir directorio o archivos locales</translation>
+        <translation>打开本地文件或目录</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
         <source>RAW format</source>
-        <translation>Formato RAW</translation>
+        <translation>RAW格式</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
         <source>EWF format</source>
-        <translation>Formato EWF</translation>
+        <translation>EWF格式</translation>
     </message>
 </context>
 <context>
@@ -1149,22 +1165,22 @@ Pablo Rogina pablojr@gmail.com
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="123"/>
         <source>Results</source>
-        <translation>Resultados</translation>
+        <translation>结果</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="125"/>
         <source>No results</source>
-        <translation>Sin resultados</translation>
+        <translation>没有结果</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="122"/>
         <source>Provided Arguments</source>
-        <translation>Argumentos provistos</translation>
+        <translation>提供的参数</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="124"/>
         <source>Processus Information</source>
-        <translation>Información de los procesos</translation>
+        <translation>处理信息</translation>
     </message>
 </context>
 </TS>

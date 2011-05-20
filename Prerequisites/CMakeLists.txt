@@ -14,7 +14,7 @@
 
 
 set(dependencies_files
-  PyQt-Py2.7-x86-gpl-4.8.2-1.exe
+  PyQt-Py2.7-x86-gpl-4.8.4-1.exe
   python-2.7.1.msi
   vcredist_x86.exe
 )

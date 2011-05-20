@@ -38,7 +38,7 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
 {
   if (inode->delete_time())
       (*attr)["Deletion time"] =
-		 new Variant(vtime_from_timestamp(inode->delete_time()));
+		 new Variant(new vtime(inode->delete_time(), TIME_UNIX));
   if (!i_nb)
     return ;
   (*attr)["Number"] = new Variant(i_nb);
@@ -71,21 +71,6 @@ void	MfsoAttrib::setAttrs(Inode * inode, Attributes * attr, uint64_t i_nb,
       __add_xtd_attr(inode, attr);
       __add_acl(inode, attr);
     }
-}
-
-vtime *	MfsoAttrib::vtime_from_timestamp(time_t UNIX_timestamp, vtime * v)
-{
-  if (!v)
-    {
-      time_t tmp = UNIX_timestamp;
-      Time * t = new Time(tmp);
-      return t->Vtime();
-    }
-  time_t tmp = UNIX_timestamp;
-  Time * t = new Time(tmp);
-  t->setVtime(v);
-  delete t;
-  return v;
 }
 
 void	MfsoAttrib::__add_xtd_attr(Inode * inode, Attributes * attr)

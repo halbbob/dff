@@ -87,7 +87,7 @@ class Conf():
             config.add_section('Help')
             config.set('Help', 'helppath', self.docPath)
             configfile = open(self.configFile, 'wb')
-            if configgile:
+            if configfile:
 		config.write(configfile)
 		configfile.close()
 

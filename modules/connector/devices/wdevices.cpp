@@ -15,6 +15,7 @@
  */
 
 #include "devices.hpp"
+#include "typesconv.hpp"
 #include <String>
 #include <windows.h>
 #include <shlwapi.h>
@@ -52,13 +53,13 @@ void DeviceBuffer::fillBuff(uint64_t offset)
 	SetFilePointerEx(this->__handle, sizeConv, &newOffset, 0);
 	DWORD gsize;
 	if (this->__offset + this->__size > this->__devSize)
-		gsize = this->__devSize - this->__offset;
+		gsize = (DWORD)(this->__devSize - this->__offset);
 	else
 		gsize = this->__size;
 	ReadFile(this->__handle, (void*)(this->__buffer), gsize,  &(this->__currentSize) ,0);
 }
 
-int32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
+uint32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 {
 	if ((offset < this->__offset) || (offset > this->__offset + this->__currentSize) 
 		||(offset + size > this->__offset + this->__currentSize))
@@ -68,10 +69,10 @@ int32_t	DeviceBuffer::getData(void *buff, uint32_t size, uint64_t offset)
 
 	uint64_t leak = offset - this->__offset;
 	if (size > this->__currentSize - leak)
-		size = this->__currentSize - leak;
-	memcpy(buff, ((char*)this->__buffer + leak), size);
+		size = (uint32_t)(this->__currentSize - leak);
+	memcpy(buff, (((char*)this->__buffer) + leak), size);
 
-	return ((int32_t)size);
+	return (size);
 }
 
 
@@ -150,7 +151,7 @@ int devices::vopen(Node *node)
     	fi = new fdinfo;
 	int hnd = (int)CreateFileA(((DeviceNode*)node)->__devname.c_str(), GENERIC_READ, FILE_SHARE_READ,
 			     0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-	fi->fm = (FileMapping*)new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, node->size());
+	fi->id = new Variant((void*) (new DeviceBuffer((HANDLE)hnd, 100 * sizeof(uint8_t), 4096, node->size())));
 	fi->node = node;
 	fi->offset = 0;
 	fd = this->__fdm->push(fi);
@@ -170,7 +171,7 @@ int devices::vread(int fd, void *buff, unsigned int origSize)
     try
     {
       fi = this->__fdm->get(fd);
-	  dbuff = (DeviceBuffer*)fi->fm;
+	  dbuff = (DeviceBuffer*)fi->id->value<void *>();
     }
     catch (...)
     {
@@ -198,7 +199,7 @@ int devices::vclose(int fd)
  try
     {
       fdinfo* fi = this->__fdm->get(fd);
-	  delete ((DeviceBuffer*)fi->fm);
+	  delete ((DeviceBuffer*)fi->id->value<void *>());
 	  this->__fdm->remove(fd);
       return (0);
     }

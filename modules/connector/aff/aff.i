@@ -50,13 +50,19 @@ class AFF(Module):
   def __init__(self):
     Module.__init__(self, 'aff', aff)
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
-	                   "name": "parent", 
-	                   "description": "files or folders will be added as child(ren) of this node or as the root node by default",
+                           "name": "parent", 
+                           "description": "files or folders will be added as child(ren) of this node or as the root node by default",
                        "parameters": {"type": Parameter.Editable,
                                           "predefined": [vfs.vfs().getnode("/")]}
                           })
     self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path,  
-	                   "name": "path", 
-	                   "description": "Path to the file or directory on your operating system."})
+                           "name": "path", 
+                           "description": "Path to the file or directory on your operating system."})
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.UInt32,
+                           "name": "cache size",
+                           "description": "Size of the pages cache, one page is 16 megabytes",
+                           "parameters": {"type": Parameter.Editable, 
+                                          "predefined" : [2]}
+                         })
     self.tags = "Connectors"
 %}

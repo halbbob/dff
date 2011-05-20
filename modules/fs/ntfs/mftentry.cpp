@@ -34,12 +34,17 @@ MftEntry::MftEntry(VFile *vfile)
   _sectorSize = 0;
   _currentAttribute = new Attribute(_vfile);
   _readBuffer = NULL;
+  _fixupValues = NULL;
+  _fixupSignature = 0;
+  _attributeHeader = NULL;
 }
 
 MftEntry::~MftEntry()
 {
-  delete _mftEntryBlock;
-  delete _readBuffer;
+  delete _currentAttribute;
+  if (_fixupValues != NULL) {
+    delete _fixupValues;
+  }
 }
 
 MftEntryBlock	*MftEntry::getMftEntryBlock()
@@ -124,6 +129,11 @@ void	MftEntry::_bufferedRead(uint64_t offset)
 #endif
   if (offset - _previousReadOffset >= _mftEntrySize ||
       (offset == 0 && _previousReadOffset == 0)) {
+
+    if (_readBuffer == NULL && _mftEntrySize > 0) {
+      _readBuffer = new uint8_t[_mftEntrySize];
+    }
+
     memset(_readBuffer, 0, _mftEntrySize);
     _vfile->seek(offset);
     _vfile->read(_readBuffer, _mftEntrySize);
@@ -155,7 +165,7 @@ void	MftEntry::_bufferedRead(uint64_t offset, uint32_t size)
 #else
   DEBUG(INFO, "requesting read to 0x%llx with size 0x%x\n", offset, size);
 #endif
-  if (_readBuffer) {
+  if (_readBuffer != NULL) {
     delete _readBuffer;
   }
 
@@ -320,11 +330,18 @@ Attribute	*MftEntry::getNextAttribute()
 {
   if ((_attributeOffset + ATTRIBUTE_HEADER_SIZE) >=
       _mftEntryBlock->usedSizeMftEntry) {
+    if (_readBuffer != NULL) {
+      delete _readBuffer;
+      _readBuffer = NULL;
+    }
     return NULL;
   }
 
   if (*(uint32_t *)(_readBuffer + _bufferOffset) == ATTRIBUTE_END) {
-    //XXX does it really works ?
+    if (_readBuffer != NULL) {
+      delete _readBuffer;
+      _readBuffer = NULL;
+    }
     return NULL;
   }
   _attributeHeader = (AttributeHeader *)(_readBuffer + _bufferOffset);

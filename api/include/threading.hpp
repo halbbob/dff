@@ -14,37 +14,20 @@
  *  Solal J. <sja@digital-forensic.org>
  */
 
-#include "device.hpp"
+#ifndef __THREADING_HPP__
+#define __THREADING_HPP__
 
-Device::Device()
-{
-}
+#ifdef WIN32
+  #define mutex_lock EnterCriticalSection
+  #define mutex_unlock LeaveCriticalSection
+  #define mutex_def(var)	   CRITICAL_SECTION var;
+  #define mutex_init(var)  InitializeCriticalSection(var);
+#else
+  #include <pthread.h>
+  #define mutex_lock pthread_mutex_lock
+  #define mutex_unlock pthread_mutex_unlock
+  #define mutex_def(var)	   pthread_mutex_t var = PTHREAD_MUTEX_INITIALIZER;	
+  #define mutex_init(var)		
+#endif
 
-Device::~Device()
-{
-}
-
-wchar_t*	Device::blockDevice(void)
-{
-  return ((wchar_t*)L"Not available");
-}
-
-wchar_t*	 Device::serialNumber(void)
-{
-  return ((wchar_t*)L"Not available");
-}
-
-wchar_t*	Device::model(void)
-{
-  return ((wchar_t*)L"Not available");
-}
-
-uint64_t	Device::size(void)
-{
-  return (0);
-}
-
-
-DeviceList::DeviceList()
-{
-}
+#endif

@@ -85,6 +85,7 @@ class Dialog(QObject):
                  terr.append(errw)
                  detailerr.append(err)
              self.messageBox(terr, detailerr)
+       del dev
 
   def addFiles(self):
         """ Open a Dialog for select a file and add in VFS """
@@ -97,9 +98,13 @@ class Dialog(QObject):
             module = "local"
             args["path"] = paths
 	    args["parent"] = self.vfs.getnode('/Logical files')
-          else:
+          elif edialog.ewfcheck.isChecked():
             module = "ewf"
             args["files"] = paths
+	    args["parent"] = self.vfs.getnode('/Logical files')
+          else:
+            module = "aff"
+            args["path"] = paths
 	    args["parent"] = self.vfs.getnode('/Logical files')
           self.conf = self.loader.get_conf(str(module))
           try:
@@ -172,9 +177,10 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     translated).
     TODO Futur : Get all DFF connectors
     """    
-
     if "ewf" not in self.loader.modules:
       self.ewfcheck.setEnabled(False)
+    if "aff" not in self.loader.modules:
+      self.affcheck.setEnabled(False)
     self.rawcheck.setChecked(True)
     layout = QHBoxLayout()
     layout.setMargin(0)
