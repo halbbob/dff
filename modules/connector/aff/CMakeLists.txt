@@ -30,7 +30,7 @@ SWIG_ADD_MODULE(AFF python aff.i ${aff_srcs})
 if(WIN32)
   SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs afflib libeay32 ssleay32 zlib Ws2_32)
 else(WIN32)
-  SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs afflib)
+  SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${AFF_LIBRARY})
 endif(WIN32)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
