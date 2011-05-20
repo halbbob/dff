@@ -166,7 +166,7 @@ endif(NOT PYTHON_QT4_PATH)
 
 ## PyQt linguist transalation updater check, to create or update translation
 ## files
-find_program(PYTHON_QT4_LANGUAGE NAMES pylupdate4 PATHS	${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_LANGUAGE NAMES pylupdate4 PATHS	${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(PYTHON_QT4_LANGUAGE)
   message(STATUS "Python Qt4 linguist translation files updater found: ${PYTHON_QT4_LANGUAGE}")
 else(PYTHON_QT4_LANGUAGE)
@@ -174,7 +174,7 @@ else(PYTHON_QT4_LANGUAGE)
 endif(PYTHON_QT4_LANGUAGE)
 
 ## QT .ts to .qm compiler, used by translator objects
-find_program(QT_LANGUAGE_COMPILER NAMES lrelease lrelease-qt4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH})
+find_program(QT_LANGUAGE_COMPILER NAMES lrelease lrelease-qt4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(QT_LANGUAGE_COMPILER)
   message(STATUS "QT translation compiler found: ${QT_LANGUAGE_COMPILER}")
 else(QT_LANGUAGE_COMPILER)
@@ -182,7 +182,7 @@ else(QT_LANGUAGE_COMPILER)
 endif(QT_LANGUAGE_COMPILER)
 
 ## PyQt UI compiler check, to generate widgets
-find_program(PYTHON_QT4_UIC NAMES pyuic4 pyuic4.bat PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_UIC NAMES pyuic4 pyuic4.bat PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(PYTHON_QT4_UIC)
   message(STATUS "Python Qt4 user interface compiler found: ${PYTHON_QT4_UIC}")
 else(PYTHON_QT4_UIC)
@@ -190,7 +190,7 @@ else(PYTHON_QT4_UIC)
 endif(PYTHON_QT4_UIC)
 
 ## PyQt resource compiler check, to generate icons
-find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin)
+find_program(PYTHON_QT4_RCC NAMES pyrcc4 PATHS ${CMAKE_SYSTEM_PROGRAM_PATH} ${PYTHON_QT4_PATH}/bin ${PYTHON_QT4_PATH})
 if(PYTHON_QT4_RCC)
   message(STATUS "Python Qt4 resource compiler found: ${PYTHON_QT4_RCC}")
 else(PYTHON_QT4_RCC)
