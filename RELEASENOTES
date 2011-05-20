@@ -25,16 +25,16 @@ It's based on Joachim Metz LibPFF. (http://sourceforge.net/projects/libpff)
 	vtime now can directly convert unix and windows 64 bits time stamp.
 
 * FAT:
-  ** extended attributes:
-     ** when there is slack space, a dedicated attribute specifies its start 
+  - extended attributes:
+      * When there is slack space, a dedicated attribute specifies its start 
      	offset and its size. 
      	This feature is only available for classical files (neither deleted nor
 	orphaned)
-     ** classical attributes are provided: Read Only, Hidden, System, Archive,
+      * Classical attributes are provided: Read Only, Hidden, System, Archive,
      	Volume
-     ** DOS name is provided (8+3 name)
-  ** Orphaned files scan
-     ** The algorithm is now faster. When walking on free clusters, checks are
+      * DOS name is provided (8+3 name)
+  - Orphaned files scan
+        The algorithm is now faster. When walking on free clusters, checks are
      	done to know if it was previously parsed when walking on deleted files
 	and directories in allocated clusters. Since chain of clusters of deleted
 	directories are used, this pass could read and parse free clusters.
@@ -56,13 +56,13 @@ for FileMapping and File Descriptor.
 handling this was fixed by using variant.
 
 * FAT :
-  ** Recovery of deleted files was not properly handled. Previous version relied
+  -  Recovery of deleted files was not properly handled. Previous version relied
      on the chain of clusters found in FAT which are often emptied when files are
      deleted. Now, the module gets the first cluster, asks the FAT for a the 
      chain of cluster, if the size of all provided is smaller than the size of 
      file, the mapping starts from the first cluster until size of the file is 
      reached.
-  ** Even if not noticeable by users (hashes of files were coherent for example)
+  -  Even if not noticeable by users (hashes of files were coherent for example)
      and not really a bug, the previous mapping for files were cluster aligned.
      It means the slack space of files were directly included in the mapping.
      This was done this way in prediction of future implementation of MFSO. 
@@ -75,15 +75,16 @@ handling this was fixed by using variant.
 
 * GUI :
 
-  ** A bug occuring when trying to input a Node as a parameter to modules has
+  -  A bug occuring when trying to input a Node as a parameter to modules has
      been fixed : it was not possible to browse in the tree view.
 
-  ** The tree view, in the node browser, had an inconsitant behavior : to change
+  -  The tree view, in the node browser, had an inconsitant behavior : to change
      directories, users had to double-click on nodes names, which used to
      collapse the tree view. This is fixed. The node browser now behaves as a
      classic file browser.
 
 * Variant vtime repr:
-  ** Dealing with vtime encapsulated in Variant in the Python interpreter, an
+
+  -  Dealing with vtime encapsulated in Variant in the Python interpreter, an
      exception were raised because there were no __repr__ or __str__ provided
      for this type.
