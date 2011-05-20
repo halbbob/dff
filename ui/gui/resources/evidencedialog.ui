@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-DFF - An Open Source Digital Forensics Framework
-Copyright (C) 2011 ArxSys
-
-This program is free software, distributed under the terms of
-the GNU General Public License Version 2. See the LICENSE file
-at the top of the source tree.
-
-See http://www.digital-forensic.org for more information about this
-project. Please do not directly contact any of the maintainers of
-DFF for assistance; the project provides a web site, mailing lists
-and IRC channels for your use.
-
-Author(s):
-Christophe Malinge cma@digital-forensic.org
--->
 <ui version="4.0">
  <class>evidenceDialog</class>
  <widget class="QDialog" name="evidenceDialog">
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>163</height>
+   </rect>
   </property>
   <property name="minimumSize">
    <size>
@@ -68,7 +60,7 @@ Christophe Malinge cma@digital-forensic.org
     </layout>
    </item>
    <item row="1" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,3,3">
      <item>
       <widget class="QCheckBox" name="rawcheck">
        <property name="sizePolicy">
@@ -95,6 +87,16 @@ Christophe Malinge cma@digital-forensic.org
        </property>
        <property name="text">
         <string>EWF format</string>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="affcheck">
+       <property name="text">
+        <string>AFF Format</string>
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
