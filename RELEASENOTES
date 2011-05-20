@@ -13,11 +13,12 @@ Features:
 * Translation : DFF Gui is now available in chinese, thanks to Zhang Jun.
 		Other languages was update : Deutch, Italian, ...
 
-* AFF : A connector to support AFF dump. The module is based on AFFLib by Simson L. Garfinkel (http://afflib.org)
+* AFF : A connector to support AFF dump. The module is based on AFFLib by Simson
+L. Garfinkel (http://afflib.org)
 
-* PFF : This module parse PST, OST and PAB files to extract mailbox content, it also recover
-deleted and orphaned files and give access to unalocated cluster. It's based on Joachim Metz LibPFF.
-(http://sourceforge.net/projects/libpff)
+* PFF : This module parse PST, OST and PAB files to extract mailbox content, it
+also recovers deleted and orphaned files and give access to unalocated cluster.
+It's based on Joachim Metz LibPFF. (http://sourceforge.net/projects/libpff)
 
 
 * API : New cache system for FileMapping and File Descriptor.
@@ -26,16 +27,27 @@ deleted and orphaned files and give access to unalocated cluster. It's based on 
 Bug fixes:
 ----------
 
-* Add devices and Add files on Windows, it was not possible to add devices and files or directory
-in the same session.
+* Add devices and Add files on Windows, it was not possible to add devices and
+files or directories in the same session.
 
-* MFSO opened only one file descriptor and cache it, leading to crash especiallyi using device module on windows platform, a totally new cache system was written for FileMapping and File Descriptor.
+* MFSO opened only one file descriptor and cache it, leading to crash especially
+ using device module on windows platform, a totally new cache system was written
+for FileMapping and File Descriptor.
 
-* EWF : Sometimes the modules could not open the underlaying due to bad fd handling this was fixed by using variant.
+* EWF : Sometimes the modules could not open the underlaying due to bad fd
+handling this was fixed by using variant.
 
 * FAT :
 
 * NTFS :
 
-* GUI : 
+* GUI :
+
+  ** A bug occuring when trying to input a Node as a parameter to modules has
+     been fixed : it was not possible to browse in the tree view.
+
+  ** The tree view, in the node browser, had an inconsitant behavior : to change
+     directories, users had to double-click on nodes names, which used to
+     collapse the tree view. This is fixed. The node browser now behaves as a
+     classic file browser.
 
