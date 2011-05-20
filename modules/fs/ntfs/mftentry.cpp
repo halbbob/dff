@@ -41,7 +41,6 @@ MftEntry::MftEntry(VFile *vfile)
 
 MftEntry::~MftEntry()
 {
-  delete _mftEntryBlock;
   delete _currentAttribute;
   if (_fixupValues != NULL) {
     delete _fixupValues;

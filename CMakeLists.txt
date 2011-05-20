@@ -465,8 +465,8 @@ IF(WIN32 AND NOT UNIX)
         ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.7.1.msi\\\" /passive'
         Goto endPython   
        endPython:
-        MessageBox MB_YESNO \\\"Install PyQt 4.8.2-1 ? \\\" /SD IDYES IDNO endPyQt
-        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.2-1.exe\\\"'
+        MessageBox MB_YESNO \\\"Install PyQt 4.8.4-1 ? \\\" /SD IDYES IDNO endPyQt
+        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.4-1.exe\\\"'
         Goto endPyQt
        endPyQt:
        MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
