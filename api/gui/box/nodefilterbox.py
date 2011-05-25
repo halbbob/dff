@@ -25,12 +25,12 @@ from api.events.libevents import EventHandler
 from api.types.libtypes import typeId
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
 from ui.conf import Conf
+from api.search.find import Filters
 
 try:
   from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch, FilterThread
   from api.index.libindex import IndexSearch, Index
   from ui.gui.widget.modif_index import ModifIndex
-  from api.search.find import Filters
   IndexerFound = True
 except ImportError:
   IndexerFound = False
@@ -40,7 +40,7 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
   """
   This class is designed to perform searches on nodes in the VFS or a part of the VFS.
   """
-  def __init__future(self, parent, model):
+  def __init__(self, parent, model):
     QWidget.__init__(self)
     Ui_NodeFBox.__init__(parent)
     EventHandler.__init__(self)

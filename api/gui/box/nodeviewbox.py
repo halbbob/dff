@@ -28,18 +28,11 @@ from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
 from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
 
-try:
-  from api.index import libindex
-  INDEX_ENABLED = True
-except ImportError:
-  INDEX_ENABLED = False
-
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
     self.setupUi(self)
-    if not INDEX_ENABLED:
-      self.search.hide()
+    #self.search.hide()
     self.vfs = vfs()
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
