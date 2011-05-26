@@ -77,15 +77,15 @@ class Spare(mfso):
       except IndexError:
         return 
       try: 
-        self.spareSize = args["spare-size"].value()
+        self.spareSize = args["spare size"].value()
       except IndexError:
 	self.spareSize = 16
       try:
-        self.pageSize = args["page-size"].value()
+        self.pageSize = args["page size"].value()
       except IndexError:
 	self.pageSize = 512
       try:
-	self.invert = args["dump_spare"]
+	self.invert = args["dump spare"]
       except IndexError:
 	pass	
       self.nosparenode = SpareNode(self, self.parent, "no-spare", self.pageSize, self.spareSize, None, False) 
@@ -105,21 +105,21 @@ or before applying a file system reconstruction modules."""
                             })
      
      self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt16,
-                            "name": "spare_size",
+                            "name": "spare size",
                             "description": "Spare size",
                             "parameters": {"type": Parameter.Editable,
                                            "predefined": [16, 8, 24, 32]}
                             })
      
      self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.UInt32,
-                            "name": "page_size",
+                            "name": "page size",
                             "description": "Iterate on each page size",
                             "parameters": {"type": Parameter.Editable,
                                            "predefined": [512, 256, 1024]}
                             })
 
      self.conf.addArgument({"input": Argument.Empty,
-                            "name": "dump_spare",
+                            "name": "dump spare",
                             "description": "Create a node with only spares data"
                             })
      self.tags = "Node"

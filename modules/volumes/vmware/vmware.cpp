@@ -47,7 +47,7 @@ void	VMware::start(std::map<std::string, Variant*> args)
   
   this->_rootdir = this->_vmdkroot->parent();
   err = this->createLinks(_vmdkroot, "0");
-  std::cout << "ERROR : " << err << std::endl;
+  //std::cout << "ERROR : " << err << std::endl;
   if (err != -1)
     {
       //      std::cout << "Links : " << this->_links.size() << std::endl;
