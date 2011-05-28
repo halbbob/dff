@@ -1,4 +1,4 @@
-#!${PYTHON_BIN_PATH}/python -i
+#!/usr/bin/python -i
 # DFF -- An Open Source Digital Forensics Framework
 # Copyright (C) 2009-2011 ArxSys
 # This program is free software, distributed under the terms of
@@ -39,4 +39,6 @@ if __name__ == "__main__":
     """You can place some script command here for testing purpose"""
     argv = usage(sys.argv[1:])
     ui = ui('gui', argv.debug)
+    if argv.batch != None:
+	ui.cmd("batch " + argv.batch)
     ui.launch()
