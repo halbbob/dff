@@ -11,17 +11,20 @@ import apsw
 
 class ApswTest(mfso):
     def __init__(self):
-        mfso.__init__(self, "browser_forensics")
-        self.name = "browser_forensics"
+        mfso.__init__(self, "ApswTest")
+        self.name = "ApswTest"
         self.__disown__()
 
     def start(self, args):     
        node = args["node"].value() 
-       print "analyzing db:"
-       print node.absolute()
+       print "analyzing db: " + str(node.absolute())
        avfs = apswvfs.apswVFS()
-       print apsw.vfsnames()	
        db = apsw.Connection(node.absolute(), vfs = avfs.vfsname)	
+       c = db.cursor()
+       c.execute("SELECT * FROM sqlite_master WHERE type='table'")
+       for row in c:
+  	 print row 
+      
 
 class apswtest(Module):
     def __init__(self):
