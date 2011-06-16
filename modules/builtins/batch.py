@@ -40,10 +40,11 @@ class BATCH(Script):
         else:
 	  cmds = self.lp.makeCommands(line[:-1])
 	  for cmd in cmds:
-	    exec_type = ["console", "thread"]
+	    exec_type = ["console"]
 	    config = self.cm.configByName(cmd[0])
 	    args  = config.generate(cmd[1])
 	    proc = self.tm.add(cmd[0], args, exec_type)
+	    proc.event.wait()
     file.close()
     return
 
