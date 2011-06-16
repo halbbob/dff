@@ -686,16 +686,41 @@ std::list<std::string>*		Node::compatibleModules(void)
   res = new list<std::string>();
   cm = ConfigManager::Get();
   if (cm != NULL)
+  {
+    constants = cm->constantsByName("mime-type");
+    if (constants.size() > 0)
     {
-      constants = cm->constantsByName("mime-type");
-      if (constants.size() > 0)
-	{
-	  vars = this->dataType()->value<Attributes >();
-	  for (constant = constants.begin(); constant != constants.end(); constant++)
-	    if (this->constantValuesMatch(constant->second, vars))
-	      res->push_back(constant->first);
-	}
+       vars = this->dataType()->value<Attributes >();
+       for (constant = constants.begin(); constant != constants.end(); constant++)
+          if (this->constantValuesMatch(constant->second, vars))
+            res->push_back(constant->first);
     }
+	//New check for compatible extension (example: .vmdk for vmware )
+    constants = cm->constantsByName("extension-type");
+    if (constants.size() > 0)		//XXX tjrs superieur a 0 donc on ce tape tous meme si c pas set par examples ds le fat
+    {
+       size_t vars_start = this->name().rfind(".");
+       if (vars_start != std::string::npos)
+       {
+          std::string vars = this->name().substr(vars_start + 1);
+          for (constant = constants.begin(); constant != constants.end(); constant++)
+          {
+             list<Variant*>		values;
+             list<Variant*>::iterator	value;
+
+             if ((constant->second != NULL) && (constant->second->type() == typeId::String))
+             {
+	       values = constant->second->values();
+	       for (value = values.begin(); value != values.end(); value++)
+	        {
+                  if (vars == (*value)->toString())	
+                    res->push_back(constant->first);}
+		   
+             }
+          }
+       }
+    }
+  }
   return res;
 }
 
