@@ -26,45 +26,58 @@
 #include <list>
 #include "export.hpp"
 
-using namespace std;
+#include "fastsearch.hpp"
 
-class algorithm
+class BaseSearch
 {
 public:
-  //virtual algorithm(unsigned char *needle, unsigned int needlesize, unsigned char wildcard);
-  //  virtual ~algorithm();
-  virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen) = 0;
-  virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen, unsigned int *count) = 0;
-  virtual bool			preprocess() = 0;
-  virtual bool			setNeedle(unsigned char *needle) = 0;
-  virtual bool			setNeedleSize(unsigned int size) = 0;
-  virtual bool			setWildcard(unsigned char wildcard) = 0;
-  virtual unsigned char		*getNeedle() = 0;
-  virtual unsigned char		getWildcard() = 0;
+  virtual ~BaseSearch() {}
+  virtual int32_t	find(unsigned char* needle, uint32_t ndlen, uint32_t offset) = 0;
+  virtual int32_t	rfind(unsigned char* needle, uint32_t ndlen, uint32_t offset) = 0;
+  virtual bool		contains(unsigned char* needle, uint32_t ndlen, uint32_t offset) = 0;  
 };
 
-class Search
+// class WildcardSearch: BaseSearch
+// {
+// public:
+  
+//   virtual int32_t	find(unsigned char* needle, uint32_t ndlen, unsigned char wildcard, uint32_t offset) = 0;
+//   virtual int32_t	rfind(unsigned char* needle, uint32_t ndlen, unsigned char wildcard, uint32_t offset) = 0;
+//   virtual bool		contains(unsigned char* needle, uint32_t ndlen, unsigned char wildcard, uint32_t offset) = 0;  
+// };
+
+// class SearchAlgorithm
+// {
+// public:
+//   EXPORT			SearchAlgorithm() {}
+//   EXPORT virtual		~SearchAlgorithm() {}
+//   EXPORT virtual int32_t	find(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen) = 0;
+//   //virtual int32_t	find(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard) = 0;
+//   EXPORT virtual int32_t	rfind(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen) = 0;
+//   //virtual int32_t	rfind(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard) = 0;
+//   EXPORT virtual int32_t       count(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen) = 0;
+//   // virtual int32_t       count(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard) = 0;
+// };
+
+class FastSearch//: public SearchAlgorithm
 {
-private:
-  algorithm		*algo;
-  unsigned char		*needle;
-  unsigned int		needleSize;
-  unsigned char		wildcard;
-  bool			aligned;
-  uint64_t		blockSize;
-  bool			preprocessed;
-
 public:
-  EXPORT Search();
-  EXPORT Search(unsigned char *needle, unsigned int needlesize, unsigned char wildcard);
-  EXPORT ~Search();
-  EXPORT bool			setNeedle(unsigned char *n);
-  EXPORT bool			setNeedleSize(unsigned int size);
-  EXPORT bool			setWildcard(unsigned char w);
-  EXPORT bool			setBlockSize(unsigned int bs);
-  EXPORT bool			setAligned(bool aligned);
-  EXPORT list<unsigned int>	*run(unsigned char *haystack, unsigned int hslen);
-  EXPORT list<unsigned int>	*run(unsigned char *haystack, unsigned int hslen, unsigned int *count);
+  EXPORT FastSearch();
+  EXPORT virtual ~FastSearch();
+  EXPORT virtual int32_t	find(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard='\0');
+  EXPORT virtual int32_t	rfind(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard='\0');
+  EXPORT virtual int32_t       count(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard='\0', int32_t maxcount=-1);
 };
+
+// class SteppedSearch: public SearchAlgorithm
+// {
+// private:
+//   uint32_t	__step;
+// public:
+//   SteppedSearch(uint32_t step);
+//   ~SteppedSearch();
+//   void		setStep(uint32_t step);
+//   uint32_t	step();
+// };
 
 #endif

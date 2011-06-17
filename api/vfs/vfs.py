@@ -41,9 +41,13 @@ class vfs():
             elif isinstance(top, Node):
                 item = child
             if child.hasChildren() or child.isDir():
+                if child.size():
+                    files.append(item)
                 dirs.append(item)
-            if child.size() > 0:
+            else:
                 files.append(item)
+            #if child.size() > 0:
+            #    files.append(item)
         if topdown:
             yield top, dirs, files
         for name in dirs:

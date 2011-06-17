@@ -25,6 +25,8 @@ set(apiguiwidget_srcs
   textedit.py
   devicesdialog.py
   completer.py
+  SearchNodeBrowser.py
+  search_widget.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

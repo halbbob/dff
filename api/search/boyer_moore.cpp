@@ -37,13 +37,15 @@ BoyerMoore::BoyerMoore(unsigned char *needle, unsigned int needlesize, unsigned 
 BoyerMoore::~BoyerMoore()
 {
   if (this->bcs != NULL)
-    delete this->bcs;
+    free(this->bcs);
 }
 
 bool	BoyerMoore::preprocess()
 {
   bool ret;
 
+  if (this->bcs != NULL)
+    free(this->bcs);
   ret = this->computeBcs();
   return ret;
 }
@@ -122,6 +124,8 @@ int	BoyerMoore::search(unsigned char *haystack, unsigned int hslen, pattern *p, 
   int shift;
 
   hspos = 0;
+  if (p->size > hslen)
+    return -1;
   while (hspos <= (hslen - p->size))
     {
       for (ndpos = p->size - 1; ndpos != -1; ndpos--)
@@ -159,6 +163,8 @@ list<unsigned int>	*BoyerMoore::search(unsigned char *haystack, unsigned int hsl
   int shift;
 
   hspos = 0;
+  if (this->needleSize > hslen)
+    return l;
   while ((hspos <= (hslen - this->needleSize)) && (*count != 0))
     {
       for (ndpos = this->needleSize - 1; ndpos != -1; ndpos--)
@@ -192,6 +198,8 @@ list<unsigned int>	*BoyerMoore::search(unsigned char *haystack, unsigned int hsl
   int shift;
 
   hspos = 0;
+  if (this->needleSize > hslen)
+    return l;
   while (hspos <= hslen - this->needleSize)
     {
       for (ndpos = this->needleSize - 1; ndpos != -1; ndpos--)

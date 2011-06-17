@@ -29,6 +29,7 @@
 #include "node.hpp"
 #include "export.hpp"
 #include "search.hpp"
+#include "eventhandler.hpp"
 
 #define BUFFSIZE 1024*1024*10
 
@@ -39,10 +40,10 @@ typedef struct _pdata
 }		pdata;
 
 
-class VFile
+class VFile: public EventHandler
 {
 private:
-  Search*	__search;
+  FastSearch	*__fs;
   class fso*	__fsobj;
   int32_t	__fd;
   class Node*  	__node;
@@ -51,22 +52,30 @@ private:
 public:
   EXPORT VFile(int32_t fd, class fso *fsobj, class Node *node);
   EXPORT ~VFile();
-  EXPORT class Node*	node();
-  EXPORT pdata*		read(void);
-  EXPORT pdata*		read(uint32_t size);
-  EXPORT int32_t 	read(void *buff, uint32_t size);
-  EXPORT uint64_t 	seek(uint64_t offset, char *whence);
-  EXPORT uint64_t 	seek(uint64_t offset, int32_t whence);
-  EXPORT uint64_t 	seek(uint64_t offset);
-  EXPORT uint64_t	seek(int32_t offset, int32_t whence);
-  EXPORT int32_t	write(std::string buff);
-  EXPORT int32_t	write(char *buff, uint32_t size);
-  EXPORT int32_t 	close(void);
-  EXPORT list<uint64_t>	*search(char *needle, uint32_t len, char wildcard, uint64_t start = 0, uint64_t window = (uint64_t)-1, uint32_t count = (uint32_t)-1);
-  EXPORT uint64_t	find(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
-  EXPORT uint32_t	count(char *needle, uint32_t len, char wildcard, uint64_t start=0, uint64_t window=(uint64_t)-1);
-  EXPORT int32_t	dfileno();
-  EXPORT uint64_t 	tell();
+  EXPORT class Node*		node();
+  EXPORT pdata*			read();
+  EXPORT pdata*			read(uint32_t size);
+  EXPORT int32_t		read(void *buff, uint32_t size);
+  EXPORT uint64_t		seek(uint64_t offset, char *whence);
+  EXPORT uint64_t		seek(uint64_t offset, int32_t whence);
+  EXPORT uint64_t		seek(uint64_t offset);
+  EXPORT uint64_t		seek(int32_t offset, int32_t whence);
+  EXPORT int32_t		write(std::string buff);
+  EXPORT int32_t		write(char *buff, uint32_t size);
+  EXPORT int32_t		dfileno();
+  EXPORT uint64_t		tell();
+  EXPORT int32_t		close();
+  EXPORT virtual void		Event(event* e) {};
+  EXPORT std::string		readline(uint32_t size=0) throw (std::string);
+  EXPORT int64_t		find(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int64_t		rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int32_t		count(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', int32_t maxcount=INT32_MAX, uint64_t start=0, uint64_t end=0) throw (std::string);
+  EXPORT std::list<uint64_t>	indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT std::list<uint64_t>*	search(char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int64_t		find(std::string needle, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int64_t		rfind(std::string needle, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int32_t		count(std::string needle, unsigned char wildcard='\0', int32_t maxcount=INT32_MAX, uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT std::list<uint64_t>	indexes(std::string needle, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
 };
 
 #endif

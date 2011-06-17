@@ -10,7 +10,7 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Romain Bertholon <rbe@digital-forensic.org>
 # 
 
 from PyQt4 import QtCore, QtGui
@@ -25,60 +25,25 @@ from api.taskmanager.taskmanager import TaskManager
 from api.types import libtypes
 from api.types.libtypes import typeId, Variant
 
-from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
 from api.gui.widget.propertytable import PropertyTable
-from api.gui.model.vfsitemmodel import  VFSItemModel, TreeModel
+from api.gui.model.vfsitemmodel import ListNodeModel
 
 from ui.gui.utils.menu import MenuTags, MenuRelevant
 from ui.gui.resources.ui_nodebrowser import Ui_NodeBrowser
 
 modulePriority = {} 
 
-class SimpleNodeBrowser(QWidget):
-  def __init__(self, parent, view = NodeThumbsView):
-    QWidget.__init__(self, parent)
-    self.type = "filebrowser"
-    self.icon = None
-    self.name = "nodebrowser"
-    self.setObjectName(self.name)
-    self.vfs = vfs.vfs()
-
-    self.model = VFSItemModel(self, True)
-    self.model.setRootPath(self.vfs.getnode('/'))
-    self.model.setThumbnails(True)
-
-    self.view = view(self)
-    self.view.setModel(self.model)
-
-    self.box = QGridLayout()
-    self.box.addWidget(self.view, 0,0)
-    self.setLayout(self.box)
-
-  def changeEvent(self, event):
-    """ Search for a language change event
-    
-    This event have to call retranslateUi to change interface language on
-    the fly.
-    """
-    if event.type() == QEvent.LanguageChange:
-      self.model.translation()
-    else:
-      QWidget.changeEvent(self, event)
-
-class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
+class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def __init__(self, parent):
     super(QWidget, self).__init__()
     EventHandler.__init__(self)
     self.setupUi(self)
 
-    self.mainwindow = parent
-
-    self.getWindowGeometry()
-
+    self.model = ListNodeModel(self)
     self.name = self.windowTitle()
     self.type = "filebrowser"
     self.setObjectName(self.name)
@@ -95,18 +60,11 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
     self.createSubMenu()
     self.createLayout()
-    self.addModel("/")
-
-    self.addNodeLinkTreeView()
-    self.addNodeView()
-
-    self.addOptionsView()
 
   def Event(self, e):
     self.model.emit(SIGNAL("layoutAboutToBeChanged()")) 
     self.model.emit(SIGNAL("layoutChanged()"))
-    self.treeModel.emit(SIGNAL("layoutAboutToBeChanged()")) 
-    self.treeModel.emit(SIGNAL("layoutChanged()"))
+
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
@@ -118,39 +76,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.browserLayout = QSplitter(self)
     self.baseLayout.insertWidget(0, self.browserLayout)
     self.baseLayout.setStretchFactor(self.browserLayout, 1)
- 
-  def addOptionsView(self):
-    self.nodeViewBox = NodeViewBox(self)
-    self.nodeFilterBox = NodeFilterBox(self, self.treeModel)
-    self.nodeFilterBox.vfs_item_model(self.model)
-    self.baseLayout.insertWidget(0,self.nodeFilterBox)
-    self.baseLayout.insertWidget(0, self.nodeViewBox)
-    self.nodeFilterBox.setVisible(False)
-
-  def addModel(self, path):
-    self.model = VFSItemModel(self, True, True)
-    self.model.setRootPath(self.vfs.getnode(path))
-
-  ###### View searhing #####
-  def addSearchView(self):
-    self.search_model = VfsSearchItemModel(self, True)
-    self.treeModel.setRootPath(self.vfs.getnode("/"))
-
-  def addNodeLinkTreeView(self):
-    self.treeModel = TreeModel(self, True)
-    self.treeModel.setRootPath(self.vfs.getnode("/"))
-    self.treeProxyModel = self.treeModel
-    self.treeView = NodeLinkTreeView(self)
-    self.treeView.setModel(self.treeProxyModel)
-
-    self.browserLayout.addWidget(self.treeView)
-
-    self.browserLayout.setStretchFactor(self.browserLayout.indexOf(self.treeView), 0)
-
-#    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-
-    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.nodeTreeDoubleClicked)
-    self.connect(self.treeView, SIGNAL("nodeTreeClicked"), self.treeModel.nodeClicked)
 
   def addNodeView(self):
     self.addTableView()
@@ -158,9 +83,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def addTableView(self): 
     self.tableView = NodeTableView(self)
-
     self.tableView.horizontalHeader().setStretchLastSection(True)
-    self.tableView.setModel(self.model)
+    # self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
     self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
@@ -172,6 +96,10 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.connect(self.tableView, SIGNAL("nodeClicked"), self.nodeClicked)
     self.connect(self.tableView, SIGNAL("nodeDoubleClicked"), self.nodeDoubleClicked)
     self.connect(self.tableView, SIGNAL(""), self.selectAttr)
+
+  def applyModule(self, modname, modtype, selected):
+      appMod = ApplyModule(self)
+      appMod.openApplyModule(modname, modtype, selected)
 
   def selectAttr(self):
     pass
@@ -193,16 +121,10 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        return self.tableView.model()
 
   def currentModel(self):
-     if self.thumbsView.isVisible():
-       return self.thumbsView.model() 
-     elif self.tableView.isVisible():
-       return self.tableView.model() 
+      return self.tableView.model() 
  
   def currentView(self):
-     if self.thumbsView.isVisible():
-       return self.thumbsView
-     elif self.tableView.isVisible():
-       return self.tableView
+      return self.tableView
 
   def currentNodes(self):
      indexList = self.currentView().selectionModel().selectedRows()
@@ -233,11 +155,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       self.currentModel().setRootPath(node.parent().parent())
 
   def nodeClicked(self, mouseButton, node, index = None):
-     if mouseButton == Qt.LeftButton:
-         if self.nodeViewBox.propertyTable.isVisible():
-            self.nodeViewBox.propertyTable.fill(node)
      if mouseButton == Qt.RightButton:
-       self.menuRelevant = MenuRelevant(self, self.parent, node)
+       self.menuRelevant = MenuRelevant(self, self, node)
        if node.hasChildren() or node.isDir():
          self.actionOpen_in_new_tab.setEnabled(True)
        else:
@@ -257,7 +176,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       return
     if self.currentView().enterInDirectory:
       if node.hasChildren() or node.isDir():
-        self.currentModel().setRootPath(node) 
+        self.openAsNewTab()
       else:
         self.openDefault(node)
     else:  
@@ -304,7 +223,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
            if argument.type() == typeId.Node:
              marg[argument.name()] = node
          args = conf.generate(marg)
-         self.taskmanager.add(mod, args, ["thread", "gui"])       
+         self.taskmanager.add(mod, args, ["thread", "gui"])
 	 return
      else:
        errnodes = ""
@@ -338,7 +257,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      self.submenuRelevant = self.submenuFile.addMenu(self.actionRelevant_module.icon(), self.actionRelevant_module.text())
      self.menu = {}
      self.menuModule = self.submenuFile.addMenu(self.actionOpen_with.icon(), self.actionOpen_with.text())
-     self.menuTags = MenuTags(self, self.parent, self.currentNodes)
+     self.menuTags = MenuTags(self,     self.parent.parent.parent.parent, self.currentNodes)
      self.submenuFile.addSeparator()
      self.submenuFile.addAction(self.actionHex_viewer)
      self.connect(self.actionHex_viewer, SIGNAL("triggered()"), self.launchHexedit)
@@ -348,7 +267,8 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def openAsNewTab(self):
     node = self.currentNode()
-    self.mainwindow.addNodeBrowser(node)
+    self.parent.parent.parent.parent.addNodeBrowser(node.absolute())
+#mainwindow.
 
   def launchHexedit(self):
      nodes = self.currentNodes()
@@ -372,7 +292,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        msg.setStandardButtons(QMessageBox.Ok)
        ret = msg.exec_()
 
-
   def extractNodes(self):
      self.extractor.launch(self.currentNodes())
 
@@ -388,7 +307,6 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        self.taskmanager.add("extract", margs, ["thread", "gui"])
      except RuntimeError:
        pass
-
 
   def changeEvent(self, event):
     """ Search for a language change event

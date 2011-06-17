@@ -77,6 +77,7 @@ Options:
      self.confPath = ''
      self.debug = False
      self.verbosity = 0
+     self.batch = None
 # Configuration
      self.main()
      self.conf = Conf(self.confPath)
@@ -85,7 +86,7 @@ Options:
    def main(self):
     """Check command line argument"""
     try:
-        opts, args = getopt.getopt(self.argv, "vgdht:l:c:", [ "version", "graphical",  "debug", "help", "test=", "language=", "verbosity=", "config="])
+        opts, args = getopt.getopt(self.argv, "vgdht:l:c:b:", [ "version", "graphical",  "debug", "help", "test=", "language=", "verbosity=", "config=", "batch="])
     except getopt.GetoptError:
         self.usage()
     for opt, arg in opts:
@@ -106,6 +107,8 @@ Options:
           self.verbosity = int(arg)
         elif opt in ("-c", "--config"):
           self.confPath = str(arg)
+	elif opt in  ("-b", "--batch"):
+	  self.batch = str(arg)
     return
 
    def usage(self):

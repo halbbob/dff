@@ -13,7 +13,10 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
+add_subdirectory(readlines)
+
 set(testmod_srcs
+  huge_node.py
   gen_nodes.py
 )
 

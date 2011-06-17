@@ -106,7 +106,35 @@ Variant::Variant()
 
 Variant::~Variant()
 {
+  if ((this->_type == typeId::String) || (this->_type == typeId::CArray))
+    delete this->__data.str;
+  if (this->_type == typeId::VTime)
+    {
+      vtime*	vt = (vtime*)this->__data.ptr;
+      delete vt;
+    }
+  if (this->_type == typeId::List)
+    {
+      std::list<Variant*>*		l;
+      std::list<Variant*>::iterator	it;
+      
+      l = (std::list<Variant*>*)this->__data.ptr;
+      for (it = l->begin(); it != l->end(); it++)
+	delete *(it);
+      delete l;
+    }
+  if (this->_type == typeId::Map)
+    {
+      std::map<std::string, Variant*>*	m;
+      std::map<std::string, Variant*>::iterator	it;
+      
+      m = (std::map<std::string, Variant*>*)this->__data.ptr;
+      for (it = m->begin(); it != m->end(); it++)
+	delete it->second;
+      delete m;
+    }
 }
+
 
 Variant::Variant(std::string str)
 {
@@ -177,6 +205,11 @@ Variant::Variant(bool b)
 
 Variant::Variant(vtime *vt)
 {
+  //vtime*	vt2;
+
+  //vt2 = new vtime(vt->year, vt->month, vt->day, vt->hour, vt->minute, vt->second, vt->usecond);
+  //delete vt;
+  //this->__data.ptr = (void*)vt2;
   this->__data.ptr = (void*)vt;
   //std::cout << "Variant(vtime)" << std::endl;
   this->_type = typeId::VTime;
@@ -258,6 +291,11 @@ std::string	Variant::toString() throw (std::string)
 	res << "True";
       else
 	res << "False";
+    }
+  else if (this->_type == typeId::VTime)
+    {
+      vtime* vt = (vtime*)this->__data.ptr;
+      res << vt->day << "/" << vt->month << "/" << vt->year << " " << vt->hour << ":" << vt->minute << ":" << vt->second << ":" << vt->usecond;
     }
   else
     throw std::string("Cannot convert type < " + this->typeName() + " > to < std::string >");

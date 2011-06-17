@@ -10,13 +10,6 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Solal Jacob <sja@digital-forensic.org>
+#  Frederic Baguelin <fba@digital-forensic.org>
 
-
-set(node_srcs
-  cut.py
-  merge.py
-  split.py
-)
-
-install_file(node ${node_srcs})
+__all__ = ["READLINES"]

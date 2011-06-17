@@ -49,10 +49,14 @@ class VMWARE(Module):
     Module.__init__(self, 'vmware', VMware)
     self.conf.addArgument({"name": "vmdkroot",
                            "description": "file containing vmdk description",
-	                   "input": Argument.Required|Argument.Single|typeId.Node})
+                           "input": Argument.Required|Argument.Single|typeId.Node})
     self.conf.addConstant({"name": "mime-type", 
- 	                   "type": typeId.String,
- 	                   "description": "managed mime type",
- 	                   "values": ["vmdk"]})
+                           "type": typeId.String,
+                           "description": "managed mime type",
+                           "values": ["vmdk"]})
+    self.conf.addConstant({"name": "extension-type",
+                           "type": typeId.String,
+                           "description" : "compatible extension",
+                           "values" : ["vmdk"]})
     self.tags = "Volumes"
 %}

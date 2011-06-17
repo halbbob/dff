@@ -42,4 +42,6 @@ if __name__ == "__main__":
         ui = ui('gui', argv.debug, argv.verbosity)
     else:
         ui = ui('console', argv.debug, argv.verbosity)
+    if argv.batch != None:
+	ui.cmd("batch " + argv.batch)
     ui.launch()

@@ -25,7 +25,7 @@ INCLUDE_DIRECTORIES(../include)
 
 SET_SOURCE_FILES_PROPERTIES(libvfs.i PROPERTIES CPLUSPLUS ON)
 
-SWIG_ADD_MODULE(libvfs python libvfs.i node.cpp vlink.cpp vfile.cpp vfs.cpp fso.cpp mfso.cpp filemapping.cpp fdmanager.cpp)
+SWIG_ADD_MODULE(libvfs python libvfs.i node.cpp vlink.cpp vfile.cpp vfs.cpp fso.cpp mfso.cpp filemapping.cpp fdmanager.cpp attributesindexer.cpp)
 SWIG_LINK_LIBRARIES(libvfs ${PYTHON_LIBRARIES} _libsearch _libexceptions _libtypes _libevents _libdatatype)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

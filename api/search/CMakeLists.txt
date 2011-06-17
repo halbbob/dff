@@ -37,6 +37,7 @@ endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
 set(libsearch_srcs
   libsearch.py
+  find.py
   __init__.py
 )
 

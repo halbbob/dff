@@ -16,6 +16,7 @@
 set(model_srcs
   __init__.py
   vfsitemmodel.py
+  search_model.py
 )
 
 install_file(model ${model_srcs})

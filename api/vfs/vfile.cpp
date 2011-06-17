@@ -18,7 +18,7 @@
 
 VFile::VFile(int32_t fd, class fso *fsobj, class Node *node) 
 {
-  this->__search = new Search();
+  this->__fs = new FastSearch();
   this->__fd = fd;
   this->__fsobj = fsobj;
   this->__node = node;
@@ -33,7 +33,7 @@ VFile::~VFile()
   catch (const vfsError& e)
     {
     }
-  delete this->__search;
+  delete this->__fs;
 }
 
 class Node*	VFile::node()
@@ -104,6 +104,7 @@ int VFile::read(void *buff, uint32_t size)
     throw vfsError("Vfile::read(buff, size) throw\n" + e.error); 
   }
 }
+
 
 uint64_t  VFile::seek(uint64_t offset, char *cwhence)
 {
@@ -221,89 +222,309 @@ int32_t  VFile::dfileno()
 
 uint64_t VFile::tell()
 {  
-      return (this->__fsobj->vtell(this->__fd));
+  return (this->__fsobj->vtell(this->__fd));
 }
 
-list<uint64_t>	*VFile::search(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window, uint32_t count)
+std::string  VFile::readline(uint32_t size) throw (std::string)
 {
-  unsigned char			*buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
-  list<uint32_t>		*res;
-  list<uint32_t>::iterator	it;
-  list<uint64_t>		*real = new list<uint64_t>;
-  int32_t			bytes_read;
-  bool				stop;
-  uint32_t			hslen;
-  
-  this->__search->setNeedle((unsigned char*)needle);
-  this->__search->setNeedleSize(len);
-  this->__search->setWildcard((unsigned char)wildcard);
-  this->seek(start, 0);
-  stop = false;
-  while(((bytes_read = this->read(buffer, BUFFSIZE)) > 0) && !stop)
-    {
-      if (window != (uint64_t)-1)
-	{
-	  if (window < (uint64_t)bytes_read)
-	    {
-	      hslen = window;
-	      stop = true;
-	    }
-	  else
-	    {
-	      hslen = bytes_read;
-	      window -= bytes_read;
-	    }
-	}
-      else
-	if (bytes_read < BUFFSIZE)
-	  hslen = bytes_read;
-	else
-	  hslen = BUFFSIZE;
-      if (count != (uint32_t)-1)
-	{
-	  res = this->__search->run(buffer, hslen, &count);
-	  if (count == 0)
-	    stop = true;
-	}
-      else
-	res = this->__search->run(buffer, hslen);
-      try  
-      {
-        for (it = res->begin(); it != res->end(); it++)
-	  real->push_back(*it + this->tell() - bytes_read);
-        if (bytes_read == BUFFSIZE)
-	  this->seek(this->tell() - len, 0);
-      }
-      catch (vfsError &e)
-	{}
-      delete res;
-    }
-  free(buffer);
-  return real;
-}
+  std::string		res;
+  unsigned char*	buffer;
+  uint32_t		bread;
+  uint32_t		bsize;
+  uint32_t		consumed;
+  uint32_t		i;
+  uint64_t		oldoff;
+  bool			found;
 
-
-uint64_t	VFile::find(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
-{
-  list<uint64_t>	*l;
-  uint64_t		res;
-
-  l = this->search(needle, len, wildcard, start, window, 1);
-  if (l->size() > 0)
-    res = l->front();
+  if (size == 0)
+    size = INT32_MAX;
+  if (size < 300)
+    bsize = size;
   else
-    res = uint64_t(-1);
-  delete l;
+    bsize = 300;
+  res = "";
+  oldoff = this->tell();
+  if ((buffer = (unsigned char*)malloc(bsize)) != NULL)
+    {
+      consumed = 0;
+      found = false;
+      while (((bread = this->read(buffer, bsize)) > 0) && (consumed != size) && (!found))
+	{
+	  i = 0;
+	  while ((i != bread) && (consumed != size) && (!found))
+	    {
+	      res += buffer[i];
+	      consumed += 1;
+	      if (buffer[i] == '\n')
+		found = true;
+	      i++;
+	    }
+	}
+      this->seek(oldoff+consumed);
+      //std::cout << "oldoff: " << oldoff << " -- consumed: " << consumed << " -- rsize: " << res.size() << std::endl << "move to: " << this->tell() << std::endl;
+      free(buffer);
+    }
+  else
+    throw(std::string("VFile::readline() --> malloc failed"));
   return res;
 }
 
-uint32_t	VFile::count(char *needle, uint32_t len, char wildcard, uint64_t start, uint64_t window)
+int64_t		VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
 {
-  list<uint64_t>	*l;
-  unsigned int		count;
+  unsigned char		*buffer;
+  int32_t		bread;
+  int32_t		idx;
+  int32_t		hlen;
+  uint64_t		totalread;
+  int64_t		pos;
 
-  l = this->search(needle, len, wildcard, start, window);
-  count = l->size();
-  delete l;
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::find 'end' argument must be greater than 'start' argument");
+  if (nlen == 0)
+    return 0;
+  idx = -1;
+  totalread = this->seek(start);
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (idx == -1))
+    {
+      if (end < totalread + bread)
+	hlen = (int32_t)(end - totalread);
+      else
+	hlen = bread;
+      idx = this->__fs->find(buffer, hlen, needle, nlen, wildcard);
+      if (idx == -1)
+	{
+	  if (hlen == BUFFSIZE)
+	    totalread = this->seek(this->tell() - nlen);
+	  else
+	    totalread = this->seek(this->tell());
+	}
+    }
+  free(buffer);
+  if (idx == -1)
+    pos = -1;
+  else
+    pos = totalread + idx;
+  return pos;
+}
+
+
+int64_t		VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  int32_t		bread;
+  int32_t		idx;
+  int32_t		hlen;
+  uint64_t		rpos;
+  int64_t		pos;
+
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::rfind 'end' argument must be greater than 'start' argument");
+  if (nlen == 0)
+    return 0;
+  idx = -1;
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  if (end < start + BUFFSIZE)
+    {
+      rpos = this->seek(start);
+      bread = this->read(buffer, end-start);
+      idx = this->__fs->rfind(buffer, bread, needle, nlen, wildcard);
+    }
+  else
+    {
+      rpos = end-BUFFSIZE;
+      this->seek(rpos);
+      while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (rpos > start) && (idx == -1))
+      	{
+      	  if (rpos < start + bread)
+      	    hlen = (int32_t)(rpos - start);
+      	  else
+      	    hlen = bread;
+      	  idx = this->__fs->rfind(buffer, hlen, needle, nlen, wildcard);
+      	  if (idx == -1)
+	    {
+	      if (hlen == BUFFSIZE)
+		rpos = this->seek(rpos - hlen + nlen);
+	      else
+		rpos = this->seek(rpos - hlen);
+	    }
+      	}
+    }
+  free(buffer);
+  if (idx == -1)
+    pos = -1;
+  else
+    pos = rpos + idx;
+  return pos;
+}
+
+
+int32_t		VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  int32_t		bread;
+  uint64_t		totalread;
+  int32_t		tcount;
+  int32_t		count;
+  int32_t		hlen;
+
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::count 'end' argument must be greater than 'start' argument");
+  if (nlen == 0)
+    {
+      if (start == 0)
+	return (end + 1);
+      else
+	return (end - start + 1);
+    }
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  count = 0;
+  totalread = this->seek(start);
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0))
+    {
+      if (end < totalread + bread)
+	hlen = (int32_t)(end - totalread);
+      else
+	hlen = bread;
+      tcount = this->__fs->count(buffer, hlen, needle, nlen, wildcard, maxcount);
+      if (tcount > 0)
+	{
+	  count += tcount;
+	  maxcount -= tcount;
+	}
+      if ((hlen == BUFFSIZE) && (this->__fs->find(buffer+(BUFFSIZE-nlen), nlen, needle, nlen, wildcard) != -1))
+	totalread = this->seek(this->tell() - nlen);
+      else
+	totalread = this->seek(this->tell());
+    }
+  free(buffer);
   return count;
+}
+
+
+std::list<uint64_t>	VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  std::list<uint64_t>	indexes;
+  int32_t		bread;
+  int32_t		idx;
+  int32_t		buffpos;
+  uint64_t		totalread;
+  int32_t		hlen;
+
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::indexes 'end' argument must be greater than 'start' argument");
+  if (nlen == 0)
+    return indexes;
+  totalread = this->seek(start);
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  event*	e = new event;
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end))
+    {
+      buffpos = 0;
+      if (end < totalread + bread)
+	hlen = (int32_t)(end - totalread);
+      else
+	hlen = bread;
+      while ((buffpos < hlen - (int32_t)nlen) && ((idx = this->__fs->find(buffer+buffpos, hlen - buffpos, needle, nlen, wildcard)) != -1))
+	{
+	  buffpos += idx + nlen;
+	  indexes.push_back(this->tell() - bread + buffpos - nlen);
+	}
+      if ((hlen == BUFFSIZE) && (buffpos != hlen))
+	totalread = this->seek(this->tell() - nlen);
+      else
+	totalread = this->seek(this->tell());
+      
+      e->value = new Variant(totalread);
+      this->notify(e);
+    }
+  free(buffer);
+  return indexes;
+}
+
+
+int64_t			VFile::find(std::string needle, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
+{
+  int64_t		ret;
+
+  try
+    {
+      ret = this->find((unsigned char*)needle.c_str(), needle.size(), wildcard, start, end);
+      return ret;
+    }
+  catch (std::string e)
+    {
+      throw e;
+    }
+}
+
+int64_t			VFile::rfind(std::string needle, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
+{
+  int64_t		ret;
+
+  try
+    {
+      ret = this->rfind((unsigned char*)needle.c_str(), needle.size(), wildcard, start, end);
+      return ret;
+    }
+  catch (std::string e)
+    {
+      throw e;
+    }
+}
+
+int32_t			VFile::count(std::string needle, unsigned char wildcard, int32_t maxcount, uint64_t start, uint64_t end) throw (std::string)
+{
+  int32_t		ret;
+
+  try
+    {
+      ret = this->count((unsigned char*)needle.c_str(), needle.size(), wildcard, maxcount, start, end);
+      return ret;
+    }
+  catch (std::string e)
+    {
+      throw e;
+    }
+}
+
+std::list<uint64_t>	VFile::indexes(std::string needle, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
+{
+  std::list<uint64_t>	ret;
+
+  try
+    {
+      ret = this->indexes((unsigned char*)needle.c_str(), needle.size(), wildcard, start, end);
+      return ret;
+    }
+  catch (std::string e)
+    {
+      throw e;
+    }
+}
+
+
+/* The following method is only for backward compatibility */
+std::list<uint64_t>*	VFile::search(char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end) throw (std::string)
+{
+  std::list<uint64_t>*	ret;
+  
+  try
+    {
+      ret = new std::list<uint64_t>(this->indexes((unsigned char*)needle, nlen, wildcard, start, end));
+      return ret;
+    }
+  catch (std::string e)
+    {
+      throw e;
+    }
 }

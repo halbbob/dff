@@ -35,6 +35,15 @@
 
 typedef std::map<std::string, class Variant* > Attributes; 
 
+enum	attributeNameType
+  {
+    ABSOLUTE_ATTR_NAME = 0,
+    RELATIVE_ATTR_NAME = 1
+  };
+
+// #define ABSOLUTE_ATTR_NAME	0x1
+// #define RELATIVE_ATTR_NAME	0x2
+
 class AttributesHandler
 {
   	std::string		__handlerName;
@@ -62,11 +71,19 @@ protected:
   class fso*				__fsobj;
   uint64_t				__common_attributes;
   //unsigned char			__checkState;
-  uint32_t				__id; 
+  uint32_t				__id;
+  uint64_t				__uid;
   EXPORT virtual Attributes		_attributes();
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
+  EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*, std::string current);
+
   EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
+  EXPORT void	 			attributeByAbsoluteNameFromVariant(Variant* variant, std::string name, Variant**);
+
   EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
+  EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names, std::string current);
+
+  EXPORT void				attributesNamesAndTypesFromVariant(Variant* variant, std::map<std::string, uint8_t> *namestypes, std::string current);
   EXPORT bool				constantValuesMatch(Constant* constant, Attributes vars);
 public:
   EXPORT 				Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
@@ -107,18 +124,22 @@ public:
   EXPORT bool				addChild(class Node* child);
   EXPORT bool				hasChildren();
   EXPORT uint32_t			childCount();
+  EXPORT uint64_t			totalChildrenCount();
 
   EXPORT virtual class VFile*		open();
   EXPORT uint32_t			at();
 
+  EXPORT uint64_t			uid();
 
   EXPORT bool					registerAttributes(AttributesHandler*);
   EXPORT virtual class Variant*			dataType(void); 
   EXPORT virtual Attributes*			attributes();
-  EXPORT virtual Variant*			attributesByName(std::string);
-  EXPORT virtual Attributes*			attributesByType(uint8_t type);
-  EXPORT virtual std::list<std::string>*	attributesNames(void);
+  EXPORT virtual Variant*			attributesByName(std::string, attributeNameType tname=RELATIVE_ATTR_NAME);
+  EXPORT virtual Attributes*			attributesByType(uint8_t type, attributeNameType tname=RELATIVE_ATTR_NAME);
+  EXPORT virtual std::list<std::string>*	attributesNames(attributeNameType tname=RELATIVE_ATTR_NAME);
+  //EXPORT virtual std::list<std::string>*	absoluteAttributesNames(void);
 
+  EXPORT virtual std::map<std::string, uint8_t>*	attributesNamesAndTypes();
   EXPORT virtual string				icon();
   EXPORT virtual std::list<std::string>*	compatibleModules(void);
   EXPORT virtual bool				isCompatibleModule(string);

@@ -51,7 +51,6 @@ from ui.gui.resources.ui_mainwindow import Ui_MainWindow
 # Documentation
 from ui.gui.widget.help import Help
 
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self,  app, debug = False):
         super(MainWindow,  self).__init__()
@@ -171,6 +170,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             nb = NodeBrowser(self)
             nb.model.setRootPath(nb.vfs.getnode(rootpath.absolute()))
             self.addDockWidgets(nb, 'nodeBrowser')
+
+    def addSearchTab(self, search):
+        self.addDockWidgets(search, 'Searchr')
 
     def addHelpWidget(self):
         conf = Conf()
@@ -293,7 +295,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for tabGroup in allTabs:
             for i in range(tabGroup.count()):
                 for v in self.dockWidget.values():
-                    if tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
+                    if v.widget() and tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
                         tabGroup.setTabIcon(i, v.widget().windowIcon()) 
 
 #############  END OF DOCKWIDGETS FUNCTIONS ###############
