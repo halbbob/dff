@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>344</width>
+    <width>403</width>
     <height>49</height>
    </rect>
   </property>
@@ -43,6 +43,23 @@
        <string>Giga bytes</string>
       </property>
      </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="exclusiv">
+     <property name="text">
+      <string>Exclusiv</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="inclusiv">
+     <property name="text">
+      <string>Inclusiv</string>
+     </property>
     </widget>
    </item>
    <item>

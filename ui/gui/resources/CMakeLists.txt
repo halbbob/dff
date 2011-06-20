@@ -18,6 +18,7 @@ set(ui_resources_files
   advance_search.ui
   applymodule.ui
   bookmarkdialog.ui
+  build_search_clause.ui
   devicesdialog.ui
   errors.ui
   evidencedialog.ui
@@ -25,6 +26,8 @@ set(ui_resources_files
   ide.ui
   interpreter.ui
   idewizard.ui
+  is_deleted.ui
+  is_file_or_folder.ui
   mainwindow.ui
   modif_index.ui
   modules.ui
@@ -33,6 +36,7 @@ set(ui_resources_files
   node_f_box.ui
   nodeviewbox.ui
   output.ui
+  or_and.ui
   preferences.ui
   varianttreewidget.ui
   search.ui
@@ -63,6 +67,7 @@ set(resources_srcs
   ui_advance_search.py
   ui_applymodule.py
   ui_bookmarkdialog.py
+  ui_build_search_clause.py
   ui_devicesdialog.py
   ui_errors.py
   ui_evidencedialog.py
@@ -70,6 +75,8 @@ set(resources_srcs
   ui_ide.py
   ui_idewizard.py
   ui_interpreter.py
+  ui_is_deleted.py
+  ui_is_file_or_folder.py
   ui_mainwindow.py
   ui_modif_index.py
   ui_modules.py
@@ -77,6 +84,7 @@ set(resources_srcs
   ui_nodefilterbox.py
   ui_node_f_box.py
   ui_nodeviewbox.py
+  ui_or_and.py
   ui_output.py
   ui_preferences.py
   ui_varianttreewidget.py
