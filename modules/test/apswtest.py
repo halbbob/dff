@@ -9,17 +9,16 @@ from api.vfs.libvfs import *
 from api.apswvfs import apswvfs
 import apsw
 
-class ApswTest(mfso):
+class ApswTest(Script):
     def __init__(self):
-        mfso.__init__(self, "ApswTest")
+        Script.__init__(self, "ApswTest")
         self.name = "ApswTest"
-        self.__disown__()
 
     def start(self, args):     
-       node = args["node"].value() 
-       print "analyzing db: " + str(node.absolute())
+       self.node = args["node"].value()
+       print "analyzing db: " + str(self.node.absolute())
        avfs = apswvfs.apswVFS()
-       db = apsw.Connection(node.absolute(), vfs = avfs.vfsname)	
+       db = apsw.Connection(self.node.absolute(), vfs = avfs.vfsname)	
        c = db.cursor()
        c.execute("SELECT * FROM sqlite_master WHERE type='table'")
        for row in c:
