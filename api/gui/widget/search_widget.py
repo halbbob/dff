@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon
 from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList
 
 from api.events.libevents import EventHandler, event
@@ -32,12 +32,25 @@ from api.types.libtypes import Variant, typeId
 
 from api.gui.widget.build_search_clause  import BuildSearchClause
 from ui.gui.resources.ui_search import Ui_SearchTab
-from ui.gui.resources.ui_or_and import Ui_OrAnd
+from ui.gui.resources.ui_search_clause import Ui_SearchClause
 
-class ChooseOperatorClass(Ui_OrAnd, QWidget):
+class SearchClause(Ui_SearchClause, QWidget):
   def __init__(self, parent = None):
-    super(QWidget, self).__init__()
+    super(QWidget, self).__init__(parent)
     self.setupUi(self)
+
+    self.parent = parent
+
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.delete_clause.clicked.connect(self.removeClauseFromWidget)
+    else:
+      QtCore.QObject.connect(self.delete_clause, SIGNAL("clicked(bool)"), self.removeClauseFromWidget)
+
+  def removeClauseFromWidget(self, changed):
+    self.parent.advancedOptions.removeWidget(self)
+    self.parent.clause_list.remove(self)
+    self.close()
+    self.parent.rebuildQuery()
 
 class FilterThread(QThread):
   def __init__(self, parent=None):
@@ -104,7 +117,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     self.searchResults.addTableView()
     self.searchResults.tableView.setModel(self.model)
-    #self.searchResults.horizontalHeader().setStretchLastSection(True)
     self.connect(self.searchResults.tableView, SIGNAL("nodeClicked"), self.change_node_name)
     
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
@@ -123,10 +135,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.addedOpt = []
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      # self.moreOptionsButton.clicked.connect(self.showMoreOptions)
       self.addOption.clicked.connect(self.addSearchOptions)
     else:
-      # QtCore.QObject.connect(self.moreOptionsButton, SIGNAL("clicked(bool)"), self.showMoreOption)
       QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
 
     self.connect(self, SIGNAL("TotalNodes"), self.searchBar.setMaximum)
@@ -153,16 +163,16 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         except KeyError:
           clause[widget.edit.field] = (widget.edit.text())
 
-      clause_widget = QTableWidget()
-      clause_widget.setShowGrid(False)
-      clause_widget.verticalHeader().hide()
-      clause_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
-      clause_widget.setAlternatingRowColors(True)
-      clause_widget.insertColumn(0)
-      clause_widget.insertColumn(1)
-      clause_widget.setHorizontalHeaderItem(0, QTableWidgetItem("Field"))
-      clause_widget.setHorizontalHeaderItem(1, QTableWidgetItem("Clause"))
-      clause_widget.horizontalHeader().setStretchLastSection(True)
+      table_clause_widget = SearchClause(self)
+      table_clause_widget.clause_widget.setShowGrid(False)
+      table_clause_widget.clause_widget.verticalHeader().hide()
+      table_clause_widget.clause_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
+      table_clause_widget.clause_widget.setAlternatingRowColors(True)
+      table_clause_widget.clause_widget.insertColumn(0)
+      table_clause_widget.clause_widget.insertColumn(1)
+      table_clause_widget.clause_widget.setHorizontalHeaderItem(0, QTableWidgetItem("Field"))
+      table_clause_widget.clause_widget.setHorizontalHeaderItem(1, QTableWidgetItem("Clause"))
+      table_clause_widget.clause_widget.horizontalHeader().setStretchLastSection(True)
 
       nb_line = 0
       text = ""
@@ -172,10 +182,10 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         text = self.completeClause.text()
         text += " or ( "
       for i in clause:
-        clause_widget.insertRow(clause_widget.rowCount())
-        clause_widget.setItem(clause_widget.rowCount() - 1, 0, QTableWidgetItem(i))
-        clause_widget.setItem(clause_widget.rowCount() - 1, 1, QTableWidgetItem(clause[i]))
-        clause_widget.resizeRowToContents(clause_widget.rowCount() - 1)
+        table_clause_widget.clause_widget.insertRow(table_clause_widget.clause_widget.rowCount())
+        table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 0, QTableWidgetItem(i))
+        table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 1, QTableWidgetItem(clause[i]))
+        table_clause_widget.clause_widget.resizeRowToContents(table_clause_widget.clause_widget.rowCount() - 1)
         if nb_line == 0:
           text += ("(" + i + " " + clause[i] + ")")
         else:
@@ -185,39 +195,39 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
       if nb_line:
         if len(self.clause_list) != 0:
-          bool_operator = ChooseOperatorClass()
           if QtCore.PYQT_VERSION_STR >= "4.5.0":
-            bool_operator.and_clause.clicked.connect(self.rebuildQuery)
-            bool_operator.or_clause.clicked.connect(self.rebuildQuery)
+            table_clause_widget.and_clause.clicked.connect(self.rebuildQuery)
+            table_clause_widget.or_clause.clicked.connect(self.rebuildQuery)
           else:
-            QtCore.QObject.connect(bool_operator.and_clause, SIGNAL("clicked(bool)"), self.rebuildQuery)
-            QtCore.QObject.connect(bool_operator.or_clause, SIGNAL("clicked(bool)"), self.rebuildQuery)
-
-          self.advancedOptions.addWidget(bool_operator)
-          self.operator_list.append(bool_operator)
-        clause_widget.setMaximumHeight(nb_line * 25 + 50)
+            QtCore.QObject.connect( table_clause_widget.and_clause, SIGNAL("clicked(bool)"), self.rebuildQuery)
+            QtCore.QObject.connect( table_clause_widget.or_clause, SIGNAL("clicked(bool)"), self.rebuildQuery)
+        else:
+          table_clause_widget.or_clause.hide()
+          table_clause_widget.and_clause.hide()
+        table_clause_widget.clause_widget.setMaximumHeight(nb_line * 25 + 50)
         self.completeClause.setText(text)
-        self.advancedOptions.addWidget(clause_widget)
-        self.clause_list.append(clause_widget)
+        self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0)
+        self.clause_list.append(table_clause_widget)
 
   def rebuildQuery(self):
     text = ""
     for i in range(0, len(self.clause_list)):
       if i == 0:
         text = "("
+        self.clause_list[i].or_clause.hide()
+        self.clause_list[i].and_clause.hide()
       else:
-        bool_clause = self.operator_list[i - 1]
-        if bool_clause.or_clause.isChecked():
+        if self.clause_list[i].or_clause.isChecked():
           text += " or ("
         else:
           text += " and ("
       clause_widget = self.clause_list[i]
-      for j in range(0, clause_widget.rowCount()):
+      for j in range(0, clause_widget.clause_widget.rowCount()):
         if j != 0:
           text += " or " 
         text += "("
-        text += (clause_widget.item(j, 0).text() + " ")
-        text += clause_widget.item(j, 1).text()
+        text += (clause_widget.clause_widget.item(j, 0).text() + " ")
+        text += clause_widget.clause_widget.item(j, 1).text()
         text += ")"
       text += ")"
     self.completeClause.setText(text)
@@ -251,7 +261,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       self.emit(SIGNAL("NodeMatched"), e)
 
   def searchFinished(self):
-    #self.searchBar.hide()
     if self.__totalhits:
       self.exportButton.setEnabled(True)
     self.stopSearchButton.hide()
@@ -306,22 +315,13 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         search += ")"
       clause["name"] = search
 
-    for i in range(0, self.advancedOptions.count()):
-      widget = self.advancedOptions.itemAt(i).widget()
-      if not len(widget.edit.text()):
-        continue
-      try:
-        if len(clause[widget.edit.field]):
-          clause[widget.edit.field] += (widget.edit.field + " " + widget.edit.operator())
-          clause[widget.edit.field] += (widget.edit.text())
-      except KeyError:
-        clause[widget.edit.field] = (widget.edit.text())
+    print self.completeClause.text()
+    return
     self.filterThread.setContext(clause, self.vfs.getnode(str(self.path.text())))
     self.searchBar.show()
     self.launchSearchButton.hide()
     self.stopSearchButton.show()
     self.filterThread.start()
-    return clause
 
   def showMoreOptions(self, changed):
     pass

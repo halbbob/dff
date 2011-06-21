@@ -27,23 +27,17 @@ from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
 from ui.conf import Conf
 from api.search.find import Filters
 
-#try:
-print "TRYING TO IMPORT INMDEX"
-from api.gui.widget.build_search_clause import SearchStr
-print "TRYING TO IMPORT INMDEX2"
-from api.gui.widget.build_search_clause import SearchD
-print "TRYING TO IMPORT INMDEX3"
-from api.gui.widget.build_search_clause import SearchS
-print "TRYING TO IMPORT INMDEX4"
-from api.gui.widget.search_widget import FilterThread
-print "TRYING TO IMPORT INMDEX5"
-from api.gui.widget.search_widget import AdvSearch
-print "TRYING TO IMPORT INMDEX6"
-from api.index.libindex import IndexSearch, Index
-from ui.gui.widget.modif_index import ModifIndex
-IndexerFound = True
-#except ImportError:
-IndexerFound = False
+try:
+  from api.gui.widget.build_search_clause import SearchStr
+  from api.gui.widget.build_search_clause import SearchD
+  from api.gui.widget.build_search_clause import SearchS
+  from api.gui.widget.search_widget import FilterThread
+  from api.gui.widget.search_widget import AdvSearch
+  from api.index.libindex import IndexSearch, Index
+  from ui.gui.widget.modif_index import ModifIndex
+  IndexerFound = True
+except ImportError:
+  IndexerFound = False
 
 from ui.conf import Conf    
 
