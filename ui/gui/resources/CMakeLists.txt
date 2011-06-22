@@ -20,6 +20,7 @@ set(ui_resources_files
   bookmarkdialog.ui
   build_search_clause.ui
   devicesdialog.ui
+  edit_dict.ui
   errors.ui
   evidencedialog.ui
   extractdialog.ui
@@ -70,6 +71,7 @@ set(resources_srcs
   ui_bookmarkdialog.py
   ui_build_search_clause.py
   ui_devicesdialog.py
+  ui_edit_dict.py
   ui_errors.py
   ui_evidencedialog.py
   ui_extractdialog.py

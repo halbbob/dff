@@ -111,6 +111,7 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="bookmark_category_add.png">icons/actions/bookmark_category_add.png</file>
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>
+    <file alias="dict.png">icons/actions/man.png</file>
 
     <file alias="editcut">icons/actions/editcut.png</file>
     <file alias="encrypted">icons/actions/encrypted.png</file>

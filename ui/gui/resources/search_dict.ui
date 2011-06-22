@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>471</width>
-    <height>100</height>
+    <width>484</width>
+    <height>52</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -40,8 +40,16 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QListWidget" name="listWord"/>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="editDictContent">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="gui.qrc">
+         <normaloff>:/dict.png</normaloff>:/dict.png</iconset>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -176,6 +176,17 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
       nb_line = 0
       text = ""
+
+      if not self.nameContain.text().isEmpty():
+        print "name : " + self.nameContain.text()
+        text += ("(name ('" + self.nameContain.text() + "'")
+        if not self.caseSensitiveName.isChecked():
+          text += ",i)"
+        else:
+          text += ")"
+        if len(self.clause_list):
+          text += " or "
+
       if self.completeClause.text() == "":
         text += "( "
       else:
@@ -211,6 +222,12 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
   def rebuildQuery(self):
     text = ""
+    if self.nameContain.text() != "":
+      print self.nameContain.text()
+      text += ("(name " + self.nameContain.text() + ")")
+      if len(self.clause_list):
+        text += " or "
+
     for i in range(0, len(self.clause_list)):
       if i == 0:
         text = "("
@@ -316,7 +333,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       clause["name"] = search
 
     print self.completeClause.text()
-    return
+
     self.filterThread.setContext(clause, self.vfs.getnode(str(self.path.text())))
     self.searchBar.show()
     self.launchSearchButton.hide()

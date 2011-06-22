@@ -29,6 +29,14 @@ from ui.gui.resources.ui_is_file_or_folder import Ui_FileOrFolder
 from ui.gui.resources.ui_is_deleted import Ui_IsDeleted
 
 from ui.gui.resources.ui_build_search_clause import Ui_BuildSearchClause
+from ui.gui.resources.ui_edit_dict import Ui_DictListEdit
+
+class DictListEdit(Ui_DictListEdit, QDialog):
+  def __init__(self, word_list, parent = None):
+    super(QDialog, self).__init__()
+    self.setupUi(self)
+    self.word_list = word_list
+    self.listWidget.addItems(self.word_list)
 
 class SearchStr(Ui_SearchStr, QWidget):
   def __init__(self, parent = None):
@@ -72,11 +80,20 @@ class SearchDict(QWidget, Ui_SearchDict):
     self.setupUi(self)
     self.translation()
     self.word_list = []
-    self.listWord.hide()
 
     self.field = "dict"
 
-    QtCore.QObject.connect(self.openDict, SIGNAL("clicked(bool)"), self.open_dict)
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.editDictContent.clicked.connect(self.edit_dict)
+      QtCore.QObject.connect(self.openDict, SIGNAL("clicked(bool)"), self.open_dict)
+    else:
+      QtCore.QObject.connect(self.editDictContent, SIGNAL("clicked(bool)"), self.edit_dict)
+      QtCore.QObject.connect(self.openDict, SIGNAL("clicked(bool)"), self.open_dict)
+    self.editDictContent.setEnabled(False)
+
+  def edit_dict(self, changed):
+    edit_dialog = DictListEdit(self.word_list)
+    ret = edit_dialog.exec_()
 
   def open_dict(self, changed):
     """
@@ -93,23 +110,23 @@ class SearchDict(QWidget, Ui_SearchDict):
       dict_file = QFile(path)
       opened = dict_file.open(QIODevice.ReadOnly)
       if not opened:
-        print "cannot open file"  
         return
       buf = dict_file.readLine()
       if len(buf):
         self.word_list.append(str(buf).rstrip('\n'))
-        self.listWord.addItem(str(buf).rstrip('\n'))
       while buf != "":
         buf = ""
         buf = dict_file.readLine()
         if len(buf):
           self.word_list.append(str(buf).rstrip('\n'))
-          self.listWord.addItem(str(buf).rstrip('\n'))
-      self.listWord.show()
       dict_file.close()
+      self.editDictContent.setEnabled(True)
 
   def text(self):
-    return self.word_list
+    text = ""
+    for i in self.word_list:
+      text += (i + ",")
+    return text
 
   def translation(self):
     self.errTr = "Cannot read the file."
