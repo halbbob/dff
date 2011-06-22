@@ -204,6 +204,13 @@ bool			MftEntry::_validateSignature()
 
   _previousReadOffset = 0;
   expectedSignature << MFTENTRY_SIGNATURE;
+
+  if (_mftEntryBlock == NULL)
+    return false;
+
+  if (_mftEntryBlock->signature == NULL)
+    return false;
+
   for (i = 0; i < expectedSignature.str().size(); i++)
     {
       /* Char by char because no trailing \0 at end of signature */
