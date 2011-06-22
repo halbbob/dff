@@ -168,7 +168,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.addDockWidgets(NodeBrowser(self), 'nodeBrowser')
         else:
             nb = NodeBrowser(self)
-            nb.model.setRootPath(nb.vfs.getnode(rootpath.absolute()))
+	    if type(rootpath) == type(''):
+	         nb.model.setRootPath(nb.vfs.getnode(rootpath))
+	    else:
+	         nb.model.setRootPath(rootpath)
             self.addDockWidgets(nb, 'nodeBrowser')
 
     def addSearchTab(self, search):
@@ -307,6 +310,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def initCallback(self):
         self.sched.set_callback("add_qwidget", self.qwidgetResult)
         self.connect(self, SIGNAL("qwidgetResultView"), self.qwidgetResultView)
+        self.connect(self, SIGNAL("strResultView"), self.strResultView)
 
     def qwidgetResult(self, qwidget):
         self.emit(SIGNAL("qwidgetResultView"), qwidget)
