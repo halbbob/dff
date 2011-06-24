@@ -192,6 +192,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       else:
         text = self.completeClause.text()
         text += " or ( "
+
       for i in clause:
         table_clause_widget.clause_widget.insertRow(table_clause_widget.clause_widget.rowCount())
         table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 0, QTableWidgetItem(i))

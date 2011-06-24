@@ -45,8 +45,10 @@ set(ui_resources_files
   search_date.ui
   search_dict.ui
   search_empty.ui
+  search_mime_type.ui
   search_size.ui
   SearchStr.ui
+  select_mime_types.ui
   shell.ui
   taskmanager.ui
   selectattrs.ui
@@ -96,7 +98,9 @@ set(resources_srcs
   ui_search_date.py
   ui_search_dict.py
   ui_search_empty.py
+  ui_search_mime_type.py
   ui_search_size.py
+  ui_select_mime_types.py
   ui_SearchStr.py
   ui_shell.py
   ui_taskmanager.py

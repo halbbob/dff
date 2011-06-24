@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>574</width>
-    <height>460</height>
+    <width>706</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,16 +46,6 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Description</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="clauseDescr"/>
-     </item>
     </layout>
    </item>
    <item>
@@ -80,8 +70,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>540</width>
-           <height>344</height>
+           <width>672</width>
+           <height>324</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">

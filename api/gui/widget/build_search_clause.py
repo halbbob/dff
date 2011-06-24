@@ -27,9 +27,65 @@ from ui.gui.resources.ui_SearchStr import Ui_SearchStr
 from ui.gui.resources.ui_search_dict import Ui_SearchDict
 from ui.gui.resources.ui_is_file_or_folder import Ui_FileOrFolder
 from ui.gui.resources.ui_is_deleted import Ui_IsDeleted
-
+from ui.gui.resources.ui_search_mime_type import Ui_MimeType
 from ui.gui.resources.ui_build_search_clause import Ui_BuildSearchClause
 from ui.gui.resources.ui_edit_dict import Ui_DictListEdit
+from ui.gui.resources.ui_select_mime_types import Ui_selectMimeTypes
+
+from ui.gui.widget.SelectMimeTypes import MimeTypesTree
+
+class SelectMimeTypes(Ui_selectMimeTypes, QDialog):
+  def __init__(self, parent = None):
+    super(QDialog, self).__init__()
+    self.setupUi(self)
+    self.translation()
+
+    self.mime_types.setHeaderLabels([self.mimeTypeTr])
+
+    self.mime = MimeTypesTree(self.mime_types)
+
+  def translation(self):
+    self.mimeTypeTr = self.tr("Select one or several mime-types")
+
+class MimeType(Ui_MimeType, QWidget):
+  def __init__(self, parent = None):
+    super(QWidget, self).__init__()
+    self.setupUi(self)
+    self.text_t = ""
+    self.field = "mime"
+
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.edit_mime_types.clicked.connect(self.editMimeTypes)
+    else:
+      QtCore.QObject.connect(self.edit_mime_types, SIGNAL("clicked(bool)"), self.editMimeTypes)
+    
+  def editMimeTypes(self, changed):
+    edit_dialog = SelectMimeTypes()
+    ret = edit_dialog.exec_()
+    if QDialog.Accepted:
+      root_item = edit_dialog.mime_types.invisibleRootItem()
+      for i in range(0, root_item.childCount()):
+        parent_item = root_item.child(i)
+        for j in range(0, parent_item.childCount()):
+          child_item = parent_item.child(j)
+          if child_item.checkState(0) == Qt.Checked:
+            print child_item.text(0)
+            self.selected_mime_types.addItem(child_item.text(0))
+#      iterator = QtGui.QTreeWidgetItemIterator(edit_dialog.mime_types, QtGui.QTreeWidgetItemIterator.Checked)
+#      iterator.thisown = False
+#      while iterator.value() != None:
+#        print QtCore.QString(iterator.value().text(0))
+#        iterator.__iadd__(1)
+
+  def text(self):
+    text_t = " in ["
+    for i in range(0, self.selected_mime_types.count()):
+      if i != 0:
+        text_t += ", "
+      text_t += ("\"" +  self.selected_mime_types.itemText(i) + "\"")
+    text_t += "]"
+    print text_t
+    return text_t
 
 class DictListEdit(Ui_DictListEdit, QDialog):
   def __init__(self, word_list, parent = None):
@@ -234,6 +290,7 @@ class OptWidget(QWidget):
                        typeId.Path: SearchDict,
                        typeId.VTime: SearchD,
                        typeId.Bool: FileIsDeleted,
+                       typeId.List: MimeType,
 
                        # MEGALOL - NEED TO BE CHANGED
                        typeId.Char + 100: SearchStr,
@@ -299,6 +356,8 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.optionList.addItem(self.fromDictTr, QVariant(typeId.Path))
       self.optionList.addItem(self.dataDeletedTr , QVariant(typeId.Bool))
       self.optionList.addItem(self.dataIsFileTr, QVariant(typeId.Bool + 100))
+      self.optionList.addItem(self.mimeTypeTr, QVariant(typeId.List))
+
       if QtCore.PYQT_VERSION_STR >= "4.5.0":
         self.addOption.clicked.connect(self.addSearchOptions)
       else:
@@ -316,6 +375,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.dateMinTr = self.tr("Date most than")
       self.dataDeletedTr = self.tr("Deleted")
       self.dataIsFileTr = self.tr("Type")
+      self.mimeTypeTr = self.tr("Mime-type")
 
   def addSearchOptions(self, changed):
     # removing from combo box
@@ -337,9 +397,8 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       widget.edit.field = "name"
 
     self.optionList.removeItem(self.optionList.currentIndex())
-
     widget.label.setText(text)
-    #widget.label.setAlignment(Qt.AlignTop)
+
     widget.id = len(self.addedOpt)
     self.advancedOptions.addWidget(widget)
     self.addedOpt.append(widget)
