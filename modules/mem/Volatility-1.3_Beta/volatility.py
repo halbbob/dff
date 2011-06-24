@@ -98,8 +98,12 @@ class volatility(Module):
    self.conf.addArgument({"name": "openfiles",
                           "description": "List opened files per processus",
                           "input": Argument.Empty})
-   self.conf.addArgument({"name": "connection",
+   self.conf.addArgument({"name": "connections",
                           "description": "List opened connection per processus",
                           "input": Argument.Empty})
+   self.conf.addConstant({"name": "extension-type",
+			  "type" : typeId.String,
+			  "description" : "Compatible extension",
+			  "values" : ["vmem"]})
    self.tags = "Volatile memory"
    self.icon = ":dev_ram.png"
