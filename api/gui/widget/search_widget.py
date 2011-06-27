@@ -120,10 +120,12 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.connect(self.searchResults.tableView, SIGNAL("nodeClicked"), self.change_node_name)
     
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.nameContain.textChanged.connect(self.rebuildQuery)
       self.launchSearchButton.clicked.connect(self.launchSearch)
       self.stopSearchButton.clicked.connect(self.stopSearch)
       self.exportButton.clicked.connect(self.export)
     else:
+      QtCore.QObject.connect(self.nameContain.textChanged, SIGNAL("clicked(bool)"), self.rebuildQuery)
       QtCore.QObject.connect(self.launchSearchButton, SIGNAL("clicked(bool)"), self.launchSearch)
       QtCore.QObject.connect(self.stopSearchButton, SIGNAL("clicked(bool)"), self.stopSearch)
       QtCore.QObject.connect(self.exportButton, SIGNAL("clicked(bool)"), self.export)
@@ -174,11 +176,15 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       table_clause_widget.clause_widget.setHorizontalHeaderItem(1, QTableWidgetItem("Clause"))
       table_clause_widget.clause_widget.horizontalHeader().setStretchLastSection(True)
 
+      if QtCore.PYQT_VERSION_STR >= "4.5.0":
+        table_clause_widget.clause_widget.itemChanged.connect(self.editing_clause)
+      else:
+        QtCore.QObject.connect(self.table_clause_widget.clause_widget,\
+                                 SIGNAL("itemChanged(QTableWidgetItem)"), self.editing_clause)
       nb_line = 0
       text = ""
-
       if not self.nameContain.text().isEmpty():
-        text += ("(name ('" + self.nameContain.text() + "'")
+        text += ("(name ('" + self.nameContain.text() + ")'")
         if not self.caseSensitiveName.isChecked():
           text += ",i)"
         else:
@@ -218,6 +224,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         self.completeClause.setText(text)
         self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0)
         self.clause_list.append(table_clause_widget)
+    self.rebuildQuery()
+
+  def editing_clause(self, item):
     self.rebuildQuery()
 
   def rebuildQuery(self):
