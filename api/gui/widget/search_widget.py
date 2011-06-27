@@ -178,25 +178,21 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       text = ""
 
       if not self.nameContain.text().isEmpty():
-        print "name : " + self.nameContain.text()
         text += ("(name ('" + self.nameContain.text() + "'")
         if not self.caseSensitiveName.isChecked():
           text += ",i)"
         else:
           text += ")"
+        text += ")"
         if len(self.clause_list):
           text += " or "
 
-      if self.completeClause.text() == "":
-        text += "( "
-      else:
-        text = self.completeClause.text()
-        text += " or ( "
-
       for i in clause:
         table_clause_widget.clause_widget.insertRow(table_clause_widget.clause_widget.rowCount())
-        table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 0, QTableWidgetItem(i))
-        table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 1, QTableWidgetItem(clause[i]))
+        table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, \
+                                                    0, QTableWidgetItem(i))
+        table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 1,\
+                                                    QTableWidgetItem(clause[i]))
         table_clause_widget.clause_widget.resizeRowToContents(table_clause_widget.clause_widget.rowCount() - 1)
         if nb_line == 0:
           text += ("(" + i + " " + clause[i] + ")")
@@ -211,8 +207,10 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
             table_clause_widget.and_clause.clicked.connect(self.rebuildQuery)
             table_clause_widget.or_clause.clicked.connect(self.rebuildQuery)
           else:
-            QtCore.QObject.connect( table_clause_widget.and_clause, SIGNAL("clicked(bool)"), self.rebuildQuery)
-            QtCore.QObject.connect( table_clause_widget.or_clause, SIGNAL("clicked(bool)"), self.rebuildQuery)
+            QtCore.QObject.connect( table_clause_widget.and_clause, SIGNAL("clicked(bool)"), \
+                                      self.rebuildQuery)
+            QtCore.QObject.connect( table_clause_widget.or_clause, SIGNAL("clicked(bool)"), \
+                                      self.rebuildQuery)
         else:
           table_clause_widget.or_clause.hide()
           table_clause_widget.and_clause.hide()
@@ -220,18 +218,21 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         self.completeClause.setText(text)
         self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0)
         self.clause_list.append(table_clause_widget)
+    self.rebuildQuery()
 
   def rebuildQuery(self):
     text = ""
-    if self.nameContain.text() != "":
-      print self.nameContain.text()
-      text += ("(name " + self.nameContain.text() + ")")
+    if not self.nameContain.text().isEmpty():
+      text += ("(name ('" + self.nameContain.text() + "'")
+      if not self.caseSensitiveName.isChecked():
+        text += ",i)"
+      else:
+        text += ")"
       if len(self.clause_list):
         text += " or "
-
     for i in range(0, len(self.clause_list)):
       if i == 0:
-        text = "("
+        text += "("
         self.clause_list[i].or_clause.hide()
         self.clause_list[i].and_clause.hide()
       else:
@@ -275,7 +276,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       self.emit(SIGNAL("CountNodes"), int(e.value.value()))
     if e.type == 0x202:
       self.__totalhits += 1
-      self.totalHits.setText(str(self.__totalhits) + "/" + str(self.__totalnodes) + " " + self.tr("match(s)"))
+      self.totalHits.setText(str(self.__totalhits) + "/" + str(self.__totalnodes) + " " \
+                               + self.tr("match(s)"))
       self.emit(SIGNAL("NodeMatched"), e)
 
   def searchFinished(self):
@@ -285,7 +287,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.launchSearchButton.show()
 
   def export(self):
-    text, ok = QInputDialog.getText(self, "Advanced search", "Filter export name", QLineEdit.Normal, "") 
+    text, ok = QInputDialog.getText(self, "Advanced search", "Filter export name",\
+                                      QLineEdit.Normal, "") 
     if ok and text != "":
       siNode = self.vfs.getnode("/Searched items")
       filtersNode = Node(str(text), 0, siNode, None)
@@ -308,7 +311,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
           l = VLink(n, filtersNode)
           l.__disown__()
     else:
-      box = QMessageBox(QMessageBox.Warning, "Error", "Error node already exists", QMessageBox.NoButton, self)
+      box = QMessageBox(QMessageBox.Warning, "Error", "Error node already exists", \
+                          QMessageBox.NoButton, self)
       box.exec_()
 
   def stopSearch(self, changed):

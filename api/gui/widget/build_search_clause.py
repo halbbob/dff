@@ -69,13 +69,7 @@ class MimeType(Ui_MimeType, QWidget):
         for j in range(0, parent_item.childCount()):
           child_item = parent_item.child(j)
           if child_item.checkState(0) == Qt.Checked:
-            print child_item.text(0)
-            self.selected_mime_types.addItem(child_item.text(0))
-#      iterator = QtGui.QTreeWidgetItemIterator(edit_dialog.mime_types, QtGui.QTreeWidgetItemIterator.Checked)
-#      iterator.thisown = False
-#      while iterator.value() != None:
-#        print QtCore.QString(iterator.value().text(0))
-#        iterator.__iadd__(1)
+            self.selected_mime_types.addItem(parent_item.text(0) + "/" + child_item.text(0))
 
   def text(self):
     text_t = " in ["
@@ -179,9 +173,7 @@ class SearchDict(QWidget, Ui_SearchDict):
       self.editDictContent.setEnabled(True)
 
   def text(self):
-    text = ""
-    for i in self.word_list:
-      text += (i + ",")
+    text = "(\"" + self.pathToDict.text() + "\")"
     return text
 
   def translation(self):
@@ -224,7 +216,7 @@ class SearchS(QWidget, Ui_SearchSize):
     self.no = no
 
   def operator(self):
-    return " or "
+    return " and "
 
   def text(self):
     prefix = ""
@@ -292,7 +284,7 @@ class OptWidget(QWidget):
                        typeId.Bool: FileIsDeleted,
                        typeId.List: MimeType,
 
-                       # MEGALOL - NEED TO BE CHANGED
+                       # NEED TO BE CHANGED
                        typeId.Char + 100: SearchStr,
                        typeId.Int16 + 100: SearchS,
                        typeId.UInt16 + 100: SearchS,
@@ -348,6 +340,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.translation()
       self.optionList.addItem(self.textTr, QVariant(typeId.String))
       self.optionList.addItem(self.notNameTr, QVariant(typeId.String + 100))
+      self.optionList.addItem(self.NameTr, QVariant(typeId.String))
       self.optionList.addItem(self.notContains, QVariant(typeId.String + 100))
       self.optionList.addItem(self.sizeMinTr, QVariant(typeId.UInt64))
       self.optionList.addItem(self.sizeMaxTr, QVariant(typeId.UInt64 + 100))
@@ -367,6 +360,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
   def translation(self):
       self.textTr = self.tr("Contains")
       self.notNameTr = self.tr("Name does not contain")
+      self.NameTr = self.tr("Name contain")
       self.fromDictTr = self.tr("From dictionnary")
       self.notContains = self.tr("Does not contain")
       self.sizeMinTr = self.tr("Size at least")
@@ -389,12 +383,12 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
     self.addOption.setEnabled(True)
 
     # add a new line
-    truc = self.optionList.itemData(self.optionList.currentIndex()).toInt()[0]
-    widget = OptWidget(self, truc)
-    if (truc != (100 + typeId.Bool)) and (truc >= (100 + typeId.String)):
+    opt = self.optionList.itemData(self.optionList.currentIndex()).toInt()[0]
+    widget = OptWidget(self, opt)
+    if (opt != (100 + typeId.Bool)) and (opt >= (100 + typeId.String)):
       widget.edit.setNo(True)
-    if text == self.notNameTr:
-      widget.edit.field = "name"
+    if text == self.notNameTr or text == self.NameTr:
+      widget.edit.field = "name "
 
     self.optionList.removeItem(self.optionList.currentIndex())
     widget.label.setText(text)
