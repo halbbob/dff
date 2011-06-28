@@ -133,7 +133,7 @@ class SearchDict(QWidget, Ui_SearchDict):
     self.translation()
     self.word_list = []
 
-    self.field = "\"dict\""
+    self.field = " \"data\" contains dict"
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.editDictContent.clicked.connect(self.edit_dict)
@@ -175,7 +175,7 @@ class SearchDict(QWidget, Ui_SearchDict):
       self.editDictContent.setEnabled(True)
 
   def text(self):
-    text = "(\"" + self.pathToDict.text() + "\")"
+    text =  "(\"" + self.pathToDict.text() + "\")"
     return text
 
   def translation(self):
