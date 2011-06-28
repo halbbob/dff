@@ -109,15 +109,17 @@ class SearchStr(Ui_SearchStr, QWidget):
   def text(self):
     if self.name.text().isEmpty():
       return ""
-    search = " == "
+
     if self.no:
-      search += " != "
+      search = " != "
+    else:
+      search = " == "
 
     idx = self.type.currentIndex()
     data_type = self.type.itemData(idx)
     search += str(data_type.toString())
 
-    search += ("(\'" + str(self.name.text()) + "\'")
+    search += ("(\"" + str(self.name.text()) + "\"")
     if not self.caseSensitive.isChecked():
       search += ",i)"
     else:
@@ -200,7 +202,7 @@ class SearchD(QWidget, Ui_SearchDate):
       prefix += " >= "
     date_time = self.dateTimeEdit.dateTime()
     if self.date_str.isChecked():
-      return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
+      return prefix + str(date_time.toString("yyyy-MM-dd hh:mm:ss"))
     return prefix + "ts(" + str(date_time.toTime_t()) + ")"
 
 class SearchS(QWidget, Ui_SearchSize):
@@ -388,9 +390,9 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
     if (opt != (100 + typeId.Bool)) and (opt >= (100 + typeId.String)):
       widget.edit.setNo(True)
     if text == self.notNameTr: 
-      widget.edit.field = "\"name\" !=  "
+      widget.edit.field = "\"name\" "
     elif text == self.NameTr:
-      widget.edit.field = "\"name\" == "
+      widget.edit.field = "\"name\" "
 
     self.optionList.removeItem(self.optionList.currentIndex())
     widget.label.setText(text)

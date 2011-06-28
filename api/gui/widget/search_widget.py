@@ -159,7 +159,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
 
   def case_sens_changed(self, state):
-    print "I DO NOT LIKE SIGNALS"
     self.rebuildQuery()
 
   def addSearchOptions(self, changed):
@@ -200,7 +199,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       nb_line = 0
       text = ""
       if not self.nameContain.text().isEmpty():
-        text += ("(name ('" + self.nameContain.text() + ")'")
+        text += ("(name (\"" + self.nameContain.text() + ")\"")
         if not self.caseSensitiveName.isChecked():
           text += ",i)"
         else:
@@ -249,8 +248,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     text = ""
     if not self.nameContain.text().isEmpty():
       prefix = self.typeName.itemData(self.typeName.currentIndex()).toString()
-
-      text += ("(\"name\" " + prefix + "('" + self.nameContain.text() + "'")
+      text += ("(\"name\"==" + prefix + "(\"" + self.nameContain.text() + "\"")
       if not self.caseSensitiveName.isChecked():
         text += ",i)"
       else:
@@ -358,7 +356,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     data_type = self.typeName.itemData(idx)
     if not self.nameContain.text().isEmpty():
       search = str(data_type.toString())
-      search += ("(\'" + str(self.nameContain.text()) + "\'")
+      search += ("(\"" + str(self.nameContain.text()) + "\"")
       if not self.caseSensitiveName.isChecked():
         search += ",i)"
       else:
