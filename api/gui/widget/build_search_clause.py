@@ -52,7 +52,7 @@ class MimeType(Ui_MimeType, QWidget):
     super(QWidget, self).__init__()
     self.setupUi(self)
     self.text_t = ""
-    self.field = "mime"
+    self.field = "\"mime\""
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.edit_mime_types.clicked.connect(self.editMimeTypes)
@@ -93,7 +93,7 @@ class SearchStr(Ui_SearchStr, QWidget):
     super(QWidget, self).__init__()
     self.setupUi(self)
     self.no = False
-    self.field = "data"
+    self.field = "\"data\""
 
     self.type.addItem("Fixed string", QVariant("f"))
     self.type.addItem("Wildcard", QVariant("w"))
@@ -109,9 +109,9 @@ class SearchStr(Ui_SearchStr, QWidget):
   def text(self):
     if self.name.text().isEmpty():
       return ""
-    search = ""
+    search = " == "
     if self.no:
-      search += " not "
+      search += " != "
 
     idx = self.type.currentIndex()
     data_type = self.type.itemData(idx)
@@ -131,7 +131,7 @@ class SearchDict(QWidget, Ui_SearchDict):
     self.translation()
     self.word_list = []
 
-    self.field = "dict"
+    self.field = "\"dict\""
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.editDictContent.clicked.connect(self.edit_dict)
@@ -184,7 +184,7 @@ class SearchD(QWidget, Ui_SearchDate):
     super(QWidget, self).__init__()
     self.setupUi(self)
     self.no = False
-    self.field = "time"
+    self.field = "\"time\""
 
   def setNo(self, no):
     self.no = no
@@ -210,7 +210,7 @@ class SearchS(QWidget, Ui_SearchSize):
     self.translation()
 
     self.no = False
-    self.field = "size"
+    self.field = "\"size\""
 
   def setNo(self, no):
     self.no = no
@@ -244,7 +244,7 @@ class FileIsDeleted(Ui_IsDeleted, QWidget):
   def __init__(self, parent = None):
     super(QWidget, self).__init__()
     self.setupUi(self)
-    self.field = "deleted"
+    self.field = "\"deleted\""
 
   def text(self):
     if self.deleted.isChecked():
@@ -255,7 +255,7 @@ class IsFile(Ui_FileOrFolder, QWidget):
   def __init__(self, parent = None):
     super(QWidget, self).__init__()
     self.setupUi(self)
-    self.field = "file"
+    self.field = "\"file\""
 
   def text(self):
     if self.isFile.isChecked():
@@ -387,8 +387,10 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
     widget = OptWidget(self, opt)
     if (opt != (100 + typeId.Bool)) and (opt >= (100 + typeId.String)):
       widget.edit.setNo(True)
-    if text == self.notNameTr or text == self.NameTr:
-      widget.edit.field = "name "
+    if text == self.notNameTr: 
+      widget.edit.field = "\"name\" !=  "
+    elif text == self.NameTr:
+      widget.edit.field = "\"name\" == "
 
     self.optionList.removeItem(self.optionList.currentIndex())
     widget.label.setText(text)

@@ -121,17 +121,29 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.nameContain.textChanged.connect(self.rebuildQuery)
+
+      self.caseSensitiveName.stateChanged.connect(self.case_sens_changed)
+      self.typeName.currentIndexChanged.connect(self.case_sens_changed)
+
       self.launchSearchButton.clicked.connect(self.launchSearch)
       self.stopSearchButton.clicked.connect(self.stopSearch)
       self.exportButton.clicked.connect(self.export)
     else:
       QtCore.QObject.connect(self.nameContain.textChanged, SIGNAL("clicked(bool)"), self.rebuildQuery)
+
+      QtCore.QObject.connect(self.caseSensitiveName, SIGNAL("stateChanged(int)"), \
+                               self.case_sens_changed)
+
+      QtCore.QObject.connect(self.typeName, SIGNAL("currentIndexChanged(int)"), \
+                               self.case_sens_changed)
+
       QtCore.QObject.connect(self.launchSearchButton, SIGNAL("clicked(bool)"), self.launchSearch)
       QtCore.QObject.connect(self.stopSearchButton, SIGNAL("clicked(bool)"), self.stopSearch)
       QtCore.QObject.connect(self.exportButton, SIGNAL("clicked(bool)"), self.export)
 
     self.typeName.addItem("Fixed string", QVariant("f"))
     self.typeName.addItem("Wildcard", QVariant("w"))
+
     self.stopSearchButton.hide()
     self.exportButton.setEnabled(False)
     self.addedOpt = []
@@ -145,6 +157,10 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
     QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
+
+  def case_sens_changed(self, state):
+    print "I DO NOT LIKE SIGNALS"
+    self.rebuildQuery()
 
   def addSearchOptions(self, changed):
     clause = {}
@@ -232,11 +248,14 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def rebuildQuery(self):
     text = ""
     if not self.nameContain.text().isEmpty():
-      text += ("(name ('" + self.nameContain.text() + "'")
+      prefix = self.typeName.itemData(self.typeName.currentIndex()).toString()
+
+      text += ("(\"name\" " + prefix + "('" + self.nameContain.text() + "'")
       if not self.caseSensitiveName.isChecked():
         text += ",i)"
       else:
         text += ")"
+      text += ")"
       if len(self.clause_list):
         text += " or "
     for i in range(0, len(self.clause_list)):
