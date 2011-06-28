@@ -106,7 +106,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     self.icon = ":search.png"
     self.translation()
-    self.attrsTree.addWidget(PropertyTable(None))
+    self.xtd_attr = PropertyTable(None)
+
+    self.attrsTree.addWidget(self.xtd_attr)
 
     self.model = ListNodeModel(self)
     self.searchResults = SearchNodeBrowser(self)
