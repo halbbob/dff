@@ -202,7 +202,7 @@ class SearchD(QWidget, Ui_SearchDate):
       prefix += " >= "
     date_time = self.dateTimeEdit.dateTime()
     if self.date_str.isChecked():
-      return prefix + str(date_time.toString("yyyy-MM-dd hh:mm:ss"))
+      return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
     return prefix + "ts(" + str(date_time.toTime_t()) + ")"
 
 class SearchS(QWidget, Ui_SearchSize):

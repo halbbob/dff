@@ -267,7 +267,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def openAsNewTab(self):
     node = self.currentNode()
-    self.parent.parent.parent.parent.addNodeBrowser(node.absolute())
+    self.parent.parent.parent.parent.addNodeBrowser(node)
 #mainwindow.
 
   def launchHexedit(self):
