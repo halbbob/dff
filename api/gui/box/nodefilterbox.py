@@ -28,12 +28,17 @@ from ui.conf import Conf
 from api.search.find import Filters
 
 try:
-  from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch, FilterThread
+  from api.gui.widget.build_search_clause import SearchStr
+  from api.gui.widget.build_search_clause import SearchD
+  from api.gui.widget.build_search_clause import SearchS
+  from api.gui.widget.search_widget import FilterThread
+  from api.gui.widget.search_widget import AdvSearch
   from api.index.libindex import IndexSearch, Index
   from ui.gui.widget.modif_index import ModifIndex
   IndexerFound = True
 except ImportError:
   IndexerFound = False
+
 from ui.conf import Conf    
 
 class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
@@ -45,12 +50,11 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
     Ui_NodeFBox.__init__(parent)
     EventHandler.__init__(self)
     self.parent = parent
-    self.filterThread = FilterThread()
-    self.filterThread.filters.connection(self)
 
     self.setupUi(self)
     self.model = model
     self.translation()
+
     if IndexerFound:
       self.opt = ModifIndex(self, model)
     self.vfs = vfs()
@@ -69,6 +73,11 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
         QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
       self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+
+    return
+    self.filterThread = FilterThread()
+    self.filterThread.filters.connection(self)
+
 
   def Event(self, e):
     node = e.value.value()

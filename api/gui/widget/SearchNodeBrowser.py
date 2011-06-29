@@ -65,7 +65,6 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     self.model.emit(SIGNAL("layoutAboutToBeChanged()")) 
     self.model.emit(SIGNAL("layoutChanged()"))
 
-
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
 
@@ -162,7 +161,8 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        else:
          self.actionOpen_in_new_tab.setEnabled(False)
        self.submenuFile.popup(QCursor.pos())
-       self.submenuFile.show()       
+       self.submenuFile.show()
+     self.parent.xtd_attr.fill(node)
 
   def nodeTreeDoubleClicked(self, mouseButton, node, index = None):
     if node == None:
@@ -267,7 +267,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def openAsNewTab(self):
     node = self.currentNode()
-    self.parent.parent.parent.parent.addNodeBrowser(node.absolute())
+    self.parent.parent.parent.parent.addNodeBrowser(node)
 #mainwindow.
 
   def launchHexedit(self):

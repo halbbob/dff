@@ -18,13 +18,17 @@ set(ui_resources_files
   advance_search.ui
   applymodule.ui
   bookmarkdialog.ui
+  build_search_clause.ui
   devicesdialog.ui
+  edit_dict.ui
   errors.ui
   evidencedialog.ui
   extractdialog.ui
   ide.ui
   interpreter.ui
   idewizard.ui
+  is_deleted.ui
+  is_file_or_folder.ui
   mainwindow.ui
   modif_index.ui
   modules.ui
@@ -33,14 +37,18 @@ set(ui_resources_files
   node_f_box.ui
   nodeviewbox.ui
   output.ui
+  or_and.ui
   preferences.ui
   varianttreewidget.ui
   search.ui
+  search_clause.ui
   search_date.ui
   search_dict.ui
   search_empty.ui
+  search_mime_type.ui
   search_size.ui
   SearchStr.ui
+  select_mime_types.ui
   shell.ui
   taskmanager.ui
   selectattrs.ui
@@ -63,13 +71,17 @@ set(resources_srcs
   ui_advance_search.py
   ui_applymodule.py
   ui_bookmarkdialog.py
+  ui_build_search_clause.py
   ui_devicesdialog.py
+  ui_edit_dict.py
   ui_errors.py
   ui_evidencedialog.py
   ui_extractdialog.py
   ui_ide.py
   ui_idewizard.py
   ui_interpreter.py
+  ui_is_deleted.py
+  ui_is_file_or_folder.py
   ui_mainwindow.py
   ui_modif_index.py
   ui_modules.py
@@ -77,14 +89,18 @@ set(resources_srcs
   ui_nodefilterbox.py
   ui_node_f_box.py
   ui_nodeviewbox.py
+  ui_or_and.py
   ui_output.py
   ui_preferences.py
   ui_varianttreewidget.py
   ui_search.py
+  ui_search_clause.py
   ui_search_date.py
   ui_search_dict.py
   ui_search_empty.py
+  ui_search_mime_type.py
   ui_search_size.py
+  ui_select_mime_types.py
   ui_SearchStr.py
   ui_shell.py
   ui_taskmanager.py
