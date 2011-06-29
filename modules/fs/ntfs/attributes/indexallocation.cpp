@@ -211,13 +211,19 @@ bool	AttributeIndexAllocation::_hasMoreAllocation()
 {
   uint8_t	i;
   uint8_t	lbreak = 0;
+  uint8_t	chunckShift = _indexRecordSize / _clusterSize;
 
   if (_currentRunIndex >= getOffsetRun(_offsetRunIndex)->runLength && (_offsetRunIndex + 1) >= _offsetListSize) {
     return false;
   }
 
-  if (!(_realOffset = nextOffset())) {
-    return false;
+  // FIXME getting next indexallocation is not reliable if _indexRecordSize > _clusterSize,
+  // except if chunck are NOT fragmented.
+  while (chunckShift) {
+    if (!(_realOffset = nextOffset())) {
+      return false;
+    }
+    chunckShift--;
   }
 
   delete _contentBuffer;
@@ -283,6 +289,7 @@ uint32_t	AttributeIndexAllocation::getEntryOffset()
       return _nodeHeader->relOffsetEndUsed;
     }
   }
+  // FIXME : Validate INDX signature !
   if (_entryOffset >= _nodeHeader->relOffsetEndUsed || _entryOffset >= _indexRecordSize) {
     while (_nodeHeader && _nodeHeader->relOffsetEndUsed && _hasMoreAllocation() && _entryOffset > _nodeHeader->relOffsetEndUsed) {
       DEBUG(INFO, "entry now 0x%x end 0x%x\n", _entryOffset, _nodeHeader->relOffsetEndUsed);
