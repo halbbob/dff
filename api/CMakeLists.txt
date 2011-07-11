@@ -33,6 +33,7 @@ add_subdirectory (manager)
 add_subdirectory (datatype)
 add_subdirectory (gui)
 add_subdirectory (devices)
+add_subdirectory (apswvfs)
 
 #### Deploying python __init__ script
 set(api_srcs
