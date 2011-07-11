@@ -18,6 +18,7 @@ add_subdirectory(readlines)
 set(testmod_srcs
   huge_node.py
   gen_nodes.py
+  apswtest.py
 )
 
 install_file(testmod ${testmod_srcs})
