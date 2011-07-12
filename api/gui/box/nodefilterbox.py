@@ -58,13 +58,15 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
     if IndexerFound:
       self.opt = ModifIndex(self, model)
     self.vfs = vfs()
+
+    self.indexOpt.hide()
+
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
       if IndexerFound:
         self.notIndexed.linkActivated.connect(self.index_opt2)
         self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
-
       self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
@@ -73,11 +75,8 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
         QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
       self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
-
-    return
     self.filterThread = FilterThread()
     self.filterThread.filters.connection(self)
-
 
   def Event(self, e):
     node = e.value.value()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>733</width>
-    <height>554</height>
+    <width>840</width>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,26 +17,34 @@
    <iconset resource="gui.qrc">
     <normaloff>:/filefind.png</normaloff>:/filefind.png</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_9">
+  <layout class="QVBoxLayout" name="verticalLayout_7">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="">
-      <layout class="QVBoxLayout" name="verticalLayout_8">
-       <property name="spacing">
-        <number>0</number>
-       </property>
+     <widget class="QWidget" name="layoutWidget">
+      <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,12">
        <item>
-        <widget class="QCheckBox" name="selectAll">
-         <property name="toolTip">
-          <string>Check all results</string>
-         </property>
-         <property name="text">
-          <string>Select all</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QCheckBox" name="selectAll">
+           <property name="toolTip">
+            <string>Check all results</string>
+           </property>
+           <property name="text">
+            <string>Select all</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exportButton">
+           <property name="text">
+            <string>Export</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <layout class="QVBoxLayout" name="nodeBrowserLayout">
@@ -175,8 +183,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>525</width>
-                  <height>339</height>
+                  <width>533</width>
+                  <height>393</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout">
@@ -253,13 +261,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="exportButton">
-              <property name="text">
-               <string>Export</string>
-              </property>
-             </widget>
             </item>
             <item>
              <widget class="QPushButton" name="stopSearchButton">

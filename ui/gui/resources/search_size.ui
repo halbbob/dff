@@ -48,7 +48,7 @@
    <item>
     <widget class="QRadioButton" name="exclusiv">
      <property name="text">
-      <string>Exclusiv</string>
+      <string>Exclusive</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -58,7 +58,7 @@
    <item>
     <widget class="QRadioButton" name="inclusiv">
      <property name="text">
-      <string>Inclusiv</string>
+      <string>Inclusive</string>
      </property>
     </widget>
    </item>

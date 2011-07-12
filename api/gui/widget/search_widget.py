@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog
 from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList
 
 from api.events.libevents import EventHandler, event
@@ -86,6 +86,18 @@ class FilterThread(QThread):
     QThread.quit(self)
 
 class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
+  """
+  When this widget is instanciated, a new tab is opened in DFF main interface.
+  It contains several sub-widgets used to perform a search by specifying more
+  specifics parameters that the quick search.
+
+  The tab is devided into two parts ::
+        * The left part is dedicated to a view which is a kind of NodeBrowser
+        designed to display search results.
+        * The right part is a view with several fields used to build the search
+        query.
+  """
+
   def __init__(self, parent):
     super(QWidget, self).__init__()
     EventHandler.__init__(self)

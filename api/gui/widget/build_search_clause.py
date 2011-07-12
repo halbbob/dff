@@ -31,6 +31,7 @@ from ui.gui.resources.ui_search_mime_type import Ui_MimeType
 from ui.gui.resources.ui_build_search_clause import Ui_BuildSearchClause
 from ui.gui.resources.ui_edit_dict import Ui_DictListEdit
 from ui.gui.resources.ui_select_mime_types import Ui_selectMimeTypes
+from ui.gui.resources.ui_search_attrs import Ui_SearchAttributes
 
 from ui.gui.widget.SelectMimeTypes import MimeTypesTree
 
@@ -39,9 +40,7 @@ class SelectMimeTypes(Ui_selectMimeTypes, QDialog):
     super(QDialog, self).__init__()
     self.setupUi(self)
     self.translation()
-
     self.mime_types.setHeaderLabels([self.mimeTypeTr])
-
     self.mime = MimeTypesTree(self.mime_types)
 
   def translation(self):
@@ -52,8 +51,7 @@ class MimeType(Ui_MimeType, QWidget):
     super(QWidget, self).__init__()
     self.setupUi(self)
     self.text_t = ""
-    self.field = "\"mime\""
-
+    self.field = "mime"
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.edit_mime_types.clicked.connect(self.editMimeTypes)
     else:
@@ -81,6 +79,28 @@ class MimeType(Ui_MimeType, QWidget):
     print text_t
     return text_t
 
+class SearchAttributes(Ui_SearchAttributes, QWidget):
+  def __init__(self, parent = None):
+    super(QWidget, self).__init__()
+    self.setupUi(self)
+    self.field = ""
+
+    if QtCore.PYQT_VERSION_STR >= "4.5.0":
+      self.attrName.textChanged.connect(self.updateField)
+    else:
+      QtCore.QObject.connect(self.attrName, SIGNAL("textChanged(QString)"), self.updateField)
+
+  def updateField(self, text):
+    self.field = "\"" + text + "\""
+
+  def text(self):
+    if self.field.isEmpty() or self.attrValue.text().isEmpty():
+      return ""
+    return self.operator() + " " + self.attrValue.text()
+
+  def operator(self):
+    return self.attrOperator.currentText()
+
 class DictListEdit(Ui_DictListEdit, QDialog):
   def __init__(self, word_list, parent = None):
     super(QDialog, self).__init__()
@@ -93,7 +113,7 @@ class SearchStr(Ui_SearchStr, QWidget):
     super(QWidget, self).__init__()
     self.setupUi(self)
     self.no = False
-    self.field = "\"data\""
+    self.field = "data"
 
     self.type.addItem("Fixed string", QVariant("f"))
     self.type.addItem("Wildcard", QVariant("w"))
@@ -111,9 +131,9 @@ class SearchStr(Ui_SearchStr, QWidget):
       return ""
 
     if self.no:
-      search = " != "
+      search = " not contain "
     else:
-      search = " == "
+      search = " contain "
 
     idx = self.type.currentIndex()
     data_type = self.type.itemData(idx)
@@ -133,7 +153,7 @@ class SearchDict(QWidget, Ui_SearchDict):
     self.translation()
     self.word_list = []
 
-    self.field = " \"data\" contains dict"
+    self.field = " data contain dict"
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.editDictContent.clicked.connect(self.edit_dict)
@@ -186,7 +206,7 @@ class SearchD(QWidget, Ui_SearchDate):
     super(QWidget, self).__init__()
     self.setupUi(self)
     self.no = False
-    self.field = "\"time\""
+    self.field = "time"
 
   def setNo(self, no):
     self.no = no
@@ -212,7 +232,7 @@ class SearchS(QWidget, Ui_SearchSize):
     self.translation()
 
     self.no = False
-    self.field = "\"size\""
+    self.field = "size"
 
   def setNo(self, no):
     self.no = no
@@ -246,7 +266,7 @@ class FileIsDeleted(Ui_IsDeleted, QWidget):
   def __init__(self, parent = None):
     super(QWidget, self).__init__()
     self.setupUi(self)
-    self.field = "\"deleted\""
+    self.field = "deleted"
 
   def text(self):
     if self.deleted.isChecked():
@@ -257,7 +277,7 @@ class IsFile(Ui_FileOrFolder, QWidget):
   def __init__(self, parent = None):
     super(QWidget, self).__init__()
     self.setupUi(self)
-    self.field = "\"file\""
+    self.field = "file"
 
   def text(self):
     if self.isFile.isChecked():
@@ -285,6 +305,7 @@ class OptWidget(QWidget):
                        typeId.VTime: SearchD,
                        typeId.Bool: FileIsDeleted,
                        typeId.List: MimeType,
+                       typeId.Argument: SearchAttributes,
 
                        # NEED TO BE CHANGED
                        typeId.Char + 100: SearchStr,
@@ -355,8 +376,10 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
 
       if QtCore.PYQT_VERSION_STR >= "4.5.0":
         self.addOption.clicked.connect(self.addSearchOptions)
+        self.addXtdAttrs.clicked.connect(self.addAttrSearchOptions)
       else:
         QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
+        QtCore.QObject.connect(self.addXtdAttrs, SIGNAL("clicked(bool)"), self.addAttrSearchOptions)
       self.addedOpt = []
 
   def translation(self):
@@ -372,6 +395,15 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.dataDeletedTr = self.tr("Deleted")
       self.dataIsFileTr = self.tr("Type")
       self.mimeTypeTr = self.tr("Mime-type")
+      self.attrTr = self.tr("Extended attributes")
+
+  def addAttrSearchOptions(self, changed):
+    widget = OptWidget(self, typeId.Argument)
+    widget.label.setText(self.attrTr)
+    widget.id = len(self.addedOpt)
+    widget.edit.field = widget.edit.attrName.text()
+    self.advancedOptions.addWidget(widget)
+    self.addedOpt.append(widget)
 
   def addSearchOptions(self, changed):
     # removing from combo box
@@ -390,9 +422,9 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
     if (opt != (100 + typeId.Bool)) and (opt >= (100 + typeId.String)):
       widget.edit.setNo(True)
     if text == self.notNameTr: 
-      widget.edit.field = "\"name\" "
+      widget.edit.field = "name "
     elif text == self.NameTr:
-      widget.edit.field = "\"name\" "
+      widget.edit.field = "name "
 
     self.optionList.removeItem(self.optionList.currentIndex())
     widget.label.setText(text)
