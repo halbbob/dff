@@ -13,12 +13,11 @@
 #  Solal Jacob <sja@digital-forensic.org>
 
 
-add_subdirectory(readlines)
-
-set(testmod_srcs
-  huge_node.py
-  gen_nodes.py
-  apswtest.py
+set(apswvfs_srcs
+  __init__.py
+  apswvfs.py
 )
 
-install_file(testmod ${testmod_srcs})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+
+install_file(apswvfs ${apswvfs_srcs})

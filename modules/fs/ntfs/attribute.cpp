@@ -375,27 +375,44 @@ uint64_t	Attribute::offsetFromID(uint32_t id)
   uint16_t	offsetRunIndex = 0;
   uint32_t	offsetInRun = 0;
   uint32_t	i;
-  uint8_t	mftIndex = 0;
+  uint32_t	mftIndex = 0;
+  uint32_t	runLength;
+  int64_t	runOffset;
 
+  if (_mftEntrySize > _clusterSize) {
+    id *= (_mftEntrySize / _clusterSize);
+  }
+
+  runLength = getOffsetRun(0)->runLength;
+  runOffset = getOffsetRun(0)->runOffset;
   for (i = 0; offsetRunIndex <= _offsetListSize; i++) {
-    if (currentRunIndex >= getOffsetRun(offsetRunIndex)->runLength) {
+    if (currentRunIndex >= runLength) {
       offsetRunIndex++;
       offsetInRun = 0;
       mftIndex = 0;
+      runLength = getOffsetRun(offsetRunIndex)->runLength;
+      runOffset = getOffsetRun(offsetRunIndex)->runOffset;
     }
 
     DEBUG(VERBOSE, "id is 0x%x we are searching for 0x%x\n", i, id);
     if (i == id) {
 #if __WORDSIZE == 64
-      DEBUG(INFO, "id %u (0x%x) found @ 0x%lx\n", id, id, (getOffsetRun(offsetRunIndex)->runOffset) * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
+      DEBUG(INFO, "id %u (0x%x) found @ 0x%lx\n", id, id, runOffset * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
 #else
-      DEBUG(INFO, "id %u (0x%x) found @ 0x%llx\n", id, id, (getOffsetRun(offsetRunIndex)->runOffset) * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
+      DEBUG(INFO, "id %u (0x%x) found @ 0x%llx\n", id, id, runOffset * _clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize));
 #endif
-      return (getOffsetRun(offsetRunIndex)->runOffset) *
-	_clusterSize + (offsetInRun * _clusterSize) + (mftIndex * _mftEntrySize);
+      return (runOffset * _clusterSize + offsetInRun * _clusterSize + 
+	      mftIndex * _mftEntrySize);
     }
-    mftIndex++;
-    if (mftIndex == _clusterSize / _mftEntrySize) {
+    if (_mftEntrySize < _clusterSize) {
+      mftIndex++;
+      if (mftIndex == (uint16_t)(_clusterSize / _mftEntrySize)) {
+	mftIndex = 0;
+	offsetInRun++;
+	currentRunIndex++;
+      }
+    }
+    else {
       mftIndex = 0;
       offsetInRun++;
       currentRunIndex++;
