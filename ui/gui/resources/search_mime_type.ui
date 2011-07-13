@@ -2,30 +2,31 @@
 <ui version="4.0">
  <class>MimeType</class>
  <widget class="QWidget" name="MimeType">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>421</width>
-    <height>51</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>6</number>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QComboBox" name="selected_mime_types"/>
    </item>
    <item>
     <widget class="QPushButton" name="edit_mime_types">
      <property name="text">
-      <string/>
+      <string>Select Mime type</string>
      </property>
      <property name="icon">
       <iconset>
        <disabledoff>:/magicball.png</disabledoff>
       </iconset>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

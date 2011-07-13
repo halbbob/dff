@@ -2,18 +2,13 @@
 <ui version="4.0">
  <class>SearchSize</class>
  <widget class="QWidget" name="SearchSize">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>403</width>
-    <height>49</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QSpinBox" name="size">
      <property name="maximum">

@@ -105,8 +105,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.filterThread.filters.connection(self)
     self.parent = parent
     self.vfs = vfs()
-    self.name = "Advanced search"
     self.setupUi(self)
+    self.name = self.windowTitle()
+    self.setObjectName(self.name)
 
     self.clause_list = []
     self.operator_list = []
@@ -368,7 +369,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.emit(SIGNAL("NewSearch"))
     self.__totalhits = 0
     self.__processednodes = 0
-    self.totalHits.setText("0 " + self.tr(" match(s)"))
+    self.totalHits.setText("0  " + self.tr("match(s)"))
     self.exportButton.setEnabled(False)
     idx = self.typeName.currentIndex()
     data_type = self.typeName.itemData(idx)

@@ -114,7 +114,11 @@
            <number>0</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="advancedOptions"/>
+           <layout class="QVBoxLayout" name="advancedOptions">
+            <property name="leftMargin">
+             <number>1</number>
+            </property>
+           </layout>
           </item>
           <item>
            <spacer name="verticalSpacer">

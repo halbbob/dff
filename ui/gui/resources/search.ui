@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Advanced search</string>
   </property>
   <property name="windowIcon">
    <iconset resource="gui.qrc">
@@ -201,7 +201,7 @@
           <item>
            <widget class="QGroupBox" name="advOptBox">
             <property name="title">
-             <string>More options</string>
+             <string>Search queries</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -232,7 +232,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>573</width>
+                  <width>523</width>
                   <height>453</height>
                  </rect>
                 </property>
@@ -250,6 +250,9 @@
                   <layout class="QGridLayout" name="advancedOptions">
                    <property name="sizeConstraint">
                     <enum>QLayout::SetMinimumSize</enum>
+                   </property>
+                   <property name="leftMargin">
+                    <number>1</number>
                    </property>
                    <property name="spacing">
                     <number>0</number>
@@ -311,7 +314,7 @@
                <enum>QProgressBar::TopToBottom</enum>
               </property>
               <property name="format">
-               <string>%p%</string>
+               <string notr="true">%p%</string>
               </property>
              </widget>
             </item>

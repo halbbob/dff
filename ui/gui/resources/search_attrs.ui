@@ -3,7 +3,7 @@
  <class>SearchAttributes</class>
  <widget class="QWidget" name="SearchAttributes">
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <property name="margin">
@@ -16,32 +16,32 @@
     <widget class="QComboBox" name="attrOperator">
      <item>
       <property name="text">
-       <string>==</string>
+       <string notr="true">==</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>!=</string>
+       <string notr="true">!=</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&gt;</string>
+       <string notr="true">&gt;</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&gt;=</string>
+       <string notr="true">&gt;=</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&lt;</string>
+       <string notr="true">&lt;</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&lt;=</string>
+       <string notr="true">&lt;=</string>
       </property>
      </item>
     </widget>

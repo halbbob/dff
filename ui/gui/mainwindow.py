@@ -131,7 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.maximizeDockwidget()
         dockwidget = DockWidget(self, widget, widget.name)
         docIndex, docTitle = self.getWidgetName(widget.name)
-        dockwidget.setWindowTitle(QString.fromUtf8(docTitle))
+        dockwidget.setWindowTitle(QString(docTitle))
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
         self.addDockWidget(self.masterArea, dockwidget)
