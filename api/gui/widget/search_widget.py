@@ -16,7 +16,7 @@
 from PyQt4 import QtCore, QtGui
 
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog
-from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList
+from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect
 
 from api.events.libevents import EventHandler, event
 from api.search.find import Filters
@@ -251,9 +251,11 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         else:
           table_clause_widget.or_clause.hide()
           table_clause_widget.and_clause.hide()
+          table_clause_widget.bool_operator.deleteLater()
+          
         table_clause_widget.clause_widget.setMaximumHeight(nb_line * 25 + 50)
         self.completeClause.setText(text)
-        self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0)
+        self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0, Qt.AlignTop)
         self.clause_list.append(table_clause_widget)
     self.rebuildQuery()
 

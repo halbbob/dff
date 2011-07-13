@@ -7,13 +7,16 @@
     <x>0</x>
     <y>0</y>
     <width>706</width>
-    <height>440</height>
+    <height>446</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Build a search clause</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="margin">
+    <number>9</number>
+   </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -31,6 +34,9 @@
         <iconset resource="gui.qrc">
          <normaloff>:/add.png</normaloff>:/add.png</iconset>
        </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -44,6 +50,15 @@
        <property name="icon">
         <iconset resource="gui.qrc">
          <normaloff>:/list.png</normaloff>:/list.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>16</width>
+         <height>16</height>
+        </size>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -65,42 +80,41 @@
    <item>
     <widget class="QGroupBox" name="advOptBox">
      <property name="title">
-      <string>Clauses</string>
+      <string>Clause(s)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="spacing">
-       <number>3</number>
-      </property>
       <property name="margin">
-       <number>3</number>
+       <number>0</number>
       </property>
       <item>
        <widget class="QScrollArea" name="scrollArea">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
         <property name="widgetResizable">
          <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
         </property>
         <widget class="QWidget" name="scrollAreaWidgetContents_2">
          <property name="geometry">
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>672</width>
-           <height>324</height>
+           <width>684</width>
+           <height>340</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="spacing">
-           <number>3</number>
-          </property>
           <property name="margin">
-           <number>3</number>
+           <number>0</number>
           </property>
           <item>
-           <layout class="QVBoxLayout" name="advancedOptions">
-            <property name="spacing">
-             <number>3</number>
-            </property>
-           </layout>
+           <layout class="QVBoxLayout" name="advancedOptions"/>
           </item>
           <item>
            <spacer name="verticalSpacer">

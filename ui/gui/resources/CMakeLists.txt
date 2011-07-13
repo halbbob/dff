@@ -48,7 +48,7 @@ set(ui_resources_files
   search_empty.ui
   search_mime_type.ui
   search_size.ui
-  SearchStr.ui
+  search_str.ui
   select_mime_types.ui
   shell.ui
   taskmanager.ui
@@ -103,7 +103,7 @@ set(resources_srcs
   ui_search_mime_type.py
   ui_search_size.py
   ui_select_mime_types.py
-  ui_SearchStr.py
+  ui_search_str.py
   ui_shell.py
   ui_taskmanager.py
   ui_selectattrs.py

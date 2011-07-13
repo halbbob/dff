@@ -25,22 +25,22 @@
     <widget class="QComboBox" name="unit">
      <item>
       <property name="text">
-       <string>Bytes</string>
+       <string>Byte(s)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Kilo bytes</string>
+       <string>Kilo byte(s)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Mega bytes</string>
+       <string>Mega byte(s)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Giga bytes</string>
+       <string>Giga byte(s)</string>
       </property>
      </item>
     </widget>
