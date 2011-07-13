@@ -59,8 +59,6 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
       self.opt = ModifIndex(self, model)
     self.vfs = vfs()
 
-    self.indexOpt.hide()
-
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
       if IndexerFound:
@@ -77,6 +75,10 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
       self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     self.filterThread = FilterThread()
     self.filterThread.filters.connection(self)
+
+    # Future feature
+    self.indexOpt.hide()
+
 
   def Event(self, e):
     node = e.value.value()

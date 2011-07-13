@@ -2,18 +2,13 @@
 <ui version="4.0">
  <class>FileOrFolder</class>
  <widget class="QWidget" name="FileOrFolder">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>365</width>
-    <height>41</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QRadioButton" name="isFile">
      <property name="text">
