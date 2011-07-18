@@ -26,13 +26,13 @@ from api.types.libtypes import typeId
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
 from ui.conf import Conf
 from api.search.find import Filters
+from api.gui.widget.search_widget import FilterThread
+from api.gui.widget.build_search_clause import SearchStr
+from api.gui.widget.build_search_clause import SearchD
+from api.gui.widget.build_search_clause import SearchS
+from api.gui.widget.search_widget import AdvSearch
 
 try:
-  from api.gui.widget.build_search_clause import SearchStr
-  from api.gui.widget.build_search_clause import SearchD
-  from api.gui.widget.build_search_clause import SearchS
-  from api.gui.widget.search_widget import FilterThread
-  from api.gui.widget.search_widget import AdvSearch
   from api.index.libindex import IndexSearch, Index
   from ui.gui.widget.modif_index import ModifIndex
   IndexerFound = True

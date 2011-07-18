@@ -23,7 +23,7 @@ from api.types.libtypes import Variant, typeId
 from ui.gui.resources.ui_search_size import Ui_SearchSize
 from ui.gui.resources.ui_search_empty import Ui_SearchEmpty
 from ui.gui.resources.ui_search_date import Ui_SearchDate
-from ui.gui.resources.ui_SearchStr import Ui_SearchStr
+from ui.gui.resources.ui_search_str import Ui_SearchStr
 from ui.gui.resources.ui_search_dict import Ui_SearchDict
 from ui.gui.resources.ui_is_file_or_folder import Ui_FileOrFolder
 from ui.gui.resources.ui_is_deleted import Ui_IsDeleted
