@@ -23,7 +23,7 @@ from api.types.libtypes import Variant, typeId
 from ui.gui.resources.ui_search_size import Ui_SearchSize
 from ui.gui.resources.ui_search_empty import Ui_SearchEmpty
 from ui.gui.resources.ui_search_date import Ui_SearchDate
-from ui.gui.resources.ui_SearchStr import Ui_SearchStr
+from ui.gui.resources.ui_search_str import Ui_SearchStr
 from ui.gui.resources.ui_search_dict import Ui_SearchDict
 from ui.gui.resources.ui_is_file_or_folder import Ui_FileOrFolder
 from ui.gui.resources.ui_is_deleted import Ui_IsDeleted
@@ -131,9 +131,9 @@ class SearchStr(Ui_SearchStr, QWidget):
       return ""
 
     if self.no:
-      search = " not contain "
+      search = " not contains "
     else:
-      search = " contain "
+      search = " contains "
 
     idx = self.type.currentIndex()
     data_type = self.type.itemData(idx)
@@ -153,7 +153,7 @@ class SearchDict(QWidget, Ui_SearchDict):
     self.translation()
     self.word_list = []
 
-    self.field = " data contain dict"
+    self.field = " data contains dict"
 
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.editDictContent.clicked.connect(self.edit_dict)
@@ -169,7 +169,7 @@ class SearchDict(QWidget, Ui_SearchDict):
 
   def open_dict(self, changed):
     """
-    Open a dialog box where the user can chose wich file to load.
+    Open a dialog box where the user can choose which file to load.
     """
     dialog = QFileDialog()
     ret = dialog.exec_()
@@ -258,9 +258,9 @@ class SearchS(QWidget, Ui_SearchSize):
     return prefix + str(self.size.value())
 
   def translation(self):
-    self.kiloTr = self.tr("Kilo bytes")
-    self.megaTr = self.tr("Mega bytes")
-    self.gigaTr = self.tr("Giga bytes")
+    self.kiloTr = self.tr("Kilo byte(s)")
+    self.megaTr = self.tr("Mega byte(s)")
+    self.gigaTr = self.tr("Giga byte(s)")
 
 class FileIsDeleted(Ui_IsDeleted, QWidget):
   def __init__(self, parent = None):
@@ -288,6 +288,8 @@ class OptWidget(QWidget):
   def __init__(self, parent, w_type = 0):
     super(QWidget, self).__init__()
     self.layout = QHBoxLayout(self)
+    self.layout.setMargin(0)
+    self.layout.setSpacing(0)
     self.type = w_type
     self.translation()
 
@@ -329,6 +331,8 @@ class OptWidget(QWidget):
     self.edit = self.value(w_type)
     self.layout.addWidget(self.edit)
     self.button = QPushButton(QIcon(":remove.png"), "", self)
+    self.button.setFlat(True)
+    self.button.setIconSize(QtCore.QSize(16, 16))
     self.button.setToolTip(self.delTr)
     self.layout.addWidget(self.button)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
@@ -361,6 +365,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       super(QDialog, self).__init__()
       self.setupUi(self)
       self.translation()
+#      self.setWindowsTitle(
       self.optionList.addItem(self.textTr, QVariant(typeId.String))
       self.optionList.addItem(self.notNameTr, QVariant(typeId.String + 100))
       self.optionList.addItem(self.NameTr, QVariant(typeId.String))
@@ -385,7 +390,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
   def translation(self):
       self.textTr = self.tr("Contains")
       self.notNameTr = self.tr("Name does not contain")
-      self.NameTr = self.tr("Name contain")
+      self.NameTr = self.tr("Name contains")
       self.fromDictTr = self.tr("From dictionnary")
       self.notContains = self.tr("Does not contain")
       self.sizeMinTr = self.tr("Size at least")

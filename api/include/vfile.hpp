@@ -76,6 +76,11 @@ public:
   EXPORT int64_t		rfind(std::string needle, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
   EXPORT int32_t		count(std::string needle, unsigned char wildcard='\0', int32_t maxcount=INT32_MAX, uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
   EXPORT std::list<uint64_t>	indexes(std::string needle, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+
+  EXPORT int64_t		find(Search* sctx, uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int64_t		rfind(Search* sctx, uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT int32_t		count(Search* sctx, int32_t=INT32_MAX, uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
+  EXPORT std::list<uint64_t>	indexes(Search* sctx, uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
 };
 
 #endif

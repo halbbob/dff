@@ -2,18 +2,13 @@
 <ui version="4.0">
  <class>SearchAttributes</class>
  <widget class="QWidget" name="SearchAttributes">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>421</width>
-    <height>58</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QLineEdit" name="attrName"/>
    </item>
@@ -21,32 +16,32 @@
     <widget class="QComboBox" name="attrOperator">
      <item>
       <property name="text">
-       <string>==</string>
+       <string notr="true">==</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>!=</string>
+       <string notr="true">!=</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&gt;</string>
+       <string notr="true">&gt;</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&gt;=</string>
+       <string notr="true">&gt;=</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&lt;</string>
+       <string notr="true">&lt;</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>&lt;=</string>
+       <string notr="true">&lt;=</string>
       </property>
      </item>
     </widget>

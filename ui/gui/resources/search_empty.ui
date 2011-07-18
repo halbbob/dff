@@ -2,18 +2,13 @@
 <ui version="4.0">
  <class>SearchEmpty</class>
  <widget class="QWidget" name="SearchEmpty">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>434</width>
-    <height>60</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QRadioButton" name="empty">
      <property name="text">
