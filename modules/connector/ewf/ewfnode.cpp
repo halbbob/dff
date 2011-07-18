@@ -16,17 +16,46 @@
 
 #include "ewfnode.hpp"
 
+
+std::string  ewf_properties[] = { 
+                      "case_number", "description", "examinier_name",
+                      "evidence_number", "notes", "acquiry_date",
+                      "system_date", "acquiry_operating_system",
+                      "acquiry_software_version", "password",
+                      "compression_type", "model", "serial_number"
+            };
+
 Attributes	EWFNode::_attributes()
 {
-  Attributes 	vmap;
+  Attributes 	attr;
+  uint8_t*      buff = (uint8_t*)malloc(sizeof(uint8_t) * 1024);
 
-  return vmap;
+
+  libewf_parse_header_values(this->ewfso->ewf_ghandle, 4); 
+  for (int i = 0; i < 13; i++)
+  {
+     libewf_get_header_value(this->ewfso->ewf_ghandle, ewf_properties[i].c_str(), (char*)buff, 1024);
+     attr[ewf_properties[i]] = new Variant(std::string((char*)buff));
+  }
+ 
+  if (libewf_get_md5_hash(this->ewfso->ewf_ghandle, buff, 16) == 1)
+  {
+    Variant*            var;
+    std::ostringstream  hexval;
+
+    hexval << hex <<  bytes_swap64(*((uint64_t*)(buff))) << bytes_swap64(*((uint64_t*)(buff + 8))); 
+    attr["md5"] = new Variant(hexval.str());
+  }
+  free(buff);
+
+  return attr;
 }
 
 
-EWFNode::EWFNode(std::string Name, uint64_t size, Node* parent, ewf* fsobj, std::string origPath): Node(Name, size, parent, fsobj)
+EWFNode::EWFNode(std::string Name, uint64_t size, Node* parent, ewf* fsobj, std::list<Variant*> origPath): Node(Name, size, parent, fsobj)
 {
   this->originalPath = origPath;
+  this->ewfso = fsobj;
 }
 
 EWFNode::~EWFNode()

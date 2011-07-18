@@ -22,27 +22,27 @@
 #include "node.hpp"
 #include <string>
 #include <iostream>
-#include <stdio.h>
 #include <list>
 #include <vector>
 #include "variant.hpp"
 #include "vfs.hpp"
 #include "path.hpp"
 #include "fdmanager.hpp"
-#include "threading.hpp"
-#include <fcntl.h>
-//#include <afflib/afflib.h>
-//#include <afflib/afflib_i.h>
+#include <libewf.h>
 
 
 class ewf : public fso
 {
 private:
-  Node		*parent;
-  FdManager*	__fdm;
+  Node*			parent;
+  FdManager*		__fdm;
+  size64_t		volumeSize; 
+  char**		files;
+  uint16_t		nfiles;
 public:
   ewf();
   ~ewf();
+  libewf_handle_t*	ewf_ghandle;
   int32_t		vopen(Node* handle);
   int32_t 		vread(int fd, void *buff, unsigned int size);
   int32_t 		vclose(int fd);

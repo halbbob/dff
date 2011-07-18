@@ -17,15 +17,17 @@
 #ifndef __EWFNODE_HPP__
 #define __EWFNODE_HPP__
 
+#include "typesconv.hpp"
 #include "ewf.hpp"
 #include <iostream>
 
 class EWFNode : public Node
 {
 public:
-  EWFNode(std::string name, uint64_t size, Node* parent, class ewf* fsobj, std::string originalPath);
+  EWFNode(std::string name, uint64_t size, Node* parent, class ewf* fsobj, std::list<Variant*> originalPath);
   ~EWFNode();
-  std::string		originalPath;
+  ewf*                          ewfso;
+  std::list<Variant*>		originalPath;
   virtual Attributes	_attributes();
 };
 #endif

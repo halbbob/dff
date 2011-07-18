@@ -29,12 +29,12 @@
 #include "node.hpp"
 #include "vlink.hpp"
 #include "vfile.hpp"
-//#include "aff.hpp"
+#include "ewf.hpp"
 %}
 
 %import "../../../api/vfs/libvfs.i"
 
-//%include "aff.hpp"
+%include "ewf.hpp"
 
 
 %pythoncode
@@ -49,7 +49,7 @@ class EWF(Module):
   """EWF connector, load E01 dump"""
   def __init__(self):
     Module.__init__(self, 'ewf', ewf)
-    self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node, 
+    self.conf.addArgument({"input": Argument.Optional|Argument.Single|typeId.Node, 
                            "name": "parent", 
                            "description": "Path where the EWF dump will be created",
                        "parameters": {"type": Parameter.Editable,
@@ -57,6 +57,6 @@ class EWF(Module):
                           })
     self.conf.addArgument({"input": Argument.Required|Argument.List|typeId.Path,  
                            "name": "files", 
-                           "description": "First EWF file to open"})
+                           "description": "EWF files to open"})
     self.tags = "Connectors"
 %}
