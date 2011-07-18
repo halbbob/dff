@@ -12,6 +12,16 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
+find_library(TRE_LIBRARY NAMES tre PATH_SUFFIXES /usr /usr/local)
+if (TRE_LIBRARY)
+   add_definitions (-DHAVE_TRE)
+   message(STATUS "tre library found: ${TRE_LIBRARY}, regexp and fuzzy match activated")
+else (TRE_LIBRARY)
+     #add_definitions (-DHAVE_TRE)
+     message(STATUS "tre library not found, regexp and fuzzy match not activated")
+endif (TRE_LIBRARY)
+
+
 
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
@@ -21,10 +31,16 @@ INCLUDE(${SWIG_USE_FILE})
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
+INCLUDE_DIRECTORIES(/usr/include)
+INCLUDE_DIRECTORIES(/usr/local/include)
 
 SET_SOURCE_FILES_PROPERTIES(libsearch.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(libsearch python libsearch.i search.cpp boyer_moore.cpp)
-SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES})
+if (TRE_LIBRARY)
+   SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES} ${TRE_LIBRARY})
+else (TRE_LIBRARY)
+   SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES})
+endif (TRE_LIBRARY)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
   set_target_properties (${SWIG_MODULE_libsearch_REAL_NAME} PROPERTIES

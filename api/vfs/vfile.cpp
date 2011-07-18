@@ -528,3 +528,236 @@ std::list<uint64_t>*	VFile::search(char* needle, uint32_t nlen, unsigned char wi
       throw e;
     }
 }
+
+
+/* Following methods will be part of the future API.
+Use the ones from now as they'll become default.
+*/
+
+int64_t		VFile::find(Search* sctx, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  int32_t		bread;
+  int32_t		idx;
+  int32_t		hlen;
+  uint64_t		totalread;
+  int64_t		pos;
+  uint32_t		nlen;
+
+  if (sctx == NULL)
+    throw (std::string("VFile::find, Search context is not set."));
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::find 'end' argument must be greater than 'start' argument");
+  idx = -1;
+  totalread = this->seek(start);
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  nlen = sctx->needleLength();
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (idx == -1))
+    {
+      if (end < totalread + bread)
+	hlen = (int32_t)(end - totalread);
+      else
+	hlen = bread;
+      try
+	{
+	  idx = sctx->find((char*)buffer, hlen);
+	}
+      catch (std::string err)
+	{
+	  if (buffer != NULL)
+	    free(buffer);
+	  throw (err);
+	}
+      if (idx == -1)
+	{
+	  if (hlen == BUFFSIZE)
+	    totalread = this->seek(this->tell() - nlen);
+	  else
+	    totalread = this->seek(this->tell());
+	}
+    }
+  free(buffer);
+  if (idx == -1)
+    pos = -1;
+  else
+    pos = totalread + idx;
+  return pos;
+}
+
+
+int64_t		VFile::rfind(Search* sctx, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  int32_t		bread;
+  int32_t		idx;
+  int32_t		hlen;
+  uint64_t		rpos;
+  int64_t		pos;
+  uint32_t		nlen;
+
+  if (sctx == NULL)
+    throw (std::string("VFile::rfind, Search context is not set."));
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::rfind 'end' argument must be greater than 'start' argument");
+  idx = -1;
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  nlen = sctx->needleLength();
+  if (end < start + BUFFSIZE)
+    {
+      rpos = this->seek(start);
+      bread = this->read(buffer, end-start);
+      try
+	{
+	  idx = sctx->rfind((char*)buffer, bread);
+	}
+      catch (std::string err)
+	{
+	  throw (err);
+	}
+    }
+  else
+    {
+      rpos = end-BUFFSIZE;
+      this->seek(rpos);
+      while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (rpos > start) && (idx == -1))
+      	{
+      	  if (rpos < start + bread)
+      	    hlen = (int32_t)(rpos - start);
+      	  else
+      	    hlen = bread;
+	  try
+	    {
+	      idx = sctx->rfind((char*)buffer, hlen);
+	    }
+	  catch (std::string err)
+	    {
+	      if (buffer != NULL)
+		free(buffer);
+	      throw (err);
+	    }
+      	  if (idx == -1)
+	    {
+	      if (hlen == BUFFSIZE)
+		rpos = this->seek(rpos - hlen + nlen);
+	      else
+		rpos = this->seek(rpos - hlen);
+	    }
+      	}
+    }
+  free(buffer);
+  if (idx == -1)
+    pos = -1;
+  else
+    pos = rpos + idx;
+  return pos;
+}
+
+
+int32_t		VFile::count(Search* sctx, int32_t maxcount, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  int32_t		bread;
+  uint64_t		totalread;
+  int32_t		tcount;
+  int32_t		count;
+  int32_t		hlen;
+  uint32_t		nlen;
+
+  if (sctx == NULL)
+    throw (std::string("VFile::count, Search context is not set."));
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::count 'end' argument must be greater than 'start' argument");
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  count = 0;
+  totalread = this->seek(start);
+  nlen = sctx->needleLength();
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0))
+    {
+      if (end < totalread + bread)
+	hlen = (int32_t)(end - totalread);
+      else
+	hlen = bread;
+      try
+	{
+	  if (buffer != NULL)
+	    free(buffer);
+	  tcount = sctx->count((char*)buffer, hlen, maxcount);
+	}
+      catch (std::string err)
+	{
+	  throw (err);
+	}
+      if (tcount > 0)
+	{
+	  count += tcount;
+	  maxcount -= tcount;
+	}
+      if ((hlen == BUFFSIZE) && (sctx->find((char*)(buffer+(BUFFSIZE-nlen)), nlen) != -1))
+	totalread = this->seek(this->tell() - nlen);
+      else
+	totalread = this->seek(this->tell());
+    }
+  free(buffer);
+  return count;
+}
+
+
+std::list<uint64_t>	VFile::indexes(Search* sctx, uint64_t start, uint64_t end) throw (std::string)
+{
+  unsigned char		*buffer;
+  std::list<uint64_t>	indexes;
+  int32_t		bread;
+  int32_t		idx;
+  int32_t		buffpos;
+  uint64_t		totalread;
+  int32_t		hlen;
+  uint32_t		nlen;
+
+  if (sctx == NULL)
+    throw (std::string("VFile::indexes, Search context is not set."));
+  if (end > this->__node->size())
+    end = this->__node->size();
+  if ((end != 0) && (end < start))
+    throw std::string("VFile::indexes 'end' argument must be greater than 'start' argument");
+  totalread = this->seek(start);
+  buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
+  event*	e = new event;
+  nlen = sctx->needleLength();
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end))
+    {
+      buffpos = 0;
+      if (end < totalread + bread)
+	hlen = (int32_t)(end - totalread);
+      else
+	hlen = bread;
+      try
+	{
+	  while ((buffpos < hlen - (int32_t)nlen) && ((idx = sctx->find((char*)(buffer+buffpos), hlen - buffpos)) != -1))
+	    {
+	      nlen = sctx->needleLength();
+	      buffpos += idx + nlen;
+	      indexes.push_back(this->tell() - bread + buffpos - nlen);
+	    }
+	}
+      catch (std::string err)
+	{
+	  if (buffer != NULL)
+	    free(buffer);
+	}
+      if ((hlen == BUFFSIZE) && (buffpos != hlen))
+	totalread = this->seek(this->tell() - nlen);
+      else
+	totalread = this->seek(this->tell());
+      
+      e->value = new Variant(totalread);
+      this->notify(e);
+    }
+  free(buffer);
+  return indexes;
+}
