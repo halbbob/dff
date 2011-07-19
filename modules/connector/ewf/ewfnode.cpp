@@ -34,9 +34,10 @@ Attributes	EWFNode::_attributes()
   libewf_parse_header_values(this->ewfso->ewf_ghandle, 4); 
   for (int i = 0; i < 13; i++)
   {
-     *buff = NULL;	
+     *buff = '\0';	
      libewf_get_header_value(this->ewfso->ewf_ghandle, ewf_properties[i].c_str(), (char*)buff, 1024);
-     attr[ewf_properties[i]] = new Variant(std::string((char*)buff));
+     if (*buff != '\0')
+       attr[ewf_properties[i]] = new Variant(std::string((char*)buff));
   }
  
   if (libewf_get_md5_hash(this->ewfso->ewf_ghandle, buff, 16) == 1)
