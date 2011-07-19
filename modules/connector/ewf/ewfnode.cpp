@@ -40,7 +40,6 @@ Attributes	EWFNode::_attributes()
  
   if (libewf_get_md5_hash(this->ewfso->ewf_ghandle, buff, 16) == 1)
   {
-    Variant*            var;
     std::ostringstream  hexval;
 
     hexval << hex <<  bytes_swap64(*((uint64_t*)(buff))) << bytes_swap64(*((uint64_t*)(buff + 8))); 
