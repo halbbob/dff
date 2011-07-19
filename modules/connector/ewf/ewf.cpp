@@ -83,11 +83,12 @@ void ewf::start(std::map<std::string, Variant* > args)
  
    char* name = (char*) malloc(sizeof(char) * 1024);
    std::string volumeName;
-
    int	res = 0;
+   *name = NULL;
+
    res = libewf_get_header_value_description(this->ewf_ghandle, name, 1024);
    if (res == -1 || std::string(name) == "")
-     volumeName = std::string("ewf");
+     volumeName = std::string("ewf_volume");
    else
      volumeName = std::string(name);
 
