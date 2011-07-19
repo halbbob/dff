@@ -47,12 +47,12 @@ class EventHandler
 private:
   std::vector<class EventHandler *>	watchers;
 public:
-  EXPORT EventHandler();
-  EXPORT virtual		~EventHandler() {};
-  EXPORT virtual void		Event(event *e) = 0;
-  EXPORT bool			connection(class EventHandler *obs);
-  EXPORT bool			deconnection(class EventHandler *obs);
-  EXPORT bool			notify(event *e);
+  EXPORT 				EventHandler();
+  EXPORT virtual			~EventHandler() {};
+  EXPORT virtual void			Event(event *e) = 0;
+  EXPORT bool				connection(class EventHandler *obs);
+  EXPORT bool				deconnection(class EventHandler *obs);
+  EXPORT bool				notify(event *e);
 };
 
 #endif

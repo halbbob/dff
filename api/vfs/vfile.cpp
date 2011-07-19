@@ -261,7 +261,6 @@ std::string  VFile::readline(uint32_t size) throw (std::string)
 	    }
 	}
       this->seek(oldoff+consumed);
-      //std::cout << "oldoff: " << oldoff << " -- consumed: " << consumed << " -- rsize: " << res.size() << std::endl << "move to: " << this->tell() << std::endl;
       free(buffer);
     }
   else

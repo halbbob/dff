@@ -229,7 +229,7 @@ int		diskDescriptor::createExtentNames()
       string extname = parseExtentName((*ext));
       this->_extNames.push_back(extname);
     }
-    return (0); //? XXX FIX ME !
+    return (0);
 }
 
 void	diskDescriptor::setParentFileName()
