@@ -202,12 +202,11 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
           if "Viewers" in self.lmodules[mod].tags:
 	    break
        try:
-         priority = modulePriority[mod] #XXX put in conf
+         priority = modulePriority[mod]
        except KeyError:
          modulePriority[mod] = 0
          priority = 0
        if not priority: 
-        #XXX translate
          mbox = QMessageBox(QMessageBox.Question, self.tr("Apply module"), self.tr("Do you want to apply module ") + str(mod) + self.tr(" on this node ?"), QMessageBox.Yes | QMessageBox.No, self)
          mbox.addButton(self.tr("Always"), QMessageBox.AcceptRole)
 	 reply = mbox.exec_() 
@@ -268,7 +267,6 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def openAsNewTab(self):
     node = self.currentNode()
     self.parent.parent.parent.parent.addNodeBrowser(node)
-#mainwindow.
 
   def launchHexedit(self):
      nodes = self.currentNodes()

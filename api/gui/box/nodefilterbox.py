@@ -215,7 +215,6 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
       none_word = str(self.adv.noneWord.text())
       one_word = str(self.adv.oneWord.text())
 
-      # LOL : to avoid a weird crash. Attempting to input the "t" string to clucene results in a crash
       if all_word == "t":
         all_word = ""
       if none_word == "t":
