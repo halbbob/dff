@@ -21,7 +21,7 @@
 typedef struct	parserParam
 {
   yyscan_t	scanner;
-  Expression*	expression;
+  AstNode*	root;
 }		parserParam;
  
 // the parameter name (of the reentrant 'yyparse' function)

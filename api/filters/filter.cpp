@@ -27,7 +27,7 @@ Filter::Filter(std::string fname)
   this->__fname = fname;
   this->__query = "";
   this->__uid = 0;
-  this->__rootast = NULL;
+  this->__root = NULL;
 }
 
 Filter::~Filter()
@@ -61,7 +61,7 @@ void	Filter::compile(std::string query) throw (std::string)
 
   if (yylex_init(&param.scanner))
     throw (std::string("error while initializing lexer"));
-  param.expression = NULL;
+  param.root = NULL;
   state = yy_scan_string(query.c_str(), param.scanner);
   if (yyparse(&param))
     {
@@ -69,16 +69,31 @@ void	Filter::compile(std::string query) throw (std::string)
     }
   yy_delete_buffer(state, param.scanner);
   yylex_destroy(param.scanner);
-  this->__rootast = param.expression;
+  this->__root = param.root;
 }
 
 void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 {
-  Node*	tmp;
+  Node*			tmp;
+  event*		e;
 
-  if (this->__rootast != NULL)
+  if (this->__root != NULL && nodeptr != NULL)
     {
-      this->__rootast->evaluate(nodeptr, 0);
+      if (this->__root->evaluate(nodeptr, 0))
+	{
+	  std::cout << nodeptr->absolute() << std::endl;
+	  e = new event;
+	  e->type = event::OTHER;
+	  e->value = new Variant(nodeptr);
+	  this->notify(e);
+	}
+      if (recursive && nodeptr->hasChildren())
+	{	  
+	  std::vector<Node*>	children = nodeptr->children();
+	  int			i;
+	  for (i = 0; i != children.size(); i++)
+	    this->process(children[i]);
+	}
     }
   else
     throw std::string("no query compiled yet");

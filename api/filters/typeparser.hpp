@@ -12,20 +12,16 @@
 /**
  * @brief The structure used by flex and bison
  */
-typedef union stypeParser
+typedef union		stypeParser
 {
-  Expression*		expression;
-  ArgumentsList*	args;
-  Identifier*		identifier;
-  Number*		number;
-/* following enables to track yyval and yytext */
-  std::string*		attrs;
-  std::string*	str;
-  std::string*	token;
-  std::string*	boolean;
-  int		comp;
-}		typeParser;
- 
+  AstNode*		node;
+  NumberList*		numlist;		
+  uint64_t		number;
+  std::string*		str;
+  std::string*		token;
+  CmpOperator::Op	comp;
+}			typeParser;
+
 // define the type for flex and bison
 #define YYSTYPE typeParser
  

@@ -23,11 +23,6 @@
 
 class Filter : public EventHandler
 {
-private:
-  std::string	__fname;
-  uint32_t	__uid;
-  std::string	__query;
-  Expression*	__rootast;
 public:
   Filter(std::string fname);
   ~Filter();
@@ -39,6 +34,11 @@ public:
   void		process(Node* nodeptr, bool recursive=true) throw (std::string);
   void		process(uint64_t nodeid, bool recursive=true) throw (std::string);
   void		process(uint16_t fsoid, bool recursive=true) throw (std::string);
+private:
+  std::string	__fname;
+  uint32_t	__uid;
+  std::string	__query;
+  AstNode*	__root;
 };
 
 #endif
