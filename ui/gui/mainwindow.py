@@ -39,9 +39,9 @@ from ui.gui.ide.ide import Ide
 from ui.gui.widget.taskmanager import Processus
 from ui.gui.widget.modules import Modules
 from ui.gui.widget.stdio import STDErr, STDOut
-
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
+from ui.gui.widget.preview import Preview
 
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
@@ -243,6 +243,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
         self.addDockWidgets(self.wmodules, 'modules', master=False)
+   
+	self.preview = Preview(self)
+        self.addDockWidgets(self.preview, 'preview', master=False)
+ 	self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
+
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
 

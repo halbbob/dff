@@ -19,14 +19,12 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread
 from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QLineEdit
 
-from api.vfs import *
-from api.module.module import *
-from api.module.script import *
+from api.vfs import vfs 
+from api.module.module import Module 
+from api.module.script import Script
 from modules.metadata.metaexif import EXIF
 from api.types.libtypes import Argument, typeId
 
-import sys
-import time
 import re
 
 class LoadedImage(QLabel):
