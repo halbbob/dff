@@ -42,12 +42,20 @@ class CAT(QTextEdit, Script):
   def g_display(self):
     QTextEdit.__init__(self, None)
     self.setReadOnly(1)
-    self.append(QString.fromUtf8(self.buff))
+    file = self.node.open()
+    size = 0
+    while size < self.node.size():
+      self.buff = file.read(1024*1024) 
+      size += len(self.buff)
+      if len(self.buff) == 0:
+	break
+      self.append(QString.fromUtf8(self.buff))
+    self.moveCursor(1) 
 
   def updateWidget(self):
 	pass
 
-  def cat(self, args):
+  def c_display(self):
     file = self.node.open()
     fsize = self.node.size()
     size = 0
