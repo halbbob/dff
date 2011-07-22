@@ -26,6 +26,12 @@ from api.vfs.iodevice import IODevice
 from api.types.libtypes import Argument, typeId
 from api.vfs import *
 
+
+#avoid bug in phonon
+audio = None
+video = None
+media = None
+
 class PLAYER(QWidget, Script):
   def __init__(self):
      Script.__init__(self, "player")
@@ -42,38 +48,33 @@ class PLAYER(QWidget, Script):
 
   def g_display(self):
      QWidget.__init__(self)
-
-     self.media = Phonon.MediaObject(self)
-     self.video = Phonon.VideoWidget(self)
-     self.audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
-
-     self.media.setTickInterval(1000)
-     self.media.tick.connect(self.tick)
-     self.media.stateChanged.connect(self.stateChanged)
-     #self.media.currentSourceChanged.connect(self.sourceChanged)
-#     self.media.aboutToFinish.connect(self.aboutToFinish)
-
-     Phonon.createPath(self.media, self.video)
-     Phonon.createPath(self.media, self.audio)
-    
+     global audio,video,media
+     if media is None:
+       media = Phonon.MediaObject(self)
+       video = Phonon.VideoWidget(self)
+       audio = Phonon.AudioOutput(Phonon.MusicCategory, self)
+       media.setTickInterval(1000)
+       media.tick.connect(self.tick)
+       Phonon.createPath(media, video)
+       Phonon.createPath(media, audio)
+     media.stateChanged.connect(self.stateChanged)
      self.setupActions()
      self.setupUi()
      self.timeLcd.display("00:00") 
- 
      self.play(self.node)
 
   def play(self, node):
-     wasPlaying = (self.media.state() == Phonon.PlayingState)
-     self.media.stop()
-     self.media.clearQueue()
+     wasPlaying = (media.state() == Phonon.PlayingState)
+     media.stop()
+     media.clearQueue()
      self.src = IODevice(node)
      source = Phonon.MediaSource(self.src)
      if source.type() != -1:
-	self.media.setCurrentSource(source)
+	media.setCurrentSource(source)
         if  wasPlaying:
-          self.media.play()
+          media.play()
         else :
-	  self.media.stop()
+	  media.stop()
      else:
 	print "error can find file"
 
@@ -83,12 +84,13 @@ class PLAYER(QWidget, Script):
 
   def stateChanged(self, newState, oldState):
         if newState == Phonon.ErrorState:
-            if self.media.errorType() == Phonon.FatalError:
-                QMessageBox.warning(self, "Fatal Error",
-                        self.media.errorString())
-            else:
-                QMessageBox.warning(self, "Error",
-                        self.media.errorString())
+	    pass
+            #if media.errorType() == Phonon.FatalError:
+                #QMessageBox.warning(self, "Fatal Error",
+                        #media.errorString())
+            #else:
+                #QMessageBox.warning(self, "Error",
+                        #media.errorString())
 
         elif newState == Phonon.PlayingState:
             self.playAction.setEnabled(False)
@@ -111,17 +113,17 @@ class PLAYER(QWidget, Script):
         self.playAction = QAction(
                 self.style().standardIcon(QStyle.SP_MediaPlay), "Play",
                 self, shortcut="Ctrl+P", enabled=False,
-                triggered=self.media.play)
+                triggered=media.play)
 
         self.pauseAction = QAction(
                 self.style().standardIcon(QStyle.SP_MediaPause),
                 "Pause", self, shortcut="Ctrl+A", enabled=False,
-                triggered=self.media.pause)
+                triggered=media.pause)
 
         self.stopAction = QAction(
                 self.style().standardIcon(QStyle.SP_MediaStop), "Stop",
                 self, shortcut="Ctrl+S", enabled=False,
-                triggered=self.media.stop)
+                triggered=media.stop)
 
         self.nextAction = QAction(
                 self.style().standardIcon(QStyle.SP_MediaSkipForward),
@@ -139,10 +141,10 @@ class PLAYER(QWidget, Script):
         bar.addAction(self.stopAction)
 
         self.seekSlider = Phonon.SeekSlider(self)
-        self.seekSlider.setMediaObject(self.media)
+        self.seekSlider.setMediaObject(media)
 
         self.volumeSlider = Phonon.VolumeSlider(self)
-        self.volumeSlider.setAudioOutput(self.audio)
+        self.volumeSlider.setAudioOutput(audio)
         self.volumeSlider.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
         volumeLabel = QLabel()
@@ -167,7 +169,7 @@ class PLAYER(QWidget, Script):
         playbackLayout.addWidget(self.volumeSlider)
 
         mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.video)
+        mainLayout.addWidget(video)
         mainLayout.addLayout(seekerLayout)
         mainLayout.addLayout(playbackLayout)
 
@@ -187,5 +189,5 @@ class player(Module):
    self.conf.addConstant({"name": "mime-type", 
                           "type": typeId.String,
                           "description": "managed mime type",
-                          "values": ["video"]})
+                          "values": ["video", "audio"]})
    self.icon = ":multimedia"

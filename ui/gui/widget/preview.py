@@ -13,7 +13,7 @@
 #  Solal Jacob <sja@digital-forensic.org>
 #
 
-from PyQt4.QtGui import QStackedWidget
+from PyQt4.QtGui import QStackedWidget, QIcon, QPixmap, QApplication, QWidget
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
 
 from api.loader.loader import loader
@@ -23,10 +23,14 @@ class Preview(QStackedWidget):
     def __init__(self, parent):
         super(QStackedWidget, self).__init__()
         self.__mainWindow = parent        
-        self.name = "Preview"
+        self.name = self.tr("Preview")
         self.loader = loader()
 	self.lmodules = self.loader.modules
-	self.previousWidget = None
+	void = QWidget()
+	self.previousWidget = void 
+	self.addWidget(void)
+        self.setWindowIcon(QIcon(QPixmap(":viewer.png")))
+        self.retranslateUi(self) 
         
     def update(self, node):
        if node.size():
@@ -57,3 +61,6 @@ class Preview(QStackedWidget):
 	 self.previousWidget = inst
        else:
 	pass 
+
+    def retranslateUi(self, widget):
+       widget.setWindowTitle(QApplication.translate("Preview", "Preview", None, QApplication.UnicodeUTF8))

@@ -44,6 +44,7 @@ SOURCES         += ../../../ui/gui/widget/taskmanager.py
 SOURCES         += ../../../ui/gui/mainwindow.py
 SOURCES         += ../../../ui/gui/dialog/preferences.py
 SOURCES         += ../../../api/gui/box/nodeviewbox.py
+SOURCES         += ../../../ui/gui/widget/preview.py
 
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts
