@@ -31,9 +31,14 @@ class Preview(QStackedWidget):
 	self.addWidget(void)
         self.setWindowIcon(QIcon(QPixmap(":viewer.png")))
         self.retranslateUi(self) 
-        
+        self.previousNode = None       
+ 
     def update(self, node):
        if node.size():
+         if self.previousNode == node.this:
+	   return
+         else:
+	   self.previousNode = node.this 	
          previewModule = None
          compat = node.compatibleModules()
          if len(compat):
@@ -43,22 +48,20 @@ class Preview(QStackedWidget):
 	      break
          if not previewModule:
 	   previewModule = "hexadecimal"  
-	 #threader le start et recup widget apres ? 
+	 if self.previousWidget:
+  	   self.removeWidget(self.previousWidget)
+	   self.previousWidget.close()
+	   del self.previousWidget
 	 args = {}
 	 args["file"]  = node
  	 args["preview"] = True
 	 conf = self.loader.get_conf(str(previewModule))
   	 genargs = conf.generate(args)
 	 genargs.thisown = False
-	 inst = self.lmodules[previewModule].create()
-	 inst.start(genargs)
-	 inst.g_display()
-	 if self.previousWidget:
-  	   self.removeWidget(self.previousWidget)
-	   del self.previousWidget
-	   #delete arg & others faire des test de monter en ram avec des grosse liste
-	 self.addWidget(inst)
-	 self.previousWidget = inst
+	 self.previousWidget = self.lmodules[previewModule].create()
+	 self.previousWidget.start(genargs)
+	 self.previousWidget.g_display()
+	 self.addWidget(self.previousWidget)
        else:
 	pass 
 

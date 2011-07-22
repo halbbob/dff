@@ -40,6 +40,10 @@ class ViewerHexa(QWidget, Script):
         
     def start(self, args) :
         self.node = args["file"].value()
+	try:
+   	  self.preview = args["preview"].value()
+	except IndexError:
+          self.preview = False
 
     def c_display(self):
 	try:
@@ -52,13 +56,16 @@ class ViewerHexa(QWidget, Script):
         self.widget = Heditor(self)
         self.name = "hexedit " + str(self.node.name())
         if self.node.size() > 0:
-          self.widget.init(self.node)
+          self.widget.init(self.node, self.preview)
           self.setLayout(self.widget.vlayout)
         else:
           msg = QMessageBox(QMessageBox.Critical, "Hexadecimal viewer", "Error: File is empty", QMessageBox.Ok)
           msg.exec_()
           
-        
+    def closeEvent(self, event):
+      self.widget.close()
+      print "close the vent"
+ 
     def updateWidget(self):
         pass
 
@@ -75,6 +82,9 @@ class hexeditor(Module):
     self.conf.addArgument({"input": Argument.Required|Argument.Single|typeId.Node,
                            "name": "file",
                            "description": "File to display as hexadecimal"})
+    self.conf.addArgument({"name": "preview",
+			   "description": "Preview mode",
+			   "input": Argument.Empty})
     self.tags = "Viewers"
     self.icon = ":hexedit.png"
 

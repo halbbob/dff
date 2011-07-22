@@ -37,11 +37,17 @@ class PLAYER(QWidget, Script):
      Script.__init__(self, "player")
      self.vfs = vfs.vfs() 
 
+
   def start(self, args):
     try:
       self.node = args["file"].value()
     except:
       pass
+
+  def closeEvent(self, event):
+     media.stop()
+     media.clearQueue()
+     self.src.close()
 
   def updateWidget(self):
     pass

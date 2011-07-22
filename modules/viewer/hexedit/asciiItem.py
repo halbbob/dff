@@ -134,8 +134,9 @@ class asciiItem(QGraphicsTextItem):
         xpos = self.getXPos(x)
         ypos = self.getYPos(y)
         self.heditor.selection.select(self.heditor.selection.xstart, self.heditor.selection.ystart, xpos, ypos)
-        self.heditor.infos.update()
-        self.heditor.right.decode.update()
+	if not self.heditor.preview:
+          self.heditor.infos.update()
+          self.heditor.right.decode.update()
 
     def mousePressEvent(self, event):
         button = event.button()
@@ -153,8 +154,9 @@ class asciiItem(QGraphicsTextItem):
             self.whex.hexcursor.draw(xpos, ypos)
             #Refresh hexadecimal cursor
             self.heditor.selection.select(xpos, ypos, xpos, ypos, True)
-            self.heditor.right.decode.update()
-            self.heditor.infos.update()
+	    if not self.heditor.preview:
+              self.heditor.right.decode.update()
+              self.heditor.infos.update()
 
 
     def mouseReleaseEvent(self, event):

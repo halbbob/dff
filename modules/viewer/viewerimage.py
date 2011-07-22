@@ -41,7 +41,6 @@ class LoadedImage(QLabel):
   def setParent(self, parent):
     self.parent = parent
 
-
   def load(self, node):
     self.matrix.reset()
     self.zoomer = 1
@@ -199,7 +198,7 @@ class Metadata(QWidget):
         label.setPixmap(QPixmap.fromImage(img))
         label.setAlignment(Qt.AlignCenter)
         self.tabs.addTab(label, "Embedded Thumbnail")
-
+      file.close()	
 
 class ImageView(QWidget, Script):
   def __init__(self):
@@ -209,7 +208,6 @@ class ImageView(QWidget, Script):
     self.vfs = vfs.vfs()
     self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM|TIFF|tiff).*", re.IGNORECASE)
     self.sceneWidth = 0
-
 
   def start(self, args):
     try :

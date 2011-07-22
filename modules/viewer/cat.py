@@ -44,12 +44,13 @@ class CAT(QTextEdit, Script):
     self.setReadOnly(1)
     file = self.node.open()
     size = 0
-    while size < self.node.size():
+    while size < self.node.size() and size < 1024*1024*10: #limit file size to 10Mo
       self.buff = file.read(1024*1024) 
       size += len(self.buff)
       if len(self.buff) == 0:
 	break
       self.append(QString.fromUtf8(self.buff))
+    file.close()
     self.moveCursor(1) 
 
   def updateWidget(self):
