@@ -314,9 +314,13 @@ void		MimeCmp::compile() throw (std::string)
 Search*		MimeCmp::__createCtx(std::string *str)
 {
   Search*	ctx;
+  std::string	pattern;
 
   ctx = new Search();
-  ctx->setPattern(str->substr(1, str->size() - 2));
+  pattern = "*";
+  pattern += str->substr(1, str->size() - 2);
+  pattern += "*";
+  ctx->setPattern(pattern);
   ctx->setPatternSyntax(Search::Wildcard);
   ctx->setCaseSensitivity(Search::CaseInsensitive);
   return ctx;
