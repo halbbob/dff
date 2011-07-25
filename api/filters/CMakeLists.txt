@@ -34,7 +34,7 @@ FLEX_TARGET(lexer lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp  COMPILE_FLAGS "
 SET_SOURCE_FILES_PROPERTIES(libfilters.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(libfilters python libfilters.i filter.cpp astnodes.cpp ${BISON_parser_OUTPUTS} ${FLEX_lexer_OUTPUTS})
 
-SWIG_LINK_LIBRARIES(libfilters ${PYTHON_LIBRARIES} _libevents _libvfs _libtypes)
+SWIG_LINK_LIBRARIES(libfilters ${PYTHON_LIBRARIES} _libevents _libvfs _libtypes _libsearch)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
   set_target_properties (${SWIG_MODULE_libfilters_REAL_NAME} PROPERTIES

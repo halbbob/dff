@@ -53,6 +53,7 @@ NOT	    "not"
 TRUE	    "True"
 FALSE	    "False"
 
+IDENTIFIER  [a-zA-Z]+
 STRING	    \"(\\.|[^\\"])*\"
 NUMBER      [0-9]+
 HEXNUMBER   0[xX][a-fA-F0-9]+
@@ -91,6 +92,7 @@ LTE         "<="
 {TRUE}		{ SAVE_STRING; return TTRUE; }
 {FALSE}		{ SAVE_STRING; return TFALSE; }
 
+{IDENTIFIER}	{ SAVE_STRING; return TIDENTIFIER;}
 {STRING}	{ SAVE_STRING; return TSTRING; }
 {NUMBER}        { SAVE_NUMBER; return TNUMBER; }
 {HEXNUMBER}	{ SAVE_HEXNUMBER; return TNUMBER; }
@@ -113,5 +115,3 @@ LTE         "<="
 %%
 #include <stdio.h>
 int yyerror(const char *msg) { fprintf(stderr,"Error:%s\n",msg); return 0; }
-//IDENTIFIER  [a-zA-Z]+
-//{IDENTIFIER}	{ SAVE_STRING; return TIDENTIFIER;}

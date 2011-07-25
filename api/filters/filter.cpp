@@ -74,29 +74,33 @@ void	Filter::compile(std::string query) throw (std::string)
 
 void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 {
-  Node*			tmp;
-  event*		e;
+  //event*		e;
+  std::vector<Node*>	children;
+  int			i;
 
-  if (this->__root != NULL && nodeptr != NULL)
+  if ((this->__root != NULL) && (nodeptr != NULL))
     {
       if (this->__root->evaluate(nodeptr, 0))
 	{
-	  std::cout << nodeptr->absolute() << std::endl;
-	  e = new event;
-	  e->type = event::OTHER;
-	  e->value = new Variant(nodeptr);
-	  this->notify(e);
-	}
-      if (recursive && nodeptr->hasChildren())
-	{	  
-	  std::vector<Node*>	children = nodeptr->children();
-	  int			i;
+	  std::cout << "NODE MATCHED ---> " << nodeptr->absolute() << std::endl;
+	  // e = new event;
+       	  // e->type = event::OTHER;
+       	  // e->value = new Variant(nodeptr);
+       	  // this->notify(e);
+       	}
+      if (nodeptr->hasChildren() && recursive)
+	{
+	  children = nodeptr->children();
 	  for (i = 0; i != children.size(); i++)
-	    this->process(children[i]);
+	    {
+	      //std::cout << children[i] << std::endl;
+	      this->process(children[i], recursive);
+	    }
 	}
     }
   else
     throw std::string("no query compiled yet");
+  return;
 }
 
 void	Filter::process(uint64_t nodeid, bool recursive) throw (std::string)

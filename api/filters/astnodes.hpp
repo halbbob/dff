@@ -20,10 +20,23 @@
 #include <iostream>
 #include <vector>
 #include "node.hpp"
+#include "search.hpp"
 
-//typedef std::vector<Expression*> ArgumentsList;
 
-typedef std::vector<uint64_t>	NumberList;
+typedef std::vector<uint64_t>		NumberList;
+typedef std::vector<std::string*>	StringList;
+
+class Processor
+{
+public:
+  ~Processor();
+  Processor(std::string* name, std::vector<std::string*>* expr);
+  std::string			name();
+  std::vector<std::string*>	arguments();
+private:
+  std::string*			__name;
+  std::vector<std::string* >*	__args;
+};
 
 class AstNode
 {
@@ -71,8 +84,8 @@ class SizeCmp: public AstNode
 {
 public:
   ~SizeCmp();
-  SizeCmp(CmpOperator::Op op, uint64_t size);
-  SizeCmp(CmpOperator::Op op, std::vector<uint64_t>* lsize);
+  SizeCmp(CmpOperator::Op cmp, uint64_t size);
+  SizeCmp(CmpOperator::Op cmp, std::vector<uint64_t>* lsize);
   virtual bool			evaluate(Node* node) throw (std::string);
   virtual bool			evaluate(Node* node, int depth) throw (std::string);
   virtual uint32_t		cost();
@@ -89,6 +102,61 @@ private:
   bool				__levaluate(Node* node);
   bool				__sevaluate(Node* node);
 };
+
+
+class MimeCmp: public AstNode
+{
+public:
+  ~MimeCmp();
+  MimeCmp(CmpOperator::Op cmp, std::string* str);
+  MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr);
+  virtual bool			evaluate(Node* node) throw (std::string);
+  virtual bool			evaluate(Node* node, int depth) throw (std::string);
+  virtual uint32_t		cost();
+private:
+  enum EType
+    {
+      SIMPLE,
+      LIST
+    };
+  EType				__etype;
+  CmpOperator::Op		__cmp;
+  std::vector<std::string* >*	__lstr;
+  std::string*			__str;
+  std::vector<Search*>		__lctx;
+  Search*			__ctx;
+  Search*			__createCtx(std::string str);
+  bool				__levaluate(Node* node);
+  bool				__sevaluate(Node* node);
+};
+
+
+class NameCmp: public AstNode
+{
+public:
+  ~NameCmp();
+  NameCmp(CmpOperator::Op cmp, Processor* proc);
+  NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lstr);
+  virtual bool			evaluate(Node* node) throw (std::string);
+  virtual bool			evaluate(Node* node, int depth) throw (std::string);
+  virtual uint32_t		cost();
+private:
+  enum EType
+    {
+      SIMPLE,
+      LIST
+    };
+  EType				__etype;
+  CmpOperator::Op		__cmp;
+  std::vector<Processor*>*	__lproc;
+  Processor*			__proc;
+  std::vector<Search*>		__lctx;
+  Search*			__ctx;
+  Search*			__createCtx(Processor* proc);
+  bool				__levaluate(Node* node);
+  bool				__sevaluate(Node* node);
+};
+
 
 // class Identifier : public Expression
 // {

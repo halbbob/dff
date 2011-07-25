@@ -9,7 +9,7 @@
    * 0 : nothing
    * 3 : everything
    */
-#define DEBUG_LEVEL     0
+#define DEBUG_LEVEL     2
 #define VERBOSE         3
 #define INFO            2
 #define CRITICAL        1
@@ -47,7 +47,7 @@
 %token <token> TCONTAIN TIN TNOT
 
 /* value tokens */
-%token <str> TSTRING TTIMESTAMP TTRUE TFALSE
+%token <str> TIDENTIFIER TSTRING TTIMESTAMP TTRUE TFALSE
 %token <number> TNUMBER THEXNUMBER
 
 /* delimiter tokens */
@@ -59,9 +59,13 @@
 
 %type <comp> comp_operators
 
-%type <node> expr size_cmp//primary_expression processor
+%type <node> expr size_cmp mime_cmp name_cmp
 
 %type <numlist> number_list
+
+%type <strlist> string_list processor_args
+
+%type <proc> processor
 
 /* %type <args> processor_args list_args */
 /* exprlist --> ptr in typeParser union | call_args --> rule defines below */
@@ -76,24 +80,39 @@ expr: expr TAND expr { DEBUG(INFO, "TOKEN_AND\n"); $$ = new Logical( $1, Logical
 | expr TOR expr { DEBUG(INFO, "TOKEN_OR\n"); $$ = new Logical( $1, Logical::OR, $3 ); }
 | TLPAREN expr TRPAREN { $$ = $2; }
 | size_cmp
-/* | TSTRING comp_operators primary_expression {$$ = new Comparison ($<str>1, $2, $3); } */
-/* | TSTRING TEQ processor { $$ = new Comparison($<str>1, Comparison::EQ, $3); } */
-/* | TSTRING TNEQ processor { $$ = new Comparison($<str>1, Comparison::NEQ, $3); } */
-/* | TSTRING TCONTAINS processor { $$ = new Operation(new Identifier($<str>1), $<str>2, $3); } */
-/* | TSTRING TIN TLBRACKET list_args TRBRACKET { $$ = new Operation(new Identifier($<str>1), $<token>2, new MethodCall(new std::string("list"), $4)); } */
+| mime_cmp
+| name_cmp
 ;
 
-size_cmp : TSIZE comp_operators TNUMBER {$$ = new SizeCmp($2, $<number>3)}
+size_cmp : TSIZE comp_operators TNUMBER {$$ = new SizeCmp($2, $3)}
 | TSIZE TIN TLBRACKET number_list TRBRACKET {$$ = new SizeCmp(CmpOperator::EQ, $<numlist>4)}
 | TSIZE TNOT TIN TLBRACKET number_list TRBRACKET {$$ = new SizeCmp(CmpOperator::NEQ, $<numlist>5)}
+;
+
+mime_cmp : TMIME TEQ TSTRING {$$ = new MimeCmp(CmpOperator::EQ, $3)}
+| TMIME TNEQ TSTRING {$$ = new MimeCmp(CmpOperator::NEQ, $3)}
+| TMIME TIN TLBRACKET string_list TRBRACKET {$$ = new MimeCmp(CmpOperator::EQ, $<strlist>4)}
+| TMIME TNOT TIN TLBRACKET string_list TRBRACKET {$$ = new MimeCmp(CmpOperator::NEQ, $<strlist>5)}
+;
+
+name_cmp : TNAME TEQ processor {$$ = new NameCmp(CmpOperator::EQ, $3); DEBUG(INFO, "name == cmp\n")}
+| TNAME TNEQ processor {$$ = new NameCmp(CmpOperator::NEQ, $3); DEBUG(INFO, "name != cmp\n")}
 ;
 
 number_list: TNUMBER {$$ = new NumberList(); $$->push_back($1); DEBUG(INFO, "numeric list with 1 item")}
 | number_list TCOMMA TNUMBER {$<numlist>1->push_back($3); DEBUG(INFO, "numeric list with several items")}
 ;
 
-/* ident: TIDENTIFIER { $$ = new Identifier($<str>1); } */
-/* ; */
+string_list : TSTRING {$$ = new StringList(); $$->push_back($1)}
+| string_list TCOMMA TSTRING {$<strlist>1->push_back($3)}
+;
+
+processor: TIDENTIFIER TLPAREN processor_args TRPAREN {$$ = new Processor($1, $3); DEBUG(INFO, "New method call\n"); }
+;
+
+processor_args : TSTRING { $$ = new StringList(); $$->push_back($1); DEBUG(INFO, "Init parsing processor arguments\n"); }
+| processor_args TCOMMA TIDENTIFIER { $<strlist>1->push_back($3); DEBUG(INFO, "parsing processor arguments\n"); }
+;
 
 comp_operators: TEQ { $$ = CmpOperator::EQ; }
 | TNEQ { $$ = CmpOperator::NEQ; }
@@ -103,26 +122,4 @@ comp_operators: TEQ { $$ = CmpOperator::EQ; }
 | TLTE { $$ = CmpOperator::LTE; }
 ;
 
-/* primary_expression: TTRUE {$$ = new Identifier($<str>1); DEBUG(INFO, "primary_expr --> true\n"); } */
-/* | TFALSE {$$ = new Identifier($<str>1); DEBUG(INFO, "primary_expr --> false\n"); } */
-/* | TSTRING {$$ = new Identifier($<str>1); DEBUG(INFO, "primary_expr --> string\n"); } */
-/* | TTIMESTAMP {$$ = new Identifier($<str>1); DEBUG(INFO, "primary_expr --> timestamp\n"); } */
-/* | TNUMBER { $$ = new Identifier($<str>1); DEBUG(INFO, "primary_expr --> number\n"); } */
-/* ; */
-
-/* processor: TIDENTIFIER TLPAREN processor_args TRPAREN {$$ = new MethodCall($<str>1, $3); DEBUG(INFO, "New method call\n"); } */
-/* ; */
-
-
-/* processor_args : primary_expression { $$ = new ArgumentsList(); $$->push_back($1); DEBUG(INFO, "Init parsing processor arguments\n"); } */
-/* | processor_args TCOMMA primary_expression { $<args>1->push_back($3); DEBUG(INFO, "parsing processor arguments\n"); } */
-/* | processor_args TCOMMA ident { $<args>1->push_back($3); DEBUG(INFO, "parsing processor arguments\n"); } */
-/* ; */
-
-/* list_args : primary_expression { $$ = new ArgumentsList(); $$->push_back($1); } */
-/* | processor { $$ = new ArgumentsList(); $$->push_back($1); } */
-/* | list_args TCOMMA primary_expression  { $<args>1->push_back($3); DEBUG(INFO, "parsing processor arguments\n"); } */
-/* | list_args TCOMMA ident { $<args>1->push_back($3); DEBUG(INFO, "parsing processor arguments\n"); } */
-/* | list_args TCOMMA processor { $<args>1->push_back($3); } */
-/* ; */
 %%

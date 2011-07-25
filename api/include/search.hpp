@@ -43,6 +43,8 @@ public:
 };
 
 
+typedef int32_t	(*sfunc)(const unsigned char*, int32_t, const unsigned char*, int32_t, int32_t, int);
+
 class Search
 {
 public:
@@ -82,7 +84,7 @@ private:
   regex_t			__preg;
   regaparams_t			__aparams;
 #endif
-  std::vector<std::string*>	__wctxs;
+  std::vector<std::string*>*	__wctxs;
   std::string			__pattern;
   CaseSensitivity		__cs;
   PatternSyntax			__syntax;
@@ -93,7 +95,7 @@ private:
 
   //find methods implementation
   int32_t			__ffind(char* haystack, uint32_t hslen);
-  int32_t			__wfind(char* haystack, uint32_t hslen);
+  int32_t			__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, int32_t vpos, uint32_t window);
   int32_t			__refind(char* haystack, uint32_t hslen);
   int32_t			__afind(char* haystack, uint32_t hslen);
 

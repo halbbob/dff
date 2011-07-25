@@ -16,6 +16,34 @@
 
 #include "astnodes.hpp"
 
+
+Processor::~Processor()
+{
+  std::vector<std::string*>::iterator it;
+  
+  delete this->__name;
+  for (it = this->__args->begin(); it != this->__args->end(); it++)
+    delete *it;
+  delete this->__args;
+}
+
+Processor::Processor(std::string* name, std::vector<std::string*>* args)
+{
+  this->__name = name;
+  this->__args = args;
+}
+
+std::string			Processor::name()
+{
+  return *this->__name;
+}
+
+std::vector<std::string*>	Processor::arguments()
+{
+  return *this->__args;
+};
+
+
 Logical::Logical(AstNode* left, int op, AstNode* right)
 {
   this->__left = left;
@@ -89,8 +117,8 @@ SizeCmp::SizeCmp(CmpOperator::Op cmp, std::vector<uint64_t>* lsize)
 
 bool		SizeCmp::__levaluate(Node* node)
 {
-  bool	found;
   std::vector<uint64_t>::iterator	it;
+  bool					found;
 
   if (this->__lsize == NULL)
     return false;
@@ -224,3 +252,220 @@ uint32_t	SizeCmp::cost()
   return 0; 
 }
 
+
+MimeCmp::~MimeCmp()
+{
+}
+
+MimeCmp::MimeCmp(CmpOperator::Op cmp, std::string* str)
+{
+  this->__cmp = cmp;
+  this->__str = str;
+  this->__ctx = this->__createCtx(*str);
+  this->__lstr = NULL;
+  this->__etype = SIMPLE;
+}
+
+MimeCmp::MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr)
+{
+  std::vector<std::string*>::iterator	it;
+  Search*				ctx;
+
+  this->__cmp = cmp;
+  this->__lstr = lstr;
+  for (it = this->__lstr->begin(); it != this->__lstr->end(); it++)
+    {
+      ctx = this->__createCtx(*(*it));
+      this->__lctx.push_back(ctx);
+    }
+  this->__str = NULL;
+  this->__ctx = NULL;
+  this->__etype = LIST;
+}
+
+Search*		MimeCmp::__createCtx(std::string str)
+{
+  Search*	ctx;
+  std::string	rstr;
+
+  ctx = new Search();  
+  rstr = str.substr(1, str.size() - 2);
+  ctx->setPattern(rstr);
+  ctx->setPatternSyntax(Search::Wildcard);
+  ctx->setCaseSensitivity(Search::CaseInsensitive);
+  return ctx;
+}
+
+bool		MimeCmp::evaluate(Node* node) throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    return this->__sevaluate(node);
+  else if (this->__etype == LIST)
+    return this->__levaluate(node);
+  else
+    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+}
+
+bool		MimeCmp::evaluate(Node* node, int depth) throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    return this->__sevaluate(node);
+  else if (this->__etype == LIST)
+    return this->__levaluate(node);
+  else
+    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+}
+
+uint32_t	MimeCmp::cost()
+{
+  return 0;
+}
+
+bool		MimeCmp::__levaluate(Node* node)
+{
+  std::vector<std::string*>::iterator	it;
+  bool					found;
+  Variant*				datatype;
+
+  if (this->__lstr == NULL)
+    return false;
+  //std::cout << std::string(3, ' ') << node->size() << std::endl;
+  found = false;
+  it = this->__lstr->begin();
+  while ((it != this->__lstr->end()) && !found)
+    {
+      it++;
+    }
+  if (this->__cmp == CmpOperator::EQ)
+    return found == true;
+  else if (this->__cmp == CmpOperator::NEQ)
+    return found == false;
+  else
+    return false; //XXX throw bad op for in [] eval
+}
+
+bool		MimeCmp::__sevaluate(Node* node)
+{
+  std::map<std::string, Variant*>		vmap;
+  std::map<std::string, Variant*>::iterator	mit;
+  Variant*					datatypes;
+  bool						found;
+
+  if (this->__ctx == NULL)
+    return false; //XXX throw exception
+  datatypes = node->dataType();
+  if (datatypes == NULL)
+    return false;
+  vmap = datatypes->value<std::map<std::string, Variant*> >();
+  mit = vmap.begin();
+  found = false;
+  while ((mit != vmap.end()) && !found)
+    {
+      if (mit->second != NULL)
+  	{
+  	  if (this->__ctx->find(mit->second->toString()) != -1)
+	    found = true;
+    	}
+      mit++;
+    }
+  if (this->__cmp == CmpOperator::EQ)
+    return found == true;
+  else if (this->__cmp == CmpOperator::NEQ)
+    return found == false;
+  else
+    return false; //XXX throw exception
+}
+
+
+
+NameCmp::~NameCmp()
+{
+}
+
+NameCmp::NameCmp(CmpOperator::Op cmp, Processor* proc)
+{
+  this->__cmp = cmp;
+  this->__proc = proc;
+  this->__lproc = NULL;
+  this->__ctx = this->__createCtx(proc);
+  this->__etype = SIMPLE;
+}
+
+NameCmp::NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lproc)
+{
+  this->__cmp = cmp;
+  this->__lproc = lproc;
+  this->__proc = NULL;
+  this->__etype = LIST;
+}
+
+bool			NameCmp::evaluate(Node* node) throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    return this->__sevaluate(node);
+  else if (this->__etype == LIST)
+    return this->__levaluate(node);
+  else
+    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+}
+
+bool			NameCmp::evaluate(Node* node, int depth) throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    return this->__sevaluate(node);
+  else if (this->__etype == LIST)
+    return this->__levaluate(node);
+  else
+    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+}
+
+uint32_t		NameCmp::cost()
+{
+  return 0;
+}
+
+Search*				NameCmp::__createCtx(Processor* proc)
+{
+  Search*			ctx;
+  std::vector<std::string*>	args;
+  
+  ctx = new Search();
+  args = proc->arguments();
+  if (args.size() > 1)
+    ctx->setCaseSensitivity(Search::CaseInsensitive);
+  else
+    ctx->setCaseSensitivity(Search::CaseSensitive);
+  ctx->setPattern(args[0]->substr(1, args[0]->size() - 2));
+  if (proc->name() == "f")
+    ctx->setPatternSyntax(Search::Fixed);
+  else if (proc->name() == "w")
+    ctx->setPatternSyntax(Search::Wildcard);
+  else if (proc->name() == "re")
+    ctx->setPatternSyntax(Search::Regexp);
+  else if (proc->name() == "fz")
+    ctx->setPatternSyntax(Search::Fuzzy);
+  else
+    return NULL;
+  return ctx;
+}
+
+bool			NameCmp::__levaluate(Node* node)
+{
+}
+
+bool			NameCmp::__sevaluate(Node* node)
+{
+  bool	found;
+
+  if (this->__ctx == NULL)
+    return false; //XXX throw exception
+  found = false;
+  if (this->__ctx->find(node->name()) != -1)
+    found = true;
+  if (this->__cmp == CmpOperator::EQ)
+    return found == true;
+  else if (this->__cmp == CmpOperator::NEQ)
+    return found == false;
+  else
+    return false; //XXX throw exception  
+}
