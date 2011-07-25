@@ -33,14 +33,14 @@ Processor::Processor(std::string* name, std::vector<std::string*>* args)
   this->__args = args;
 }
 
-std::string			Processor::name()
+std::string*			Processor::name()
 {
-  return *this->__name;
+  return this->__name;
 }
 
-std::vector<std::string*>	Processor::arguments()
+std::vector<std::string*>*	Processor::arguments()
 {
-  return *this->__args;
+  return this->__args;
 };
 
 
@@ -58,6 +58,17 @@ Logical::~Logical()
 uint32_t	Logical::cost() 
 {
   return 0;
+}
+
+void		Logical::compile() throw (std::string)
+{
+  if ((this->__left != NULL) && (this->__right != NULL))
+    {
+      this->__left->compile();
+      this->__right->compile();
+    }
+  else
+    throw (std::string("Logical::compile(), left and right cannot be NULL"));
 }
 
 bool		Logical::evaluate(Node* node) throw (std::string)
@@ -113,6 +124,11 @@ SizeCmp::SizeCmp(CmpOperator::Op cmp, std::vector<uint64_t>* lsize)
   this->__lsize = lsize;
   this->__size = (uint64_t)-1;
   this->__etype = LIST;
+}
+
+void		SizeCmp::compile() throw (std::string)
+{
+  return;
 }
 
 bool		SizeCmp::__levaluate(Node* node)
@@ -261,36 +277,46 @@ MimeCmp::MimeCmp(CmpOperator::Op cmp, std::string* str)
 {
   this->__cmp = cmp;
   this->__str = str;
-  this->__ctx = this->__createCtx(*str);
+  this->__ctx = NULL;
   this->__lstr = NULL;
   this->__etype = SIMPLE;
 }
 
 MimeCmp::MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr)
 {
-  std::vector<std::string*>::iterator	it;
-  Search*				ctx;
-
   this->__cmp = cmp;
   this->__lstr = lstr;
-  for (it = this->__lstr->begin(); it != this->__lstr->end(); it++)
-    {
-      ctx = this->__createCtx(*(*it));
-      this->__lctx.push_back(ctx);
-    }
   this->__str = NULL;
   this->__ctx = NULL;
   this->__etype = LIST;
 }
 
-Search*		MimeCmp::__createCtx(std::string str)
+void		MimeCmp::compile() throw (std::string)
+{
+  std::vector<std::string*>::iterator	it;
+  Search*				ctx;
+
+  if (this->__etype == SIMPLE)
+    this->__ctx = this->__createCtx(this->__str);
+  else if (this->__etype == LIST)
+    {
+      this->__lctx = new std::vector<Search*>;
+      for (it = this->__lstr->begin(); it != this->__lstr->end(); it++)
+	{
+	  ctx = this->__createCtx(*it);
+	  this->__lctx->push_back(ctx);
+	}
+    }
+  else
+    ;
+}
+
+Search*		MimeCmp::__createCtx(std::string *str)
 {
   Search*	ctx;
-  std::string	rstr;
 
-  ctx = new Search();  
-  rstr = str.substr(1, str.size() - 2);
-  ctx->setPattern(rstr);
+  ctx = new Search();
+  ctx->setPattern(str->substr(1, str->size() - 2));
   ctx->setPatternSyntax(Search::Wildcard);
   ctx->setCaseSensitivity(Search::CaseInsensitive);
   return ctx;
@@ -387,7 +413,7 @@ NameCmp::NameCmp(CmpOperator::Op cmp, Processor* proc)
   this->__cmp = cmp;
   this->__proc = proc;
   this->__lproc = NULL;
-  this->__ctx = this->__createCtx(proc);
+  this->__ctx = NULL;
   this->__etype = SIMPLE;
 }
 
@@ -397,6 +423,17 @@ NameCmp::NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lproc)
   this->__lproc = lproc;
   this->__proc = NULL;
   this->__etype = LIST;
+}
+
+void			NameCmp::compile() throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    this->__createCtx(this->__proc);
+  else if (this->__etype == LIST)
+    {
+    }
+  else
+    ;
 }
 
 bool			NameCmp::evaluate(Node* node) throw (std::string)
@@ -427,22 +464,22 @@ uint32_t		NameCmp::cost()
 Search*				NameCmp::__createCtx(Processor* proc)
 {
   Search*			ctx;
-  std::vector<std::string*>	args;
+  std::vector<std::string*>*	args;
   
   ctx = new Search();
   args = proc->arguments();
-  if (args.size() > 1)
+  if (args->size() > 1)
     ctx->setCaseSensitivity(Search::CaseInsensitive);
   else
     ctx->setCaseSensitivity(Search::CaseSensitive);
-  ctx->setPattern(args[0]->substr(1, args[0]->size() - 2));
-  if (proc->name() == "f")
+  ctx->setPattern(args->at(0)->substr(1, args->at(0)->size() - 2));
+  if (proc->name()->compare("f"))
     ctx->setPatternSyntax(Search::Fixed);
-  else if (proc->name() == "w")
+  else if (proc->name()->compare("w"))
     ctx->setPatternSyntax(Search::Wildcard);
-  else if (proc->name() == "re")
+  else if (proc->name()->compare("re"))
     ctx->setPatternSyntax(Search::Regexp);
-  else if (proc->name() == "fz")
+  else if (proc->name()->compare("fz"))
     ctx->setPatternSyntax(Search::Fuzzy);
   else
     return NULL;

@@ -70,6 +70,7 @@ void	Filter::compile(std::string query) throw (std::string)
   yy_delete_buffer(state, param.scanner);
   yylex_destroy(param.scanner);
   this->__root = param.root;
+  this->__root->compile();
 }
 
 void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)

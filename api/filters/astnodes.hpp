@@ -31,8 +31,8 @@ class Processor
 public:
   ~Processor();
   Processor(std::string* name, std::vector<std::string*>* expr);
-  std::string			name();
-  std::vector<std::string*>	arguments();
+  std::string*			name();
+  std::vector<std::string*>*	arguments();
 private:
   std::string*			__name;
   std::vector<std::string* >*	__args;
@@ -42,6 +42,7 @@ class AstNode
 {
 public:
   virtual ~AstNode() {}
+  virtual void		compile() throw (std::string) = 0;
   virtual bool		evaluate(Node* node, int depth) throw (std::string) = 0;
   virtual bool		evaluate(Node* node) throw (std::string) = 0;
   virtual uint32_t	cost() = 0;
@@ -75,6 +76,7 @@ public:
   Logical(AstNode* left, int op, AstNode* right);
   ~Logical();
   virtual uint32_t	cost();
+  virtual void		compile() throw (std::string);
   virtual bool		evaluate(Node* node) throw (std::string);
   virtual bool		evaluate(Node* node, int depth) throw (std::string);
 };
@@ -86,6 +88,7 @@ public:
   ~SizeCmp();
   SizeCmp(CmpOperator::Op cmp, uint64_t size);
   SizeCmp(CmpOperator::Op cmp, std::vector<uint64_t>* lsize);
+  virtual void			compile() throw (std::string);
   virtual bool			evaluate(Node* node) throw (std::string);
   virtual bool			evaluate(Node* node, int depth) throw (std::string);
   virtual uint32_t		cost();
@@ -110,6 +113,7 @@ public:
   ~MimeCmp();
   MimeCmp(CmpOperator::Op cmp, std::string* str);
   MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr);
+  virtual void			compile() throw (std::string);
   virtual bool			evaluate(Node* node) throw (std::string);
   virtual bool			evaluate(Node* node, int depth) throw (std::string);
   virtual uint32_t		cost();
@@ -123,9 +127,9 @@ private:
   CmpOperator::Op		__cmp;
   std::vector<std::string* >*	__lstr;
   std::string*			__str;
-  std::vector<Search*>		__lctx;
+  std::vector<Search*>*		__lctx;
   Search*			__ctx;
-  Search*			__createCtx(std::string str);
+  Search*			__createCtx(std::string* str);
   bool				__levaluate(Node* node);
   bool				__sevaluate(Node* node);
 };
@@ -137,6 +141,7 @@ public:
   ~NameCmp();
   NameCmp(CmpOperator::Op cmp, Processor* proc);
   NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lstr);
+  virtual void			compile() throw (std::string);
   virtual bool			evaluate(Node* node) throw (std::string);
   virtual bool			evaluate(Node* node, int depth) throw (std::string);
   virtual uint32_t		cost();
