@@ -428,7 +428,10 @@ NameCmp::NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lproc)
 void			NameCmp::compile() throw (std::string)
 {
   if (this->__etype == SIMPLE)
-    this->__createCtx(this->__proc);
+    {
+      this->__ctx = this->__createCtx(this->__proc);
+      std::cout << this->__ctx->pattern() << std::endl;      
+    }
   else if (this->__etype == LIST)
     {
     }
@@ -465,7 +468,7 @@ Search*				NameCmp::__createCtx(Processor* proc)
 {
   Search*			ctx;
   std::vector<std::string*>*	args;
-  
+
   ctx = new Search();
   args = proc->arguments();
   if (args->size() > 1)
@@ -473,13 +476,13 @@ Search*				NameCmp::__createCtx(Processor* proc)
   else
     ctx->setCaseSensitivity(Search::CaseSensitive);
   ctx->setPattern(args->at(0)->substr(1, args->at(0)->size() - 2));
-  if (proc->name()->compare("f"))
+  if (proc->name()->compare("f") == 0)
     ctx->setPatternSyntax(Search::Fixed);
-  else if (proc->name()->compare("w"))
+  else if (proc->name()->compare("w") == 0)
     ctx->setPatternSyntax(Search::Wildcard);
-  else if (proc->name()->compare("re"))
+  else if (proc->name()->compare("re") == 0)
     ctx->setPatternSyntax(Search::Regexp);
-  else if (proc->name()->compare("fz"))
+  else if (proc->name()->compare("fz") == 0)
     ctx->setPatternSyntax(Search::Fuzzy);
   else
     return NULL;

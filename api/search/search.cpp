@@ -23,7 +23,7 @@
  * 0 : nothing
  * 3 : everything
  */
-#define DEBUG_LEVEL	1
+#define DEBUG_LEVEL	2
 #define	VERBOSE		3
 #define	INFO		2
 #define CRITICAL	1
@@ -60,6 +60,7 @@ Search::Search(std::string pattern, CaseSensitivity cs, PatternSyntax syntax)
   this->__pattern = pattern;
   this->__cs = cs;
   this->__syntax = syntax;
+  this->__compiled = false;
 }
 
 Search::~Search()
@@ -391,17 +392,17 @@ int32_t			Search::__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, int3
       std::cout << this->__wctxs->size() << std::endl;
       return -1;
     }
-  if (*needle == "?")
+  if (needle->compare("?") == 0)
     {
-      DEBUG(INFO, "vpos: %d -- token: ? -- hslen: %d\n", vpos, hslen);
+      DEBUG(INFO, "vpos: %d / %d -- token: ? -- hslen: %d\n", vpos, this->__wctxs->size(), hslen);
       if (vpos == (this->__wctxs->size() - 1))
 	return 0;
       else
 	return this->__wfind(haystack, hslen, s, vpos+1, 1);
     }
-  else if (*needle == "*")
+  else if (needle->compare("*") == 0)
     {
-      DEBUG(INFO, "vpos: %d -- token: * -- hslen: %d\n", vpos, hslen);
+      DEBUG(INFO, "vpos: %d / %d -- token: * -- hslen: %d\n", vpos, this->__wctxs->size(), hslen);
       if (vpos == (this->__wctxs->size() - 1))
 	return 0;
       else
@@ -412,8 +413,8 @@ int32_t			Search::__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, int3
       //return -1;
       if (vpos == (this->__wctxs->size() - 1))
 	{
-	  DEBUG(INFO, "vpos: %d -- token %s -- hslen: %d -- nsize: %d\n", 
-		vpos, needle->c_str(), hslen, needle->size());
+	  DEBUG(INFO, "vpos: %d / %d -- token %s -- hslen: %d -- nsize: %d\n", 
+		vpos, this->__wctxs->size(), needle->c_str(), hslen, needle->size());
 	  return s((unsigned char*)haystack, hslen,
 		   (unsigned char*)needle->c_str(), needle->size(),
 		   1, FAST_SEARCH);
@@ -421,6 +422,8 @@ int32_t			Search::__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, int3
       else
 	{
 	  idx = -1;
+	  DEBUG(INFO, "vpos: %d / %d -- token %s -- hslen: %d -- nsize: %d\n", 
+		vpos, this->__wctxs->size(), needle->c_str(), hslen, needle->size());
 	  while (idx < window)
 	    if ((idx = s((unsigned char*)haystack, hslen, 
 			 (unsigned char*)needle->c_str(), needle->size(), 
