@@ -48,7 +48,6 @@ class Heditor(QWidget):
        
     def closeEvent(self, event):
         self.file.close()
-	print "close heditor event "
  
     def init(self, node, preview = False):
         self.node = node

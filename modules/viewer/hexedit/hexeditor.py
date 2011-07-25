@@ -64,7 +64,6 @@ class ViewerHexa(QWidget, Script):
           
     def closeEvent(self, event):
       self.widget.close()
-      print "close the vent"
  
     def updateWidget(self):
         pass
