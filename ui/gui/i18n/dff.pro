@@ -64,6 +64,7 @@ SOURCES         += ../../../ui/gui/dialog/preferences.py
 SOURCES         += ../../../api/gui/box/nodeviewbox.py
 SOURCES         += ../../../api/gui/widget/search_widget.py
 SOURCES         += ../../../api/gui/widget/build_search_clause.py
+SOURCES         += ../../../ui/gui/widget/preview.py
 
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_de.ts
 TRANSLATIONS    += ../../../ui/gui/i18n/Dff_en.ts

@@ -43,6 +43,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     EventHandler.__init__(self)
     self.setupUi(self)
 
+    self.mainwindow = parent.parent.parent.parent
     self.model = ListNodeModel(self)
     self.name = self.windowTitle()
     self.type = "filebrowser"
@@ -140,20 +141,12 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def nodePressed(self, key, node, index = None):
     if key in [Qt.Key_Up, Qt.Key_Down, Qt.Key_PageUp, Qt.Key_PageDown]:
-      if self.nodeViewBox.propertyTable.isVisible():
-        self.nodeViewBox.propertyTable.fill(node)
-    if key == Qt.Key_Return:
-      if self.currentView().enterInDirectory:
-        if node.hasChildren() or node.isDir():
-          self.currentModel().setRootPath(node)
-        else:
-          self.openDefault(node)
-      else:
-        self.openDefault(node)
-    if key == Qt.Key_Backspace:
-      self.currentModel().setRootPath(node.parent().parent())
+      self.parent.xtd_attr.fill(node)
+      self.mainwindow.emit(SIGNAL("previewUpdate"), node)	
 
   def nodeClicked(self, mouseButton, node, index = None):
+     if mouseButton == Qt.LeftButton:
+	 self.mainwindow.emit(SIGNAL("previewUpdate"), node)
      if mouseButton == Qt.RightButton:
        self.menuRelevant = MenuRelevant(self, self, node)
        if node.hasChildren() or node.isDir():

@@ -31,20 +31,26 @@ class IODevice(QIODevice):
        return False 
 
    def seek(self, pos):
-     n = self.file.seek(pos)
-     if n == pos:
-       return True
+     if self.file :	
+       n = self.file.seek(pos)
+       if n == pos:
+         return True
      return False
 
    def close(self):
-      self.file.close() 
+      self.file.close()
+      self.file = None 
       return True  
 
    def readData(self, size):
-      return self.file.read(size)
+      if self.file:
+        return self.file.read(size)
+      return "" 
 
    def pos(self):
-      return long(self.file.tell())
+      if self.file:
+        return long(self.file.tell())
+      return 0
 
    def isSequential(self):
       return False
@@ -53,12 +59,15 @@ class IODevice(QIODevice):
       return long(self.node.size())
 
    def reset(self):
-      self.file.seek(0)
-      return True
+      if self.file:
+        self.file.seek(0)
+        return True
+      return False
 
    def atEnd(self):
-      if self.file.tell() >= self.node.size():
-	return True
+      if self.file:
+        if self.file.tell() >= self.node.size():
+  	  return True
       return False  
 
 

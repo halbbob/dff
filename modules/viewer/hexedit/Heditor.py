@@ -45,9 +45,13 @@ class Heditor(QWidget):
         super(Heditor,  self).__init__(parent)
         self.mainWindow = parent
         self.vfs = vfs.vfs()
-        
-    def init(self, node):
+       
+    def closeEvent(self, event):
+        self.file.close()
+ 
+    def init(self, node, preview = False):
         self.node = node
+ 	self.preview = preview
         self.file = node.open()
         self.filesize = self.node.size()
 
@@ -62,7 +66,8 @@ class Heditor(QWidget):
             self.updateHexItems(buffer, 0, True)
             self.whex.asciicursor.draw(0, 0)
             self.whex.hexcursor.draw(0, 0)
-            self.right.decode.update()
+	    if not self.preview:
+              self.right.decode.update()
         except vfsError,  e:
             print e.error
 
@@ -117,28 +122,33 @@ class Heditor(QWidget):
 
 
         self.lhsplitter.addWidget(self.whex)
- 
-        #Add block and pixel views
-        self.initFooterViews()
+
+	if not self.preview: 
+          #Add block and pixel views
+          self.initFooterViews()
 
 
-        #INIT SELECTION
+          #INIT SELECTION
         self.selection = selection(self)
-        self.pageselection = pageSelection(self)
+	if not self.preview:
+          self.pageselection = pageSelection(self)
 
         self.lhsplitter.setOrientation(Qt.Vertical)
         self.vsplitter.addWidget(self.lhsplitter)
 
-        self.right = righTab(self)
-        self.infos = informations(self)
+	if not self.preview:
+          self.right = righTab(self)
+          self.infos = informations(self)
 
-        self.vsplitter.addWidget(self.right)
+          self.vsplitter.addWidget(self.right)
 
 #        self.lhsplitter.addWidget(self.infos)
 
 #        self.vlayout.addWidget(self.toolbars)
         self.vlayout.addWidget(self.vsplitter)
-        self.vlayout.addWidget(self.infos)
+
+  	if not self.preview:
+          self.vlayout.addWidget(self.infos)
 
 
     def shapeToolBars(self):
@@ -266,9 +276,10 @@ class Heditor(QWidget):
                 if (self.selection.offset >= readoff) and (self.selection.offset < (readoff + self.pageSize)):
                     self.selection.update()
 
-                self.infos.update()
-                self.whex.hexcursor.update()
+		if not self.preview:
+                  self.infos.update()
                 self.whex.asciicursor.update()
+                self.whex.hexcursor.update()
 #                if self.linkmode:
                     #read pixel
 #                    self.wpixel.view.read_image(readoffset)
@@ -277,8 +288,9 @@ class Heditor(QWidget):
 #                    if readoffset > (self.startBlockOffset + (self.wpage.view.displayLines * (self.pageSize * self.pagesPerBlock))):
 #                        self.wpage.view.refreshOffsetItems(readoffset)
 #                        self.wpage.view.refreshPageItems(readoffset)
-                self.pageselection.selectPage(self.currentPage * self.pageSize)
-                self.pageselection.update()
+		if not self.preview:
+	           self.pageselection.selectPage(self.currentPage * self.pageSize)
+        	   self.pageselection.update()
 #                value = self.whex.offsetToValue(readoff)
 #                print "value: ", value
 

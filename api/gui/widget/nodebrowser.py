@@ -221,6 +221,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     if key in [Qt.Key_Up, Qt.Key_Down, Qt.Key_PageUp, Qt.Key_PageDown]:
       if self.nodeViewBox.propertyTable.isVisible():
         self.nodeViewBox.propertyTable.fill(node)
+      self.mainwindow.emit(SIGNAL("previewUpdate"), node)	
     if key == Qt.Key_Return:
       if self.currentView().enterInDirectory:
         if node.hasChildren() or node.isDir():
@@ -236,6 +237,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      if mouseButton == Qt.LeftButton:
          if self.nodeViewBox.propertyTable.isVisible():
             self.nodeViewBox.propertyTable.fill(node)
+	 self.mainwindow.emit(SIGNAL("previewUpdate"), node)
      if mouseButton == Qt.RightButton:
        self.menuRelevant = MenuRelevant(self, self.parent, node)
        if node.hasChildren() or node.isDir():
