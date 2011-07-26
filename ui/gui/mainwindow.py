@@ -19,7 +19,7 @@ import sys
 from Queue import *
 
 # Form Custom implementation of MAINWINDOW
-from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar
+from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar, QPushButton, QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
@@ -247,6 +247,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	self.preview = Preview(self)
         self.addDockWidgets(self.preview, 'preview', master=False)
  	self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
+  
+	pinButton = QCheckBox()	
+	pinButton.setChecked(True)
+        pinButton.connect(pinButton, SIGNAL("stateChanged(int)"), self.preview.setUpdate)
+	voidWidget = QWidget(self.dockWidget["preview"])
+	vlayout = QVBoxLayout()
+	vlayout.insertSpacing(0, -10)
+	hlayout = QHBoxLayout()
+	hlayout.insertSpacing(0, -5)
+	vlayout.addLayout(hlayout)
+	hlayout.addWidget(pinButton)
+	voidWidget.setLayout(vlayout)
 
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()

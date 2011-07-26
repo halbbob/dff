@@ -23,7 +23,7 @@ class Preview(QStackedWidget):
     def __init__(self, parent):
         super(QStackedWidget, self).__init__()
         self.__mainWindow = parent        
-        self.name = self.tr("Preview")
+        self.name = "    " + self.tr("Preview")
         self.loader = loader()
 	self.lmodules = self.loader.modules
 	void = QWidget()
@@ -32,9 +32,13 @@ class Preview(QStackedWidget):
         self.setWindowIcon(QIcon(QPixmap(":viewer.png")))
         self.retranslateUi(self) 
         self.previousNode = None       
- 
+	self.mustUpdate = True
+
+    def setUpdate(self, state):
+       self.mustUpdate = state 
+
     def update(self, node):
-       if node.size():
+       if self.mustUpdate and node.size():
          if self.previousNode == node.this:
 	   return
          else:
@@ -62,8 +66,6 @@ class Preview(QStackedWidget):
 	 self.previousWidget.start(genargs)
 	 self.previousWidget.g_display()
 	 self.addWidget(self.previousWidget)
-       else:
-	pass 
 
     def retranslateUi(self, widget):
-       widget.setWindowTitle(QApplication.translate("Preview", "Preview", None, QApplication.UnicodeUTF8))
+       widget.setWindowTitle("    " + QApplication.translate("Preview", "Preview", None, QApplication.UnicodeUTF8))
