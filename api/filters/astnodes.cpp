@@ -513,3 +513,122 @@ bool			NameCmp::__sevaluate(Node* node)
   else
     return false; //XXX throw exception  
 }
+
+
+TimeCmp::~TimeCmp()
+{
+}
+ 
+TimeCmp::TimeCmp(CmpOperator::Op cmp, vtime* ts)
+{
+  this->__cmp = cmp;
+  this->__ts = ts;
+  this->__lts = NULL;
+  this->__etype = SIMPLE;
+}
+
+TimeCmp::TimeCmp(CmpOperator::Op cmp, std::vector<vtime*>* lts)
+{
+  this->__cmp = cmp;
+  this->__lts = lts;
+  this->__ts = NULL;
+  this->__etype = LIST;
+}
+
+void		TimeCmp::compile() throw (std::string)
+{
+  return;
+}
+
+bool		TimeCmp::evaluate(Node* node) throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    return this->__sevaluate(node);
+  else if (this->__etype == LIST)
+    return this->__levaluate(node);
+  else
+    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+}
+
+bool		TimeCmp::evaluate(Node* node, int depth) throw (std::string)
+{
+  if (this->__etype == SIMPLE)
+    return this->__sevaluate(node);
+  else if (this->__etype == LIST)
+    return this->__levaluate(node);
+  else
+    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+}
+
+uint32_t	TimeCmp::cost()
+{
+  return 0;
+}
+
+bool		TimeCmp::__levaluate(Node* node)
+{
+}
+
+bool		TimeCmp::__sevaluate(Node* node)
+{
+  Attributes*		ts;
+  Attributes::iterator	mit;
+  vtime*		vt;
+  bool			found;
+
+  ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME);
+  found = false;
+  mit = ts->begin();
+  while ((mit != ts->end()) && !found)
+    {
+      if (mit->second != NULL)
+	{
+	  if ((vt = mit->second->value<vtime*>()) != NULL)
+	    {
+	      //std::cout << mit->second->toString() << std::endl;
+	      if (this->__tcmp(*vt, this->__ts))
+		found = true;
+	    }
+	}
+      mit++;
+    }
+  return found;
+}
+
+bool		TimeCmp::__tcmp(vtime ref, vtime* ts)
+{
+  if (this->__cmp == CmpOperator::EQ)
+    if (ref == ts)
+      return true;
+    else
+      return false;
+  else if (this->__cmp == CmpOperator::NEQ)
+    if (ref != ts)
+      return true;
+    else
+      return false;
+  else if (this->__cmp == CmpOperator::GT)
+    {
+      if (ref > ts)
+	return true;
+      else
+	return false;
+    }
+  else if (this->__cmp == CmpOperator::LT)
+    if (ref < ts)
+      return true;
+    else
+      return false;
+  else if (this->__cmp == CmpOperator::GTE)
+    if (ref >= ts)
+      return true;
+    else
+      return false;
+  else if (this->__cmp == CmpOperator::LTE)
+    if (ref <= ts)
+      return true;
+    else
+      return false;
+  else
+    return false;
+}

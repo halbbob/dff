@@ -75,7 +75,7 @@ void	Filter::compile(std::string query) throw (std::string)
 
 void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 {
-  //event*		e;
+  event*		e;
   std::vector<Node*>	children;
   int			i;
 
@@ -83,11 +83,11 @@ void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)
     {
       if (this->__root->evaluate(nodeptr, 0))
 	{
-	  std::cout << "NODE MATCHED ---> " << nodeptr->absolute() << std::endl;
-	  // e = new event;
-       	  // e->type = event::OTHER;
-       	  // e->value = new Variant(nodeptr);
-       	  // this->notify(e);
+	  //std::cout << "NODE MATCHED ---> " << nodeptr->absolute() << std::endl;
+	  e = new event;
+	  e->type = event::OTHER;
+       	  e->value = new Variant(nodeptr);
+	  this->notify(e);
        	}
       if (nodeptr->hasChildren() && recursive)
 	{

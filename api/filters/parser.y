@@ -59,9 +59,11 @@
 
 %type <comp> comp_operators
 
-%type <node> expr size_cmp mime_cmp name_cmp
+%type <node> expr size_cmp mime_cmp name_cmp time_cmp
 
 %type <numlist> number_list
+
+%type <timelist> time_list
 
 %type <strlist> string_list processor_args
 
@@ -82,6 +84,7 @@ expr: expr TAND expr { DEBUG(INFO, "TOKEN_AND\n"); $$ = new Logical( $1, Logical
 | size_cmp
 | mime_cmp
 | name_cmp
+| time_cmp
 ;
 
 size_cmp : TSIZE comp_operators TNUMBER {$$ = new SizeCmp($2, $3)}
@@ -97,6 +100,18 @@ mime_cmp : TMIME TEQ TSTRING {$$ = new MimeCmp(CmpOperator::EQ, $3)}
 
 name_cmp : TNAME TEQ processor {$$ = new NameCmp(CmpOperator::EQ, $3); DEBUG(INFO, "name == cmp\n")}
 | TNAME TNEQ processor {$$ = new NameCmp(CmpOperator::NEQ, $3); DEBUG(INFO, "name != cmp\n")}
+;
+
+time_cmp : TTIME comp_operators TTIMESTAMP {$$ = new TimeCmp($2, new vtime(*$3)); delete $3}
+| TTIME comp_operators TNUMBER {$$ = new TimeCmp($2, new vtime($3, 0))}
+| TTIME TIN TLBRACKET time_list TRBRACKET {$$ = new TimeCmp(CmpOperator::EQ, $4)}
+| TTIME TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeCmp(CmpOperator::NEQ, $5)}
+;
+
+ time_list : TNUMBER {$$ = new TimeList(); $$->push_back(new vtime($1, 0))}
+| TTIMESTAMP {$$ = new TimeList(); $$->push_back(new vtime(*$1)); delete $1}
+| time_list TCOMMA TNUMBER {$<timelist>1->push_back(new vtime($3, 0))}
+| time_list TCOMMA TTIMESTAMP {$<timelist>1->push_back(new vtime(*$3)); delete $1}
 ;
 
 number_list: TNUMBER {$$ = new NumberList(); $$->push_back($1); DEBUG(INFO, "numeric list with 1 item")}

@@ -17,6 +17,7 @@ typedef union		stypeParser
   AstNode*		node;
   NumberList*		numlist;
   StringList*		strlist;
+  TimeList*		timelist;
   Processor*		proc;
   uint64_t		number;
   std::string*		str;
