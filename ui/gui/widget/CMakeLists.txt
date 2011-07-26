@@ -23,6 +23,7 @@ set(widget_srcs
   interpreter.py
   shell.py
   stdio.py
+  preview.py
 )
 
 install_file(widget ${widget_srcs})
