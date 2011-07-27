@@ -59,7 +59,7 @@
 
 %type <comp> comp_operators
 
-%type <node> expr size_cmp mime_cmp name_cmp time_cmp
+%type <node> expr size_cmp mime_cmp name_cmp time_cmp file_cmp deleted_cmp
 
 %type <numlist> number_list
 
@@ -68,6 +68,8 @@
 %type <strlist> string_list processor_args
 
 %type <proc> processor
+
+%type <boolean>	boolean_ident
 
 /* %type <args> processor_args list_args */
 /* exprlist --> ptr in typeParser union | call_args --> rule defines below */
@@ -85,6 +87,8 @@ expr: expr TAND expr { DEBUG(INFO, "TOKEN_AND\n"); $$ = new Logical( $1, Logical
 | mime_cmp
 | name_cmp
 | time_cmp
+| file_cmp
+| deleted_cmp
 ;
 
 size_cmp : TSIZE comp_operators TNUMBER {$$ = new SizeCmp($2, $3)}
@@ -108,7 +112,27 @@ time_cmp : TTIME comp_operators TTIMESTAMP {$$ = new TimeCmp($2, new vtime(*$3))
 | TTIME TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeCmp(CmpOperator::NEQ, $5)}
 ;
 
- time_list : TNUMBER {$$ = new TimeList(); $$->push_back(new vtime($1, 0))}
+file_cmp : TFILE TEQ boolean_ident {$$ = new FileCmp(CmpOperator::EQ, $<boolean>3)}
+| TFILE TNEQ boolean_ident {$$ = new FileCmp(CmpOperator::NEQ, $<boolean>3)}
+;
+
+deleted_cmp : TDELETED TEQ boolean_ident {$$ = new DeletedCmp(CmpOperator::EQ, $<boolean>3)}
+| TDELETED TNEQ boolean_ident {$$ = new DeletedCmp(CmpOperator::NEQ, $<boolean>3)}
+;
+
+boolean_ident: TTRUE {$$ = true}
+| TFALSE {$$ = false}
+;
+
+/* extended_cmp : TSTRING comp_operators TTIMESTAMP {$$ = new ExtendedCmp($1, $2, new vtime(*$3)); delete $3} */
+/* | TSTRING comp_operators TNUMBER {$$ = new ExtendedCmp($1, $2, $3)} */
+/* | TSTRING TIN TLBRACKET time_list TRBRACKET {$$ = new ExtendedCmp($1, CmpOperator::EQ, $4)} */
+/* | TSTRING TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new ExtendedCmp($1, CmpOperator::NEQ, $5)} */
+/* | TSTRING TIN TLBRACKET number_list TRBRACKET {$$ = new ExtendedCmp($1, CmpOperator::EQ, $4)} */
+/* | TSTRING TNOT TIN TLBRACKET number_list TRBRACKET {$$ = new ExtendedCmp($1, CmpOperator::NEQ, $5)} */
+/* ; */
+
+time_list : TNUMBER {$$ = new TimeList(); $$->push_back(new vtime($1, 0))}
 | TTIMESTAMP {$$ = new TimeList(); $$->push_back(new vtime(*$1)); delete $1}
 | time_list TCOMMA TNUMBER {$<timelist>1->push_back(new vtime($3, 0))}
 | time_list TCOMMA TTIMESTAMP {$<timelist>1->push_back(new vtime(*$3)); delete $1}

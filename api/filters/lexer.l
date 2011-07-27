@@ -50,8 +50,8 @@ CONTAIN     "contain"
 IN	    "in"
 NOT	    "not"
 
-TRUE	    "True"
-FALSE	    "False"
+TRUE	    "true"
+FALSE	    "false"
 
 IDENTIFIER  [a-zA-Z]+
 STRING	    \"(\\.|[^\\"])*\"

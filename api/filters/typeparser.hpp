@@ -23,6 +23,7 @@ typedef union		stypeParser
   std::string*		str;
   std::string*		token;
   CmpOperator::Op	comp;
+  bool			boolean;
 }			typeParser;
 
 // define the type for flex and bison

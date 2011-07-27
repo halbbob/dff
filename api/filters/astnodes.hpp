@@ -190,4 +190,33 @@ private:
   bool				__tcmp(vtime ref, vtime* other);
 };
 
+class FileCmp: public AstNode
+{
+public:
+  ~FileCmp();
+  FileCmp(CmpOperator::Op cmp, bool b);
+  virtual void		compile() throw (std::string);
+  virtual bool		evaluate(Node* node) throw (std::string);
+  virtual bool		evaluate(Node* node, int depth) throw (std::string);
+  virtual uint32_t	cost();
+private:
+  CmpOperator::Op	__cmp;
+  bool			__b;
+};
+
+class DeletedCmp: public AstNode
+{
+public:
+  ~DeletedCmp();
+  DeletedCmp(CmpOperator::Op cmp, bool b);
+  virtual void		compile() throw (std::string);
+  virtual bool		evaluate(Node* node) throw (std::string);
+  virtual bool		evaluate(Node* node, int depth) throw (std::string);
+  virtual uint32_t	cost();
+private:
+  CmpOperator::Op	__cmp;
+  bool			__b;
+};
+
+
 #endif

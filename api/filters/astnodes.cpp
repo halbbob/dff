@@ -632,3 +632,96 @@ bool		TimeCmp::__tcmp(vtime ref, vtime* ts)
   else
     return false;
 }
+
+FileCmp::~FileCmp()
+{
+}
+
+FileCmp::FileCmp(CmpOperator::Op cmp, bool b)
+{
+  this->__b = b;
+  this->__cmp = cmp;  
+}
+
+void		FileCmp::compile() throw (std::string)
+{
+  return;
+}
+
+bool		FileCmp::evaluate(Node* node) throw (std::string)
+{
+  if (node != NULL)
+    {
+      if (this->__cmp == CmpOperator::EQ)
+	if (node->size() > 0)
+	  return true;
+	else
+	  return false;
+      else if (this->__cmp == CmpOperator::NEQ)
+	if (node->size() == 0)
+	  return true;
+	else
+	  return false;
+      else
+	return false;
+    }
+  else
+    throw (std::string("provided node is NULL"));
+}
+
+bool		FileCmp::evaluate(Node* node, int depth) throw (std::string)
+{
+  return this->evaluate(node);
+}
+
+uint32_t	FileCmp::cost()
+{
+  return 0;
+}
+
+
+DeletedCmp::~DeletedCmp()
+{
+}
+
+DeletedCmp::DeletedCmp(CmpOperator::Op cmp, bool b)
+{
+  this->__b = b;
+  this->__cmp = cmp;
+}
+
+void		DeletedCmp::compile() throw (std::string)
+{
+  return;
+}
+
+bool		DeletedCmp::evaluate(Node* node) throw (std::string)
+{
+  if (node != NULL)
+    {
+      if (this->__cmp == CmpOperator::EQ)
+	if (node->isDeleted())
+	  return true;
+	else
+	  return false;
+      else if (this->__cmp == CmpOperator::NEQ)
+	if (!node->isDeleted())
+	  return true;
+	else
+	  return false;
+      else
+	return false;
+    }
+  else
+    throw (std::string("provided node is NULL"));
+}
+
+bool		DeletedCmp::evaluate(Node* node, int depth) throw (std::string)
+{
+  return this->evaluate(node);
+}
+
+uint32_t	DeletedCmp::cost()
+{
+  return 0;
+}
