@@ -265,6 +265,15 @@ if(UNIX)
   endif(AFF_LIBRARY)
 endif(UNIX)
 
+## LibTRE check for regexp and fuzzy support in search API
+find_library(TRE_LIBRARY NAMES tre PATH_SUFFIXES /usr /usr/local)
+if (TRE_LIBRARY)
+   add_definitions (-DHAVE_TRE)
+   message(STATUS "tre library found: ${TRE_LIBRARY}, regexp and fuzzy match activated")
+else (TRE_LIBRARY)
+   message(STATUS "tre library not found, regexp and fuzzy match not activated")
+endif (TRE_LIBRARY)
+
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})

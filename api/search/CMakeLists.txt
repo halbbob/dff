@@ -12,17 +12,6 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-find_library(TRE_LIBRARY NAMES tre PATH_SUFFIXES /usr /usr/local)
-if (TRE_LIBRARY)
-   add_definitions (-DHAVE_TRE)
-   message(STATUS "tre library found: ${TRE_LIBRARY}, regexp and fuzzy match activated")
-else (TRE_LIBRARY)
-     #add_definitions (-DHAVE_TRE)
-     message(STATUS "tre library not found, regexp and fuzzy match not activated")
-endif (TRE_LIBRARY)
-
-
-
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
