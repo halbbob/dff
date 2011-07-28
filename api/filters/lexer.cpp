@@ -529,11 +529,10 @@ uint64_t		token_to_hexnumber(char* str, int len)
 
 /* wrapper to ease token association with variable in typeParser union */
 #define SAVE_STRING yylval->str = new std::string(yytext, yyleng)
-#define SAVE_TOKEN yylval->token = new std::string(yytext, yyleng)
 #define SAVE_NUMBER yylval->number = token_to_number(yytext, yyleng)
 #define SAVE_HEXNUMBER yylval->number = token_to_hexnumber(yytext, yyleng)
 #define YY_NO_UNISTD_H 1
-#line 537 "/home/udgover/projects/dff/working/api/filters/lexer.cpp"
+#line 536 "/home/udgover/projects/dff/working/api/filters/lexer.cpp"
 
 #define INITIAL 0
 
@@ -766,10 +765,10 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 75 "lexer.l"
+#line 74 "lexer.l"
 
 
-#line 773 "/home/udgover/projects/dff/working/api/filters/lexer.cpp"
+#line 772 "/home/udgover/projects/dff/working/api/filters/lexer.cpp"
 
     yylval = yylval_param;
 
@@ -852,172 +851,172 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 77 "lexer.l"
-{ return TNAME; }
+#line 76 "lexer.l"
+{ SAVE_STRING; return TNAME; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 78 "lexer.l"
-{ return TDATA; }
+#line 77 "lexer.l"
+{ SAVE_STRING; return TDATA; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 79 "lexer.l"
-{ return TMIME; }
+#line 78 "lexer.l"
+{ SAVE_STRING; return TMIME; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 80 "lexer.l"
-{ return TTIME; }
+#line 79 "lexer.l"
+{ SAVE_STRING; return TTIME; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 81 "lexer.l"
-{ return TSIZE; }
+#line 80 "lexer.l"
+{ SAVE_STRING; return TSIZE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 82 "lexer.l"
-{ return TDELETED; }
+#line 81 "lexer.l"
+{ SAVE_STRING; return TDELETED; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 83 "lexer.l"
-{ return TFILE; }
+#line 82 "lexer.l"
+{ SAVE_STRING; return TFILE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 85 "lexer.l"
-{ SAVE_TOKEN; return TAND; }
+#line 84 "lexer.l"
+{ return TAND; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 86 "lexer.l"
-{ SAVE_TOKEN; return TOR; }
+#line 85 "lexer.l"
+{ return TOR; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 88 "lexer.l"
-{ SAVE_TOKEN; return TCONTAIN; }
+#line 87 "lexer.l"
+{ return TCONTAIN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 89 "lexer.l"
-{ SAVE_TOKEN; return TIN; }
+#line 88 "lexer.l"
+{ return TIN; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 90 "lexer.l"
-{ SAVE_TOKEN; return TNOT; }
+#line 89 "lexer.l"
+{ return TNOT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 92 "lexer.l"
-{ SAVE_STRING; return TTRUE; }
+#line 91 "lexer.l"
+{ return TTRUE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 93 "lexer.l"
-{ SAVE_STRING; return TFALSE; }
+#line 92 "lexer.l"
+{ return TFALSE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 95 "lexer.l"
+#line 94 "lexer.l"
 { SAVE_STRING; return TIDENTIFIER;}
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 96 "lexer.l"
+#line 95 "lexer.l"
 { SAVE_STRING; return TSTRING; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 97 "lexer.l"
+#line 96 "lexer.l"
 { SAVE_NUMBER; return TNUMBER; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 98 "lexer.l"
+#line 97 "lexer.l"
 { SAVE_HEXNUMBER; return TNUMBER; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 99 "lexer.l"
+#line 98 "lexer.l"
 { SAVE_STRING; return TTIMESTAMP; }
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 100 "lexer.l"
+#line 99 "lexer.l"
 { /* Skip blanks. */ }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 102 "lexer.l"
-{ SAVE_TOKEN; return TCOMMA; }
+#line 101 "lexer.l"
+{ return TCOMMA; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 103 "lexer.l"
-{ SAVE_TOKEN; return TLPAREN; }
+#line 102 "lexer.l"
+{ return TLPAREN; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 104 "lexer.l"
-{ SAVE_TOKEN; return TRPAREN; }
+#line 103 "lexer.l"
+{ return TRPAREN; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 105 "lexer.l"
-{ SAVE_TOKEN; return TLBRACKET; }
+#line 104 "lexer.l"
+{ return TLBRACKET; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 106 "lexer.l"
-{ SAVE_TOKEN; return TRBRACKET; }
+#line 105 "lexer.l"
+{ return TRBRACKET; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 108 "lexer.l"
-{ SAVE_TOKEN; return TEQ; }
+#line 107 "lexer.l"
+{ return TEQ; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 109 "lexer.l"
-{ SAVE_TOKEN; return TNEQ; }
+#line 108 "lexer.l"
+{ return TNEQ; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 110 "lexer.l"
-{ SAVE_TOKEN; return TGT; }
+#line 109 "lexer.l"
+{ return TGT; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 111 "lexer.l"
-{ SAVE_TOKEN; return TGTE; }
+#line 110 "lexer.l"
+{ return TGTE; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 112 "lexer.l"
-{ SAVE_TOKEN; return TLT; }
+#line 111 "lexer.l"
+{ return TLT; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 113 "lexer.l"
-{ SAVE_TOKEN; return TLTE; }
+#line 112 "lexer.l"
+{ return TLTE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 114 "lexer.l"
+#line 113 "lexer.l"
 {  }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 115 "lexer.l"
+#line 114 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1021 "/home/udgover/projects/dff/working/api/filters/lexer.cpp"
+#line 1020 "/home/udgover/projects/dff/working/api/filters/lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2181,7 +2180,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 115 "lexer.l"
+#line 114 "lexer.l"
 
 
 #include <stdio.h>

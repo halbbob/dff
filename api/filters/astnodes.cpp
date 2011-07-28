@@ -19,26 +19,18 @@
 
 Processor::~Processor()
 {
-  std::vector<std::string*>::iterator it;
-  
-  delete this->__name;
-  for (it = this->__args->begin(); it != this->__args->end(); it++)
-    delete *it;
-  delete this->__args;
 }
 
-Processor::Processor(std::string* name, std::vector<std::string*>* args)
+Processor::Processor(const std::string& name, const StringList& args): __name(name), __args(args)
 {
-  this->__name = name;
-  this->__args = args;
 }
 
-std::string*			Processor::name()
+std::string			Processor::name()
 {
   return this->__name;
 }
 
-std::vector<std::string*>*	Processor::arguments()
+StringList	Processor::arguments()
 {
   return this->__args;
 };
@@ -73,29 +65,24 @@ void		Logical::compile() throw (std::string)
 
 bool		Logical::evaluate(Node* node) throw (std::string)
 {
-  return true; 
-}
-
-bool		Logical::evaluate(Node* node, int depth) throw (std::string)
-{
   bool	ret = false;
   
   if (this->__op == OR)
     {
       if (this->__left->cost() < this->__right->cost())
 	{
-	  if ((ret = this->__left->evaluate(node, depth+1)) == false)
-	    ret = this->__right->evaluate(node, depth+1);
+	  if ((ret = this->__left->evaluate(node)) == false)
+	    ret = this->__right->evaluate(node);
 	}
       else
 	{
-	  if ((ret = this->__right->evaluate(node, depth+1)) == false)
-	    ret = this->__left->evaluate(node, depth+1);
+	  if ((ret = this->__right->evaluate(node)) == false)
+	    ret = this->__left->evaluate(node);
 	}
     }
   else if (this->__op == AND)
     {
-      if (this->__left->evaluate(node, depth+1) && this->__right->evaluate(node, depth+1))
+      if (this->__left->evaluate(node) && this->__right->evaluate(node))
 	ret = true;
       else
 	ret = false;
@@ -105,623 +92,799 @@ bool		Logical::evaluate(Node* node, int depth) throw (std::string)
   return ret;
 }
 
-
-SizeCmp::~SizeCmp()
-{
-}
-
-SizeCmp::SizeCmp(CmpOperator::Op cmp, uint64_t size)
+NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, uint64_t value) : __attr(attr)
 {
   this->__cmp = cmp;
-  this->__size = size;
-  this->__lsize = NULL;
-  this->__etype = SIMPLE;
+  this->__values.push_back(value);
 }
 
-SizeCmp::SizeCmp(CmpOperator::Op cmp, std::vector<uint64_t>* lsize)
+NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, const NumberList& values) : __attr(attr), __values(values)
 {
   this->__cmp = cmp;
-  this->__lsize = lsize;
-  this->__size = (uint64_t)-1;
-  this->__etype = LIST;
 }
 
-void		SizeCmp::compile() throw (std::string)
+void		NumericFilter::compile() throw (std::string)
 {
   return;
 }
 
-bool		SizeCmp::__levaluate(Node* node)
+bool		NumericFilter::evaluate(Node* node) throw (std::string)
 {
-  std::vector<uint64_t>::iterator	it;
-  bool					found;
-
-  if (this->__lsize == NULL)
-    return false;
-  //std::cout << std::string(3, ' ') << node->size() << std::endl;
-  found = false;
-  it = this->__lsize->begin();
-  while ((it != this->__lsize->end()) && !found)
+  uint64_t	value;
+  bool		process;
+  Variant*	v;
+  
+  // std::cout << "attribute: " << this->__attr << std::endl;
+  // std::cout << "comparison: " << this->__cmp << std::endl;
+  process = false;
+  if (this->__attr == "size")
     {
-      //std::cout << std::string(6, ' ') << *it << std::endl;
-      if (node->size() == *it)
+      value = node->size();
+      process = true;
+    }
+  else
+    {
+      if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+	{
+	  try
+	    {
+	      value = v->value<uint64_t>();
+	      delete v;
+	      process = true;
+	    }
+	  catch (std::string err)
+	    {
+	      delete v;
+	      throw err;
+	    }
+	}
+    }
+  if (process)
+    if (this->__values.size() == 1)
+      return this->__evaluate(value, this->__values[0]);
+    else
+      return this->__levaluate(value);
+  else
+    return false;
+}
+
+bool		NumericFilter::__levaluate(uint64_t value)
+{
+  NumberList::iterator	it;
+  bool			found;
+
+  it = this->__values.begin();
+  found = false;
+  while ((it != this->__values.end()) && !found)
+    {
+      if (value == *it)
 	found = true;
       it++;
     }
   if (this->__cmp == CmpOperator::EQ)
-    return found == true;
+    return (found == true);
   else if (this->__cmp == CmpOperator::NEQ)
-    return found == false;
+    return (found == false);
   else
-    return false; //XXX throw bad op for in [] eval
+    return false;
 }
 
-bool		SizeCmp::__sevaluate(Node* node)
+bool		NumericFilter::__evaluate(uint64_t value, uint64_t provided)
 {
-  std::string	out;
-
-  if (this->__size == (uint64_t)-1)
-    return false; //XXXX throw size not setted
   if (this->__cmp == CmpOperator::EQ)
-    {
-      if (node->size() == this->__size)
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " == " << this->__size << " --> true " << std::endl;
-	  return true;
-	}
-      else
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " == " << this->__size << " --> false " << std::endl;
-	  return false;
-	}
-    }
+    if (value == provided)
+      return true;
+    else
+      return false;
   else if (this->__cmp == CmpOperator::NEQ)
-    {
-      if (node->size() != this->__size)
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " != " << this->__size << " --> true " << std::endl;
-	  return true;
-	}
-      else
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " != " << this->__size << " --> false " << std::endl;
-	  return false;
-	}
-    }
+    if (value != provided)
+      return true;
+    else
+      return false;
   else if (this->__cmp == CmpOperator::LT)
-    {
-      if (node->size() < this->__size)
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " < " << this->__size << " --> true " << std::endl;
-	  return true;
-	}
-      else
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " < " << this->__size << " --> false " << std::endl;
-	  return false;
-	}
-    }
+    if (value < provided)
+      return true;
+    else
+      return false;
   else if (this->__cmp == CmpOperator::LTE)
-    {
-      if (node->size() <= this->__size)
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " <= " << this->__size << " --> true " << std::endl;
-	  return true;
-	}
-      else
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " <= " << this->__size << " --> false " << std::endl;
-	  return false;
-	}
-    }
+    if (value <= provided)
+      return true;
+    else
+      return false;
   else if (this->__cmp == CmpOperator::GT)
-    {
-      if (node->size() > this->__size)
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " > " << this->__size << " --> true " << std::endl;
-	  return true;
-	}
-      else
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " > " << this->__size << " --> false " << std::endl;
-	  return false;
-	}
-    }
+    if (value > provided)
+      return true;
+    else
+      return false;
   else if (this->__cmp == CmpOperator::GTE)
-    {
-      if (node->size() >= this->__size)
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " >= " << this->__size << " --> true " << std::endl;
-	  return true;
-	}
-      else
-	{
-	  //std::cout << std::string(3, ' ') << "SizeCmp::__sevaluate : " << node->size() << " >= " << this->__size << " --> false " << std::endl;
-	  return false;
-	}
-    }
-}
-
-
-bool		SizeCmp::evaluate(Node* node) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
+    if (value >= provided)
+      return true;
+    else
+      return false;
   else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+    return false;
 }
 
-bool		SizeCmp::evaluate(Node* node, int depth) throw (std::string)
+uint32_t	NumericFilter::cost()
 {
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
+  return 0;
 }
 
-uint32_t	SizeCmp::cost()
+StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, const std::string value) : __attr(attr)
 {
-  return 0; 
-}
-
-
-MimeCmp::~MimeCmp()
-{
-}
-
-MimeCmp::MimeCmp(CmpOperator::Op cmp, std::string* str)
-{
+  this->__etype = STRING;
   this->__cmp = cmp;
-  this->__str = str;
-  this->__ctx = NULL;
-  this->__lstr = NULL;
-  this->__etype = SIMPLE;
+  this->__strvalues.push_back(value);
 }
 
-MimeCmp::MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr)
+StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, const StringList& values) : __attr(attr)
 {
+  this->__etype = STRING;
   this->__cmp = cmp;
-  this->__lstr = lstr;
-  this->__str = NULL;
-  this->__ctx = NULL;
-  this->__etype = LIST;
+  this->__strvalues = values;
 }
 
-void		MimeCmp::compile() throw (std::string)
+StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, Processor* value) : __attr(attr)
 {
-  std::vector<std::string*>::iterator	it;
-  Search*				ctx;
-
-  if (this->__etype == SIMPLE)
-    this->__ctx = this->__createCtx(this->__str);
-  else if (this->__etype == LIST)
-    {
-      this->__lctx = new std::vector<Search*>;
-      for (it = this->__lstr->begin(); it != this->__lstr->end(); it++)
-	{
-	  ctx = this->__createCtx(*it);
-	  this->__lctx->push_back(ctx);
-	}
-    }
-  else
-    ;
+  this->__etype = PROCESSOR;
+  this->__cmp = cmp;
+  this->__proc = value;
 }
 
-Search*		MimeCmp::__createCtx(std::string *str)
+void		StringFilter::__pcompile()
 {
   Search*	ctx;
+  StringList	args;
   std::string	pattern;
 
-  ctx = new Search();
-  pattern = "*";
-  pattern += str->substr(1, str->size() - 2);
-  pattern += "*";
-  ctx->setPattern(pattern);
-  ctx->setPatternSyntax(Search::Wildcard);
-  ctx->setCaseSensitivity(Search::CaseInsensitive);
-  return ctx;
-}
-
-bool		MimeCmp::evaluate(Node* node) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
-}
-
-bool		MimeCmp::evaluate(Node* node, int depth) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
-}
-
-uint32_t	MimeCmp::cost()
-{
-  return 0;
-}
-
-bool		MimeCmp::__levaluate(Node* node)
-{
-  std::vector<std::string*>::iterator	it;
-  bool					found;
-  Variant*				datatype;
-
-  if (this->__lstr == NULL)
-    return false;
-  //std::cout << std::string(3, ' ') << node->size() << std::endl;
-  found = false;
-  it = this->__lstr->begin();
-  while ((it != this->__lstr->end()) && !found)
-    {
-      it++;
-    }
-  if (this->__cmp == CmpOperator::EQ)
-    return found == true;
-  else if (this->__cmp == CmpOperator::NEQ)
-    return found == false;
-  else
-    return false; //XXX throw bad op for in [] eval
-}
-
-bool		MimeCmp::__sevaluate(Node* node)
-{
-  std::map<std::string, Variant*>		vmap;
-  std::map<std::string, Variant*>::iterator	mit;
-  Variant*					datatypes;
-  bool						found;
-
-  if (this->__ctx == NULL)
-    return false; //XXX throw exception
-  datatypes = node->dataType();
-  if (datatypes == NULL)
-    return false;
-  vmap = datatypes->value<std::map<std::string, Variant*> >();
-  mit = vmap.begin();
-  found = false;
-  while ((mit != vmap.end()) && !found)
-    {
-      if (mit->second != NULL)
-  	{
-  	  if (this->__ctx->find(mit->second->toString()) != -1)
-	    found = true;
-    	}
-      mit++;
-    }
-  if (this->__cmp == CmpOperator::EQ)
-    return found == true;
-  else if (this->__cmp == CmpOperator::NEQ)
-    return found == false;
-  else
-    return false; //XXX throw exception
-}
-
-
-
-NameCmp::~NameCmp()
-{
-}
-
-NameCmp::NameCmp(CmpOperator::Op cmp, Processor* proc)
-{
-  this->__cmp = cmp;
-  this->__proc = proc;
-  this->__lproc = NULL;
-  this->__ctx = NULL;
-  this->__etype = SIMPLE;
-}
-
-NameCmp::NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lproc)
-{
-  this->__cmp = cmp;
-  this->__lproc = lproc;
-  this->__proc = NULL;
-  this->__etype = LIST;
-}
-
-void			NameCmp::compile() throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    {
-      this->__ctx = this->__createCtx(this->__proc);
-      std::cout << this->__ctx->pattern() << std::endl;      
-    }
-  else if (this->__etype == LIST)
-    {
-    }
-  else
-    ;
-}
-
-bool			NameCmp::evaluate(Node* node) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
-}
-
-bool			NameCmp::evaluate(Node* node, int depth) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
-}
-
-uint32_t		NameCmp::cost()
-{
-  return 0;
-}
-
-Search*				NameCmp::__createCtx(Processor* proc)
-{
-  Search*			ctx;
-  std::vector<std::string*>*	args;
-
-  ctx = new Search();
-  args = proc->arguments();
-  if (args->size() > 1)
+  ctx = new Search;
+  args = this->__proc->arguments();
+  if (args.size() > 1)
     ctx->setCaseSensitivity(Search::CaseInsensitive);
   else
     ctx->setCaseSensitivity(Search::CaseSensitive);
-  ctx->setPattern(args->at(0)->substr(1, args->at(0)->size() - 2));
-  if (proc->name()->compare("f") == 0)
+  pattern = args[0].substr(1, args[0].size() - 2);
+  ctx->setPattern(pattern);
+  if (this->__proc->name() == "f")
     ctx->setPatternSyntax(Search::Fixed);
-  else if (proc->name()->compare("w") == 0)
+  else if (this->__proc->name() == "w")
     ctx->setPatternSyntax(Search::Wildcard);
-  else if (proc->name()->compare("re") == 0)
+  else if (this->__proc->name() == "re")
     ctx->setPatternSyntax(Search::Regexp);
-  else if (proc->name()->compare("fz") == 0)
+  else if (this->__proc->name() == "fz")
     ctx->setPatternSyntax(Search::Fuzzy);
-  else
-    return NULL;
-  return ctx;
+  this->__ctxs.push_back(ctx);
 }
 
-bool			NameCmp::__levaluate(Node* node)
+void		StringFilter::__scompile()
 {
-}
-
-bool			NameCmp::__sevaluate(Node* node)
-{
-  bool	found;
-
-  if (this->__ctx == NULL)
-    return false; //XXX throw exception
-  found = false;
-  if (this->__ctx->find(node->name()) != -1)
-    found = true;
-  if (this->__cmp == CmpOperator::EQ)
-    return found == true;
-  else if (this->__cmp == CmpOperator::NEQ)
-    return found == false;
-  else
-    return false; //XXX throw exception  
-}
-
-
-TimeCmp::~TimeCmp()
-{
-}
+  Search*		ctx;
+  StringList::iterator	it;
+  std::string		pattern; 
  
-TimeCmp::TimeCmp(CmpOperator::Op cmp, vtime* ts)
-{
-  this->__cmp = cmp;
-  this->__ts = ts;
-  this->__lts = NULL;
-  this->__etype = SIMPLE;
-}
-
-TimeCmp::TimeCmp(CmpOperator::Op cmp, std::vector<vtime*>* lts)
-{
-  this->__cmp = cmp;
-  this->__lts = lts;
-  this->__ts = NULL;
-  this->__etype = LIST;
-}
-
-void		TimeCmp::compile() throw (std::string)
-{
-  return;
-}
-
-bool		TimeCmp::evaluate(Node* node) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
-}
-
-bool		TimeCmp::evaluate(Node* node, int depth) throw (std::string)
-{
-  if (this->__etype == SIMPLE)
-    return this->__sevaluate(node);
-  else if (this->__etype == LIST)
-    return this->__levaluate(node);
-  else
-    throw std::string("SizeCmp::evaluate() -> unknown eval type");
-}
-
-uint32_t	TimeCmp::cost()
-{
-  return 0;
-}
-
-bool		TimeCmp::__levaluate(Node* node)
-{
-}
-
-bool		TimeCmp::__sevaluate(Node* node)
-{
-  Attributes*		ts;
-  Attributes::iterator	mit;
-  vtime*		vt;
-  bool			found;
-
-  ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME);
-  found = false;
-  mit = ts->begin();
-  while ((mit != ts->end()) && !found)
+  for (it = this->__strvalues.begin(); it != this->__strvalues.end(); it++)
     {
-      if (mit->second != NULL)
-	{
-	  if ((vt = mit->second->value<vtime*>()) != NULL)
-	    {
-	      //std::cout << mit->second->toString() << std::endl;
-	      if (this->__tcmp(*vt, this->__ts))
-		found = true;
-	    }
-	}
-      mit++;
+      ctx = new Search;
+      if (this->__attr == "mime")
+  	{
+  	  pattern = "*" + (*it).substr(1, (*it).size() - 2) + "*";
+  	  ctx->setCaseSensitivity(Search::CaseInsensitive);
+  	  ctx->setPatternSyntax(Search::Wildcard);
+  	  ctx->setPattern(pattern);
+  	}
+      else
+  	{
+  	  pattern = (*it).substr(1, (*it).size() - 2);
+  	  ctx->setCaseSensitivity(Search::CaseSensitive);
+  	  ctx->setPatternSyntax(Search::Fixed);
+  	  ctx->setPattern(pattern);
+  	}
+      this->__ctxs.push_back(ctx);
     }
-  return found;
 }
 
-bool		TimeCmp::__tcmp(vtime ref, vtime* ts)
+void		StringFilter::compile() throw (std::string)
 {
-  if (this->__cmp == CmpOperator::EQ)
-    if (ref == ts)
-      return true;
-    else
-      return false;
-  else if (this->__cmp == CmpOperator::NEQ)
-    if (ref != ts)
-      return true;
-    else
-      return false;
-  else if (this->__cmp == CmpOperator::GT)
+  if (this->__etype == PROCESSOR)
+    this->__pcompile();
+  else if (this->__etype == STRING)
+    this->__scompile();
+  else
+    throw (std::string("bad values type"));
+}
+
+bool		StringFilter::evaluate(Node* node) throw (std::string)
+{
+  StringList	values;
+  Attributes		vmap;
+  Attributes::iterator	mit;
+  Variant*		v;
+  bool			process;
+  
+  if (this->__attr == "name")
     {
-      if (ref > ts)
-	return true;
+      //std::cout << "GOT NAME" << std::endl;
+      values.push_back(node->name());
+      process = true;
+    }
+  else if (this->__attr == "mime")
+    {
+      //std::cout << "GOT MIME" << std::endl;
+      if ((v = node->dataType()) != NULL)
+	{
+	  vmap = v->value<Attributes>();
+	  for (mit = vmap.begin(); mit != vmap.end(); mit++)
+	    if (mit->second != NULL)
+	      {
+		try
+		  {
+		    values.push_back(mit->second->value<std::string>());
+		  }
+		catch (std::string err)
+		  {
+		    throw err;
+		  }
+	      }
+	  process = true;
+	}
+    }
+  else
+    {
+      if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+	if (v->type() == typeId::String)
+	  values.push_back(v->value<std::string>());
+    }
+  if (process)
+    {
+      if (this->__etype == PROCESSOR)
+	return this->__pevaluate(values);
+      else if (this->__etype == STRING)
+	return this->__pevaluate(values);
       else
 	return false;
     }
-  else if (this->__cmp == CmpOperator::LT)
-    if (ref < ts)
-      return true;
-    else
-      return false;
-  else if (this->__cmp == CmpOperator::GTE)
-    if (ref >= ts)
-      return true;
-    else
-      return false;
-  else if (this->__cmp == CmpOperator::LTE)
-    if (ref <= ts)
-      return true;
-    else
-      return false;
   else
     return false;
 }
 
-FileCmp::~FileCmp()
+bool		StringFilter::__pevaluate(StringList values)
 {
+ StringList::iterator			vit;
+ std::vector<Search*>::iterator		cit;
+ bool					found;
+ 
+ found = false;
+ for (vit = values.begin(); vit != values.end(); vit++)
+   for (cit = this->__ctxs.begin(); cit != this->__ctxs.end(); cit++)
+     if ((*cit)->find(*vit) != -1)
+       found = true;
+ //std::cout << "FOUND ---> " << found << std::endl;
+ if (this->__cmp == CmpOperator::EQ)
+   return (found == true);
+ else if (this->__cmp == CmpOperator::NEQ)
+   return (found == false);
+ return true;
 }
 
-FileCmp::FileCmp(CmpOperator::Op cmp, bool b)
+bool		StringFilter::__sevaluate(StringList values)
 {
-  this->__b = b;
-  this->__cmp = cmp;  
+  // StringList::iterator vit;
+  // StringList::iterator cit;
+
+  // for (vit = values.begin(); vit != values.end(); vit++)
+  //   for (cit = this->__ctxs.begin(); cit != this->__cit.end(); cit++)
+  //     if ((*cit)
+  // return true;
 }
 
-void		FileCmp::compile() throw (std::string)
+uint32_t	StringFilter::cost()
+{
+  return 0;
+}
+
+BooleanFilter::BooleanFilter(const std::string& attr, CmpOperator::Op cmp, bool value) : __attr(attr)
+{
+  this->__cmp = cmp;
+  this->__value = value;
+}
+
+void		BooleanFilter::compile() throw (std::string)
 {
   return;
 }
 
-bool		FileCmp::evaluate(Node* node) throw (std::string)
+bool		BooleanFilter::evaluate(Node* node) throw (std::string)
 {
-  if (node != NULL)
+  bool		value;
+  bool		process;
+  Variant*	v;
+
+  process = false;
+  if (this->__attr == "deleted")
+    {
+      value = node->isDeleted();
+      process = true;
+    }
+  else if (this->__attr == "file")
+    {
+      if (node->size() > 0)
+	value = true;
+      else
+	value = false;
+      process = true;
+    }
+  else if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+    {
+      if (v->type() == typeId::Bool)
+	{
+	  value = v->value<bool>();
+	  process = true;
+	}
+    }
+  if (process)
     {
       if (this->__cmp == CmpOperator::EQ)
-	if (node->size() > 0)
-	  return true;
-	else
-	  return false;
+	return (value == this->__value);
       else if (this->__cmp == CmpOperator::NEQ)
-	if (node->size() == 0)
-	  return true;
-	else
-	  return false;
+	return (value != this->__value);
       else
 	return false;
     }
   else
-    throw (std::string("provided node is NULL"));
+    return false;
 }
 
-bool		FileCmp::evaluate(Node* node, int depth) throw (std::string)
-{
-  return this->evaluate(node);
-}
-
-uint32_t	FileCmp::cost()
+uint32_t	BooleanFilter::cost()
 {
   return 0;
 }
 
 
-DeletedCmp::~DeletedCmp()
+TimeFilter::TimeFilter(const std::string& attr, CmpOperator::Op cmp, vtime* value) : __attr(attr)
 {
+  this->__cmp = cmp;
+  this->__values.push_back(value);
 }
 
-DeletedCmp::DeletedCmp(CmpOperator::Op cmp, bool b)
+TimeFilter::TimeFilter(const std::string& attr, CmpOperator::Op cmp, const TimeList& values) : __attr(attr), __values(values)
 {
-  this->__b = b;
   this->__cmp = cmp;
 }
 
-void		DeletedCmp::compile() throw (std::string)
+void		TimeFilter::compile() throw (std::string)
 {
   return;
 }
 
-bool		DeletedCmp::evaluate(Node* node) throw (std::string)
+bool		TimeFilter::evaluate(Node* node) throw (std::string)
 {
-  if (node != NULL)
-    {
-      if (this->__cmp == CmpOperator::EQ)
-	if (node->isDeleted())
-	  return true;
-	else
-	  return false;
-      else if (this->__cmp == CmpOperator::NEQ)
-	if (!node->isDeleted())
-	  return true;
-	else
-	  return false;
-      else
-	return false;
-    }
-  else
-    throw (std::string("provided node is NULL"));
+  return false;
 }
 
-bool		DeletedCmp::evaluate(Node* node, int depth) throw (std::string)
-{
-  return this->evaluate(node);
-}
-
-uint32_t	DeletedCmp::cost()
+uint32_t	TimeFilter::cost()
 {
   return 0;
 }
+
+
+// MimeCmp::~MimeCmp()
+// {
+// }
+
+// MimeCmp::MimeCmp(CmpOperator::Op cmp, std::string* str)
+// {
+//   this->__cmp = cmp;
+//   this->__str = str;
+//   this->__ctx = NULL;
+//   this->__lstr = NULL;
+//   this->__etype = SIMPLE;
+// }
+
+// MimeCmp::MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr)
+// {
+//   this->__cmp = cmp;
+//   this->__lstr = lstr;
+//   this->__str = NULL;
+//   this->__ctx = NULL;
+//   this->__etype = LIST;
+// }
+
+// void		MimeCmp::compile() throw (std::string)
+// {
+//   std::vector<std::string*>::iterator	it;
+//   Search*				ctx;
+
+//   if (this->__etype == SIMPLE)
+//     this->__ctx = this->__createCtx(this->__str);
+//   else if (this->__etype == LIST)
+//     {
+//       this->__lctx = new std::vector<Search*>;
+//       for (it = this->__lstr->begin(); it != this->__lstr->end(); it++)
+// 	{
+// 	  ctx = this->__createCtx(*it);
+// 	  this->__lctx->push_back(ctx);
+// 	}
+//     }
+//   else
+//     ;
+// }
+
+// Search*		MimeCmp::__createCtx(std::string *str)
+// {
+//   Search*	ctx;
+//   std::string	pattern;
+
+//   ctx = new Search();
+//   pattern = "*";
+//   pattern += str->substr(1, str->size() - 2);
+//   pattern += "*";
+//   ctx->setPattern(pattern);
+//   ctx->setPatternSyntax(Search::Wildcard);
+//   ctx->setCaseSensitivity(Search::CaseInsensitive);
+//   return ctx;
+// }
+
+// bool		MimeCmp::evaluate(Node* node) throw (std::string)
+// {
+//   if (this->__etype == SIMPLE)
+//     return this->__sevaluate(node);
+//   else if (this->__etype == LIST)
+//     return this->__levaluate(node);
+//   else
+//     throw std::string("SizeCmp::evaluate() -> unknown eval type");
+// }
+
+
+// uint32_t	MimeCmp::cost()
+// {
+//   return 0;
+// }
+
+// bool		MimeCmp::__levaluate(Node* node)
+// {
+//   std::vector<std::string*>::iterator	it;
+//   bool					found;
+//   Variant*				datatype;
+
+//   if (this->__lstr == NULL)
+//     return false;
+//   //std::cout << std::string(3, ' ') << node->size() << std::endl;
+//   found = false;
+//   it = this->__lstr->begin();
+//   while ((it != this->__lstr->end()) && !found)
+//     {
+//       it++;
+//     }
+//   if (this->__cmp == CmpOperator::EQ)
+//     return found == true;
+//   else if (this->__cmp == CmpOperator::NEQ)
+//     return found == false;
+//   else
+//     return false; //XXX throw bad op for in [] eval
+// }
+
+// bool		MimeCmp::__sevaluate(Node* node)
+// {
+//   std::map<std::string, Variant*>		vmap;
+//   std::map<std::string, Variant*>::iterator	mit;
+//   Variant*					datatypes;
+//   bool						found;
+
+//   if (this->__ctx == NULL)
+//     return false; //XXX throw exception
+//   datatypes = node->dataType();
+//   if (datatypes == NULL)
+//     return false;
+//   vmap = datatypes->value<std::map<std::string, Variant*> >();
+//   mit = vmap.begin();
+//   found = false;
+//   while ((mit != vmap.end()) && !found)
+//     {
+//       if (mit->second != NULL)
+//   	{
+//   	  if (this->__ctx->find(mit->second->toString()) != -1)
+// 	    found = true;
+//     	}
+//       mit++;
+//     }
+//   if (this->__cmp == CmpOperator::EQ)
+//     return found == true;
+//   else if (this->__cmp == CmpOperator::NEQ)
+//     return found == false;
+//   else
+//     return false; //XXX throw exception
+// }
+
+
+
+// NameCmp::~NameCmp()
+// {
+// }
+
+// NameCmp::NameCmp(CmpOperator::Op cmp, Processor* proc)
+// {
+//   this->__cmp = cmp;
+//   this->__proc = proc;
+//   this->__lproc = NULL;
+//   this->__ctx = NULL;
+//   this->__etype = SIMPLE;
+// }
+
+// NameCmp::NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lproc)
+// {
+//   this->__cmp = cmp;
+//   this->__lproc = lproc;
+//   this->__proc = NULL;
+//   this->__etype = LIST;
+// }
+
+// void			NameCmp::compile() throw (std::string)
+// {
+//   if (this->__etype == SIMPLE)
+//     {
+//       this->__ctx = this->__createCtx(this->__proc);
+//       std::cout << this->__ctx->pattern() << std::endl;      
+//     }
+//   else if (this->__etype == LIST)
+//     {
+//     }
+//   else
+//     ;
+// }
+
+// bool			NameCmp::evaluate(Node* node) throw (std::string)
+// {
+//   if (this->__etype == SIMPLE)
+//     return this->__sevaluate(node);
+//   else if (this->__etype == LIST)
+//     return this->__levaluate(node);
+//   else
+//     throw std::string("SizeCmp::evaluate() -> unknown eval type");
+// }
+
+
+// uint32_t		NameCmp::cost()
+// {
+//   return 0;
+// }
+
+// Search*				NameCmp::__createCtx(Processor* proc)
+// {
+//   Search*			ctx;
+//   std::vector<std::string*>*	args;
+
+//   ctx = new Search();
+//   args = proc->arguments();
+//   if (args->size() > 1)
+//     ctx->setCaseSensitivity(Search::CaseInsensitive);
+//   else
+//     ctx->setCaseSensitivity(Search::CaseSensitive);
+//   ctx->setPattern(args->at(0)->substr(1, args->at(0)->size() - 2));
+//   if (proc->name()->compare("f") == 0)
+//     ctx->setPatternSyntax(Search::Fixed);
+//   else if (proc->name()->compare("w") == 0)
+//     ctx->setPatternSyntax(Search::Wildcard);
+//   else if (proc->name()->compare("re") == 0)
+//     ctx->setPatternSyntax(Search::Regexp);
+//   else if (proc->name()->compare("fz") == 0)
+//     ctx->setPatternSyntax(Search::Fuzzy);
+//   else
+//     return NULL;
+//   return ctx;
+// }
+
+// bool			NameCmp::__levaluate(Node* node)
+// {
+// }
+
+// bool			NameCmp::__sevaluate(Node* node)
+// {
+//   bool	found;
+
+//   if (this->__ctx == NULL)
+//     return false; //XXX throw exception
+//   found = false;
+//   if (this->__ctx->find(node->name()) != -1)
+//     found = true;
+//   if (this->__cmp == CmpOperator::EQ)
+//     return found == true;
+//   else if (this->__cmp == CmpOperator::NEQ)
+//     return found == false;
+//   else
+//     return false; //XXX throw exception  
+// }
+
+
+// TimeCmp::~TimeCmp()
+// {
+// }
+ 
+// TimeCmp::TimeCmp(CmpOperator::Op cmp, vtime* ts)
+// {
+//   this->__cmp = cmp;
+//   this->__ts = ts;
+//   this->__lts = NULL;
+//   this->__etype = SIMPLE;
+// }
+
+// TimeCmp::TimeCmp(CmpOperator::Op cmp, std::vector<vtime*>* lts)
+// {
+//   this->__cmp = cmp;
+//   this->__lts = lts;
+//   this->__ts = NULL;
+//   this->__etype = LIST;
+// }
+
+// void		TimeCmp::compile() throw (std::string)
+// {
+//   return;
+// }
+
+// bool		TimeCmp::evaluate(Node* node) throw (std::string)
+// {
+//   if (this->__etype == SIMPLE)
+//     return this->__sevaluate(node);
+//   else if (this->__etype == LIST)
+//     return this->__levaluate(node);
+//   else
+//     throw std::string("SizeCmp::evaluate() -> unknown eval type");
+// }
+
+
+// uint32_t	TimeCmp::cost()
+// {
+//   return 0;
+// }
+
+// bool		TimeCmp::__levaluate(Node* node)
+// {
+// }
+
+// bool		TimeCmp::__sevaluate(Node* node)
+// {
+//   Attributes*		ts;
+//   Attributes::iterator	mit;
+//   vtime*		vt;
+//   bool			found;
+
+//   ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME);
+//   found = false;
+//   mit = ts->begin();
+//   while ((mit != ts->end()) && !found)
+//     {
+//       if (mit->second != NULL)
+// 	{
+// 	  if ((vt = mit->second->value<vtime*>()) != NULL)
+// 	    {
+// 	      //std::cout << mit->second->toString() << std::endl;
+// 	      if (this->__tcmp(*vt, this->__ts))
+// 		found = true;
+// 	    }
+// 	}
+//       mit++;
+//     }
+//   return found;
+// }
+
+// bool		TimeCmp::__tcmp(vtime ref, vtime* ts)
+// {
+//   if (this->__cmp == CmpOperator::EQ)
+//     if (ref == ts)
+//       return true;
+//     else
+//       return false;
+//   else if (this->__cmp == CmpOperator::NEQ)
+//     if (ref != ts)
+//       return true;
+//     else
+//       return false;
+//   else if (this->__cmp == CmpOperator::GT)
+//     {
+//       if (ref > ts)
+// 	return true;
+//       else
+// 	return false;
+//     }
+//   else if (this->__cmp == CmpOperator::LT)
+//     if (ref < ts)
+//       return true;
+//     else
+//       return false;
+//   else if (this->__cmp == CmpOperator::GTE)
+//     if (ref >= ts)
+//       return true;
+//     else
+//       return false;
+//   else if (this->__cmp == CmpOperator::LTE)
+//     if (ref <= ts)
+//       return true;
+//     else
+//       return false;
+//   else
+//     return false;
+// }
+
+// FileCmp::~FileCmp()
+// {
+// }
+
+// FileCmp::FileCmp(CmpOperator::Op cmp, bool b)
+// {
+//   this->__b = b;
+//   this->__cmp = cmp;  
+// }
+
+// void		FileCmp::compile() throw (std::string)
+// {
+//   return;
+// }
+
+// bool		FileCmp::evaluate(Node* node) throw (std::string)
+// {
+//   if (node != NULL)
+//     {
+//       if (this->__cmp == CmpOperator::EQ)
+// 	if (node->size() > 0)
+// 	  return true;
+// 	else
+// 	  return false;
+//       else if (this->__cmp == CmpOperator::NEQ)
+// 	if (node->size() == 0)
+// 	  return true;
+// 	else
+// 	  return false;
+//       else
+// 	return false;
+//     }
+//   else
+//     throw (std::string("provided node is NULL"));
+// }
+
+
+// uint32_t	FileCmp::cost()
+// {
+//   return 0;
+// }
+
+
+// DeletedCmp::~DeletedCmp()
+// {
+// }
+
+// DeletedCmp::DeletedCmp(CmpOperator::Op cmp, bool b)
+// {
+//   this->__b = b;
+//   this->__cmp = cmp;
+// }
+
+// void		DeletedCmp::compile() throw (std::string)
+// {
+//   return;
+// }
+
+// bool		DeletedCmp::evaluate(Node* node) throw (std::string)
+// {
+//   if (node != NULL)
+//     {
+//       if (this->__cmp == CmpOperator::EQ)
+// 	if (node->isDeleted())
+// 	  return true;
+// 	else
+// 	  return false;
+//       else if (this->__cmp == CmpOperator::NEQ)
+// 	if (!node->isDeleted())
+// 	  return true;
+// 	else
+// 	  return false;
+//       else
+// 	return false;
+//     }
+//   else
+//     throw (std::string("provided node is NULL"));
+// }
+
+
+// uint32_t	DeletedCmp::cost()
+// {
+//   return 0;
+// }

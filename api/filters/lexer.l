@@ -27,7 +27,6 @@ uint64_t		token_to_hexnumber(char* str, int len)
 
 /* wrapper to ease token association with variable in typeParser union */
 #define SAVE_STRING yylval->str = new std::string(yytext, yyleng)
-#define SAVE_TOKEN yylval->token = new std::string(yytext, yyleng)
 #define SAVE_NUMBER yylval->number = token_to_number(yytext, yyleng)
 #define SAVE_HEXNUMBER yylval->number = token_to_hexnumber(yytext, yyleng)
 %}
@@ -74,23 +73,23 @@ LTE         "<="
 
 %%
 
-{NAME}		{ return TNAME; }
-{DATA}		{ return TDATA; }
-{MIME}		{ return TMIME; }
-{TIME}		{ return TTIME; }
-{SIZE}		{ return TSIZE; }
-{DELETED}	{ return TDELETED; }
-{FILE}		{ return TFILE; }
+{NAME}		{ SAVE_STRING; return TNAME; }
+{DATA}		{ SAVE_STRING; return TDATA; }
+{MIME}		{ SAVE_STRING; return TMIME; }
+{TIME}		{ SAVE_STRING; return TTIME; }
+{SIZE}		{ SAVE_STRING; return TSIZE; }
+{DELETED}	{ SAVE_STRING; return TDELETED; }
+{FILE}		{ SAVE_STRING; return TFILE; }
 
-{AND}		{ SAVE_TOKEN; return TAND; }
-{OR}		{ SAVE_TOKEN; return TOR; }
+{AND}		{ return TAND; }
+{OR}		{ return TOR; }
 
-{CONTAIN}	{ SAVE_TOKEN; return TCONTAIN; }
-{IN}		{ SAVE_TOKEN; return TIN; }
-{NOT}		{ SAVE_TOKEN; return TNOT; }
+{CONTAIN}	{ return TCONTAIN; }
+{IN}		{ return TIN; }
+{NOT}		{ return TNOT; }
 
-{TRUE}		{ SAVE_STRING; return TTRUE; }
-{FALSE}		{ SAVE_STRING; return TFALSE; }
+{TRUE}		{ return TTRUE; }
+{FALSE}		{ return TFALSE; }
 
 {IDENTIFIER}	{ SAVE_STRING; return TIDENTIFIER;}
 {STRING}	{ SAVE_STRING; return TSTRING; }
@@ -99,18 +98,18 @@ LTE         "<="
 {TIMESTAMP}	{ SAVE_STRING; return TTIMESTAMP; }
 {WS}            { /* Skip blanks. */ }
 
-{COMMA}		{ SAVE_TOKEN; return TCOMMA; }
-{LPAREN}        { SAVE_TOKEN; return TLPAREN; }
-{RPAREN}        { SAVE_TOKEN; return TRPAREN; }
-{LBRACKET}      { SAVE_TOKEN; return TLBRACKET; }
-{RBRACKET}      { SAVE_TOKEN; return TRBRACKET; }
+{COMMA}		{ return TCOMMA; }
+{LPAREN}        { return TLPAREN; }
+{RPAREN}        { return TRPAREN; }
+{LBRACKET}      { return TLBRACKET; }
+{RBRACKET}      { return TRBRACKET; }
 
-{EQ}		{ SAVE_TOKEN; return TEQ; }
-{NEQ}		{ SAVE_TOKEN; return TNEQ; }
-{GT}		{ SAVE_TOKEN; return TGT; }
-{GTE}		{ SAVE_TOKEN; return TGTE; }
-{LT}		{ SAVE_TOKEN; return TLT; }
-{LTE}		{ SAVE_TOKEN; return TLTE; }
+{EQ}		{ return TEQ; }
+{NEQ}		{ return TNEQ; }
+{GT}		{ return TGT; }
+{GTE}		{ return TGTE; }
+{LT}		{ return TLT; }
+{LTE}		{ return TLTE; }
 .               {  }
 %%
 #include <stdio.h>

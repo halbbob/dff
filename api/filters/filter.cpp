@@ -77,13 +77,12 @@ void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 {
   event*		e;
   std::vector<Node*>	children;
-  int			i;
+  uint32_t		i;
 
   if ((this->__root != NULL) && (nodeptr != NULL))
     {
-      if (this->__root->evaluate(nodeptr, 0))
+      if (this->__root->evaluate(nodeptr))
 	{
-	  //std::cout << "NODE MATCHED ---> " << nodeptr->absolute() << std::endl;
 	  e = new event;
 	  e->type = event::OTHER;
        	  e->value = new Variant(nodeptr);
@@ -93,10 +92,7 @@ void	Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 	{
 	  children = nodeptr->children();
 	  for (i = 0; i != children.size(); i++)
-	    {
-	      //std::cout << children[i] << std::endl;
-	      this->process(children[i], recursive);
-	    }
+	    this->process(children[i], recursive);
 	}
     }
   else
