@@ -21,6 +21,7 @@
 #include <vector>
 #include "node.hpp"
 #include "search.hpp"
+#include "eventhandler.hpp"
 
 
 typedef std::vector<uint64_t>		NumberList;
@@ -41,7 +42,7 @@ private:
 
 typedef std::vector<Processor*>		ProcessorList;
 
-class AstNode
+class AstNode : public EventHandler
 {
 public:
   typedef enum
@@ -52,11 +53,14 @@ public:
       TIMESTAMP,
       LOGIC
     }	Type;
-  virtual ~AstNode() {}
+  virtual ~AstNode() { _stop = false; }
   virtual void		compile() throw (std::string) = 0;
   virtual bool		evaluate(Node* node) throw (std::string) = 0;
   virtual uint32_t	cost() = 0;
   virtual Type		type() = 0;
+  virtual void		Event(event* e) { _stop = true; }
+protected:
+  bool			_stop;
 };
 
 typedef struct
@@ -78,6 +82,7 @@ private:
   AstNode*	__left;
   int		__op;
   AstNode*	__right;
+  bool		__stop;
 public:
   enum
     {
@@ -137,8 +142,8 @@ private:
   std::vector<Search*>	__ctxs;
   void			__pcompile();
   void			__scompile();
-  bool			__pevaluate(StringList values);
   bool			__sevaluate(StringList values);
+  bool			__devaluate(Node* node);
 };
 
 class BooleanFilter: public AstNode
@@ -170,112 +175,7 @@ private:
   uint32_t		__cost;
   std::string		__attr;
   TimeList		__values;
+  bool			__tcmp(vtime v1, vtime* v2);
 };
-
-
-// class MimeCmp: public AstNode
-// {
-// public:
-//   ~MimeCmp();
-//   MimeCmp(CmpOperator::Op cmp, std::string* str);
-//   MimeCmp(CmpOperator::Op cmp, std::vector<std::string* >* lstr);
-//   virtual void			compile() throw (std::string);
-//   virtual bool			evaluate(Node* node) throw (std::string);
-//   virtual uint32_t		cost();
-// private:
-//   enum EType
-//     {
-//       SIMPLE,
-//       LIST
-//     };
-//   EType				__etype;
-//   CmpOperator::Op		__cmp;
-//   std::vector<std::string* >*	__lstr;
-//   std::string*			__str;
-//   std::vector<Search*>*		__lctx;
-//   Search*			__ctx;
-//   Search*			__createCtx(std::string* str);
-//   bool				__levaluate(Node* node);
-//   bool				__sevaluate(Node* node);
-// };
-
-
-// class NameCmp: public AstNode
-// {
-// public:
-//   ~NameCmp();
-//   NameCmp(CmpOperator::Op cmp, Processor* proc);
-//   NameCmp(CmpOperator::Op cmp, std::vector<Processor* >* lstr);
-//   virtual void			compile() throw (std::string);
-//   virtual bool			evaluate(Node* node) throw (std::string);
-//   virtual uint32_t		cost();
-// private:
-//   enum EType
-//     {
-//       SIMPLE,
-//       LIST
-//     };
-//   EType				__etype;
-//   CmpOperator::Op		__cmp;
-//   std::vector<Processor*>*	__lproc;
-//   Processor*			__proc;
-//   std::vector<Search*>		__lctx;
-//   Search*			__ctx;
-//   Search*			__createCtx(Processor* proc);
-//   bool				__levaluate(Node* node);
-//   bool				__sevaluate(Node* node);
-// };
-
-
-// class TimeCmp: public AstNode
-// {
-// public:
-//   ~TimeCmp();
-//   TimeCmp(CmpOperator::Op cmp, vtime* ts);
-//   TimeCmp(CmpOperator::Op cmp, std::vector<vtime*>* lts);
-//   virtual void			compile() throw (std::string);
-//   virtual bool			evaluate(Node* node) throw (std::string);
-//   virtual uint32_t		cost();
-// private:
-//   enum EType
-//     {
-//       SIMPLE,
-//       LIST
-//     };
-//   EType				__etype;
-//   CmpOperator::Op		__cmp;
-//   std::vector<vtime*>*		__lts;
-//   vtime*			__ts;
-//   bool				__levaluate(Node* node);
-//   bool				__sevaluate(Node* node);
-//   bool				__tcmp(vtime ref, vtime* other);
-// };
-
-// class FileCmp: public AstNode
-// {
-// public:
-//   ~FileCmp();
-//   FileCmp(CmpOperator::Op cmp, bool b);
-//   virtual void		compile() throw (std::string);
-//   virtual bool		evaluate(Node* node) throw (std::string);
-//   virtual uint32_t	cost();
-// private:
-//   CmpOperator::Op	__cmp;
-//   bool			__b;
-// };
-
-// class DeletedCmp: public AstNode
-// {
-// public:
-//   ~DeletedCmp();
-//   DeletedCmp(CmpOperator::Op cmp, bool b);
-//   virtual void		compile() throw (std::string);
-//   virtual bool		evaluate(Node* node) throw (std::string);
-//   virtual uint32_t	cost();
-// private:
-//   CmpOperator::Op	__cmp;
-//   bool			__b;
-// };
-
 
 #endif
