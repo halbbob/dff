@@ -59,10 +59,10 @@ class FIND(Script, EventHandler):
         v.thisown = False
         self.res["total of matching nodes"] = v
         if args.has_key("save_result"):
-            si_node = self.vfs.getnode("/Searched Items")
+            si_node = self.vfs.getnode("/Searched items")
             if si_node == None:
                 root = self.vfs.getnode("/")
-                si_node = Node("Searched Items", 0, root)
+                si_node = Node("Searched items", 0, root)
                 si_node.__disown__()
             fnode = Node(fname, 0, si_node)
             fnode.__disown__()
@@ -97,7 +97,7 @@ class find(Module):
                                "description": "Name of the filter",
                                "input": Argument.Single|Argument.Required|typeId.String})
         self.conf.addArgument({"name": "expression",
-                               "description": "Expression provided to filter engine (e.g: name == w('*.jp?g', i)",
+                               "description": 'Expression provided to filter engine (e.g: name == w("*.jp?g", i)',
                                "input": Argument.Single|Argument.Required|typeId.String})
         self.conf.addArgument({"name": "root_node",
                                "description": "node from which apply filter expression",
@@ -111,4 +111,4 @@ class find(Module):
         self.conf.addArgument({"name": "verbose",
                                "description": "outputs matching node on console during processing",
                                "input": Argument.Empty})
-        self.tags = "search"
+        self.tags = "Search"
