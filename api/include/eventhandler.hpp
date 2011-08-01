@@ -28,17 +28,22 @@
 #include <iomanip>
 #include <vector>
 
-typedef struct
+typedef struct 
 {
-  enum etype
+  enum
     {
       OPEN = 0,
       CLOSE = 1,
       READ = 2,
       WRITE = 3,
       SEEK = 4,
-      OTHER = 5
-    } type;
+      OTHER = 5    
+    };
+}	etype;
+
+typedef struct
+{
+  uint32_t	type;
   Variant*	value;
 }		event;
 
