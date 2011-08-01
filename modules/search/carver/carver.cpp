@@ -71,7 +71,7 @@ void		Carver::Event(event* e)
   event*	e1;
 
   e1 = new event;
-  e1->type = event::OTHER;
+  e1->type = etype::OTHER;
   e1->value = new Variant(std::string("terminated"));
   this->notify(e1);
 }
@@ -89,7 +89,7 @@ void		Carver::start(std::map<std::string, Variant*> args)
   this->mapper();
   this->registerTree(this->inode, this->root);
   e1 = new event;
-  e1->type = event::OTHER;
+  e1->type = etype::OTHER;
   e1->value = new Variant(std::string("terminated"));
   this->notify(e1);
 }
@@ -205,8 +205,8 @@ void		Carver::mapper()
   e1 = new event;
   buffer = (char*)malloc(sizeof(char) * BUFFSIZE);
   int seek;
-  e->type = event::SEEK;
-  e1->type = event::OTHER;
+  e->type = etype::SEEK;
+  e1->type = etype::OTHER;
   total_headers = 0;
   ctxsize = this->ctx.size();
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
