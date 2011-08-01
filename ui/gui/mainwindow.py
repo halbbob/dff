@@ -19,7 +19,7 @@ import sys
 from Queue import *
 
 # Form Custom implementation of MAINWINDOW
-from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar
+from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar, QPushButton, QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
@@ -42,6 +42,7 @@ from ui.gui.widget.stdio import STDErr, STDOut
 
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
+from ui.gui.widget.preview import Preview
 
 #from ui.gui.widget.modulesmanager import managerDialog
 
@@ -245,8 +246,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
         self.addDockWidgets(self.wmodules, 'modules', master=False)
+        self.preview = Preview(self)
+        self.addDockWidgets(self.preview, 'preview', master=False)
+        self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
+        pinButton = QCheckBox()
+        pinButton.setChecked(True)
+        pinButton.connect(pinButton, SIGNAL("stateChanged(int)"), self.preview.setUpdate)
+        voidWidget = QWidget(self.dockWidget["preview"])
+        vlayout = QVBoxLayout()
+        vlayout.insertSpacing(0, -10)
+        hlayout = QHBoxLayout()
+        hlayout.insertSpacing(0, -5)
+        vlayout.addLayout(hlayout)
+        hlayout.addWidget(pinButton)
+        voidWidget.setLayout(vlayout)
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
+
 
     def maximizeDockwidget(self):
         if self.last_state is None:
