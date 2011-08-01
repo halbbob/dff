@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -38,8 +38,8 @@
      <string>Module</string>
     </property>
     <addaction name="actionLoadModule"/>
-    <addaction name="separator"/>
     <addaction name="actionBrowse_modules"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuIDE">
     <property name="title">
