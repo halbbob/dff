@@ -24,6 +24,7 @@ set(apiguiwidget_srcs
   propertytable.py
   textedit.py
   devicesdialog.py
+  generateModuleShape.py
   completer.py
   SearchNodeBrowser.py
   search_widget.py

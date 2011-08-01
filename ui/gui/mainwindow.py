@@ -19,7 +19,7 @@ import sys
 from Queue import *
 
 # Form Custom implementation of MAINWINDOW
-from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar, QPushButton, QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
+from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
@@ -39,9 +39,11 @@ from ui.gui.ide.ide import Ide
 from ui.gui.widget.taskmanager import Processus
 from ui.gui.widget.modules import Modules
 from ui.gui.widget.stdio import STDErr, STDOut
+
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
-from ui.gui.widget.preview import Preview
+
+#from ui.gui.widget.modulesmanager import managerDialog
 
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
@@ -78,7 +80,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	self.interpreterActions = InterpreterActions(self)
         self.initDockWidgets()
         self.setCentralWidget(None)
-
         # Signals handling
         ## File menu
         self.connect(self.actionOpen_evidence, SIGNAL("triggered()"), self.dialog.addFiles)
@@ -88,8 +89,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPreferences, SIGNAL("triggered()"), self.dialog.preferences)
         ## Module menu
         self.connect(self.actionLoadModule, SIGNAL("triggered()"), self.dialog.loadDriver)
+        self.connect(self.actionBrowse_modules, SIGNAL("triggered()"), self.dialog.manager)
         ## Ide menu
-        self.connect(self.actionIdeOpen, SIGNAL("triggered()"), self.addIde)        
+        self.connect(self.actionIdeOpen, SIGNAL("triggered()"), self.addIde)
         ## View menu
         self.connect(self.actionMaximize, SIGNAL("triggered()"), self.maximizeDockwidget)
         self.connect(self.actionFullscreen_mode, SIGNAL("triggered()"), self.fullscreenMode)
@@ -98,7 +100,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPython_interpreter, SIGNAL("triggered()"), self.interpreterActions.create)        ## About menu
         self.connect(self.actionHelp, SIGNAL("triggered()"), self.addHelpWidget)
         self.connect(self.actionAbout, SIGNAL("triggered()"), self.dialog.about)
-
         # list used to build toolbar
         # None will be a separator
         self.toolbarList = [self.actionOpen_evidence,
@@ -112,6 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             None,
                             self.actionMaximize,
                             self.actionFullscreen_mode,
+                            self.actionBrowse_modules,
                             ]
 
         # Set up toolbar
@@ -131,7 +133,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.maximizeDockwidget()
         dockwidget = DockWidget(self, widget, widget.name)
         docIndex, docTitle = self.getWidgetName(widget.name)
-        dockwidget.setWindowTitle(QString(docTitle))
+        dockwidget.setWindowTitle(QString.fromUtf8(docTitle))
         self.connect(dockwidget, SIGNAL("resizeEvent"), widget.resize)
 
         self.addDockWidget(self.masterArea, dockwidget)
@@ -243,23 +245,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
         self.addDockWidgets(self.wmodules, 'modules', master=False)
-   
-	self.preview = Preview(self)
-        self.addDockWidgets(self.preview, 'preview', master=False)
- 	self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
-  
-	pinButton = QCheckBox()	
-	pinButton.setChecked(True)
-        pinButton.connect(pinButton, SIGNAL("stateChanged(int)"), self.preview.setUpdate)
-	voidWidget = QWidget(self.dockWidget["preview"])
-	vlayout = QVBoxLayout()
-	vlayout.insertSpacing(0, -10)
-	hlayout = QHBoxLayout()
-	hlayout.insertSpacing(0, -5)
-	vlayout.addLayout(hlayout)
-	hlayout.addWidget(pinButton)
-	voidWidget.setLayout(vlayout)
-
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
 

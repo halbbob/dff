@@ -31,6 +31,8 @@ set(ui_resources_files
   mainwindow.ui
   modif_index.ui
   modules.ui
+  modulegeneratorwidget.ui
+  modulebrowserdialog.ui
   nodebrowser.ui
   nodefilterbox.ui
   node_f_box.ui

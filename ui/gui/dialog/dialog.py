@@ -31,6 +31,8 @@ from ui.gui.dialog.preferences import Preferences
 from ui.gui.resources.ui_about import Ui_About
 from ui.gui.resources.ui_evidencedialog import Ui_evidenceDialog
 
+from ui.gui.widget.modulesmanager import *
+
 class Dialog(QObject):
   def __init__(self, parent):
      QObject.__init__(self)
@@ -44,6 +46,18 @@ class Dialog(QObject):
     
     pref = Preferences(self.parent)
     ret = pref.exec_()
+    if ret:
+      pass
+#      pref.conf.root_index = pref.root_index_line.text()
+#      pref.conf.index_name = pref.index_name_line.text()
+#      pref.conf.index_path = pref.conf.root_index + "/" + pref.conf.index_name
+
+#      root_index_dir = QDir(pref.conf.root_index)
+#      if not root_index_dir.exists():
+#        root_index_dir.mkpath(pref.conf.root_index)
+#@      default_index_dir = QDir(pref.conf.index_path)
+ #     if not default_index_dir.exists():
+ #       default_index_dir.mkpath(pref.conf.index_path)
 
   def addDevices(self):
        """Open a device list dialog"""
@@ -131,6 +145,19 @@ class Dialog(QObject):
         about = About()
         about.exec_()
 
+  def manager(self):
+        """ Open module browser dialog """
+        module = browserDialog(self.parent)
+        ir = module.exec_()
+        if ir > 0:
+          module.browser.execute()
+
+#class managerDialog(QDialog):
+#    def __init__(self,  mainWindow):
+#        QDialog.__init__(self, mainWindow)
+#        l = QVBoxLayout()
+#        l.addWidget(modulesManager(self))
+#        self.setLayout(l)
 
 class About(QDialog, Ui_About):
   def __init__(self):
