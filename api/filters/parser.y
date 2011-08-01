@@ -87,6 +87,7 @@ expr: expr TAND expr { $$ = new Logical( $1, Logical::AND, $3 ); }
 | numeric_filter
 | string_filter
 | boolean_filter
+| time_filter
 ;
 
 numeric_filter: numeric_ident comp_operators TNUMBER { $$ = new NumericFilter(*$1, $2, $3); delete $1; }
@@ -116,6 +117,7 @@ string_filter: TSTRING TEQ TSTRING { $$ = new StringFilter(*$1, CmpOperator::EQ,
 
 string_ident: TNAME { $$ = $1; }
 | TMIME { $$ = $1; }
+| TDATA { $$ = $1; }
 ;
 
 boolean_filter: boolean_ident TEQ boolean_value { $$ = new BooleanFilter(*$1, CmpOperator::EQ, $3); delete $1; }
@@ -134,12 +136,12 @@ boolean_value: TTRUE { $$ = true; }
 
 time_filter : TTIME comp_operators TTIMESTAMP { $$ = new TimeFilter(*$1, $2, new vtime(*$3)); delete $1; delete $3; }
 | TTIME comp_operators TNUMBER {$$ = new TimeFilter(*$1, $2, new vtime($3, 0)); delete $1; }
-| TTIME TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, $4); delete $1; delete $4; }
-| TTIME TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, $5); delete $1; delete $5; }
+| TTIME TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, *$4); delete $1; delete $4; }
+| TTIME TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, *$5); delete $1; delete $5; }
 | TSTRING comp_operators TTIMESTAMP { $$ = new TimeFilter(*$1, $2, new vtime(*$3)); delete $1; delete $3; }
-| TSTRING comp_operators TNUMBER {$$ = new TimeFilter(*$1, $2, new vtime($3, 0)); delete $1; }
-| TSTRING TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, $4); delete $1; delete $4; }
-| TSTRING TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, $5); delete $1; delete $5; }
+/* | TSTRING comp_operators TNUMBER {$$ = new TimeFilter(*$1, $2, new vtime($3, 0)); delete $1; } */
+| TSTRING TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, *$4); delete $1; delete $4; }
+| TSTRING TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, *$5); delete $1; delete $5; }
 ;
 
 number_list: TNUMBER { $$ = new NumberList(); $$->push_back($1); }

@@ -35,6 +35,7 @@ public:
   void		process(uint64_t nodeid, bool recursive=true) throw (std::string);
   void		process(uint16_t fsoid, bool recursive=true) throw (std::string);
 private:
+  void		__process(Node* nodeptr, uint64_t* processed, event* e);
   std::string	__fname;
   uint32_t	__uid;
   std::string	__query;
