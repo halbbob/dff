@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="zh">
+<!DOCTYPE TS><TS version="1.1" language="zh">
 <context>
     <name>About</name>
     <message>
@@ -40,6 +39,102 @@
         <location filename="../../../ui/gui/resources/bookmarkdialog.ui" line="91"/>
         <source>Add in an existing category</source>
         <translation>增加一个存在的分类</translation>
+    </message>
+</context>
+<context>
+    <name>AdvSearch</name>
+    <message>
+        <location filename="../../../api/gui/widget/search_widget.py" line="372"/>
+        <source>match(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BuildSearchClause</name>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="391"/>
+        <source>Contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="392"/>
+        <source>Name does not contain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="393"/>
+        <source>Name contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="394"/>
+        <source>From dictionnary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="395"/>
+        <source>Does not contain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="396"/>
+        <source>Size at least</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="397"/>
+        <source>Size at most</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="398"/>
+        <source>Date less than</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="399"/>
+        <source>Date most than</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="400"/>
+        <source>Deleted</source>
+        <translation type="unfinished">删除的</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="401"/>
+        <source>Type</source>
+        <translation type="unfinished">类型</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="402"/>
+        <source>Mime-type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="403"/>
+        <source>Extended attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/build_search_clause.ui" line="14"/>
+        <source>Build a search clause</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/build_search_clause.ui" line="28"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/build_search_clause.ui" line="45"/>
+        <source>Add extended attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/build_search_clause.ui" line="83"/>
+        <source>Clause(s)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -83,6 +178,14 @@
         <location filename="../../../ui/gui/resources/devicesdialog.ui" line="138"/>
         <source>Serial</source>
         <translation>系列号</translation>
+    </message>
+</context>
+<context>
+    <name>DictListEdit</name>
+    <message>
+        <location filename="../../../ui/gui/resources/edit_dict.ui" line="6"/>
+        <source>Edit dictionnary</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -142,6 +245,19 @@
         <location filename="../../../api/gui/dialog/extractor.py" line="122"/>
         <source>Overwrite with selected ones ?</source>
         <translation>用选择的文件覆盖吗 ？</translation>
+    </message>
+</context>
+<context>
+    <name>FileOrFolder</name>
+    <message>
+        <location filename="../../../ui/gui/resources/is_file_or_folder.ui" line="15"/>
+        <source>File</source>
+        <translation type="unfinished">文件</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/is_file_or_folder.ui" line="25"/>
+        <source>Folder</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -402,6 +518,19 @@
     </message>
 </context>
 <context>
+    <name>IsDeleted</name>
+    <message>
+        <location filename="../../../ui/gui/resources/is_deleted.ui" line="15"/>
+        <source>No</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/is_deleted.ui" line="25"/>
+        <source>Yes</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ListNodeModel</name>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="545"/>
@@ -552,24 +681,105 @@
         <translation>DFF文档</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="383"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="389"/>
         <source>Error while loading help</source>
         <translation>加载帮助时的错误</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="384"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="390"/>
         <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
         <translation>&lt;br&gt;你可以查阅在线帮助 &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="385"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="391"/>
         <source>Not an help file.</source>
         <translation>不是一个帮助文件.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="386"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="392"/>
         <source>Documentation path not found.</source>
         <translation>文档路径没有找到.</translation>
+    </message>
+</context>
+<context>
+    <name>MimeType</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_mime_type.ui" line="21"/>
+        <source>Select Mime type</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ModifIndex</name>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="24"/>
+        <source>Index content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="42"/>
+        <source>Select the directories you wish to index. Changes will take effect when you click on &apos;OK&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="70"/>
+        <source>Select nodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="77"/>
+        <source>Indexed items</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="90"/>
+        <source>Advanced</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="96"/>
+        <source>Attributes list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="114"/>
+        <source>Select which nodes&apos; attributes you wish to index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="149"/>
+        <source>File type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="167"/>
+        <source>Select what types of nodes you wish to index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="195"/>
+        <source>Mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="213"/>
+        <source>Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="219"/>
+        <source>Index file content</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="226"/>
+        <source>Index attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/modif_index.ui" line="14"/>
+        <source>Indexer options</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -675,6 +885,34 @@
     </message>
 </context>
 <context>
+    <name>NodeFBox</name>
+    <message>
+        <location filename="../../../ui/gui/resources/node_f_box.ui" line="24"/>
+        <source>Quick search:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/node_f_box.ui" line="34"/>
+        <source>Search recursively</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/node_f_box.ui" line="83"/>
+        <source>Advanced search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/node_f_box.ui" line="112"/>
+        <source>Index options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/node_f_box.ui" line="54"/>
+        <source>Launch quick search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>NodeViewBox</name>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="37"/>
@@ -707,7 +945,7 @@
         <translation>图标</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="309"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
         <source>Attributes</source>
         <translation>属性</translation>
     </message>
@@ -722,17 +960,17 @@
         <translation>显示搜索引擎</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="320"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="329"/>
         <source>Small</source>
         <translation>小</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="325"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="334"/>
         <source>Medium</source>
         <translation>中等</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="330"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="339"/>
         <source>Large</source>
         <translation>大</translation>
     </message>
@@ -742,8 +980,34 @@
         <translation>激活缩略图</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/box/nodeviewbox.py" line="349"/>
+        <location filename="../../../api/gui/box/nodeviewbox.py" line="343"/>
         <source>You must specify at least one node.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
+        <source>Attributes selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OptWidget</name>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="361"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OrAnd</name>
+    <message>
+        <location filename="../../../ui/gui/resources/or_and.ui" line="15"/>
+        <source>Or</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/or_and.ui" line="25"/>
+        <source>And</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -904,84 +1168,314 @@
 <context>
     <name>PropertyTable</name>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="118"/>
         <source>name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
         <source>folder</source>
         <translation>文件夹</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="122"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="120"/>
         <source>file</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
         <source>generated by</source>
         <translation>产生于</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
         <source>size</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="127"/>
         <source>relevant module(s)</source>
         <translation>关联的模块</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="119"/>
         <source>node type</source>
         <translation>节点类型</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="135"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="133"/>
         <source>attributes</source>
         <translation>属性</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="128"/>
         <source>children</source>
         <translation>子节点</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="129"/>
         <source>file(s)</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="133"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="131"/>
         <source> bytes</source>
         <translation>字节</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="134"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
         <source>folder(s)</source>
         <translation>文件夹</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="132"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="130"/>
         <source> totalizing </source>
         <translation>总计</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="121"/>
         <source> with module(s) applied on it</source>
         <translation>有模块应用于它</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="125"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="123"/>
         <source> empty</source>
         <translation>空的</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/propertytable.py" line="126"/>
+        <location filename="../../../api/gui/widget/propertytable.py" line="124"/>
         <source> deleted</source>
         <translation>删除的</translation>
+    </message>
+</context>
+<context>
+    <name>SearchClause</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_clause.ui" line="20"/>
+        <source>Or</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_clause.ui" line="30"/>
+        <source>And</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_clause.ui" line="60"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchDate</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_date.ui" line="20"/>
+        <source>Timestamp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_date.ui" line="30"/>
+        <source>String</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchDict</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_dict.ui" line="43"/>
+        <source>Edit dictionnary</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchEmpty</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_empty.ui" line="15"/>
+        <source>Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_empty.ui" line="22"/>
+        <source>Not empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchS</name>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="261"/>
+        <source>Kilo byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="262"/>
+        <source>Mega byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="263"/>
+        <source>Giga byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchSize</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_size.ui" line="23"/>
+        <source>Byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_size.ui" line="28"/>
+        <source>Kilo byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_size.ui" line="33"/>
+        <source>Mega byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_size.ui" line="38"/>
+        <source>Giga byte(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_size.ui" line="46"/>
+        <source>Exclusive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_size.ui" line="56"/>
+        <source>Inclusive</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchStr</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search_str.ui" line="28"/>
+        <source>Case sensitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SearchTab</name>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="48"/>
+        <source>Check all results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="51"/>
+        <source>Select all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="71"/>
+        <source>Export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="95"/>
+        <source>Attributes</source>
+        <translation type="unfinished">属性</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="112"/>
+        <source>Search options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="131"/>
+        <source>Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="148"/>
+        <source>Name contains</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="158"/>
+        <source>Case sensitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="172"/>
+        <source>Add search clause</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="290"/>
+        <source>Resulting search clause</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="324"/>
+        <source>match(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="344"/>
+        <source>Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="351"/>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="14"/>
+        <source>Advanced search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search.ui" line="204"/>
+        <source>Search queries</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SelectAttr</name>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="30"/>
+        <source>Select attributes to display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="50"/>
+        <source>Attributes selection : add an attributes to display in the node browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="77"/>
+        <source>Dynamic attributes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="133"/>
+        <source>Data types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="185"/>
+        <source>Display module name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="195"/>
+        <source>Sort by deleted</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SelectMimeTypes</name>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="47"/>
+        <source>Select one or several mime-types</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1130,57 +1624,67 @@
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="31"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="23"/>
         <source>Select evidence type</source>
         <translation>选择证据类型</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="129"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="131"/>
         <source>Add evidence directory</source>
         <translation>添加证据目录</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="134"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="136"/>
         <source>Add evidence files</source>
         <translation>添加证据文件</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="64"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="56"/>
         <source>Open local files or directory</source>
         <translation>打开本地文件或目录</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="81"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="73"/>
         <source>RAW format</source>
         <translation>RAW格式</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="97"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="89"/>
         <source>EWF format</source>
         <translation>EWF格式</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="99"/>
+        <source>AFF Format</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="123"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="147"/>
         <source>Results</source>
         <translation>结果</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="125"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="149"/>
         <source>No results</source>
         <translation>没有结果</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="122"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="146"/>
         <source>Provided Arguments</source>
         <translation>提供的参数</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="124"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="148"/>
         <source>Processus Information</source>
         <translation>处理信息</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="145"/>
+        <source>Output</source>
+        <translation type="unfinished">输出</translation>
     </message>
 </context>
 </TS>

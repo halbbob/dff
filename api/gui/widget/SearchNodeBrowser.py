@@ -43,6 +43,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     EventHandler.__init__(self)
     self.setupUi(self)
 
+    self.mainwindow = parent.parent.parent.parent
     self.model = ListNodeModel(self)
     self.name = self.windowTitle()
     self.type = "filebrowser"
@@ -64,7 +65,6 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def Event(self, e):
     self.model.emit(SIGNAL("layoutAboutToBeChanged()")) 
     self.model.emit(SIGNAL("layoutChanged()"))
-
 
   def getWindowGeometry(self):
     self.winWidth = self.mainwindow.width()
@@ -141,20 +141,12 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def nodePressed(self, key, node, index = None):
     if key in [Qt.Key_Up, Qt.Key_Down, Qt.Key_PageUp, Qt.Key_PageDown]:
-      if self.nodeViewBox.propertyTable.isVisible():
-        self.nodeViewBox.propertyTable.fill(node)
-    if key == Qt.Key_Return:
-      if self.currentView().enterInDirectory:
-        if node.hasChildren() or node.isDir():
-          self.currentModel().setRootPath(node)
-        else:
-          self.openDefault(node)
-      else:
-        self.openDefault(node)
-    if key == Qt.Key_Backspace:
-      self.currentModel().setRootPath(node.parent().parent())
+      self.parent.xtd_attr.fill(node)
+      self.mainwindow.emit(SIGNAL("previewUpdate"), node)	
 
   def nodeClicked(self, mouseButton, node, index = None):
+     if mouseButton == Qt.LeftButton:
+	 self.mainwindow.emit(SIGNAL("previewUpdate"), node)
      if mouseButton == Qt.RightButton:
        self.menuRelevant = MenuRelevant(self, self, node)
        if node.hasChildren() or node.isDir():
@@ -162,7 +154,8 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
        else:
          self.actionOpen_in_new_tab.setEnabled(False)
        self.submenuFile.popup(QCursor.pos())
-       self.submenuFile.show()       
+       self.submenuFile.show()
+     self.parent.xtd_attr.fill(node)
 
   def nodeTreeDoubleClicked(self, mouseButton, node, index = None):
     if node == None:
@@ -202,12 +195,11 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
           if "Viewers" in self.lmodules[mod].tags:
 	    break
        try:
-         priority = modulePriority[mod] #XXX put in conf
+         priority = modulePriority[mod]
        except KeyError:
          modulePriority[mod] = 0
          priority = 0
        if not priority: 
-        #XXX translate
          mbox = QMessageBox(QMessageBox.Question, self.tr("Apply module"), self.tr("Do you want to apply module ") + str(mod) + self.tr(" on this node ?"), QMessageBox.Yes | QMessageBox.No, self)
          mbox.addButton(self.tr("Always"), QMessageBox.AcceptRole)
 	 reply = mbox.exec_() 
@@ -267,8 +259,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
   def openAsNewTab(self):
     node = self.currentNode()
-    self.parent.parent.parent.parent.addNodeBrowser(node.absolute())
-#mainwindow.
+    self.parent.parent.parent.parent.addNodeBrowser(node)
 
   def launchHexedit(self):
      nodes = self.currentNodes()

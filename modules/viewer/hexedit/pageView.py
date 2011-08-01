@@ -413,16 +413,17 @@ class pageView(QGraphicsView):
 
 
     def keyPressEvent(self, keyEvent):
-        if keyEvent.matches(QKeySequence.MoveToNextPage):
-            print "Next block"
-        elif keyEvent.matches(QKeySequence.MoveToPreviousPage):
-            print "Previous block"
-        elif keyEvent.matches(QKeySequence.MoveToNextLine):
-            print "Next Line"
-        elif keyEvent.matches(QKeySequence.MoveToPreviousLine):
-            print "Previous Line"
-        else:
-            pass
+	pass
+        #if keyEvent.matches(QKeySequence.MoveToNextPage):
+            #print "Next block"
+        #elif keyEvent.matches(QKeySequence.MoveToPreviousPage):
+            #print "Previous block"
+        #elif keyEvent.matches(QKeySequence.MoveToNextLine):
+            #print "Next Line"
+        #elif keyEvent.matches(QKeySequence.MoveToPreviousLine):
+            #print "Previous Line"
+        #else:
+            #pass
 
     def resetSelection(self):
         for item in self.pageItems:

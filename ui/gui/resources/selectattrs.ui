@@ -93,14 +93,14 @@ Christophe Malinge cma@digital-forensic.org
           <item>
            <widget class="QPushButton" name="addAttr">
             <property name="text">
-             <string>&gt;&gt;</string>
+             <string notr="true">&gt;&gt;</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="removeAttr">
             <property name="text">
-             <string>&lt;&lt;</string>
+             <string notr="true">&lt;&lt;</string>
             </property>
            </widget>
           </item>
@@ -143,14 +143,14 @@ Christophe Malinge cma@digital-forensic.org
           <item>
            <widget class="QPushButton" name="attType">
             <property name="text">
-             <string>&gt;&gt;</string>
+             <string notr="true">&gt;&gt;</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="removeType">
             <property name="text">
-             <string>&lt;&lt;</string>
+             <string notr="true">&lt;&lt;</string>
             </property>
            </widget>
           </item>

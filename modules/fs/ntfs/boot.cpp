@@ -85,30 +85,34 @@ bool			Boot::isBootBlock(uint64_t offset)
       && (bootBlock->signature == BOOT_FAT_NTFS_SIGNATURE)) {
     setBootBlock(bootBlock);
 
-    DEBUG(INFO, "Boot block found\n");
-    DEBUG(INFO, "\tByte per sector: %u\n", bootBlock->bytePerSector);
-    DEBUG(INFO, "\tSector per cluster: %u\n", bootBlock->sectorPerCluster);
 #if __WORDSIZE == 64
-    DEBUG(INFO, "\tNumber of sector: %lx\n", bootBlock->numberOfSector);
-    DEBUG(INFO, "\tStart Mft: 0x%lx\n", bootBlock->startMft);
-    DEBUG(INFO, "\tStart Mft 16b Mirror: 0x%lx\n", bootBlock->startMftMirr);
+    printf("NTFS Boot block found at offset 0x%lx in vfile %s\n", offset, _vfile->node()->absolute().c_str());
 #else
-    DEBUG(INFO, "\tNumber of sector: %llx\n", bootBlock->numberOfSector);
-    DEBUG(INFO, "\tStart Mft: 0x%llx\n", bootBlock->startMft);
-    DEBUG(INFO, "\tStart Mft 16b Mirror: 0x%llx\n", bootBlock->startMftMirr);
+    printf("NTFS Boot block found at offset 0x%llx in vfile %s\n", offset, _vfile->node()->absolute().c_str());
 #endif
-    DEBUG(INFO, "\tCluster Mft record: %u\n", bootBlock->clusterMftRecord);
+    printf("Byte per sector: %u\n", bootBlock->bytePerSector);
+    printf("Sector per cluster: %u\n", bootBlock->sectorPerCluster);
+#if __WORDSIZE == 64
+    printf("Number of sector: %lx\n", bootBlock->numberOfSector);
+    printf("Start Mft: 0x%lx\n", bootBlock->startMft);
+    printf("Start Mft 16b Mirror: 0x%lx\n", bootBlock->startMftMirr);
+#else
+    printf("Number of sector: %llx\n", bootBlock->numberOfSector);
+    printf("Start Mft: 0x%llx\n", bootBlock->startMft);
+    printf("Start Mft 16b Mirror: 0x%llx\n", bootBlock->startMftMirr);
+#endif
+    printf("Cluster Mft record: %u\n", bootBlock->clusterMftRecord);
     if (isPow2(bootBlock->clusterMftRecord)) {
       _mftEntrySize = bootBlock->clusterMftRecord * _clusterSize;
-      DEBUG(INFO, "\tMFT Entry size: %u\n", _mftEntrySize);
+      printf("MFT Entry size: %u\n", _mftEntrySize);
     }
     else {
-      DEBUG(INFO, "\tMFT Entry size not valid in bootblock");
-      DEBUG(INFO, "\tTODO: search for it");
+      printf("MFT Entry size not valid in bootblock");
+      printf("Will search for it");
       ;
     }
-    DEBUG(INFO, "\tCluster Index record: %u\n", bootBlock->clusterIndexRecord);
-    DEBUG(INFO, "\tCluster Size: %u\n", _clusterSize);
+    printf("Cluster Index record: %u\n", bootBlock->clusterIndexRecord);
+    printf("Cluster Size: %u\n", _clusterSize);
   }
   else {
     delete bootBlock;;

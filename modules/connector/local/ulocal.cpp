@@ -60,7 +60,6 @@ void local::iterdir(std::string dir, Node *parent)
 	}
       closedir(dfd);
     }
-  //res->add_const("nodes created", total);
 }
 
 local::local(): fso("local")

@@ -25,10 +25,10 @@
 class DataTypeHandler
 {
 public:
-  EXPORT		DataTypeHandler(std::string);
-  EXPORT  virtual 	~DataTypeHandler();
-  EXPORT  virtual	std::string	 type(class Node*) = 0;
-  std::string		name;
+  EXPORT			DataTypeHandler(std::string);
+  EXPORT  virtual 		~DataTypeHandler();
+  EXPORT  virtual std::string	 type(class Node*) = 0;
+  std::string			name;
 }; 
 
 class DataTypeManager 
@@ -45,9 +45,9 @@ private:
   std::map<uint32_t, std::string>		typeIdString;
   std::map<uint32_t, DataTypeHandler*>		typeIdHandler; 
 public:
-  EXPORT static DataTypeManager* 	Get();
-  EXPORT bool						registerHandler(DataTypeHandler*);
-  EXPORT std::map<std::string, uint32_t>&		foundTypes();
+  EXPORT static DataTypeManager* 		Get();
+  EXPORT bool					registerHandler(DataTypeHandler*);
+  EXPORT std::map<std::string, uint32_t>&	foundTypes();
   EXPORT class Variant*				type(Node*);
 };
 

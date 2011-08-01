@@ -2,18 +2,13 @@
 <ui version="4.0">
  <class>SearchSize</class>
  <widget class="QWidget" name="SearchSize">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>344</width>
-    <height>49</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QSpinBox" name="size">
      <property name="maximum">
@@ -25,24 +20,41 @@
     <widget class="QComboBox" name="unit">
      <item>
       <property name="text">
-       <string>Bytes</string>
+       <string>Byte(s)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Kilo bytes</string>
+       <string>Kilo byte(s)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Mega bytes</string>
+       <string>Mega byte(s)</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Giga bytes</string>
+       <string>Giga byte(s)</string>
       </property>
      </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="exclusiv">
+     <property name="text">
+      <string>Exclusive</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QRadioButton" name="inclusiv">
+     <property name="text">
+      <string>Inclusive</string>
+     </property>
     </widget>
    </item>
    <item>

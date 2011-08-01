@@ -27,6 +27,7 @@ set(apiguiwidget_srcs
   completer.py
   SearchNodeBrowser.py
   search_widget.py
+  build_search_clause.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

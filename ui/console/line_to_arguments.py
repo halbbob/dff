@@ -13,29 +13,16 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #
 
-#from api.vfs import *
-#from api.env import *
-#from api.loader import *
-#XXX type
-#from api.type import *
 from api.manager.manager import ApiManager
 
 import os.path, os
 import dircache
-
 import utils
-
-#from types import *
-
 import re
 
 class Line_to_arguments():
     def __init__(self):
-#        self.env = env.env()
-#        self.loader = loader.loader()
-#        self.vfs = vfs.vfs()
         self.api = ApiManager()
-        #self.argument = self.api.argument
         self.loader = self.api.loader()
         self.vfs = self.api.vfs()
 
@@ -89,12 +76,7 @@ class Line_to_arguments():
         else:
             value = value.replace("\ ", " ")
             abs_path = utils.get_absolute_path(value)
-#XXX print ?
-        #print abs_path
         if os.path.exists(abs_path):   
-#            path = self.api.Path(str(abs_path))
-#            path.thisown = False
-#            gen_arg.add_path(key, path)
              gen_arg.add_path(key, str(abs_path))
         else:
             print "Value error: local path <", value, "> doesn't exist"
@@ -197,9 +179,7 @@ class Line_to_arguments():
             print "dff:" +  args[0] + ": command not found"
         except IndexError: 
             return -1
-        #mod = self.loader.get_modules(args[0])
         conf = self.loader.get_conf(args[0]) 
-       # conf = mod.conf
         if conf != None:
             cdl = conf.descr_l
             if cdl == None:

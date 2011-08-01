@@ -695,9 +695,8 @@ std::list<std::string>*		Node::compatibleModules(void)
           if (this->constantValuesMatch(constant->second, vars))
             res->push_back(constant->first);
     }
-	//New check for compatible extension (example: .vmdk for vmware )
     constants = cm->constantsByName("extension-type");
-    if (constants.size() > 0)		//XXX tjrs superieur a 0 donc on ce tape tous meme si c pas set par examples ds le fat
+    if (constants.size() > 0)
     {
        size_t vars_start = this->name().rfind(".");
        if (vars_start != std::string::npos)

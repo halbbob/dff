@@ -21,7 +21,6 @@ from Queue import *
 from types import *
 from api.loader import *
 from api.exceptions.libexceptions import *
-#from api.env import *
 
 event_type = ["add_qwidget"]
 

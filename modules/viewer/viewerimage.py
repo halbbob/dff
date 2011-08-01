@@ -19,14 +19,12 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, QSize, QString, SIGNAL, QThread
 from PyQt4.QtGui import QPixmap, QImage, QPushButton, QLabel, QWidget, QHBoxLayout, QVBoxLayout, QScrollArea, QIcon, QMatrix, QToolBar, QAction, QSizePolicy, QTabWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QLineEdit
 
-from api.vfs import *
-from api.module.module import *
-from api.module.script import *
+from api.vfs import vfs 
+from api.module.module import Module 
+from api.module.script import Script
 from modules.metadata.metaexif import EXIF
 from api.types.libtypes import Argument, typeId
 
-import sys
-import time
 import re
 
 class LoadedImage(QLabel):
@@ -42,7 +40,6 @@ class LoadedImage(QLabel):
 
   def setParent(self, parent):
     self.parent = parent
-
 
   def load(self, node):
     self.matrix.reset()
@@ -201,7 +198,7 @@ class Metadata(QWidget):
         label.setPixmap(QPixmap.fromImage(img))
         label.setAlignment(Qt.AlignCenter)
         self.tabs.addTab(label, "Embedded Thumbnail")
-
+      file.close()	
 
 class ImageView(QWidget, Script):
   def __init__(self):
@@ -212,17 +209,14 @@ class ImageView(QWidget, Script):
     self.reg_viewer = re.compile(".*(JPEG|JPG|jpg|jpeg|GIF|gif|bmp|png|PNG|pbm|PBM|pgm|PGM|ppm|PPM|xpm|XPM|xbm|XBM|TIFF|tiff).*", re.IGNORECASE)
     self.sceneWidth = 0
 
-
   def start(self, args):
-    self.images = []
+    try :
+      self.preview = args["preview"].value()
+    except IndexError:
+      self.preview = False
     try:
-      node = args["file"].value()
-      children = node.parent().children()
-      for child in children:
-        if self.isImage(child):
-          self.images.append(child)
-          if child.name() == node.name():
-            self.curIdx = len(self.images) - 1
+      self.node = args["file"].value()
+      self.curIdx = self.node.at()
     except KeyError:
       pass
 
@@ -238,19 +232,33 @@ class ImageView(QWidget, Script):
 
 
   def next(self):
-    if self.curIdx == len(self.images) - 1:
-      self.curIdx = 0
-    else:
-      self.curIdx += 1
-    self.setImage(self.images[self.curIdx])
+    listNodes = self.node.parent().children()
+    newIdx = self.curIdx + 1
+    if newIdx >= len(listNodes):
+	newIdx = 0
+    while newIdx != self.curIdx:
+      if self.isImage(listNodes[newIdx]):
+        break
+      newIdx += 1
+      if newIdx >= len(listNodes):
+        newIdx = 0
+    self.curIdx = newIdx 
+    self.setImage(listNodes[self.curIdx])
 
 
   def previous(self):
-    if self.curIdx == 0:
-      self.curIdx = len(self.images) - 1
-    else:
-      self.curIdx -= 1
-    self.setImage(self.images[self.curIdx])
+    listNodes = self.node.parent().children()
+    newIdx = self.curIdx - 1 
+    if newIdx < 0:
+      newIdx = len(listNodes) - 1
+    while newIdx != self.curIdx:
+       if self.isImage(listNodes[newIdx]):
+	 break
+       newIdx -=  1
+       if newIdx < 0:
+	 newIdx = len(listNodes) - 1
+    self.curIdx = newIdx
+    self.setImage(listNodes[self.curIdx])
       
 
   def createActions(self):
@@ -293,10 +301,11 @@ class ImageView(QWidget, Script):
 
 
   def setImage(self, node):
-    self.imagelabel.clear()
-    self.imagelabel.insert(QString.fromUtf8(str(node.absolute()) + " (" + str(self.curIdx + 1) + " / " + str(len(self.images)) + ")"))
+    if not self.preview:
+      self.imagelabel.clear()
+      self.imagelabel.insert(QString.fromUtf8(node.absolute()))
+      self.metadata.process(node)
     self.loadedImage.load(node)
-    self.metadata.process(node)
 
 
   def g_display(self):
@@ -310,38 +319,42 @@ class ImageView(QWidget, Script):
     self.loadedImage = LoadedImage(self.scrollArea)
     self.scrollArea.setWidget(self.loadedImage)
     self.scrollArea.setAlignment(Qt.AlignCenter)
-    self.createActions()
-    self.imagelabelbox = QVBoxLayout()
-    self.imagelabelbox.setSpacing(0)
-    self.imagelabel = QLineEdit()
-    self.imagelabelbox.addWidget(self.imagelabel)
-    self.imagelabel.setReadOnly(True)    
-    self.imagebox.addWidget(self.actions)
+    if not self.preview:
+      self.createActions()
+      self.imagelabelbox = QVBoxLayout()
+      self.imagelabelbox.setSpacing(0)
+      self.imagelabel = QLineEdit()
+      self.imagelabelbox.addWidget(self.imagelabel)
+      self.imagelabel.setReadOnly(True)    
+      self.imagebox.addWidget(self.actions)
     self.imagebox.addWidget(self.scrollArea)
-    self.imagebox.setAlignment(self.actions, Qt.AlignCenter)
-    self.imagebox.addLayout(self.imagelabelbox)
+    if not self.preview:
+      self.imagebox.setAlignment(self.actions, Qt.AlignCenter)
+      self.imagebox.addLayout(self.imagelabelbox)
+      self.databox = QVBoxLayout()
+      self.metadata = Metadata()
+      self.databox.addWidget(self.metadata)
 
-    self.databox = QVBoxLayout()
-    self.metadata = Metadata()
-    self.databox.addWidget(self.metadata)
-
-    if len(self.images) < 2:
-      self.nextButton.setEnabled(False)
-      self.previousButton.setEnabled(False)
+      if len(self.node.parent().children()) < 2:
+        self.nextButton.setEnabled(False)
+        self.previousButton.setEnabled(False)
 
     self.box.addLayout(self.imagebox)
-    self.box.addLayout(self.databox)
-
-    self.setImage(self.images[self.curIdx])
+    if not self.preview:
+      self.box.addLayout(self.databox)
+	
+    self.setImage(self.node.parent().children()[self.curIdx])
 
 
   def updateWidget(self):
-    self.metadata.setMaximumSize(self.width() / 4, self.height())
+    if not self.preview:
+      self.metadata.setMaximumSize(self.width() / 4, self.height())
     self.loadedImage.adjust()
 
 
   def resizeEvent(self, e):
-    self.metadata.setMaximumSize(self.width() / 4, self.height())
+    if not self.preview:
+      self.metadata.setMaximumSize(self.width() / 4, self.height())
     self.loadedImage.adjust()
 
 
@@ -352,6 +365,9 @@ class viewerimage(Module):
     self.conf.addArgument({"name": "file",
                            "description": "Picture file to display",
                            "input": Argument.Required|Argument.Single|typeId.Node})
+    self.conf.addArgument({"name": "preview",
+			   "description": "Preview mode",
+			   "input": Argument.Empty})
     self.conf.addConstant({"name": "mime-type", 
  	                   "type": typeId.String,
  	                   "description": "managed mime type",

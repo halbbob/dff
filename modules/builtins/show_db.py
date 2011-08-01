@@ -133,10 +133,6 @@ class SHOW_DB(Script):
         res += self.keyInVMap(item.value(), key)
       elif item.type() == typeId.List:
         res += self.keyInVList(item.value(), key)
-      #elif vval.type() == typeId.Node:
-      #  res += "\n\t\t\t" + str(vval.value().absolute())
-      #else:
-      #  res += "\n\t\t\t" + str(vval.toString())
     return res
 
 

@@ -29,8 +29,8 @@ using namespace std;
 class Device
 {
 public:
-  						Device();
-  virtual				~Device();
+				Device();
+  virtual			~Device();
   virtual wchar_t*	 	blockDevice(void);
   virtual wchar_t*		serialNumber(void);
   virtual wchar_t*	 	model(void);

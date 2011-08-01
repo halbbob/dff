@@ -14,7 +14,8 @@
 
 
 add_subdirectory (local)
-add_subdirectory (libewf)
+#add_subdirectory (libewf)
+add_subdirectory (ewf)
 add_subdirectory(devices)
 if(WIN32 OR AFF_LIBRARY)
   add_subdirectory(aff)

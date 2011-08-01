@@ -288,6 +288,15 @@
    </item>
    <item>
     <widget class="QPushButton" name="attrSelect">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Attributes selection</string>
+     </property>
      <property name="icon">
       <iconset resource="gui.qrc">
        <normaloff>:/list.png</normaloff>:/list.png</iconset>
