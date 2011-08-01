@@ -11,17 +11,10 @@
 # 
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
-#  Solal Jacob <sja@digital-forensic.org>
 
-add_subdirectory (carver)
-if (ENABLE_INDEXER)
-   add_subdirectory (indexer)
-endif (ENABLE_INDEXER)
-
-add_subdirectory(find)
-
-set(search_srcs
+set(find_srcs
   __init__.py
+  find.py
 )
 
-install_file(search ${search_srcs})
+install_file(find ${find_srcs})

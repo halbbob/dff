@@ -229,9 +229,9 @@ class CarvingProcess(QWidget, EventHandler):
 
 
     def Event(self, e):
-        if e.type == event.SEEK:
+        if e.type == etype.SEEK:
             self.emit(SIGNAL("update"), e)
-        elif e.type == event.OTHER:
+        elif e.type == etype.OTHER:
             if e.value.type() == typeId.String and e.value == "terminated":
                 self.emit(SIGNAL("ended"), "")
             else:
@@ -239,7 +239,7 @@ class CarvingProcess(QWidget, EventHandler):
 
 
     def update(self, e):
-        if e.type == event.SEEK:
+        if e.type == etype.SEEK:
             ref = time.time() - self.time
             self.time = time.time()
             if not str(ref).startswith("0.0"):
@@ -282,5 +282,5 @@ class CarvingProcess(QWidget, EventHandler):
         val = Variant(1)
         val.thisown = False
         e.value = val
-        e.type = event.SEEK
+        e.type = etype.SEEK
         self.notify(e)

@@ -12,27 +12,32 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
+
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
+
+find_package(BISON)
+find_package(FLEX)
 
 #FIND_PACKAGE(PythonLibs)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
-INCLUDE_DIRECTORIES(/usr/include)
-INCLUDE_DIRECTORIES(/usr/local/include)
 
-SET_SOURCE_FILES_PROPERTIES(libsearch.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(libsearch python libsearch.i search.cpp boyer_moore.cpp)
-if (TRE_LIBRARY)
-   SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES} ${TRE_LIBRARY})
-else (TRE_LIBRARY)
-   SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES})
-endif (TRE_LIBRARY)
+BISON_TARGET(parser parser.y ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
+FLEX_TARGET(lexer lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp  COMPILE_FLAGS "--header-file=lexer.hpp")
+
+# does not seem to be mandatory. Here just in case and as a reminder...
+#ADD_FLEX_BISON_DEPENDENCY(lexer parser)
+
+SET_SOURCE_FILES_PROPERTIES(libfilters.i PROPERTIES CPLUSPLUS ON)
+SWIG_ADD_MODULE(libfilters python libfilters.i filter.cpp astnodes.cpp ${BISON_parser_OUTPUTS} ${FLEX_lexer_OUTPUTS})
+
+SWIG_LINK_LIBRARIES(libfilters ${PYTHON_LIBRARIES} _libevents _libvfs _libtypes _libsearch)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
-  set_target_properties (${SWIG_MODULE_libsearch_REAL_NAME} PROPERTIES
+  set_target_properties (${SWIG_MODULE_libfilters_REAL_NAME} PROPERTIES
   SUFFIX ".pyd"
   RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
   RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
@@ -40,13 +45,12 @@ if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
-set(libsearch_srcs
-  libsearch.py
-  find.py
+set(libfilters_srcs
+  libfilters.py
   __init__.py
 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 
-install_lib(${SWIG_MODULE_libsearch_REAL_NAME})
-install_file(libsearch ${libsearch_srcs})
+install_lib(${SWIG_MODULE_libfilters_REAL_NAME})
+install_file(libfilters ${libfilters_srcs})
