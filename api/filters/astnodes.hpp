@@ -101,6 +101,7 @@ public:
 class NumericFilter: public AstNode
 {
 public:
+  ~NumericFilter();
   NumericFilter(const std::string& attr, CmpOperator::Op cmp, uint64_t value);
   NumericFilter(const std::string& attr, CmpOperator::Op cmp, const NumberList& values);
   virtual void		compile() throw (std::string);
@@ -120,6 +121,7 @@ private:
 class StringFilter: public AstNode
 {
 public:
+  ~StringFilter();
   StringFilter(const std::string& attr, CmpOperator::Op cmp, const std::string value);
   StringFilter(const std::string& attr, CmpOperator::Op cmp, const StringList& values);
   StringFilter(const std::string& attr, CmpOperator::Op cmp, Processor* value);
@@ -149,6 +151,7 @@ private:
 class BooleanFilter: public AstNode
 {
 public:
+  ~BooleanFilter();
   BooleanFilter(const std::string& attr, CmpOperator::Op cmp, bool value);
   virtual void		compile() throw (std::string);
   virtual bool		evaluate(Node* node) throw (std::string);
@@ -164,6 +167,7 @@ private:
 class TimeFilter: public AstNode
 {
 public:
+  ~TimeFilter();
   TimeFilter(const std::string& attr, CmpOperator::Op cmp, vtime* value);
   TimeFilter(const std::string& attr, CmpOperator::Op cmp, const TimeList& values);
   virtual void		compile() throw (std::string);

@@ -32,6 +32,8 @@ Filter::Filter(std::string fname)
 
 Filter::~Filter()
 {
+  if (this->__root != NULL)
+    delete this->__root;
 }
 
 // Future implementation will provide a filter manager with precompiled

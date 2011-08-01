@@ -19,6 +19,7 @@
 
 Processor::~Processor()
 {
+  this->__args.clear();
 }
 
 Processor::Processor(const std::string& name, const StringList& args): __name(name), __args(args)
@@ -45,6 +46,11 @@ Logical::Logical(AstNode* left, int op, AstNode* right)
 
 Logical::~Logical()
 {
+  if ((this->__left != NULL) && (this->__right != NULL))
+    {
+      delete this->__left;
+      delete this->__right;
+    }
 }
 
 uint32_t	Logical::cost() 
@@ -93,6 +99,11 @@ bool		Logical::evaluate(Node* node) throw (std::string)
   else
     std::cout << "bad operator" << std::endl;//throw std::string("operator not managed");
   return ret;
+}
+
+NumericFilter::~NumericFilter()
+{
+  this->__values.clear();
 }
 
 NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, uint64_t value) : __attr(attr)
@@ -214,11 +225,22 @@ uint32_t	NumericFilter::cost()
   return 0;
 }
 
+StringFilter::~StringFilter()
+{
+  std::vector<Search*>::iterator	it;
+
+  for (it = this->__ctxs.begin(); it != this->__ctxs.end(); it++)
+    delete *it;
+  if (this->__proc != NULL)
+    delete this->__proc;
+}
+
 StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, const std::string value) : __attr(attr)
 {
   this->__etype = STRING;
   this->__cmp = cmp;
   this->__strvalues.push_back(value);
+  this->__proc = NULL;
 }
 
 StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, const StringList& values) : __attr(attr)
@@ -226,6 +248,7 @@ StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, const S
   this->__etype = STRING;
   this->__cmp = cmp;
   this->__strvalues = values;
+  this->__proc = NULL;
 }
 
 StringFilter::StringFilter(const std::string& attr, CmpOperator::Op cmp, Processor* value) : __attr(attr)
@@ -409,6 +432,10 @@ uint32_t	StringFilter::cost()
   return 0;
 }
 
+BooleanFilter::~BooleanFilter()
+{
+}
+
 BooleanFilter::BooleanFilter(const std::string& attr, CmpOperator::Op cmp, bool value) : __attr(attr)
 {
   this->__cmp = cmp;
@@ -464,6 +491,14 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
 uint32_t	BooleanFilter::cost()
 {
   return 0;
+}
+
+TimeFilter::~TimeFilter()
+{
+  TimeList::iterator	it;
+
+  for (it = this->__values.begin(); it != this->__values.end(); it++)
+    delete *it;
 }
 
 
