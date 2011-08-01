@@ -49,8 +49,10 @@ Search::Search()
   this->__cs = CaseSensitive;
   this->__nlen = 512;
   this->__syntax = Fixed;
+#if HAVE_TRE
   this->__aparams.max_err = 3;
   this->__aparams.max_ins = this->__aparams.max_del = this->__aparams.max_subst = 1;
+#endif
 }
 
 Search::Search(std::string pattern, CaseSensitivity cs, PatternSyntax syntax)
