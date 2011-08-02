@@ -120,6 +120,8 @@ NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, const
 void		NumericFilter::compile() throw (std::string)
 {
   this->_stop = false;
+  if (this->__attr != "size")
+    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
   return;
 }
 
@@ -303,10 +305,15 @@ void		StringFilter::__scompile()
   	{
   	  pattern = (*it).substr(1, (*it).size() - 2);
 	  if (this->__attr == "data")
-	    ctx->setCaseSensitivity(Search::CaseInsensitive);
+	    {
+	      ctx->setPatternSyntax(Search::Fuzzy);
+	      ctx->setCaseSensitivity(Search::CaseInsensitive);
+	    }
 	  else
-	    ctx->setCaseSensitivity(Search::CaseSensitive);
-  	  ctx->setPatternSyntax(Search::Fixed);
+	    {
+	      ctx->setPatternSyntax(Search::Fixed);
+	      ctx->setCaseSensitivity(Search::CaseSensitive);
+	    }
   	  ctx->setPattern(pattern);
   	}
       this->__ctxs.push_back(ctx);
@@ -316,6 +323,8 @@ void		StringFilter::__scompile()
 void		StringFilter::compile() throw (std::string)
 {
   this->_stop = false;
+  if ((this->__attr != "mime") && (this->__attr != "name") && (this->__attr != "data"))
+    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
   if (this->__etype == PROCESSOR)
     this->__pcompile();
   else if (this->__etype == STRING)
@@ -444,6 +453,8 @@ BooleanFilter::BooleanFilter(const std::string& attr, CmpOperator::Op cmp, bool 
 
 void		BooleanFilter::compile() throw (std::string)
 {
+  if ((this->__attr != "deleted") && (this->__attr != "file"))
+    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
   return;
 }
 
@@ -515,6 +526,8 @@ TimeFilter::TimeFilter(const std::string& attr, CmpOperator::Op cmp, const TimeL
 
 void		TimeFilter::compile() throw (std::string)
 {
+  if (this->__attr != "time")
+    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
   return;
 }
 
@@ -522,27 +535,33 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
 {
   Attributes*		ts;
   Attributes::iterator	mit;
-  TimeList::iterator	vit;
   vtime*		vt;
   bool			found;
+  Variant		*v;
 
-  if ((ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME)) == NULL)
-    return false;
   found = false;
-  mit = ts->begin();
-  while ((mit != ts->end()) && !found)
+  if (this->__attr == "time")
     {
-      if ((mit->second != NULL) && ((vt = mit->second->value<vtime*>()) != NULL))
+      if ((ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME)) == NULL)
+	return false;
+      else
 	{
-	  vit = this->__values.begin();
-	  while ((vit != this->__values.end()) && !found)
+	  mit = ts->begin();
+	  while ((mit != ts->end()) && !found)
 	    {
-	      if (this->__tcmp(*vt, *vit))
-		found = true;
-	      vit++;
+	      if ((mit->second != NULL) && ((vt = mit->second->value<vtime*>()) != NULL))
+		found = this->__evaluate(vt);
+	      mit++;
 	    }
 	}
-      mit++;
+    }
+  else
+    {
+      if (((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) == NULL) ||
+	  (v->type() != typeId::VTime))
+	return false;
+      else
+	found = this->__evaluate(v->value<vtime*>());
     }
   if (this->__values.size() > 1)
     if (this->__cmp == CmpOperator::EQ)
@@ -551,7 +570,7 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
       return (found == false);
     else
       return false;
-  else      
+  else
     return found;
 }
 
@@ -560,6 +579,22 @@ uint32_t	TimeFilter::cost()
   return 0;
 }
 
+
+bool		TimeFilter::__evaluate(vtime* vt)
+{
+  TimeList::iterator	it;
+  bool			found;
+
+  found = false;
+  it = this->__values.begin();
+  while ((it != this->__values.end()) && !found)
+    {
+      if (this->__tcmp(*vt, *it))
+	found = true;
+      it++;
+    }
+  return found;
+}
 
 bool		TimeFilter::__tcmp(vtime ref, vtime* ts)
 {

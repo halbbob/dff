@@ -179,6 +179,7 @@ private:
   uint32_t		__cost;
   std::string		__attr;
   TimeList		__values;
+  bool			__evaluate(vtime* val);
   bool			__tcmp(vtime v1, vtime* v2);
 };
 
