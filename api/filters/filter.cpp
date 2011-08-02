@@ -63,6 +63,11 @@ void	Filter::compile(std::string query) throw (std::string)
 
   if (yylex_init(&param.scanner))
     throw (std::string("error while initializing lexer"));
+  if (this->__root != NULL)
+    {
+      delete this->__root;
+      this->__root = NULL;
+    }
   param.root = NULL;
   state = yy_scan_string(query.c_str(), param.scanner);
   if (yyparse(&param))
