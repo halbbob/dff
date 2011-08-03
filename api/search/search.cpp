@@ -19,27 +19,7 @@
 #include <iostream>
 #include <string.h>
 
-/**
- * 0 : nothing
- * 3 : everything
- */
-#define DEBUG_LEVEL	0
-#define	VERBOSE		3
-#define	INFO		2
-#define CRITICAL	1
-#if (!defined(WIN64) && !defined(WIN32))
-#define DEBUG(level, str, args...) do {                                        \
-  if (DEBUG_LEVEL)                                                             \
-    if (level <= DEBUG_LEVEL)                                                  \
-      printf("%s:%d\t" str, __FILE__, __LINE__, ##args);                       \
-  } while (0)
-#else
-#define DEBUG(level, str, ...) do {                                            \
-  if (DEBUG_LEVEL)                                                             \
-    if (level <= DEBUG_LEVEL)                                                  \
-      printf("%s:%d\t" str, __FILE__, __LINE__, __VA_ARGS__);                  \
-  } while (0)
-#endif
+//#define DEBUGSEARCH 1
 
 Search::Search()
 {
@@ -280,6 +260,7 @@ void			Search::__compile() throw (std::string)
 	
       this->__nlen = 0;
       needle = "";
+      this->__wctxs.clear();
       for (i = 0; i != this->__pattern.size(); i++)
        	{
 	  if ((this->__pattern[i] != '?') && (this->__pattern[i] != '*'))
@@ -306,11 +287,12 @@ void			Search::__compile() throw (std::string)
 	this->__wctxs.push_back(needle);
       if (!rpattern)
       	throw (std::string("pattern is not useful, only * and ? provided"));
-      DEBUG(CRITICAL, "original pattern --> %s\n", this->__pattern.c_str());
-      DEBUG(CRITICAL, "compile pattern with max length of: %d\n", this->__nlen);
-      if (DEBUG_LEVEL)
-      	for (i = 0; i != this->__wctxs.size(); i++)
-      	  std::cout << std::string(3, ' ') << this->__wctxs[i] << std::endl;
+#ifdef DEBUGSEARCH
+      std::cout << "original pattern --> " << this->__pattern;
+      std::cout << "compile pattern with max length of: " << this->__nlen;
+      for (i = 0; i != this->__wctxs.size(); i++)
+	std::cout << std::string(3, ' ') << this->__wctxs[i] << std::endl;
+#endif
     }
 
   else if (this->__syntax == Regexp)
@@ -371,8 +353,10 @@ int32_t			Search::__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, size
   uint32_t	rwindow;
   int32_t	idx;
   uint32_t	oidx;
-  
-  //std::ostringstream ostr;
+
+#ifdef DEBUGSEARCH
+  std::ostringstream ostr;
+#endif
   needle = this->__wctxs[vpos];
   if (needle != "?" && needle != "*")
     {	
@@ -382,29 +366,36 @@ int32_t			Search::__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, size
 	    rwindow = needle.size() + window;
 	  else
 	    rwindow = hslen;
-	  // ostr << "%s:%d\tvpos: %d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen << "s\n";
-	  // printf(ostr.str().c_str(), __FILE__, __LINE__,
-	  // 	 vpos, this->__wctxs.size(), needle.c_str(), hslen-window, needle.size(), haystack);
+#ifdef DEBUGSEARCH
+	  ostr << std::string(vpos, '\t') << "vpos: %d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen << "s\n";
+	  printf(ostr.str().c_str(), vpos, this->__wctxs.size(), needle.c_str(), rwindow, needle.size(), haystack);
+#endif
   	  return s((unsigned char*)haystack, rwindow,
   		   (unsigned char*)needle.c_str(), needle.size(),
   		   1, FAST_SEARCH);
   	}
       else
   	{
+	  if (hslen == 0)
+	    return -1;
   	  idx = -1;
-	  // ostr << "%s:%d\tvpos: %d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen << "s\n";
-	  // printf(ostr.str().c_str(), __FILE__, __LINE__,
-	  // 	 vpos, this->__wctxs.size(), needle.c_str(), hslen, needle.size(), haystack);
+#ifdef DEBUGSEARCH
+	  ostr << std::string(vpos, '\t') << "vpos: %d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen << "s\n";
+	  printf(ostr.str().c_str(), vpos, this->__wctxs.size(), needle.c_str(), hslen, needle.size(), haystack);
+#endif
 	  oidx = 0;
 	  while ((idx = s((unsigned char*)haystack+oidx, hslen-oidx,
 			  (unsigned char*)needle.c_str(), needle.size(), 
 			  1, FAST_SEARCH)) != -1)
 	    {
-	      oidx += idx + needle.size();
-	      if (oidx == hslen)
-		return -1;
+#ifdef DEBUGSEARCH
+	      ostr.str("");
+	      ostr << std::string(vpos, '\t') << "%d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen-oidx << "s\n";
+	      printf(ostr.str().c_str(), vpos, this->__wctxs.size(), needle.c_str(), hslen-oidx, needle.size(), haystack+oidx);
+#endif
+	      oidx += idx + needle.size();	      
 	      if (this->__wfind(haystack+oidx, hslen-oidx, s, vpos+1, 0) != -1)
-		return 0;
+		return idx;
 	    }
 	}
     }
@@ -416,9 +407,10 @@ int32_t			Search::__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, size
 	rwindow = 1;
       else
 	rwindow = 512;
-      // ostr << "%s:%d\tvpos: %d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen << "s -- %d\n";
-      // printf(ostr.str().c_str(), __FILE__, __LINE__,
-      // 	     vpos, this->__wctxs.size(), needle.c_str(), hslen, needle.size(), haystack, this->__cs);
+#ifdef DEBUGSEARCH
+      ostr << std::string(vpos, '\t') << "vpos: %d / %d -- token: %s -- hslen: %d -- nsize: %d -- haystack: %" << hslen << "s -- %d\n";
+      printf(ostr.str().c_str(), vpos, this->__wctxs.size(), needle.c_str(), hslen, needle.size(), haystack, this->__cs);
+#endif
       return this->__wfind(haystack, hslen, s, vpos+1, rwindow);
     }
   //never reached
