@@ -60,6 +60,7 @@ class FilterThread(QThread):
     self.__parent = parent
     self.filters = Filter("test")
     self.model = None
+    self.recursive = True
 
   def setContext(self, clauses, rootnode, model=None):
     if model:
@@ -73,9 +74,12 @@ class FilterThread(QThread):
     self.rootnode = rootnode
     self.filters.compile(str(clauses))
 
+  def setRecursive(self, rec):
+    self.recursive = rec
+
   def run(self):
     self.emit(SIGNAL("started"))
-    self.filters.process(self.rootnode)
+    self.filters.process(self.rootnode, self.recursive)
     self.emit(SIGNAL("finished"))
     self.model = None
 

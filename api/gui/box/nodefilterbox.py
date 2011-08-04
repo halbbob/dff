@@ -265,11 +265,11 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
   def searching(self, changed):
     if not self.searchClause.text().isEmpty():
       if self.recurse.checkState() != Qt.Checked:
-        self.filterThread.filters.setRecursive(False)
+        self.filterThread.setRecursive(False)
       else:
-        self.filterThread.filters.setRecursive(True)
-      clause = {}
-      clause["name"] = "w(\'*" + str(self.searchClause.text()) + "*\',i)"
+        self.filterThread.setRecursive(True)
+
+      clause = "name == w(\"*" + str(self.searchClause.text()) + "*\",i)"
       print clause      
       self.filterThread.setContext(clause, self.parent.model.rootItem, self.parent.model)
       self.filterThread.start()
