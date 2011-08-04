@@ -135,6 +135,7 @@ typeWorker.start()
 
 
 class ListNodeModel(QAbstractItemModel, EventHandler):
+  numberPopulated = QtCore.pyqtSignal(int)
   """
   The ListNodeModel, inheriting QAbstractItemModel, is used to represent a list of nodes.
 
@@ -177,22 +178,41 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
 
     self.cacheAttr = (None, None)
 
-  def addNode(self, e):
+  def canFetchMore(self, index):
+    if self.fetchedItems < len(self.node_list):
+      return True
+    return False
+
+  def fetchMore(self, index):
+    reminder = len(self.node_list) - self.fetchedItems
+    item_to_fetch = 0
+
+    if reminder < 100:
+      item_to_fetch = reminder
+    else:
+      item_to_fetch = 100
+
+    self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + item_to_fetch - 1)
+    self.fetchedItems += item_to_fetch
+    self.endInsertRows()
+    self.numberPopulated.emit(item_to_fetch)
+
+  def addNode(self, node):
     """
     This method is called when an event is emitted by the VFS (when a node is added into the
     VFS for example, and the view needs to be redrawed).
     """
-    if e != None and e.value != None:
-      node = e.value.value()
+    if node != None:
       self.node_list.append(node.this)
-      # emit signals to redraw the gui
-      self.emit(SIGNAL("layoutAboutToBeChanged()"))
-      self.emit(SIGNAL("layoutChanged()"))
-
+      if len(self.node_list) < 100:
+        self.fetchedItems += 1
+        self.emit(SIGNAL("layoutAboutToBeChanged()"))
+        self.emit(SIGNAL("layoutChanged()"))
 
   def clean(self):
     self.emit(SIGNAL("modelAboutToBeReset()"))
     self.node_list = []
+    self.fetchedItems = 0
     self.emit(SIGNAL("modelReset()"))
 
 
@@ -222,8 +242,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     """
     \returns the number of children of lines of the index `parent`.
     """
-    return len(self.node_list)
-
+    return self.fetchedItems
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     """
@@ -402,6 +421,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
       childItem = self.node_list[row]
     else:
       return QModelIndex()
+
     index = self.createIndex(row, column, long(childItem))
     return index
 
@@ -412,14 +432,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
 
     \return the parent index of `index` or an invalid QModelIndex if an erroc occurs.
     """
-    #if not index.isValid():
     return QModelIndex()
-    #childItem = self.VFS.getNodeFromPointer(index.internalId())
-    #parentItem = childItem.parent()
-    #if parentItem.this == self.rootItem.this:
-    #  return QModelIndex()
-    #index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
-    #return index
 
 
   def hasChildren(self, parent):

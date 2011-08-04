@@ -67,7 +67,7 @@ class MimeType(Ui_MimeType, QWidget):
         for j in range(0, parent_item.childCount()):
           child_item = parent_item.child(j)
           if child_item.checkState(0) == Qt.Checked:
-            self.selected_mime_types.addItem(parent_item.text(0) + "/" + child_item.text(0))
+            self.selected_mime_types.addItem(child_item.text(0))
 
   def text(self):
     text_t = " in ["
@@ -76,7 +76,6 @@ class MimeType(Ui_MimeType, QWidget):
         text_t += ", "
       text_t += ("\"" +  self.selected_mime_types.itemText(i) + "\"")
     text_t += "]"
-    print text_t
     return text_t
 
 class SearchAttributes(Ui_SearchAttributes, QWidget):
@@ -118,7 +117,7 @@ class SearchStr(Ui_SearchStr, QWidget):
     self.type.addItem("Fixed string", QVariant("f"))
     self.type.addItem("Wildcard", QVariant("w"))
     self.type.addItem("Fuzzy", QVariant("fz"))
-    self.type.addItem("Reg exp", QVariant("r"))
+    self.type.addItem("Reg exp", QVariant("re"))
 
   def setNo(self, no):
     self.no = no
@@ -131,19 +130,19 @@ class SearchStr(Ui_SearchStr, QWidget):
       return ""
 
     if self.no:
-      search = " not contains "
+      search = " != "
     else:
-      search = " contains "
+      search = " == "
 
     idx = self.type.currentIndex()
     data_type = self.type.itemData(idx)
     search += str(data_type.toString())
 
-    search += ("(\"" + str(self.name.text()) + "\"")
+    search += ("(\"" + str(self.name.text()))
     if not self.caseSensitive.isChecked():
-      search += ",i)"
+      search += "\",i)"
     else:
-      search += ")"
+      search += "\")"
     return str(search)
 
 class SearchDict(QWidget, Ui_SearchDict):
@@ -270,8 +269,8 @@ class FileIsDeleted(Ui_IsDeleted, QWidget):
 
   def text(self):
     if self.deleted.isChecked():
-      return " == True"
-    return " == False"
+      return " == true"
+    return " == false"
 
 class IsFile(Ui_FileOrFolder, QWidget):
   def __init__(self, parent = None):
@@ -281,8 +280,8 @@ class IsFile(Ui_FileOrFolder, QWidget):
 
   def text(self):
     if self.isFile.isChecked():
-      return " == True"
-    return " == False"
+      return " == true"
+    return " == false"
 
 class OptWidget(QWidget):
   def __init__(self, parent, w_type = 0):

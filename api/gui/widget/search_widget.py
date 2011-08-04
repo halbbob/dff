@@ -34,6 +34,8 @@ from api.gui.widget.build_search_clause  import BuildSearchClause
 from ui.gui.resources.ui_search import Ui_SearchTab
 from ui.gui.resources.ui_search_clause import Ui_SearchClause
 
+from api.filters.libfilters import Filter
+
 class SearchClause(Ui_SearchClause, QWidget):
   def __init__(self, parent = None):
     super(QWidget, self).__init__(parent)
@@ -56,7 +58,7 @@ class FilterThread(QThread):
   def __init__(self, parent=None):
     QThread.__init__(self)
     self.__parent = parent
-    self.filters = Filters()
+    self.filters = Filter("test")
     self.model = None
 
   def setContext(self, clauses, rootnode, model=None):
@@ -67,12 +69,13 @@ class FilterThread(QThread):
       self.connect(self.model, SIGNAL("stop_search()"), self.quit)
     elif self.__parent:
       self.connect(self.__parent, SIGNAL("stop_search()"), self.quit)
-    self.filters.setRootNode(rootnode)
-    self.filters.compile(clauses)
+#    self.filters.setRootNode(rootnode)
+    self.rootnode = rootnode
+    self.filters.compile(str(clauses))
 
   def run(self):
     self.emit(SIGNAL("started"))
-    matches = self.filters.process()
+    self.filters.process(self.rootnode)
     self.emit(SIGNAL("finished"))
     self.model = None
 
@@ -267,7 +270,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     text = ""
     if not self.nameContain.text().isEmpty():
       prefix = self.typeName.itemData(self.typeName.currentIndex()).toString()
-      text += ("(\"name\"==" + prefix + "(\"" + self.nameContain.text() + "\"")
+      text += ("(name==" + prefix + "(\"" + self.nameContain.text() + "\"")
       if not self.caseSensitiveName.isChecked():
         text += ",i)"
       else:
@@ -323,7 +326,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       self.__totalhits += 1
       self.totalHits.setText(str(self.__totalhits) + "/" + str(self.__totalnodes) + " " \
                                + self.tr("match(s)"))
-      self.emit(SIGNAL("NodeMatched"), e)
+      self.emit(SIGNAL("NodeMatched"), e.value.value())
 
   def searchFinished(self):
     if self.__totalhits:
@@ -382,9 +385,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         search += ")"
       clause["name"] = search
 
-    print self.completeClause.text()
-
-    self.filterThread.setContext(clause, self.vfs.getnode(str(self.path.text())))
+    self.filterThread.setContext(self.completeClause.text(), self.vfs.getnode(str(self.path.text())))
     self.searchBar.show()
     self.launchSearchButton.hide()
     self.stopSearchButton.show()

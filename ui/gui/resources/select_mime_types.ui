@@ -2,8 +2,16 @@
 <ui version="4.0">
  <class>selectMimeTypes</class>
  <widget class="QDialog" name="selectMimeTypes">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>256</width>
+    <height>225</height>
+   </rect>
+  </property>
   <property name="windowTitle">
-   <string notr="true"/>
+   <string notr="true">Select mime-type</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="margin">
