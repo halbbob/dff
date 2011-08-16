@@ -21,6 +21,20 @@
 
 //#define DEBUGSEARCH 1
 
+#if HAVE_TRE
+	#if WIN32
+		#define	_REGFREE	regfree
+		#define _REGCOMP	regcomp
+		#define _REGNEXEC	regnexec
+		#define _REGANEXEC	reganexec
+	#else
+		#define	_REGFREE	tre_regfree
+		#define _REGCOMP	tre_regcomp
+		#define _REGNEXEC	tre_regnexec
+		#define _REGANEXEC	tre_reganexec
+	#endif
+#endif
+
 Search::Search()
 {
   this->__pattern = "";
@@ -47,7 +61,7 @@ Search::~Search()
 {
 #if HAVE_TRE
   if (this->__needtrefree)
-    tre_regfree(&this->__preg);
+    _REGFREE(&this->__preg);
 #endif
 }
 
@@ -301,11 +315,11 @@ void			Search::__compile() throw (std::string)
       int	cflags;
 
       if (this->__needtrefree)
-      	tre_regfree(&this->__preg);
+      	_REGFREE(&this->__preg);
       cflags = REG_EXTENDED;
       if (this->__cs == Search::CaseInsensitive)
       	cflags |= REG_ICASE;
-      tre_regcomp(&this->__preg, this->__pattern.c_str(), cflags);
+      _REGCOMP(&this->__preg, this->__pattern.c_str(), cflags);
       this->__needtrefree = true;
       return;
 #else
@@ -318,11 +332,11 @@ void			Search::__compile() throw (std::string)
       int	cflags;
 
       if (this->__needtrefree)
-      	tre_regfree(&this->__preg);
+      	_REGFREE(&this->__preg);
       cflags = REG_LITERAL;
       if (this->__cs == Search::CaseInsensitive)
       	cflags |= REG_ICASE;
-      tre_regcomp(&this->__preg, this->__pattern.c_str(), cflags);
+      _REGCOMP(&this->__preg, this->__pattern.c_str(), cflags);
       this->__needtrefree = true;
       return;
 #else
@@ -426,7 +440,7 @@ int32_t                        Search::__refind(char* haystack, uint32_t hslen)
 #ifdef HAVE_TRE
   regmatch_t   pmatch[1];
   
-  if (tre_regnexec(&this->__preg, haystack, hslen, 1, pmatch, 0) == REG_OK)
+  if (_REGNEXEC(&this->__preg, haystack, hslen, 1, pmatch, 0) == REG_OK)
     {
       ret = pmatch[0].rm_so;
       this->__nlen = pmatch[0].rm_eo - pmatch[0].rm_so;
@@ -461,7 +475,7 @@ int32_t			Search::__afind(char* haystack, uint32_t hslen)
   memset(&match, 0, sizeof(match));
   match.pmatch = pmatch;
   match.nmatch = 1;
-  if (tre_reganexec(&this->__preg, haystack, hslen, &match, params, 0) == REG_OK)
+  if (_REGANEXEC(&this->__preg, haystack, hslen, &match, params, 0) == REG_OK)
     {
       ret = match.pmatch[0].rm_so;
       this->__nlen = match.pmatch[0].rm_eo - match.pmatch[0].rm_so;

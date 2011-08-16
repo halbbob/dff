@@ -29,7 +29,11 @@
 
 #include "fastsearch.hpp"
 #ifdef HAVE_TRE
-#include <tre/tre.h>
+	#ifdef WIN32
+		#include "regex.h"
+	#else
+		#include <tre/tre.h>
+	#endif
 #endif
 
 class FastSearch
@@ -60,23 +64,23 @@ public:
       CaseInsensitive = 0,
       CaseSensitive = 1
     };
-  Search();
-  Search(std::string pattern, CaseSensitivity cs = CaseSensitive, PatternSyntax syntax = Fixed);
-  ~Search();
-  uint32_t		needleLength();
-  void			setPattern(std::string pattern);
-  std::string		pattern();
-  void			setPatternSyntax(PatternSyntax syntax);
-  PatternSyntax		patternSyntax();
-  void			setCaseSensitivity(CaseSensitivity cs);
-  CaseSensitivity	caseSensitivity();
+  EXPORT Search();
+  EXPORT Search(std::string pattern, CaseSensitivity cs = CaseSensitive, PatternSyntax syntax = Fixed);
+  EXPORT ~Search();
+  EXPORT uint32_t		needleLength();
+  EXPORT void			setPattern(std::string pattern);
+  EXPORT std::string		pattern();
+  EXPORT void			setPatternSyntax(PatternSyntax syntax);
+  EXPORT PatternSyntax		patternSyntax();
+  EXPORT void			setCaseSensitivity(CaseSensitivity cs);
+  EXPORT CaseSensitivity	caseSensitivity();
   //void			setFuzzyWeight();
-  int32_t		find(char* haystack, uint32_t hslen) throw (std::string);
-  int32_t		find(std::string haystack) throw (std::string);
-  int32_t		rfind(char* haystack, uint32_t hslen) throw (std::string);
-  int32_t		rfind(std::string haystack) throw (std::string);
-  int32_t		count(char* haystack, uint32_t hslen, int32_t maxcount=-1) throw (std::string);
-  int32_t		count(std::string haystack, int32_t maxcount=-1) throw (std::string);
+  EXPORT int32_t		find(char* haystack, uint32_t hslen) throw (std::string);
+  EXPORT int32_t		find(std::string haystack) throw (std::string);
+  EXPORT int32_t		rfind(char* haystack, uint32_t hslen) throw (std::string);
+  EXPORT int32_t		rfind(std::string haystack) throw (std::string);
+  EXPORT int32_t		count(char* haystack, uint32_t hslen, int32_t maxcount=-1) throw (std::string);
+  EXPORT int32_t		count(std::string haystack, int32_t maxcount=-1) throw (std::string);
   // std::vector<uint32_t>	indexes(char* haystack, uint32_t hslen) throw (std::string);
   // std::vector<uint32_t>	indexes(std::string haystack) throw (std::string);
 private:
@@ -94,20 +98,20 @@ private:
   void				__compile() throw (std::string);
 
   //find methods implementation
-  int32_t			__ffind(char* haystack, uint32_t hslen);
-  int32_t			__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, size_t vpos, uint32_t window);
-  int32_t			__refind(char* haystack, uint32_t hslen);
-  int32_t			__afind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__ffind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, size_t vpos, uint32_t window);
+  EXPORT int32_t			__refind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__afind(char* haystack, uint32_t hslen);
 
   //rfind methods implementation
-  int32_t			__frfind(char* haystack, uint32_t hslen);
-  int32_t			__wrfind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__frfind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__wrfind(char* haystack, uint32_t hslen);
   
   //count methods implementation
-  int32_t			__fcount(char* haystack, uint32_t hslen, int32_t maxcount);
-  int32_t			__wcount(char* haystack, uint32_t hslen, int32_t maxcount);
-  int32_t			__recount(char* haystack, uint32_t hslen, int32_t maxcount);
-  int32_t			__acount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__fcount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__wcount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__recount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__acount(char* haystack, uint32_t hslen, int32_t maxcount);
 };
 
 #endif
