@@ -25,30 +25,70 @@ std::string  ewf_properties[] = {
                       "compression_type", "model", "serial_number"
             };
 
+std::string	EWFNode::__getIdentifier(uint32_t index) throw ()
+{
+  size_t	id_size;
+  uint8_t*	id;
+  std::string	identifier;
+
+  identifier = "";
+  if (libewf_handle_get_header_value_identifier_size(this->ewfso->ewf_ghandle, index, &id_size, NULL) == 1)
+    {
+      id = new uint8_t[id_size];
+      if (libewf_handle_get_header_value_identifier(this->ewfso->ewf_ghandle, index, id, id_size, NULL) == 1)
+	identifier = std::string((char*)id);
+    }
+  return identifier;
+}
+
+std::string		EWFNode::__getValue(std::string identifier) throw ()
+{
+  size_t	val_size;
+  uint8_t*	val;
+  std::string	value;
+
+  value = "";
+  if (libewf_handle_get_utf8_header_value_size(this->ewfso->ewf_ghandle, (uint8_t*)identifier.c_str(), identifier.size(), &val_size, NULL) == 1)
+    {
+      val = new uint8_t[val_size];
+      if (libewf_handle_get_utf8_header_value(this->ewfso->ewf_ghandle, (uint8_t*)identifier.c_str(), identifier.size(), val, val_size, NULL) == 1)
+	value = std::string((char*)val);
+    }
+  return value;
+}
+
 Attributes	EWFNode::_attributes()
 {
   Attributes 	attr;
-  uint8_t*      buff = (uint8_t*)malloc(sizeof(uint8_t) * 1024);
-
-
-  libewf_parse_header_values(this->ewfso->ewf_ghandle, 4); 
-  for (int i = 0; i < 13; i++)
-  {
-     *buff = '\0';	
-     libewf_get_header_value(this->ewfso->ewf_ghandle, ewf_properties[i].c_str(), (char*)buff, 1024);
-     if (*buff != '\0')
-       attr[ewf_properties[i]] = new Variant(std::string((char*)buff));
-  }
- 
-  if (libewf_get_md5_hash(this->ewfso->ewf_ghandle, buff, 16) == 1)
-  {
-    std::ostringstream  hexval;
-
-    hexval << hex <<  bytes_swap64(*((uint64_t*)(buff))) << bytes_swap64(*((uint64_t*)(buff + 8))); 
-    attr["md5"] = new Variant(hexval.str());
-  }
-  free(buff);
-
+  uint32_t	numval;
+  std::string	identifier;
+  std::string	value;
+  
+  
+  if (libewf_handle_set_header_values_date_format(this->ewfso->ewf_ghandle, LIBEWF_DATE_FORMAT_CTIME, NULL) == 1)
+    {
+      if (libewf_handle_get_number_of_header_values(this->ewfso->ewf_ghandle, &numval, NULL) == 1)
+	{
+	  for (uint32_t i = 0; i != numval; i++)
+	    {
+	      try
+		{
+		  identifier = this->__getIdentifier(i);
+		  if (!identifier.empty())
+		    {
+		      value = this->__getValue(identifier);
+		      if (!value.empty())
+			attr[identifier] = new Variant(value);
+		      else
+			attr[identifier] = new Variant(std::string("N/A"));
+		    }
+		}
+	      catch (std::exception)
+		{
+		}
+	    }
+	}
+    }
   return attr;
 }
 

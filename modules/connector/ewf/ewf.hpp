@@ -36,9 +36,17 @@ class ewf : public fso
 private:
   Node*			parent;
   FdManager*		__fdm;
-  size64_t		volumeSize; 
+  size64_t		volumeSize;
+  std::string		volumeName;
   char**		files;
   uint16_t		nfiles;
+  libewf_error_t*	__ewf_error;
+  void			__checkSignature(std::list<Variant*> vl) throw (std::string);
+  void			__initHandle(libewf_handle_t** handle, libewf_error_t** error) throw (std::string);
+  void			__openHandle(libewf_handle_t* handle, libewf_error_t** error) throw (std::string);
+  void			__getVolumeSize() throw (std::string);
+  void			__getVolumeName();
+  void			__cleanup();
 public:
   ewf();
   ~ewf();
