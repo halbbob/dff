@@ -15,9 +15,13 @@
  */
 
 #include "attributesindexer.hpp"
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
+#ifndef WIN32
 pthread_mutex_t attrsmutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 AttributesIndexer&	AttributesIndexer::Get()
 {
