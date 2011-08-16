@@ -420,18 +420,25 @@ bool		StringFilter::__devaluate(Node* node)
   found = false;
   if (node->size() == 0)
     return found;
-  if ((v = node->open()) != NULL)
+  try
     {
-      cit = this->__ctxs.begin();
-      while (cit != this->__ctxs.end() && !this->_stop)
+      if ((v = node->open()) != NULL)
 	{
-	  if ((idx = v->find(*cit)) != -1)
+	  cit = this->__ctxs.begin();
+	  while (cit != this->__ctxs.end() && !this->_stop)
 	    {
-	      found = true;
-	      //std::cout << (*cit)->pattern() << " FOUND in " << node->absolute() << " @ " << idx << std::endl;
+	      if ((idx = v->find(*cit)) != -1)
+		{
+		  found = true;
+		  //std::cout << (*cit)->pattern() << " FOUND in " << node->absolute() << " @ " << idx << std::endl;
+		}
+	      cit++;
 	    }
-	  cit++;
 	}
+    }
+  catch (vfsError err)
+    {
+      return found;
     }
   return found;
 }
@@ -448,7 +455,7 @@ BooleanFilter::~BooleanFilter()
 BooleanFilter::BooleanFilter(const std::string& attr, CmpOperator::Op cmp, bool value) : __attr(attr)
 {
   this->__cmp = cmp;
-  this->__value = value;
+  this->__val = value;
 }
 
 void		BooleanFilter::compile() throw (std::string)
@@ -489,9 +496,9 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
   if (process)
     {
       if (this->__cmp == CmpOperator::EQ)
-	return (value == this->__value);
+	return (value == this->__val);
       else if (this->__cmp == CmpOperator::NEQ)
-	return (value != this->__value);
+	return (value != this->__val);
       else
 	return false;
     }

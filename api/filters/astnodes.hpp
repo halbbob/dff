@@ -161,7 +161,7 @@ private:
   CmpOperator::Op	__cmp;
   uint32_t		__cost;
   std::string		__attr;
-  bool			__value;
+  bool			__val;
 };
 
 class TimeFilter: public AstNode
