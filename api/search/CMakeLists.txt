@@ -12,16 +12,14 @@
 # Author(s):
 #  Frederic Baguelin <fba@digital-forensic.org>
 
-FIND_PACKAGE(SWIG REQUIRED)
-INCLUDE(${SWIG_USE_FILE})
+#FIND_PACKAGE(SWIG REQUIRED)
+#INCLUDE(${SWIG_USE_FILE})
 
 #FIND_PACKAGE(PythonLibs)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
-INCLUDE_DIRECTORIES(/usr/include)
-INCLUDE_DIRECTORIES(/usr/local/include)
 
 SET_SOURCE_FILES_PROPERTIES(libsearch.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(libsearch python libsearch.i search.cpp boyer_moore.cpp)
@@ -40,11 +38,22 @@ if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 )
 endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
-set(libsearch_srcs
-  libsearch.py
-  find.py
-  __init__.py
-)
+if ( WIN32 )
+	set(libsearch_srcs
+		libsearch.py
+		find.py
+		__init__.py
+		tre4.dll
+		libiconv2.dll
+		libintl3.dll
+		)
+else ( WIN32 )
+	set(libsearch_srcs
+		libsearch.py
+		find.py
+		__init__.py
+		)
+endif ( WIN32 )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 

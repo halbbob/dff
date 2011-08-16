@@ -70,6 +70,18 @@ if (${SWIGOK})
   MESSAGE(FATAL_ERROR "Need SWIG version >= 1.3.38 (current version is ${SWIG_VERSION})")
 endif (${SWIGOK})
 
+
+find_package(AFF)
+
+if (CMAKE_GENERATOR MATCHES "Unix Makefiles")
+   message(STATUS "current build dir")
+   message(STATUS "build command is based on unix Makefiles")
+   #add_custom_command (OUTPUT api COMMAND make WORKING_DIRECTORY api)
+   add_custom_target (modules ALL COMMAND make -i WORKING_DIRECTORY modules)
+   #add_custom_command (OUTPUT ui COMMAND make WORKING_DIRECTORY ui/)
+   #add_custom_command (OUTPUT all COMMAND make DEPENDS api modules ui)
+endif (CMAKE_GENERATOR MATCHES "Unix Makefiles")
+
 # Project-wide swig options
 #SET(CMAKE_SWIG_FLAGS "-py3")
 
@@ -249,31 +261,25 @@ if(UNIX)
   endif(PFF_MAIN_LIBRARY)
 endif(UNIX)
 
-## AFFlib check for AFF connector, added separatly on windows
-# TODO ; we need afflib >= 3.6, this have to be checked
-if(UNIX)
-  if(INSTALL)
-    # Link with static version at install, until AFF >= 3.6 be added to respective packages streams
-    find_library(AFF_LIBRARY NAMES libafflib.a)
-  else(INSTALL)
-    find_library(AFF_LIBRARY NAMES afflib)
-  endif(INSTALL)
-  if(AFF_LIBRARY)
-    message(STATUS "AFF library found: ${AFF_LIBRARY}")
-  else(AFF_LIBRARY)
-    message(STATUS "AFF library not found, AFF connector will not be build.")
-  endif(AFF_LIBRARY)
-endif(UNIX)
 
 ## LibTRE check for regexp and fuzzy support in search API
-find_library(TRE_LIBRARY NAMES tre PATH_SUFFIXES /usr /usr/local)
-if (TRE_LIBRARY)
-   add_definitions (-DHAVE_TRE)
-   message(STATUS "tre library found: ${TRE_LIBRARY}, regexp and fuzzy match activated")
-else (TRE_LIBRARY)
-   message(STATUS "tre library not found, regexp and fuzzy match not activated")
-endif (TRE_LIBRARY)
-
+if ( UNIX )
+	find_library(TRE_LIBRARY NAMES tre PATH_SUFFIXES /usr /usr/local)
+	if (TRE_LIBRARY)
+		find_path(TRE_INCLUDE tre PATH /usr/include /usr/local/include)
+		if ( TRE_INCLUDE )
+		     	message(STATUS "has tre include : ${TRE_INCLUDE}")
+			INCLUDE_DIRECTORIES(${TRE_INCLUDE})
+			add_definitions (-DHAVE_TRE)
+			message(STATUS "tre library found: ${TRE_LIBRARY}, regexp and fuzzy match activated")
+		else ( TRE_INCLUDE )
+			message(STATUS "tre library not found, regexp and fuzzy match not activated")
+		endif ( TRE_INCLUDE )
+	endif ( TRE_LIBRARY )
+else ( UNIX )
+	message(STATUS "tre library found: regexp and fuzzy match activated")
+	add_definitions (-DHAVE_TRE)
+endif ( UNIX )
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})

@@ -25,6 +25,12 @@ set(aff_srcs
     affnode.cpp
 )
 
+message(STATUS "${AFF_VERSION}")
+IF (${AFF_VERSION} VERSION_GREATER "3.6.6")
+   add_definitions (-DNEW_AFF_LIB)
+ENDIF (${AFF_VERSION} VERSION_GREATER "3.6.6")
+
+
 SET_SOURCE_FILES_PROPERTIES(aff.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(AFF python aff.i ${aff_srcs})
 if(WIN32)

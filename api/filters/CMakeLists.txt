@@ -16,17 +16,31 @@
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
 
-find_package(BISON)
 find_package(FLEX)
 
-#FIND_PACKAGE(PythonLibs)
 
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
 
-BISON_TARGET(parser parser.y ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
-FLEX_TARGET(lexer lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp  COMPILE_FLAGS "--header-file=lexer.hpp")
+if ( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp )
+	message(STATUS "bison files NOT generated, Bison executable is required")
+	find_package(BISON REQUIRED)
+	BISON_TARGET(parser parser.y ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
+else ( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp )
+	set(BISON_parser_OUTPUTS ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp)
+	message(STATUS "BISON files already generated and setted to ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp") 
+endif ( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser.cpp )
+
+if ( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.hpp )
+	message(STATUS "flex files NOT generated, Flex executable is required")
+	find_package(FLEX REQUIRED)
+	FLEX_TARGET(lexer lexer.l ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp  COMPILE_FLAGS "--header-file=lexer.hpp")
+else (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.hpp )
+	message(STATUS "FLEX files already generated and setted to ${CMAKE_CURRENT_SOURCE_DIR}/{lexer.hpp,lexer.cpp}")
+	set(FLEX_lexer_OUTPUTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp)
+endif ( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.cpp OR NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/lexer.hpp )
+
 
 # does not seem to be mandatory. Here just in case and as a reminder...
 #ADD_FLEX_BISON_DEPENDENCY(lexer parser)
