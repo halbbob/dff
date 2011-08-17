@@ -19,6 +19,7 @@ INCLUDE(${SWIG_USE_FILE})
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
+include_directories(${EWF_INCLUDE_DIR})
 
 set(ewf_srcs
     ewf.cpp
@@ -28,10 +29,9 @@ set(ewf_srcs
 SET_SOURCE_FILES_PROPERTIES(ewf.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(EWF python ewf.i ${ewf_srcs})
 if(WIN32)
-  SWIG_LINK_LIBRARIES(EWF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ewf)
+  SWIG_LINK_LIBRARIES(EWF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${EWF_LIBRARY})
 else(WIN32)
-#  SWIG_LINK_LIBRARIES(EWF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${EWF_LIBRARY})
-  SWIG_LINK_LIBRARIES(EWF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ewf)
+  SWIG_LINK_LIBRARIES(EWF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${EWF_LIBRARY})
 endif(WIN32)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")

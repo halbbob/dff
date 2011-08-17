@@ -23,11 +23,11 @@ INCLUDE_DIRECTORIES(../include)
 
 SET_SOURCE_FILES_PROPERTIES(libsearch.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(libsearch python libsearch.i search.cpp boyer_moore.cpp)
-if (TRE_LIBRARY)
+if (TRE_FOUND)
    SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES} ${TRE_LIBRARY})
-else (TRE_LIBRARY)
+else (TRE_FOUND)
    SWIG_LINK_LIBRARIES(libsearch ${PYTHON_LIBRARIES})
-endif (TRE_LIBRARY)
+endif (TRE_FOUND)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
   set_target_properties (${SWIG_MODULE_libsearch_REAL_NAME} PROPERTIES

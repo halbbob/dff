@@ -12,12 +12,12 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-find_package(AFF)
+add_subdirectory(devices)
 
 add_subdirectory (local)
-#add_subdirectory (libewf)
-add_subdirectory (ewf)
-add_subdirectory(devices)
+IF (EWF_FOUND)
+   add_subdirectory (ewf)
+ENDIF (EWF_FOUND)
 
 if (AFF_FOUND)
    add_subdirectory(aff)

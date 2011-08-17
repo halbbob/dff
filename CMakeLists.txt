@@ -19,7 +19,14 @@ project (dff)
 cmake_minimum_required (VERSION 2.6)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
-#### Project-wide requirements
+SET(CMAKE_INCLUDE_PATH "${INCLUDEDIR}")
+SET(CMAKE_LIBRARY_PATH "${LIBDIR}")
+
+find_file(FILEERROR liberror.h)
+find_library(LIBERROR error)
+message(STATUS ${LIBERROR})
+message(STATUS ${FILEERROR})
+
 
 # check 64 bit
 if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
@@ -72,6 +79,31 @@ endif (${SWIGOK})
 
 
 find_package(AFF)
+find_package(BFIO)
+find_package(EWF)
+find_package(PFF)
+find_package(TRE)
+
+IF (TRE_FOUND)
+   add_definitions(-DHAVE_TRE)
+   message(STATUS "TRE installed version: ${TRE_VERSION}
+   approximative matching support : ${TRE_HAVE_APPROX}
+   wide character support         : ${TRE_HAVE_WCHAR}
+   multibyte character support    : ${TRE_HAVE_MULTIBYTE}")
+ENDIF (TRE_FOUND)
+
+IF (PFF_FOUND)
+   message(STATUS "PFF installed version: ${PFF_VERSION}")
+ENDIF (PFF_FOUND)
+
+IF (BFIO_FOUND)
+   message(STATUS "BFIO installed version: ${BFIO_VERSION}")
+ENDIF (BFIO_FOUND)
+
+IF (EWF_FOUND)
+   message(STATUS "EWF installed version: ${EWF_VERSION}")
+   message(STATUS "library: ${EWF_LIBRARY}")
+ENDIF (EWF_FOUND)
 
 if (CMAKE_GENERATOR MATCHES "Unix Makefiles")
    message(STATUS "current build dir")
@@ -233,33 +265,6 @@ if (ENABLE_INDEXER)
   	endif(CLUCENE_CONFIG_INCLUDE_PATH)
    endif(CLUCENE_CONFIG_INCLUDE_PATH)
 endif(ENABLE_INDEXER)
-
-## LibPFF check for PFF module, added separatly on windows
-# Need libbfio separate installation for DFF to be able to use PFF.
-# To summarize, install http://libbfio.sf.net first, before http://libpff.sf.net .
-if(UNIX)
-  if(INSTALL)
-    # Link with static version at install, until PFF be added to respective packages streams
-    find_library(PFF_MAIN_LIBRARY NAMES libpff.a)
-  else(INSTALL)
-    find_library(PFF_MAIN_LIBRARY NAMES pff)
-  endif(INSTALL)
-  if(PFF_MAIN_LIBRARY)
-    message(STATUS "PFF library found: ${PFF_MAIN_LIBRARY}")
-    if(INSTALL)
-      find_library(PFF_BFIO_LIBRARY NAMES libbfio.a)
-    else(INSTALL)
-      find_library(PFF_BFIO_LIBRARY NAMES bfio)
-    endif(INSTALL)
-    if(PFF_BFIO_LIBRARY)
-      message(STATUS "Separate PFF bfio library found: ${PFF_BFIO_LIBRARY}")
-    else(PFF_BFIO_LIBRARY)
-      message(STATUS "Separate PFF bfio library not found, unable to use PFF library, PFF module will not be build.")
-    endif(PFF_BFIO_LIBRARY)
-  else(PFF_MAIN_LIBRARY)
-    message(STATUS "PFF library not found, PFF module will not be build.")
-  endif(PFF_MAIN_LIBRARY)
-endif(UNIX)
 
 
 ## LibTRE check for regexp and fuzzy support in search API
@@ -574,3 +579,8 @@ ADD_CUSTOM_COMMAND(
 
 ADD_CUSTOM_TARGET(tags DEPENDS ${CMAKE_BINARY_DIR}/ctags)
 endif (UNIX)
+
+MESSAGE("CMAKE_FIND_ROOT_PATH: "  ${CMAKE_FIND_ROOT_PATH} )
+MESSAGE("CMAKE_SYSTEM_LIBRARY_PATH: "  ${CMAKE_SYSTEM_LIBRARY_PATH} )
+MESSAGE("CMAKE_INCLUDE_PATH: "  ${CMAKE_INCLUDE_PATH} )
+MESSAGE("CMAKE_SYSTEM_INCLUDE_PATH: "  ${CMAKE_SYSTEM_INCLUDE_PATH} )

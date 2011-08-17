@@ -20,6 +20,9 @@ INCLUDE(${SWIG_USE_FILE})
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
+include_directories(${PFF_INCLUDE_DIR})
+include_directories(${BFIO_INCLUDE_DIR})
+
 
 set(pff_srcs
     pff.cpp
@@ -44,9 +47,9 @@ SWIG_ADD_MODULE(PFF python pff.i ${pff_srcs})
 
 if(WIN32)
   add_definitions(-DLIBPFF_HAVE_BFIO)
-  SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs libpff libbfio liberror)
+  SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${PFF_LIBRARY} ${BFIO_LIBRARY} liberror)
 else(WIN32)
-  SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${PFF_MAIN_LIBRARY} ${PFF_BFIO_LIBRARY})
+  SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${PFF_LIBRARY} ${BFIO_LIBRARY})
 endif(WIN32)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
