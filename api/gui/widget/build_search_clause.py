@@ -52,22 +52,19 @@ class MimeType(Ui_MimeType, QWidget):
     self.setupUi(self)
     self.text_t = ""
     self.field = "mime"
+    self.edit_dialog = SelectMimeTypes()
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.edit_mime_types.clicked.connect(self.editMimeTypes)
     else:
       QtCore.QObject.connect(self.edit_mime_types, SIGNAL("clicked(bool)"), self.editMimeTypes)
     
   def editMimeTypes(self, changed):
-    edit_dialog = SelectMimeTypes()
-    ret = edit_dialog.exec_()
+    ret = self.edit_dialog.exec_()
     if QDialog.Accepted:
-      root_item = edit_dialog.mime_types.invisibleRootItem()
-      for i in range(0, root_item.childCount()):
-        parent_item = root_item.child(i)
-        for j in range(0, parent_item.childCount()):
-          child_item = parent_item.child(j)
-          if child_item.checkState(0) == Qt.Checked:
-            self.selected_mime_types.addItem(child_item.text(0))
+      self.selected_mime_types.clear()
+      selectedItems = self.edit_dialog.mime.selectedItems()
+      for item in selectedItems:
+        self.selected_mime_types.addItem(item)
 
   def text(self):
     text_t = " in ["
