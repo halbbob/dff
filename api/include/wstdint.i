@@ -8,7 +8,11 @@
  * ----------------------------------------------------------------------------- */
 
 %{
-#include "wstdint.h"		// Use the C99 official header
+#if (_MSC_VER >= 1600)
+	#include <stdint.h>
+#else
+	#include "wstdint.h"		// Use the C99 official header
+#endif
 %}
 
 %include <swigarch.i>
@@ -16,7 +20,7 @@
 /* Exact integral types.  */
 
 /* Signed.  */
-
+#if (_MSC_VER < 1600)
 typedef signed char		int8_t;
 typedef short int		int16_t;
 typedef int			int32_t;
@@ -106,4 +110,4 @@ typedef long long int		intmax_t;
 typedef unsigned long long int	uintmax_t;
 #endif
 
-
+#endif

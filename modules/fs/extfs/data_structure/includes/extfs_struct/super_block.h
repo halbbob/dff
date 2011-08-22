@@ -21,10 +21,13 @@
 
 #include "node.hpp"
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
 
 /*! \def SUPER_BLOCK_SIZE
     \brief Size of the superblock.

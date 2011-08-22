@@ -22,6 +22,14 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 SET(CMAKE_INCLUDE_PATH "${INCLUDEDIR}")
 SET(CMAKE_LIBRARY_PATH "${LIBDIR}")
 
+#FILE(DOWNLOAD "http://sourceforge.net/projects/libbfio/files/libbfio-alpha/libbfio-alpha-20110625/libbfio-alpha-20110625.tar.gz/download" ./libbfio/libbfio.tar.gz SHOW_PROGESS)
+#execute_process(COMMAND "C:/Program Files (x86)/7-Zip/7z.exe" -y x -olibbfio libbfio/libbfio.tar.gz)
+#execute_process(COMMAND "C:/Program Files (x86)/7-Zip/7z.exe" -y x -olibbfio libbfio/libbfio.tar)
+#execute_process(COMMAND "C:/Program Files (x86)/Microsoft Visual Studio 10.0/Common7/Tools/vsvars32.bat")
+#execute_process(COMMAND "devenv" libbfio/libbfio-20110625/msvscpp/libbfio.sln /upgrade)
+#execute_process(COMMAND "msbuild" /p:Configuration=Release /t:Build libbfio/libbfio-20110625/msvscpp/libbfio.sln)
+
+
 # check 64 bit
 if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
   set( HAVE_64_BIT 0 )
@@ -80,6 +88,7 @@ find_package(TRE)
 
 IF (TRE_FOUND)
    add_definitions(-DHAVE_TRE)
+   include_directories(${TRE_INCLUDE_DIR})
    message(STATUS "TRE installed version: ${TRE_VERSION}
    approximative matching support : ${TRE_HAVE_APPROX}
    wide character support         : ${TRE_HAVE_WCHAR}
@@ -98,6 +107,7 @@ IF (EWF_FOUND)
    message(STATUS "EWF installed version: ${EWF_VERSION}")
    message(STATUS "library: ${EWF_LIBRARY}")
 ENDIF (EWF_FOUND)
+
 
 if (CMAKE_GENERATOR MATCHES "Unix Makefiles")
    message(STATUS "current build dir")
@@ -128,6 +138,7 @@ endif(NOT HAVE_FUSE)
 
 IF(WIN32)
   SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DWIN32 -DSWIGWIN)
+  add_definitions("/W3 /D_CRT_SECURE_NO_WARNINGS /wd4290 /nologo")
 ENDIF(WIN32)
 
 
@@ -260,25 +271,6 @@ if (ENABLE_INDEXER)
    endif(CLUCENE_CONFIG_INCLUDE_PATH)
 endif(ENABLE_INDEXER)
 
-
-## LibTRE check for regexp and fuzzy support in search API
-if ( UNIX )
-	find_library(TRE_LIBRARY NAMES tre PATH_SUFFIXES /usr /usr/local)
-	if (TRE_LIBRARY)
-		find_path(TRE_INCLUDE tre PATH /usr/include /usr/local/include)
-		if ( TRE_INCLUDE )
-		     	message(STATUS "has tre include : ${TRE_INCLUDE}")
-			INCLUDE_DIRECTORIES(${TRE_INCLUDE})
-			add_definitions (-DHAVE_TRE)
-			message(STATUS "tre library found: ${TRE_LIBRARY}, regexp and fuzzy match activated")
-		else ( TRE_INCLUDE )
-			message(STATUS "tre library not found, regexp and fuzzy match not activated")
-		endif ( TRE_INCLUDE )
-	endif ( TRE_LIBRARY )
-else ( UNIX )
-	message(STATUS "tre library found: regexp and fuzzy match activated")
-	add_definitions (-DHAVE_TRE)
-endif ( UNIX )
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})

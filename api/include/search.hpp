@@ -20,7 +20,11 @@
 #ifndef WIN32
 #include <stdint.h>
 #else
-#include "wstdint.h"
+	#if _MSC_VER >= 1600
+		#include <stdint.h>
+	#else
+		#include "wstdint.h"
+	#endif
 #endif
 #include <string>
 #include <list>
@@ -29,10 +33,10 @@
 
 #include "fastsearch.hpp"
 #ifdef HAVE_TRE
+	#include <tre/tre.h>
 	#ifdef WIN32
-		#include "regex.h"
-	#else
-		#include <tre/tre.h>
+		#undef HAVE_ALLOCA
+		#undef HAVE_ALLOCA_H
 	#endif
 #endif
 

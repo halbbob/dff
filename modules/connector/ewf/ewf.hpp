@@ -17,6 +17,13 @@
 #ifndef __EWF_HH__
 #define __EWF_HH__
 
+#if defined( _MSC_VER )
+	#if defined( _WIN64 )
+		typedef __int64			ssize_t;
+	#else
+		typedef __int32			ssize_t;
+	#endif
+#endif
 
 #include "fso.hpp"
 #include "node.hpp"
@@ -29,6 +36,7 @@
 #include "path.hpp"
 #include "fdmanager.hpp"
 #include <libewf.h>
+
 
 
 class ewf : public fso

@@ -22,6 +22,8 @@
 #include <string.h>
 #ifndef WIN32
 #include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
 #include "wstdint.h"
 #endif

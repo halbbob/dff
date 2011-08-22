@@ -684,9 +684,11 @@ Open the node and return a pointer to a VFile instance
 %include "std_vector.i"
 %include "std_except.i"
 #ifndef WIN32
-%include "stdint.i"
+	%include "stdint.i"
+#elif _MSC_VER >= 1600
+	%include "stdint.i"
 #else
-%include "wstdint.i"
+	%include "wstdint.i"
 #endif
 %include "windows.i"
 

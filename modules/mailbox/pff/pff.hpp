@@ -17,6 +17,14 @@
 #ifndef __PFF_HH__
 #define __PFF_HH__
 
+#if defined( _MSC_VER )
+	#if defined( _WIN64 )
+		typedef __int64			ssize_t;
+	#else
+		typedef __int32			ssize_t;
+	#endif
+#endif
+
 #include "pff_common.hpp"
 #include "pff_node.hpp"
 #include "pff_macro.hpp"

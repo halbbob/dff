@@ -13,9 +13,21 @@ FIND_LIBRARY(BFIO_LIBRARY bfio)
 IF (BFIO_LIBRARY)
    FIND_PATH(BFIO_INCLUDE_FILE libbfio.h)
    IF (BFIO_INCLUDE_FILE)
-      STRING(REPLACE "libbfio.h" "" BFIO_INCLUDE_DIR "${BFIO_INCLUDE_FILE}")
+   	  IF (CMAKE_GENERATOR MATCHES "Visual Studio")
+		STRING(REPLACE "libbfio.lib" "" BFIO_DYN_LIB_PATH "${BFIO_LIBRARY}")
+		STRING(REPLACE "libbfio.h" "" BFIO_INCLUDE_DIR "${BFIO_INCLUDE_FILE}")
+		SET(BFIO_DYN_LIBRARIES ${BFIO_DYN_LIB_PATH}/libbfio.dll)
+		FILE(COPY ${BFIO_DYN_LIBRARIES} DESTINATION ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/Debug/)
+	  ENDIF (CMAKE_GENERATOR MATCHES "Visual Studio")
       FILE(WRITE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/bfioversion.c
-      "#include <libbfio.h>
+      "#ifdef WIN32
+			#if _MSC_VER >= 1600
+				#include <stdint.h>
+			#else
+				#include <wstdint.h>
+			#endif
+	   #endif
+	   #include <libbfio.h>
        #include <stdio.h>
        int main()
        {
@@ -23,12 +35,16 @@ IF (BFIO_LIBRARY)
 
 	 version = libbfio_get_version();
   	 printf(\"%s\", version);
+	 return 1;
        }")
+     IF (UNIX)
+	   SET(COMP_BFIO_DEF "-DHAVE_STDINT_H -DHAVE_INTTYPES_H -D_LIBBFIO_TYPES_H_INTEGERS")
+	 ENDIF (UNIX)
       TRY_RUN(BFIO_RUN_RESULT BFIO_COMP_RESULT
 	${CMAKE_BINARY_DIR}
       	${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/bfioversion.c
 	CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${BFIO_INCLUDE_DIR} -DLINK_LIBRARIES:STRING=${BFIO_LIBRARY}
-	COMPILE_DEFINITIONS "-DHAVE_STDINT_H -DHAVE_INTTYPES_H"
+	COMPILE_DEFINITIONS ${COMP_BFIO_DEF}
 	COMPILE_OUTPUT_VARIABLE COMP_OUTPUT
 	RUN_OUTPUT_VARIABLE RUN_OUTPUT)
       #message(STATUS ${BFIO_COMP_RESULT})

@@ -19,10 +19,13 @@
 #ifndef __INODES__H__
 #define __INODES__H__
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
 
 /* access rights */
 #define _IRUSR  400

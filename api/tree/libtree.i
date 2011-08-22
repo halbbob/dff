@@ -18,9 +18,11 @@
 
 %include "std_string.i"
 #ifndef WIN32
-%include "stdint.i"
+	%include "stdint.i"
+#elif _MSC_VER >= 1600
+	%include "stdint.i"
 #else
-%include "wstdint.i"
+	%include "wstdint.i"
 #endif
 %include "std_list.i"
 %include "std_map.i"

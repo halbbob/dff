@@ -21,8 +21,13 @@
 
 #include "vfs.hpp"
 #include "common.hpp"
+
 #if (defined(WIN64) || defined(WIN32))
-#include "wstdint.h"
+	#if _MSC_VER >= 1600
+		#include <stdint.h>
+	#else
+		#include "wstdint.h"
+	#endif
 #include <time.h>
 #include <stdio.h>
 #else

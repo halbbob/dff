@@ -13,10 +13,21 @@ FIND_LIBRARY(PFF_LIBRARY pff)
 IF (PFF_LIBRARY)
    FIND_FILE(PFF_INCLUDE_FILE libpff.h)
    IF (PFF_INCLUDE_FILE)
-      STRING(REPLACE "libpff.h" "" PFF_INCLUDE_DIR "${PFF_INCLUDE_FILE}")
-      message(STATUS "LIBPFF include path found ${PFF_INCLUDE_DIR}")
+	  IF (CMAKE_GENERATOR MATCHES "Visual Studio")
+		STRING(REPLACE "libpff.h" "" PFF_INCLUDE_DIR "${PFF_INCLUDE_FILE}")
+		STRING(REPLACE "libpff.lib" "" PFF_DYN_LIB_PATH "${PFF_LIBRARY}")
+		SET (PFF_DYN_LIBRARIES ${PFF_DYN_LIB_PATH}/libpff.dll)
+		FILE(COPY ${BFIO_DYN_LIBRARIES} ${PFF_DYN_LIBRARIES} DESTINATION ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/Debug/)
+	  ENDIF (CMAKE_GENERATOR MATCHES "Visual Studio")
       FILE(WRITE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/pffversion.c
-      "#include <libpff.h>
+      "#ifdef WIN32
+			#if _MSC_VER >= 1600
+				#include <stdint.h>
+			#else
+				#include <wstdint.h>
+			#endif
+	   #endif
+	   #include <libpff.h>
        #include <stdio.h>
        int main()
        {
@@ -24,12 +35,16 @@ IF (PFF_LIBRARY)
 
 	 version = libpff_get_version();
   	 printf(\"%s\", version);
+	 return 1;
        }")
+     IF (UNIX)
+	   SET(COMP_PFF_DEF "-DHAVE_STDINT_H -DHAVE_INTTYPES_H -D_LIBPFF_TYPES_H_INTEGERS")
+	 ENDIF (UNIX)
       TRY_RUN(PFF_RUN_RESULT PFF_COMP_RESULT
 	${CMAKE_BINARY_DIR}
       	${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/pffversion.c
 	CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${PFF_INCLUDE_DIR} -DLINK_LIBRARIES:STRING=${PFF_LIBRARY}
-	COMPILE_DEFINITIONS "-DHAVE_STDINT_H -DHAVE_INTTYPES_H"
+	COMPILE_DEFINITIONS ${COMP_PFF_DEF}
 	COMPILE_OUTPUT_VARIABLE COMP_OUTPUT
 	RUN_OUTPUT_VARIABLE RUN_OUTPUT)
       IF (PFF_COMP_RESULT)

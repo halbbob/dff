@@ -19,12 +19,14 @@
 #ifndef BLK_LIST_
 #define BLK_LIST_
 
-#include <string>
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
 
 #include "../data_structure/includes/GroupDescriptor.h"
 #include "../data_structure/includes/SuperBlock.h"

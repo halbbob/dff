@@ -23,10 +23,12 @@
 #include "common.hpp"
 #include "attribute.hpp"
 
-#if (defined(WIN64) || defined(WIN32))
-#include "wstdint.h"
+#ifndef WIN32
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include <stdint.h>
+	#include "wstdint.h"
 #endif
 
 

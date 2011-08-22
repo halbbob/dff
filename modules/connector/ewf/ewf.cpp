@@ -64,7 +64,7 @@ void	ewf::__checkSignature(std::list<Variant*> vl) throw (std::string)
       std::string path = (*vpath)->value<Path* >()->path;
       if (libewf_check_file_signature(path.c_str(), &this->__ewf_error) == 1)
 	{
-	  this->files[nfiles] = (char*)path.c_str();
+	  this->files[nfiles] = strdup((char*)path.c_str());
 	  this->nfiles++;
 	}
       else
@@ -154,7 +154,6 @@ void	ewf::__getVolumeName()
 void	ewf::__getVolumeSize() throw (std::string)
 {
   std::string	err;
-  char*		cerr;
   
   if (libewf_handle_get_media_size(this->ewf_ghandle, &this->volumeSize, &this->__ewf_error) == -1)
     {
@@ -272,7 +271,6 @@ uint64_t ewf::vseek(int fd, uint64_t offset, int whence)
 {
   fdinfo*		fi;
   libewf_handle_t* 	ewf_handle; 
-  uint64_t		current_offset;
 
   try 
   {
