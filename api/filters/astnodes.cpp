@@ -296,9 +296,9 @@ void		StringFilter::__scompile()
       ctx = new Search;
       if (this->__attr == "mime")
   	{
-  	  pattern = "*" + (*it).substr(1, (*it).size() - 2) + "*";
+  	  pattern = (*it).substr(1, (*it).size() - 2);
   	  ctx->setCaseSensitivity(Search::CaseInsensitive);
-  	  ctx->setPatternSyntax(Search::Wildcard);
+  	  ctx->setPatternSyntax(Search::Fixed);
   	  ctx->setPattern(pattern);
   	}
       else
@@ -337,13 +337,12 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
 {
   StringList		values;
   Attributes		vmap;
-  Attributes::iterator	mit;
+  Attributes::iterator	it;
   Variant*		v;
   bool			process;
   
   if (this->__attr == "name")
     {
-      //std::cout << "GOT NAME" << std::endl;
       values.push_back(node->name());
       process = true;
     }
@@ -351,22 +350,20 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
     process = true;
   else if (this->__attr == "mime")
     {
-      //std::cout << "GOT MIME" << std::endl;
       if ((v = node->dataType()) != NULL)
 	{
 	  vmap = v->value<Attributes>();
-	  for (mit = vmap.begin(); mit != vmap.end(); mit++)
-	    if (mit->second != NULL)
-	      {
-		try
-		  {
-		    values.push_back(mit->second->value<std::string>());
-		  }
-		catch (std::string err)
-		  {
-		    throw err;
-		  }
-	      }
+	  if (((it = vmap.find("magic mime")) != vmap.end()) && (it->second != NULL))
+	    {
+	      try
+		{
+		  values.push_back(it->second->value<std::string>());
+		}
+	      catch (std::string err)
+		{
+		  throw err;
+		}
+	    }
 	  process = true;
 	}
     }
@@ -405,7 +402,6 @@ bool		StringFilter::__sevaluate(StringList values)
    for (cit = this->__ctxs.begin(); cit != this->__ctxs.end(); cit++)
      if ((*cit)->find(*vit) != -1)
        found = true;
- //std::cout << "FOUND ---> " << found << std::endl;
  return found;
 }
 
@@ -428,10 +424,7 @@ bool		StringFilter::__devaluate(Node* node)
 	  while (cit != this->__ctxs.end() && !this->_stop)
 	    {
 	      if ((idx = v->find(*cit)) != -1)
-		{
-		  found = true;
-		  //std::cout << (*cit)->pattern() << " FOUND in " << node->absolute() << " @ " << idx << std::endl;
-		}
+		found = true;
 	      cit++;
 	    }
 	}

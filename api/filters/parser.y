@@ -139,9 +139,11 @@ time_filter : TTIME comp_operators TTIMESTAMP { $$ = new TimeFilter(*$1, $2, new
 | TTIME TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, *$4); delete $1; delete $4; }
 | TTIME TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, *$5); delete $1; delete $5; }
 | TSTRING comp_operators TTIMESTAMP { $$ = new TimeFilter(*$1, $2, new vtime(*$3)); delete $1; delete $3; }
+
+// The following rules create conflicts at the moment. Need to enhance grammar !
 /* | TSTRING comp_operators TNUMBER {$$ = new TimeFilter(*$1, $2, new vtime($3, 0)); delete $1; } */
-| TSTRING TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, *$4); delete $1; delete $4; }
-| TSTRING TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, *$5); delete $1; delete $5; }
+/* | TSTRING TIN TLBRACKET time_list TRBRACKET { $$ = new TimeFilter(*$1, CmpOperator::EQ, *$4); delete $1; delete $4; } */
+/* | TSTRING TNOT TIN TLBRACKET time_list TRBRACKET {$$ = new TimeFilter(*$1, CmpOperator::NEQ, *$5); delete $1; delete $5; } */
 ;
 
 number_list: TNUMBER { $$ = new NumberList(); $$->push_back($1); }
