@@ -40,6 +40,7 @@ private:
   uint32_t	__uid;
   std::string	__query;
   AstNode*	__root;
+  bool		__stop;
 };
 
 #endif

@@ -24,6 +24,7 @@ int yyparse(void *param);
 
 Filter::Filter(std::string fname)
 {
+  this->__stop = false;
   this->__fname = fname;
   this->__query = "";
   this->__uid = 0;
@@ -33,7 +34,10 @@ Filter::Filter(std::string fname)
 Filter::~Filter()
 {
   if (this->__root != NULL)
-    delete this->__root;
+    {
+      this->deconnection(this->__root);
+      delete this->__root;
+    }
 }
 
 // Future implementation will provide a filter manager with precompiled
@@ -65,6 +69,7 @@ void	Filter::compile(std::string query) throw (std::string)
     throw (std::string("error while initializing lexer"));
   if (this->__root != NULL)
     {
+      this->deconnection(this->__root);
       delete this->__root;
       this->__root = NULL;
     }
@@ -78,6 +83,7 @@ void	Filter::compile(std::string query) throw (std::string)
   yy_delete_buffer(state, param.scanner);
   yylex_destroy(param.scanner);
   this->__root = param.root;
+  this->connection(this->__root);
   this->__root->compile();
 }
 
@@ -86,13 +92,16 @@ void		Filter::process(Node* nodeptr, bool recursive) throw (std::string)
   uint64_t	nodescount;
   uint64_t	processed;
   event*	e;
-  
+
+  this->__stop = false;
   if (this->__root != NULL)
     {
       if (nodeptr != NULL)
 	{
 	  processed = 0;
 	  e = new event;
+	  e->type = 0x4242;
+	  this->__root->Event(e);
 	  e->type = 0x200;
 	  if (nodeptr->hasChildren() && recursive)
 	    {
@@ -133,7 +142,7 @@ void			Filter::__process(Node* nodeptr, uint64_t* processed, event* e)
   std::vector<Node*>	children;
   uint32_t		i;
 
-  if (nodeptr != NULL)
+  if (nodeptr != NULL && !this->__stop)
     {
       (*processed)++;
       e->type = 0x201;
@@ -167,4 +176,9 @@ void	Filter::process(uint16_t fsoid, bool recursive) throw (std::string)
 
 void	Filter::Event(event* e)
 {
+  if (e != NULL && e->type == 0x204)
+    {
+      this->__stop = true;
+      this->notify(e);
+    }
 }

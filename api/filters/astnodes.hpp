@@ -58,7 +58,22 @@ public:
   virtual bool		evaluate(Node* node) throw (std::string) = 0;
   virtual uint32_t	cost() = 0;
   virtual Type		type() = 0;
-  virtual void		Event(event* e) { _stop = true; }
+  virtual void		Event(event* e) 
+  { 
+    if (e != NULL)
+      {
+	if (e->type == 0x4242)
+	  {
+	    _stop = false;
+	    notify(e);
+	  }
+	else if (e->type == 0x204)
+	  {
+	    _stop = true;
+	    notify(e);
+	  }
+      }
+  }
 protected:
   bool			_stop;
 };

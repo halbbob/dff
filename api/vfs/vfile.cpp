@@ -22,6 +22,7 @@ VFile::VFile(int32_t fd, class fso *fsobj, class Node *node)
   this->__fd = fd;
   this->__fsobj = fsobj;
   this->__node = node;
+  this->__stop = false;
 };
 
 VFile::~VFile()
@@ -236,6 +237,7 @@ std::string  VFile::readline(uint32_t size) throw (std::string)
   uint64_t		oldoff;
   bool			found;
 
+  this->__stop = false;
   if (size == 0)
     size = INT32_MAX;
   if (size < 300)
@@ -248,10 +250,10 @@ std::string  VFile::readline(uint32_t size) throw (std::string)
     {
       consumed = 0;
       found = false;
-      while (((bread = this->read(buffer, bsize)) > 0) && (consumed != size) && (!found))
+      while (((bread = this->read(buffer, bsize)) > 0) && (consumed != size) && (!found) && !this->__stop)
 	{
 	  i = 0;
-	  while ((i != bread) && (consumed != size) && (!found))
+	  while ((i != bread) && (consumed != size) && (!found) && !this->__stop)
 	    {
 	      res += buffer[i];
 	      consumed += 1;
@@ -277,6 +279,7 @@ int64_t		VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcar
   uint64_t		totalread;
   int64_t		pos;
 
+  this->__stop = false;
   if (end > this->__node->size())
     end = this->__node->size();
   if ((end != 0) && (end < start))
@@ -286,7 +289,7 @@ int64_t		VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcar
   idx = -1;
   totalread = this->seek(start);
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
-  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (idx == -1))
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (idx == -1) && !this->__stop)
     {
       if (end < totalread + bread)
 	hlen = (int32_t)(end - totalread);
@@ -319,6 +322,7 @@ int64_t		VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildca
   uint64_t		rpos;
   int64_t		pos;
 
+  this->__stop = false;
   if (end > this->__node->size())
     end = this->__node->size();
   if ((end != 0) && (end < start))
@@ -337,7 +341,7 @@ int64_t		VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildca
     {
       rpos = end-BUFFSIZE;
       this->seek(rpos);
-      while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (rpos > start) && (idx == -1))
+      while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (rpos > start) && (idx == -1) && !this->__stop)
       	{
       	  if (rpos < start + bread)
       	    hlen = (int32_t)(rpos - start);
@@ -371,6 +375,7 @@ int32_t		VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildca
   int32_t		count;
   int32_t		hlen;
 
+  this->__stop = false;
   if (end > this->__node->size())
     end = this->__node->size();
   if ((end != 0) && (end < start))
@@ -385,7 +390,7 @@ int32_t		VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildca
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   count = 0;
   totalread = this->seek(start);
-  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0))
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0) && !this->__stop)
     {
       if (end < totalread + bread)
 	hlen = (int32_t)(end - totalread);
@@ -417,6 +422,7 @@ std::list<uint64_t>	VFile::indexes(unsigned char* needle, uint32_t nlen, unsigne
   uint64_t		totalread;
   int32_t		hlen;
 
+  this->__stop = false;
   if (end > this->__node->size())
     end = this->__node->size();
   if ((end != 0) && (end < start))
@@ -426,14 +432,14 @@ std::list<uint64_t>	VFile::indexes(unsigned char* needle, uint32_t nlen, unsigne
   totalread = this->seek(start);
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   event*	e = new event;
-  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end))
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && !this->__stop)
     {
       buffpos = 0;
       if (end < totalread + bread)
 	hlen = (int32_t)(end - totalread);
       else
 	hlen = bread;
-      while ((buffpos < hlen - (int32_t)nlen) && ((idx = this->__fs->find(buffer+buffpos, hlen - buffpos, needle, nlen, wildcard)) != -1))
+      while ((buffpos < hlen - (int32_t)nlen) && ((idx = this->__fs->find(buffer+buffpos, hlen - buffpos, needle, nlen, wildcard)) != -1) && !this->__stop)
 	{
 	  buffpos += idx + nlen;
 	  indexes.push_back(this->tell() - bread + buffpos - nlen);
@@ -543,6 +549,7 @@ int64_t		VFile::find(Search* sctx, uint64_t start, uint64_t end) throw (std::str
   int64_t		pos;
   uint32_t		nlen;
 
+  this->__stop = false;
   if (sctx == NULL)
     throw (std::string("VFile::find, Search context is not set."));
   if (end > this->__node->size())
@@ -553,7 +560,7 @@ int64_t		VFile::find(Search* sctx, uint64_t start, uint64_t end) throw (std::str
   totalread = this->seek(start);
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   nlen = sctx->needleLength();
-  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (idx == -1))
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (idx == -1) && !this->__stop)
     {
       if (end < totalread + bread)
 	hlen = (int32_t)(end - totalread);
@@ -596,6 +603,7 @@ int64_t		VFile::rfind(Search* sctx, uint64_t start, uint64_t end) throw (std::st
   int64_t		pos;
   uint32_t		nlen;
 
+  this->__stop = false;
   if (sctx == NULL)
     throw (std::string("VFile::rfind, Search context is not set."));
   if (end > this->__node->size())
@@ -622,7 +630,7 @@ int64_t		VFile::rfind(Search* sctx, uint64_t start, uint64_t end) throw (std::st
     {
       rpos = end-BUFFSIZE;
       this->seek(rpos);
-      while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (rpos > start) && (idx == -1))
+      while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (rpos > start) && (idx == -1) && !this->__stop)
       	{
       	  if (rpos < start + bread)
       	    hlen = (int32_t)(rpos - start);
@@ -666,6 +674,7 @@ int32_t		VFile::count(Search* sctx, int32_t maxcount, uint64_t start, uint64_t e
   int32_t		hlen;
   uint32_t		nlen;
 
+  this->__stop = false;
   if (sctx == NULL)
     throw (std::string("VFile::count, Search context is not set."));
   if (end > this->__node->size())
@@ -676,7 +685,7 @@ int32_t		VFile::count(Search* sctx, int32_t maxcount, uint64_t start, uint64_t e
   count = 0;
   totalread = this->seek(start);
   nlen = sctx->needleLength();
-  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0))
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && (maxcount > 0) && !this->__stop)
     {
       if (end < totalread + bread)
 	hlen = (int32_t)(end - totalread);
@@ -718,6 +727,7 @@ std::list<uint64_t>	VFile::indexes(Search* sctx, uint64_t start, uint64_t end) t
   int32_t		hlen;
   uint32_t		nlen;
 
+  this->__stop = false;
   if (sctx == NULL)
     throw (std::string("VFile::indexes, Search context is not set."));
   if (end > this->__node->size())
@@ -728,7 +738,7 @@ std::list<uint64_t>	VFile::indexes(Search* sctx, uint64_t start, uint64_t end) t
   buffer = (unsigned char*)malloc(sizeof(char) * BUFFSIZE);
   event*	e = new event;
   nlen = sctx->needleLength();
-  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end))
+  while (((bread = this->read(buffer, BUFFSIZE)) > 0) && (totalread < end) && !this->__stop)
     {
       buffpos = 0;
       if (end < totalread + bread)
@@ -737,7 +747,7 @@ std::list<uint64_t>	VFile::indexes(Search* sctx, uint64_t start, uint64_t end) t
 	hlen = bread;
       try
 	{
-	  while ((buffpos < hlen - (int32_t)nlen) && ((idx = sctx->find((char*)(buffer+buffpos), hlen - buffpos)) != -1))
+	  while ((buffpos < hlen - (int32_t)nlen) && ((idx = sctx->find((char*)(buffer+buffpos), hlen - buffpos)) != -1) && !this->__stop)
 	    {
 	      nlen = sctx->needleLength();
 	      buffpos += idx + nlen;

@@ -42,12 +42,18 @@ Logical::Logical(AstNode* left, int op, AstNode* right)
   this->__left = left;
   this->__op = op;
   this->__right = right;
+  if (this->__left != NULL)
+    this->connection(this->__left);
+  if (this->__right != NULL)
+    this->connection(this->__right);
 }
 
 Logical::~Logical()
 {
   if ((this->__left != NULL) && (this->__right != NULL))
     {
+      this->deconnection(this->__left);
+      this->deconnection(this->__right);
       delete this->__left;
       delete this->__right;
     }
@@ -60,7 +66,6 @@ uint32_t	Logical::cost()
 
 void		Logical::compile() throw (std::string)
 {
-  this->_stop = false;
   if ((this->__left != NULL) && (this->__right != NULL))
     {
       this->__left->compile();
@@ -80,19 +85,19 @@ bool		Logical::evaluate(Node* node) throw (std::string)
     {
       if (this->__left->cost() < this->__right->cost())
 	{
-	  if ((ret = this->__left->evaluate(node)) == false)
+	  if (((ret = this->__left->evaluate(node)) == false) && !this->_stop)
 	    ret = this->__right->evaluate(node);
 	}
       else
 	{
-	  if ((ret = this->__right->evaluate(node)) == false)
+	  if (((ret = this->__right->evaluate(node)) == false) && !this->_stop)
 	    ret = this->__left->evaluate(node);
 	}
     }
   else if (this->__op == AND)
     {
-      if (this->__left->evaluate(node) && this->__right->evaluate(node))
-	ret = true;
+      if (this->__left->evaluate(node) && !this->_stop)
+	ret = this->__right->evaluate(node);
       else
 	ret = false;
     }
@@ -119,7 +124,6 @@ NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, const
 
 void		NumericFilter::compile() throw (std::string)
 {
-  this->_stop = false;
   if (this->__attr != "size")
     this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
   return;
@@ -134,6 +138,8 @@ bool		NumericFilter::evaluate(Node* node) throw (std::string)
   // std::cout << "attribute: " << this->__attr << std::endl;
   // std::cout << "comparison: " << this->__cmp << std::endl;
   process = false;
+  if (this->_stop)
+    return false;
   if (this->__attr == "size")
     {
       value = node->size();
@@ -156,7 +162,7 @@ bool		NumericFilter::evaluate(Node* node) throw (std::string)
 	    }
 	}
     }
-  if (process)
+  if (process && !this->_stop)
     if (this->__values.size() == 1)
       return this->__evaluate(value, this->__values[0]);
     else
@@ -322,7 +328,6 @@ void		StringFilter::__scompile()
 
 void		StringFilter::compile() throw (std::string)
 {
-  this->_stop = false;
   if ((this->__attr != "mime") && (this->__attr != "name") && (this->__attr != "data"))
     this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
   if (this->__etype == PROCESSOR)
@@ -340,7 +345,9 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
   Attributes::iterator	it;
   Variant*		v;
   bool			process;
-  
+
+  if (this->_stop)
+    return false;
   if (this->__attr == "name")
     {
       values.push_back(node->name());
@@ -373,7 +380,7 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
 	if (v->type() == typeId::String)
 	  values.push_back(v->value<std::string>());
     }
-  if (process)
+  if (process && !this->_stop)
     {
       bool	ret;
       if (this->__attr == "data")
@@ -398,10 +405,18 @@ bool		StringFilter::__sevaluate(StringList values)
  bool					found;
  
  found = false;
- for (vit = values.begin(); vit != values.end(); vit++)
-   for (cit = this->__ctxs.begin(); cit != this->__ctxs.end(); cit++)
-     if ((*cit)->find(*vit) != -1)
-       found = true;
+ vit = values.begin();
+ while (vit != values.end() && !this->_stop)
+   {
+     cit = this->__ctxs.begin();
+     while (cit != this->__ctxs.end() && !this->_stop)
+       {
+	 if ((*cit)->find(*vit) != -1)
+	   found = true;
+	 cit++;
+       }
+     vit++;
+   }
  return found;
 }
 
@@ -420,6 +435,7 @@ bool		StringFilter::__devaluate(Node* node)
     {
       if ((v = node->open()) != NULL)
 	{
+	  this->connection(v);
 	  cit = this->__ctxs.begin();
 	  while (cit != this->__ctxs.end() && !this->_stop)
 	    {
@@ -427,6 +443,8 @@ bool		StringFilter::__devaluate(Node* node)
 		found = true;
 	      cit++;
 	    }
+	  this->deconnection(v);
+	  delete v;
 	}
     }
   catch (vfsError err)
@@ -465,6 +483,8 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
   Variant*	v;
 
   process = false;
+  if (this->_stop)
+    return false;
   if (this->__attr == "deleted")
     {
       value = node->isDeleted();
@@ -486,7 +506,7 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
 	  process = true;
 	}
     }
-  if (process)
+  if (process && !this->_stop)
     {
       if (this->__cmp == CmpOperator::EQ)
 	return (value == this->__val);
@@ -540,6 +560,8 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
   Variant		*v;
 
   found = false;
+  if (this->_stop)
+    return false;
   if (this->__attr == "time")
     {
       if ((ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME)) == NULL)
@@ -547,7 +569,7 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
       else
 	{
 	  mit = ts->begin();
-	  while ((mit != ts->end()) && !found)
+	  while ((mit != ts->end()) && !found && !this->_stop)
 	    {
 	      if ((mit->second != NULL) && ((vt = mit->second->value<vtime*>()) != NULL))
 		found = this->__evaluate(vt);
@@ -587,7 +609,7 @@ bool		TimeFilter::__evaluate(vtime* vt)
 
   found = false;
   it = this->__values.begin();
-  while ((it != this->__values.end()) && !found)
+  while ((it != this->__values.end()) && !found && !this->_stop)
     {
       if (this->__tcmp(*vt, *it))
 	found = true;

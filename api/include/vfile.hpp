@@ -50,7 +50,7 @@ private:
   int32_t	__fd;
   class Node*  	__node;
   bool		__recordUnread;
-
+  bool		__stop;
 public:
   EXPORT VFile(int32_t fd, class fso *fsobj, class Node *node);
   EXPORT ~VFile();
@@ -67,7 +67,7 @@ public:
   EXPORT int32_t		dfileno();
   EXPORT uint64_t		tell();
   EXPORT int32_t		close();
-  EXPORT virtual void		Event(event* e) {};
+  EXPORT virtual void		Event(event* e) { __stop = true; }
   EXPORT std::string		readline(uint32_t size=0) throw (std::string);
   EXPORT int64_t		find(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
   EXPORT int64_t		rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard='\0', uint64_t start=0, uint64_t end=UINT64_MAX) throw (std::string);
