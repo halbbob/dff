@@ -305,9 +305,8 @@ void			Search::__compile() throw (std::string)
       cflags = REG_EXTENDED;
       if (this->__cs == Search::CaseInsensitive)
       	cflags |= REG_ICASE;
-      tre_regcomp(&this->__preg, this->__pattern.c_str(), cflags);
+      tre_regncomp(&this->__preg, this->__pattern.c_str(), this->__pattern.size(), cflags);
       this->__needtrefree = true;
-      return;
 #else
       throw std::string("regexp support not activated (libtre not linked)");
 #endif
@@ -322,9 +321,8 @@ void			Search::__compile() throw (std::string)
       cflags = REG_LITERAL;
       if (this->__cs == Search::CaseInsensitive)
       	cflags |= REG_ICASE;
-      tre_regcomp(&this->__preg, this->__pattern.c_str(), cflags);
+      tre_regncomp(&this->__preg, this->__pattern.c_str(), this->__pattern.size(), cflags);
       this->__needtrefree = true;
-      return;
 #else
       throw std::string("fuzzy support not activated (libtre not linked)");
 #endif
