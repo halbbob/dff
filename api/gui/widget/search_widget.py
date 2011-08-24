@@ -74,9 +74,7 @@ class FilterThread(QThread, EventHandler):
       self.connect(self.__parent, SIGNAL("stop_search()"), self.quit)
 #    self.filters.setRootNode(rootnode)
     self.rootnode = rootnode
-    #self.filters.compile('mime == "image" and name == w("*.jp?g",i)')
-    self.filters.compile('name == w("*.jp?g",i)')
-    #self.filters.compile(str(clauses))
+    self.filters.compile(str(clauses))
 
 
   def Event(self, e):
