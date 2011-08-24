@@ -63,6 +63,7 @@ class FilterThread(QThread, EventHandler):
     self.filters.connection(self)
     self.model = None
     self.recursive = True
+    self.onefolder = False
 
   def setContext(self, clauses, rootnode, model=None):
     if model:
@@ -97,13 +98,19 @@ class FilterThread(QThread, EventHandler):
   def setRecursive(self, rec):
     self.recursive = rec
 
+  def setOneFolder(self, val):
+    self.onefolder = val
+
   def run(self):
     self.match = 0
     self.processed=0
     self.total =0
     self.percent =0
     self.emit(SIGNAL("started"))
-    self.filters.process(self.rootnode, self.recursive)
+    if self.onefolder:
+      self.filters.processFolder(self.rootnode)
+    else:
+      self.filters.process(self.rootnode, self.recursive)
     self.emit(SIGNAL("finished"))
     self.model = None
 

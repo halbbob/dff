@@ -265,8 +265,9 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
   def searching(self, changed):
     if not self.searchClause.text().isEmpty():
       if self.recurse.checkState() != Qt.Checked:
-        self.filterThread.setRecursive(False)
+        self.filterThread.setOneFolder(True)
       else:
+        self.filterThread.setOneFolder(False)
         self.filterThread.setRecursive(True)
 
       clause = "name == w(\"*" + str(self.searchClause.text()) + "*\",i)"
