@@ -196,7 +196,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.typeName.addItem("Fixed string", QVariant("f"))
     self.typeName.addItem("Wildcard", QVariant("w"))
     self.typeName.addItem("Fuzzy", QVariant("fz"))
-    self.typeName.addItem("Reg exp", QVariant("r"))
+    self.typeName.addItem("Reg exp", QVariant("re"))
 
     self.stopSearchButton.hide()
     self.exportButton.setEnabled(False)
