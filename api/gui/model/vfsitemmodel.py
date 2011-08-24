@@ -178,24 +178,27 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
 
     self.cacheAttr = (None, None)
 
-  def canFetchMore(self, index):
-    if self.fetchedItems < len(self.node_list):
-      return True
-    return False
+  #def canFetchMore(self, index):
+  #  if self.fetchedItems < len(self.node_list):
+  #    return True
+  #  return False
 
-  def fetchMore(self, index):
-    reminder = len(self.node_list) - self.fetchedItems
-    item_to_fetch = 0
+  #def fetchMore(self, index):
+  #  reminder = len(self.node_list) - self.fetchedItems
+  #  item_to_fetch = 0
 
-    if reminder < 100:
-      item_to_fetch = reminder
-    else:
-      item_to_fetch = 100
+  #  if reminder < 100:
+  #    item_to_fetch = reminder
+  #  else:
+  #    item_to_fetch = 100
 
-    self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + item_to_fetch - 1)
-    self.fetchedItems += item_to_fetch
-    self.endInsertRows()
-    self.numberPopulated.emit(item_to_fetch)
+  #  self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + item_to_fetch - 1)
+  #  self.fetchedItems += item_to_fetch
+  #  self.endInsertRows()
+  #  self.numberPopulated.emit(item_to_fetch)
+
+  def columnCount(self, index):
+    return 2
 
   def addNode(self, node):
     """
@@ -203,11 +206,14 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     VFS for example, and the view needs to be redrawed).
     """
     if node != None:
+      self.beginInsertRows(QModelIndex(), len(self.node_list), len(self.node_list))
       self.node_list.append(node.this)
-      if len(self.node_list) < 100:
-        self.fetchedItems += 1
-        self.emit(SIGNAL("layoutAboutToBeChanged()"))
-        self.emit(SIGNAL("layoutChanged()"))
+      self.endInsertRows()
+      #if len(self.node_list) < 100:
+      #self.fetchedItems += 1
+      #self.insertRows(len(self.node_list), 1, 
+      #self.emit(SIGNAL("layoutAboutToBeChanged()"))
+      #self.emit(SIGNAL("layoutChanged()"))
 
   def clean(self):
     self.emit(SIGNAL("modelAboutToBeReset()"))
@@ -242,7 +248,8 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     """
     \returns the number of children of lines of the index `parent`.
     """
-    return self.fetchedItems
+    return len(self.node_list)
+  
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     """

@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog, QTableView
 from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect
 
 from api.events.libevents import EventHandler, event
@@ -54,11 +54,13 @@ class SearchClause(Ui_SearchClause, QWidget):
     self.close()
     self.parent.rebuildQuery()
 
-class FilterThread(QThread):
+class FilterThread(QThread, EventHandler):
   def __init__(self, parent=None):
+    EventHandler.__init__(self)
     QThread.__init__(self)
     self.__parent = parent
     self.filters = Filter("test")
+    self.filters.connection(self)
     self.model = None
     self.recursive = True
 
@@ -72,12 +74,36 @@ class FilterThread(QThread):
       self.connect(self.__parent, SIGNAL("stop_search()"), self.quit)
 #    self.filters.setRootNode(rootnode)
     self.rootnode = rootnode
-    self.filters.compile(str(clauses))
+    #self.filters.compile('mime == "image" and name == w("*.jp?g",i)')
+    self.filters.compile('name == w("*.jp?g",i)')
+    #self.filters.compile(str(clauses))
+
+
+  def Event(self, e):
+    if e != None:
+      if e.value != None:
+        if e.type == 0x200:
+          self.total = e.value.value()
+          #self.emit(SIGNAL("TotalNodes"), int(e.value.value()))
+        if e.type == 0x201:
+          self.processed += 1
+          #self.emit(SIGNAL("CountNodes"), int(e.value.value()))
+        if e.type == 0x202:
+          self.match += 1
+          self.emit(SIGNAL("NodeMatched"), e.value.value())
+        pc = self.processed * 100 / self.total
+        if pc > self.percent:
+          self.percent = pc
+          self.emit(SIGNAL("CountNodes"), self.percent)
 
   def setRecursive(self, rec):
     self.recursive = rec
 
   def run(self):
+    self.match = 0
+    self.processed=0
+    self.total =0
+    self.percent =0
     self.emit(SIGNAL("started"))
     self.filters.process(self.rootnode, self.recursive)
     self.emit(SIGNAL("finished"))
@@ -86,7 +112,7 @@ class FilterThread(QThread):
   def quit(self):
     e = event()
     e.thisown = False
-    e.type = 0
+    e.type = 0x204
     e.value = None
     self.filters.Event(e)
     self.emit(SIGNAL("finished"))
@@ -109,7 +135,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     super(QWidget, self).__init__()
     EventHandler.__init__(self)
     self.filterThread = FilterThread(self)
-    self.filterThread.filters.connection(self)
     self.parent = parent
     self.vfs = vfs()
     self.setupUi(self)
@@ -138,7 +163,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.nodeBrowserLayout.addWidget(self.node_name)
 
     self.searchResults.addTableView()
-    self.searchResults.tableView.setModel(self.model)
+    self.searchResults.tableView.setModel(self.model)    
     self.connect(self.searchResults.tableView, SIGNAL("nodeClicked"), self.change_node_name)
     
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
@@ -177,10 +202,26 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     else:
       QtCore.QObject.connect(self.addOption, SIGNAL("clicked(bool)"), self.addSearchOptions)
 
-    self.connect(self, SIGNAL("TotalNodes"), self.searchBar.setMaximum)
-    self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
+
+    self.connect(self.filterThread, SIGNAL("CountNodes"), self.__progressUpdate)
+    self.connect(self.filterThread, SIGNAL("NodeMatched"), self.__matchedUpdate)
+    #self.connect(self, SIGNAL("TotalNodes"), self.searchBar.setMaximum)
+    #self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
     QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
+    #self.searchBar.setMaximum(100)
+
+  def __progressUpdate(self, val):
+    self.searchBar.setValue(val)
+    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+
+
+  def __matchedUpdate(self, val):
+    pass
+    self.__totalhits += 1
+    self.emit(SIGNAL("NodeMatched"), val)
+    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+
 
   def case_sens_changed(self, state):
     self.rebuildQuery()
@@ -319,18 +360,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def change_node_name(self, button, node):
     self.node_name.setText(node.absolute())
 
-  def Event(self, e):
-    if e.type == 0x200:
-      self.__totalnodes = e.value.value()
-      self.emit(SIGNAL("TotalNodes"), int(e.value.value()))
-    if e.type == 0x201:
-      self.__processednodes += 1
-      self.emit(SIGNAL("CountNodes"), int(e.value.value()))
-    if e.type == 0x202:
-      self.__totalhits += 1
-      self.totalHits.setText(str(self.__totalhits) + "/" + str(self.__totalnodes) + " " \
-                               + self.tr("match(s)"))
-      self.emit(SIGNAL("NodeMatched"), e.value.value())
 
   def searchFinished(self):
     if self.__totalhits:
@@ -375,7 +404,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     self.emit(SIGNAL("NewSearch"))
     self.__totalhits = 0
-    self.__processednodes = 0
     self.totalHits.setText("0  " + self.tr("match(s)"))
     self.exportButton.setEnabled(False)
     idx = self.typeName.currentIndex()
@@ -393,6 +421,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.searchBar.show()
     self.launchSearchButton.hide()
     self.stopSearchButton.show()
+    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
     self.filterThread.start()
 
   def showMoreOptions(self, changed):
