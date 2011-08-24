@@ -87,6 +87,54 @@ void	Filter::compile(std::string query) throw (std::string)
   this->__root->compile();
 }
 
+void		Filter::processFolder(Node* nodeptr) throw (std::string)
+{
+  uint64_t		nodescount;
+  uint64_t		processed;
+  event*		e;
+  std::vector<Node*>	children;
+  size_t		i;
+
+  this->__stop = false;
+  if (this->__root != NULL)
+    {
+      if (nodeptr != NULL)
+	{
+	  processed = 0;
+	  e = new event;
+	  e->type = 0x4242;
+	  this->__root->Event(e);
+	  e->type = 0x200;
+	  if (nodeptr->hasChildren())
+	    {
+	      nodescount = nodeptr->childCount();
+	      e->value = new Variant(nodescount);
+	      this->notify(e);
+	      delete e->value;
+	      children = nodeptr->children();
+	      for (i = 0; i != children.size(); i++)
+		{
+		  e->type = 0x201;
+		  e->value = new Variant(i);
+		  this->notify(e);
+		  delete e->value;
+		  if (this->__root->evaluate(children[i]))
+		    {
+		      e->type = 0x202;
+		      e->value = new Variant(children[i]);
+		      this->notify(e);
+		      delete e->value;
+		    }
+		}
+	    }
+	}
+      else
+	throw std::string("provided node does not exist");
+    }
+  else
+    throw std::string("no query compiled yet");    
+}
+
 void		Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 {
   uint64_t	nodescount;
@@ -122,6 +170,7 @@ void		Filter::process(Node* nodeptr, bool recursive) throw (std::string)
 		  e->type = 0x202;
 		  e->value = new Variant(nodeptr);
 		  this->notify(e);
+		  delete e->value;
 		}
 	      e->value = new Variant(1);
 	      e->type = 0x201;

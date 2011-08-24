@@ -31,6 +31,7 @@ public:
   virtual void	Event(event* e);
   void		setFilterName(std::string fname) throw (std::string);
   void		compile(std::string query) throw (std::string);
+  void		processFolder(Node* nodeptr) throw (std::string);
   void		process(Node* nodeptr, bool recursive=true) throw (std::string);
   void		process(uint64_t nodeid, bool recursive=true) throw (std::string);
   void		process(uint16_t fsoid, bool recursive=true) throw (std::string);
