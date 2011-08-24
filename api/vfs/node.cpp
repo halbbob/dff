@@ -577,15 +577,18 @@ uint32_t	Node::childCount()
   return this->__childcount;
 }
 
-uint64_t	Node::totalChildrenCount()
+uint64_t	Node::totalChildrenCount(uint32_t depth)
 {
   uint64_t	totalsub;
   int		i;
 
   totalsub = this->__childcount;
-  for (i = 0; i != this->__children.size(); i++)
-    if (this->__children[i]->hasChildren())
-      totalsub += this->__children[i]->totalChildrenCount();
+  if (depth != 0)
+    {
+      for (i = 0; i != this->__children.size(); i++)
+	if (this->__children[i]->hasChildren())
+	  totalsub += this->__children[i]->totalChildrenCount(depth-1);
+    }
   return totalsub;
 }
 

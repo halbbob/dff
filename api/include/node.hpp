@@ -124,7 +124,7 @@ public:
   EXPORT bool				addChild(class Node* child);
   EXPORT bool				hasChildren();
   EXPORT uint32_t			childCount();
-  EXPORT uint64_t			totalChildrenCount();
+  EXPORT uint64_t			totalChildrenCount(uint32_t depth=(uint32_t)-1);
 
   EXPORT virtual class VFile*		open();
   EXPORT uint32_t			at();
