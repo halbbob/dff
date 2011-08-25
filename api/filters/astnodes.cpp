@@ -288,6 +288,7 @@ void		StringFilter::__pcompile()
     ctx->setPatternSyntax(Search::Regexp);
   else if (this->__proc->name() == "fz")
     ctx->setPatternSyntax(Search::Fuzzy);
+  ctx->compile();
   this->__ctxs.push_back(ctx);
 }
 
@@ -322,6 +323,7 @@ void		StringFilter::__scompile()
 	    }
   	  ctx->setPattern(pattern);
   	}
+      ctx->compile();
       this->__ctxs.push_back(ctx);
     }
 }
