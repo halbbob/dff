@@ -109,15 +109,6 @@ IF (EWF_FOUND)
 ENDIF (EWF_FOUND)
 
 
-if (CMAKE_GENERATOR MATCHES "Unix Makefiles")
-   message(STATUS "current build dir")
-   message(STATUS "build command is based on unix Makefiles")
-   #add_custom_command (OUTPUT api COMMAND make WORKING_DIRECTORY api)
-   add_custom_target (modules ALL COMMAND make -i WORKING_DIRECTORY modules)
-   #add_custom_command (OUTPUT ui COMMAND make WORKING_DIRECTORY ui/)
-   #add_custom_command (OUTPUT all COMMAND make DEPENDS api modules ui)
-endif (CMAKE_GENERATOR MATCHES "Unix Makefiles")
-
 # Project-wide swig options
 #SET(CMAKE_SWIG_FLAGS "-py3")
 
@@ -280,6 +271,8 @@ SET(CMAKE_INSTALL_PREFIX ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/)
 ## Main purpose of this macro if to copy Python files at install.
 # It also deploys .py files in build directory if there is one.
 LIST(APPEND PYC_FILES "")
+
+
 macro(install_file target_name)
   foreach(file ${ARGN})
     # Be carreful:
