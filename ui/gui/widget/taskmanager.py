@@ -90,21 +90,22 @@ class procMB(QDialog):
         self.tm = TaskManager()
         self.pid = pid
         res = {}
+        args = {}
         self.tabwidget = QTabWidget(self)
 	stream = None
         for proc in self.tm.lprocessus:
             if str(proc.pid) == self.pid:
-                pres = proc.res
+                res = proc.res
                 args = proc.args
 			
 		if proc.streamOut == None: 
   		  try :
-		    proc.streamOut = ''
-		    txt = proc.stream.get(0)
-		    proc.streamOut += txt
-		    while txt:
-		       txt = proc.stream.get(0)
-		       proc.streamOut += txt
+                      proc.streamOut = ''
+                      txt = proc.stream.get(0)
+                      proc.streamOut += txt
+                      while txt:
+                          txt = proc.stream.get(0)
+                          proc.streamOut += txt
 	          except Empty:
 		      pass
 		if proc.streamOut and proc.streamOut != '':
