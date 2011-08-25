@@ -49,18 +49,20 @@ class MagicHandler(DataTypeHandler):
   def type(self, node):
     buff = ""
     try:
-     f = node.open()
-     buff = f.read(0x2000)
-     f.close()
-     try:
-      filemime = self.mime.buffer(buff)
-      return filemime
-     except AttributeError:
-      filemime = self.mime.from_buffer(buff)
-      return filemime
+      f = node.open()
+      buff = f.read(0x2000)
+      f.close()
+      try:
+        filemime = self.mime.buffer(buff)
+      except AttributeError:
+        filemime = self.mime.from_buffer(buff)
+      if filemime:
+        return filemime
+      return "data"
     except IOError:
-	return "None"
-    return "None"
+      return "data"
+    return "data"
+
 
 try:
   magicMimeHandler = MagicHandler(magic.MAGIC_MIME, "magic mime")
