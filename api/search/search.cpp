@@ -47,7 +47,7 @@ Search::~Search()
 {
 #if HAVE_TRE
   if (this->__needtrefree)
-    tre_regfree(&this->__preg);
+    tre_free(&this->__preg);
 #endif
 }
 
@@ -101,7 +101,7 @@ int32_t			Search::find(char* haystack, uint32_t hslen) throw (std::string)
     {
       try
 	{
-	  this->__compile();
+	  this->compile();
 	}
       catch (std::string err)
 	{
@@ -162,7 +162,7 @@ int32_t			Search::rfind(char* haystack, uint32_t hslen) throw (std::string)
     {
       try
 	{
-	  this->__compile();
+	  this->compile();
 	}
       catch (std::string err)
 	{
@@ -199,7 +199,7 @@ int32_t			Search::count(char* haystack, uint32_t hslen, int32_t maxcount) throw 
     {
       try
 	{
-	  this->__compile();
+	  this->compile();
 	}
       catch (std::string err)
 	{
@@ -246,7 +246,7 @@ int32_t			Search::count(std::string haystack, int32_t maxcount) throw (std::stri
     }
 }
 
-void			Search::__compile() throw (std::string)
+void			Search::compile() throw (std::string)
 {
   if (this->__pattern == "")
     throw(std::string("pattern not setted"));
@@ -301,12 +301,14 @@ void			Search::__compile() throw (std::string)
       int	cflags;
 
       if (this->__needtrefree)
-      	tre_regfree(&this->__preg);
+      	tre_free(&this->__preg);
       cflags = REG_EXTENDED;
       if (this->__cs == Search::CaseInsensitive)
       	cflags |= REG_ICASE;
-      tre_regncomp(&this->__preg, this->__pattern.c_str(), this->__pattern.size(), cflags);
-      this->__needtrefree = true;
+      if (tre_regncomp(&this->__preg, this->__pattern.c_str(), this->__pattern.size(), cflags) == REG_OK)
+	this->__needtrefree = true;
+      else
+	throw std::string("error while compiling regexp: " + this->__pattern);
 #else
       throw std::string("regexp support not activated (libtre not linked)");
 #endif
@@ -317,12 +319,14 @@ void			Search::__compile() throw (std::string)
       int	cflags;
 
       if (this->__needtrefree)
-      	tre_regfree(&this->__preg);
+      	tre_free(&this->__preg);
       cflags = REG_LITERAL;
       if (this->__cs == Search::CaseInsensitive)
       	cflags |= REG_ICASE;
-      tre_regncomp(&this->__preg, this->__pattern.c_str(), this->__pattern.size(), cflags);
-      this->__needtrefree = true;
+      if (tre_regncomp(&this->__preg, this->__pattern.c_str(), this->__pattern.size(), cflags) == REG_OK)
+	this->__needtrefree = true;
+      else
+	throw std::string("error while compiling regexp: " + this->__pattern);
 #else
       throw std::string("fuzzy support not activated (libtre not linked)");
 #endif

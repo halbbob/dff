@@ -40,6 +40,17 @@
 	#endif
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern void tre_free(regex_t *preg);
+
+#ifdef __cplusplus
+}
+#endif
+
+
 class FastSearch
 {
 public:
@@ -85,6 +96,7 @@ public:
   EXPORT int32_t		rfind(std::string haystack) throw (std::string);
   EXPORT int32_t		count(char* haystack, uint32_t hslen, int32_t maxcount=-1) throw (std::string);
   EXPORT int32_t		count(std::string haystack, int32_t maxcount=-1) throw (std::string);
+  EXPORT void			compile() throw (std::string);
   // std::vector<uint32_t>	indexes(char* haystack, uint32_t hslen) throw (std::string);
   // std::vector<uint32_t>	indexes(std::string haystack) throw (std::string);
 private:
@@ -99,7 +111,6 @@ private:
   bool				__compiled;
   bool				__needtrefree;
   uint32_t			__nlen;
-  void				__compile() throw (std::string);
 
   //find methods implementation
   EXPORT int32_t			__ffind(char* haystack, uint32_t hslen);
