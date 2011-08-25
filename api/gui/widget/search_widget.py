@@ -15,7 +15,7 @@
 
 from PyQt4 import QtCore, QtGui
 
-from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog, QTableView
+from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog, QTableView, QMessageBox
 from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect
 
 from api.events.libevents import EventHandler, event
@@ -73,7 +73,6 @@ class FilterThread(QThread, EventHandler):
       self.connect(self.model, SIGNAL("stop_search()"), self.quit)
     elif self.__parent:
       self.connect(self.__parent, SIGNAL("stop_search()"), self.quit)
-#    self.filters.setRootNode(rootnode)
     self.rootnode = rootnode
     self.filters.compile(str(clauses))
 
@@ -422,13 +421,18 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
         search += ")"
       clause["name"] = search
 
-    self.filterThread.setContext(self.completeClause.text(), self.vfs.getnode(str(self.path.text())))
-    self.searchBar.show()
-    self.launchSearchButton.hide()
-    self.stopSearchButton.show()
-    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
-    self.filterThread.start()
-
+    try:
+      self.filterThread.setContext(self.completeClause.text(), self.vfs.getnode(str(self.path.text())))
+      self.searchBar.show()
+      self.launchSearchButton.hide()
+      self.stopSearchButton.show()
+      self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+      self.filterThread.start()
+    except RuntimeError as err:
+      box = QMessageBox(QMessageBox.Warning, self.tr("Invalid Clause"),
+                        str(err), QMessageBox.Ok, self)
+      box.exec_()
+      
   def showMoreOptions(self, changed):
     pass
 
