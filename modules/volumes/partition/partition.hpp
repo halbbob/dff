@@ -33,7 +33,6 @@ class Partition : public mfso
 private:
   std::ostringstream		Result;
   Node				*parent;
-  Node				*__root;
   class DosPartition*			dos;
 //   int				SetResult();
 //   int				getParts();
@@ -46,7 +45,7 @@ private:
 public:
   Partition();
   ~Partition();
-
+  Node			*root;
   virtual void		start(std::map<std::string, Variant*> args);
 };
 

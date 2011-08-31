@@ -25,6 +25,7 @@ set(partition_srcs
   dos.cpp
 )
 
+add_definitions(-D__STDC_LIMIT_MACROS)
 SET_SOURCE_FILES_PROPERTIES(partition.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(PARTITION python partition.i ${partition_srcs})
 SWIG_LINK_LIBRARIES(PARTITION ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)

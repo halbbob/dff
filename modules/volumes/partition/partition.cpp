@@ -152,7 +152,17 @@
 void Partition::start(std::map<std::string, Variant*> args)
 {
   std::map<std::string, Variant*>::iterator	it;
-  
+  uint32_t					sectsize;
+  uint64_t					soffset;
+
+  if ((it = args.find("sector-size")) != args.end())
+    sectsize = it->second->value<uint32_t>();
+  else
+    sectsize = 512;
+  if ((it = args.find("offset")) != args.end())
+    soffset = it->second->value<uint64_t>();
+  else
+    soffset = 0;
   if ((it = args.find("file")) != args.end())
     {
       try
@@ -160,17 +170,17 @@ void Partition::start(std::map<std::string, Variant*> args)
 	  this->parent = it->second->value<Node*>();
 	  if (this->parent->size() != 0)
 	    {
-	      this->__root = new Node("partition");
-	      this->__root->setDir();
-	      this->__root->setFsobj(this);
-	      this->dos->open(this->parent->open(), 0, this->__root, this, this->parent);
-	      this->registerTree(this->parent, this->__root);
+	      this->root = new Node("partition");
+	      this->root->setDir();
+	      this->root->setFsobj(this);
+	      this->dos->open(this->parent, soffset, sectsize, this);
+	      this->registerTree(this->parent, this->root);
 	      this->res = this->dos->result();
 	    }
 	}
       catch(vfsError e)
 	{
-	  delete this->__root;
+	  delete this->root;
 	  throw vfsError("[PARTITION] error while processing file\n" + e.error);
 	}
     }
