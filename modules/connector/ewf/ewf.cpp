@@ -137,7 +137,7 @@ void	ewf::__getVolumeName()
   size_t	val_size;
   std::string	volume;
  
-  if (libewf_handle_get_utf8_header_value_size(this->ewf_ghandle, (uint8_t*)"description", 11, &val_size, &this->__ewf_error) == -1)
+  if (libewf_handle_get_utf8_header_value_size(this->ewf_ghandle, (uint8_t*)"description", 11, &val_size, &this->__ewf_error) != 1)
     this->volumeName = std::string("ewf_volume");
   else
     {
@@ -155,7 +155,7 @@ void	ewf::__getVolumeSize() throw (std::string)
 {
   std::string	err;
   
-  if (libewf_handle_get_media_size(this->ewf_ghandle, &this->volumeSize, &this->__ewf_error) == -1)
+  if (libewf_handle_get_media_size(this->ewf_ghandle, &this->volumeSize, &this->__ewf_error) != 1)
     {
       if (this->__ewf_error != NULL)
 	{

@@ -24,6 +24,8 @@
 class EWFNode : public Node
 {
 private:
+  std::string	__getHashIdentifier(uint32_t index) throw();
+  std::string	__getHashValue(std::string identifier) throw ();
   std::string	__getIdentifier(uint32_t index) throw ();
   std::string	__getValue(std::string identifier) throw ();
 public:
