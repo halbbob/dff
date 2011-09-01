@@ -37,19 +37,17 @@
 	#ifdef WIN32
 		#undef HAVE_ALLOCA
 		#undef HAVE_ALLOCA_H
+		#define tre_free tre_regfree;
+	#else
+		#ifdef __cplusplus
+		extern "C" {
+		#endif
+			extern void tre_free(regex_t *preg);
+		#ifdef __cplusplus
+		}
+		#endif
 	#endif
 #endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern void tre_free(regex_t *preg);
-
-#ifdef __cplusplus
-}
-#endif
-
 
 class FastSearch
 {
