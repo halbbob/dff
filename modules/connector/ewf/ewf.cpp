@@ -264,7 +264,7 @@ int ewf::vclose(int fd)
     }
   delete fi->id;
   this->__fdm->remove(fd);
-  return -1;
+  return 0;
 }
 
 uint64_t ewf::vseek(int fd, uint64_t offset, int whence)
