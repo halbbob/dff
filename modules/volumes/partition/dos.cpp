@@ -359,7 +359,7 @@ void		DosPartition::mapping(FileMapping* fm, uint64_t entry, uint8_t type)
   else if ((type != UNALLOCATED) && ((mit = this->allocated.find(entry)) != this->allocated.end()))
     {
       offset = this->offset + mit->first * this->sectsize;
-      size = mit->second->pte->total_blocks * this->sectsize;
+      size = (uint64_t)mit->second->pte->total_blocks * this->sectsize;
       process = true;
     }
   if (process)
@@ -557,7 +557,7 @@ void	DosPartition::makeNodes()
 	  if ((mit->second->type & EXTENDED) != EXTENDED)
 	    {
 	      ostr << "Partition " << mit->second->slot;
-	      size = mit->second->pte->total_blocks * this->sectsize;
+	      size = (uint64_t)mit->second->pte->total_blocks * this->sectsize;
 	      pnode = new DosPartitionNode(ostr.str(), size, this->root, this->fsobj);
 	      pnode->setCtx(this, mit->first, mit->second->type);
 	      ostr.str("");
@@ -574,7 +574,7 @@ void	DosPartition::makeNodes()
 	    {
 	      ostr << mit->first << "s--" << mit->second->entry_offset - 1 << "s";
 	      size = (mit->second->entry_offset - mit->first) * this->sectsize;
-	      pnode = new DosPartitionNode(ostr.str(), (mit->second->entry_offset - mit->first) * this->sectsize, root_unalloc, this->fsobj);
+	      pnode = new DosPartitionNode(ostr.str(), size, root_unalloc, this->fsobj);
 	      pnode->setCtx(this, mit->first, UNALLOCATED);
 	      ostr.str("");
 	      //std::cout << mit->first << " -- " << mit->second->entry_offset - 1 << " -- " << mit->second->entry_offset - mit->first << " -- UNALLOCATED" << std::endl;
