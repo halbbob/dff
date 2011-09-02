@@ -18,16 +18,36 @@
 
 void		Fatfs::process()
 {
+  Node*			fsroot;
+  std::string		volname;
+  ReservedSectors*	rs;
+  FileSystemSlack*	fss;
+
   try
     {
       if (this->parent->size() > 0)
 	{
 	  this->vfile = this->parent->open();
 	  this->bs->process(this->parent, this);
-	  this->fat->setContext(this->parent, this->bs);
-	  this->root = new Node("Fat File System", 0, NULL, this);
+	  this->fat->setContext(this->parent, this);
+	  fsroot = new Node("[root]", 0, NULL, this);
+	  fsroot->setDir();
+	  this->tree->process(this->parent, this, fsroot);
+	  volname = this->tree->volname();
+	  if (volname.empty())
+	    this->root = new Node("NONAME", 0, NULL, this);  
+	  else
+	    this->root = new Node(volname, 0, NULL, this);
 	  this->root->setDir();
-	  this->tree->process(this->parent, this, this->root);
+	  this->root->addChild(fsroot);
+	  if (this->bs->reserved != 0)
+	    rs = new ReservedSectors("reserved sectors", (uint64_t)(this->bs->reserved - 1) * this->bs->ssize, this->root, this);
+	  if (this->bs->totalsize < this->parent->size())
+	    fss = new FileSystemSlack("file system slack", this->parent->size() - this->bs->totalsize, this->root, this);
+	  this->fat->makeNodes(this->root);
+	  this->registerTree(this->parent, this->root);
+	  if (this->carveunalloc)
+	    this->tree->walk_free(this->root);
 	}
     }
   catch(...)

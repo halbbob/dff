@@ -249,6 +249,8 @@ bool	EntriesManager::push(uint8_t* buff, uint64_t offset)
 	  this->c->dosmetaoffset = offset;
 	  dos = this->toDos(buff);
 	  this->setDosName(dos);
+	  if ((dos->attributes & ATTR_VOLUME) == ATTR_VOLUME)
+	    this->c->volume = true;
 	  if ((dos->attributes & ATTR_DIRECTORY) == ATTR_DIRECTORY)
 	    {
 // 	      if (dos->size != 0)
@@ -281,6 +283,7 @@ void	EntriesManager::initCtx()
   this->c->lfnname = "";
   this->c->dir = false;
   this->c->deleted = false;
+  this->c->volume = false;
   this->c->size = 0;
   this->c->cluster = 0;
   this->c->lfnmetaoffset = 0;

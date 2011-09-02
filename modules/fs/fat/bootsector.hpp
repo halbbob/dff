@@ -107,6 +107,7 @@ typedef struct
   uint32_t	datasector;
   uint32_t	fatsize;
   uint64_t	totalsize;
+  uint64_t	totaldatasize;
 
   //fat type based on computation
   uint8_t	fattype;

@@ -29,6 +29,29 @@
 	#include "wstdint.h"
 #endif
 
+class ReservedSectors: public Node
+{
+private:
+  class Fatfs*	fs;
+public:
+  ReservedSectors(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~ReservedSectors();
+  virtual void			fileMapping(FileMapping* fm);
+  virtual Attributes		_attributes(void);
+};
+
+class FileSystemSlack: public Node
+{
+private:
+  class Fatfs*	fs;
+public:
+  FileSystemSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~FileSystemSlack();
+  virtual void			fileMapping(FileMapping* fm);
+  virtual Attributes		_attributes(void);
+};
+
+
 class FatNode: public Node
 {
 private:

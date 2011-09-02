@@ -16,6 +16,60 @@
 
 #include "fatnodes.hpp"
 
+ReservedSectors::ReservedSectors(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
+{
+  this->fs = fs;
+}
+
+ReservedSectors::~ReservedSectors()
+{
+}
+
+void		ReservedSectors::fileMapping(FileMapping* fm)
+{
+  fm->push(0, (uint64_t)(this->fs->bs->reserved - 1) * this->fs->bs->ssize, this->fs->parent, 512);
+}
+
+Attributes	ReservedSectors::_attributes(void)
+{
+  Attributes	attrs;
+
+  attrs["starting sector"] = new Variant(1);
+  attrs["total sectors"] = new Variant(this->fs->bs->reserved);
+  return attrs;
+}
+
+
+FileSystemSlack::FileSystemSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
+{
+  this->fs = fs;
+}
+
+FileSystemSlack::~FileSystemSlack()
+{
+}
+
+void		FileSystemSlack::fileMapping(FileMapping* fm)
+{
+  uint64_t	offset;
+  uint64_t	size;
+
+  offset = this->fs->bs->totalsize;
+  size = this->fs->parent->size() - offset;
+  fm->push(0, size, this->fs->parent, offset);
+}
+
+Attributes	FileSystemSlack::_attributes(void)
+{
+  Attributes	attrs;
+  
+  attrs["starting sector"] = new Variant(this->fs->bs->totalsize);
+  attrs["ending sector"] = new Variant(this->fs->parent->size() / this->fs->bs->ssize);
+  attrs["total sectors"] = new Variant((this->fs->parent->size() - this->fs->bs->totalsize) / this->fs->bs->ssize);
+  return attrs;
+}
+
+
 
 FatNode::FatNode(std::string name, uint64_t size, Node* parent, class Fatfs* fs): Node(name, size, parent, fs)
 {
@@ -136,7 +190,7 @@ Attributes	FatNode::_attributes()
       attr["Hidden"] = new Variant(bool(dos->attributes & ATTR_HIDDEN));
       attr["System"] = new Variant(bool(dos->attributes & ATTR_SYSTEM));
       attr["Archive"] = new Variant(bool(dos->attributes & ATTR_ARCHIVE));
-      attr["Volume"] = new Variant(bool(dos->attributes & ATTR_VOLUME));  
+      attr["Volume"] = new Variant(bool(dos->attributes & ATTR_VOLUME));
       delete dos;
       try
 	{

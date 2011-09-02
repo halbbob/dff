@@ -20,6 +20,7 @@ FatTree::FatTree()
 {
   //this->ectx = new EntryContext();
   //this->converter = new EntryConverter();
+  this->__volname = "";
   this->depth = 0;
   this->allocatedClusters = new TwoThreeTree();
 }
@@ -53,16 +54,21 @@ void	FatTree::rootdir(Node* parent)
 		{
 		  if (!c->deleted)
 		    {
-		      node = this->allocNode(c, parent);
-		      if (c->dir)
-			{
-			  this->depth++;
-			  this->walk(c->cluster, node);
-			  this->depth--;
-			}
+		      if (c->volume)
+			this->__volname = c->dosname;
 		      else
-			this->updateAllocatedClusters(c->cluster);
-		      delete c;
+			{
+			  node = this->allocNode(c, parent);
+			  if (c->dir)
+			    {
+			      this->depth++;
+			      this->walk(c->cluster, node);
+			      this->depth--;
+			    }
+			  else
+			    this->updateAllocatedClusters(c->cluster);
+			  delete c;
+			}
 		    }
 		  else
 		    this->updateDeletedItems(c, parent);
@@ -133,7 +139,7 @@ void	hexlify(uint8_t *entry)
 Node*	FatTree::allocNode(ctx* c, Node* parent)
 {
   FatNode*	node;
-  
+
   if (!c->lfnname.empty())
     node = new FatNode(c->lfnname, c->size, parent, this->fs);
   else
@@ -209,21 +215,26 @@ void	FatTree::walk(uint32_t cluster, Node* parent)
 		  c = this->emanager->fetchCtx();
 		  if ((c->valid) && (c->cluster < this->fs->bs->totalcluster))
 		    {
-		      if (!c->deleted)
+		      if (c->volume)
+			this->__volname = c->dosname;
+		      else
 			{
-			  node = this->allocNode(c, parent);
-			  if (c->dir)
+			  if (!c->deleted)
 			    {
-			      this->depth++;
-			      this->walk(c->cluster, node);
-			      this->depth--;
+			      node = this->allocNode(c, parent);
+			      if (c->dir)
+				{
+				  this->depth++;
+				  this->walk(c->cluster, node);
+				  this->depth--;
+				}
+			      else
+				this->updateAllocatedClusters(c->cluster);
+			      delete c;
 			    }
 			  else
-			    this->updateAllocatedClusters(c->cluster);
-			  delete c;
+			    this->updateDeletedItems(c, parent);
 			}
-		      else
-			this->updateDeletedItems(c, parent);
 		    }
 		  else
 		    delete c;
@@ -379,9 +390,6 @@ void	FatTree::process(Node* origin, Fatfs* fs, Node* parent)
       else
 	this->rootdir(parent);
       this->processDeleted();
-      this->fs->registerTree(origin, parent);
-      if (this->fs->carveunalloc)
-	this->walk_free(parent);
     }
   catch(...)
     {

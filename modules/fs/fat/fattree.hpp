@@ -77,16 +77,17 @@ private:
   void				updateDeletedItems(ctx* c, Node* parent);
   void				updateAllocatedClusters(uint32_t cluster);
   Node*				allocNode(ctx* c, Node* parent);
-  void				walk_free(Node* parent);
   void				walk(uint32_t cluster, Node* parent);
   void				rootdir(Node* parent);
+  std::string			__volname;
 
 public:
   EntriesManager*		emanager;
-
   FatTree();
   ~FatTree();
-  void	process(Node* origin, class Fatfs* fs, Node* parent);
+  void		walk_free(Node* parent);
+  void		process(Node* origin, class Fatfs* fs, Node* parent);
+  std::string	volname() {return __volname;}
 };
 
 #endif

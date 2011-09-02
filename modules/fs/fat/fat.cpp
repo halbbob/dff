@@ -16,6 +16,31 @@
 
 #include "fat.hpp"
 
+FileAllocationTableNode::FileAllocationTableNode(std::string name, uint64_t size, Node* parent, class Fatfs* fatfs) : Node(name, size, parent, fatfs)
+{
+}
+
+FileAllocationTableNode::~FileAllocationTableNode()
+{
+}
+
+void			FileAllocationTableNode::setContext(FileAllocationTable* fat, uint8_t fatnum)
+{
+  this->__fat = fat;
+  this->__fatnum = fatnum;
+}
+
+void			FileAllocationTableNode::fileMapping(FileMapping* fm)
+{
+  this->__fat->fileMapping(fm, this->__fatnum);
+}
+
+Attributes		FileAllocationTableNode::_attributes(void)
+{
+  return this->__fat->attributes(this->__fatnum);
+}
+
+
 FileAllocationTable::FileAllocationTable()
 {
   this->vfile = NULL;
@@ -37,13 +62,31 @@ FileAllocationTable::~FileAllocationTable()
     }
 }
 
-void	FileAllocationTable::setContext(Node* origin, BootSector* bs)
+void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 {
+  uint8_t	i;
+  uint64_t	offset;
+
   this->origin = origin;
-  this->bs = bs;
+  this->fatfs = fatfs;
+  this->bs = fatfs->bs;
   try
     {
       this->vfile = this->origin->open();
+      if ((this->bs->fatsize < 1024*1024*10) && ((this->__fat = malloc(this->bs->fatsize)) != NULL))
+	{
+	  offset = this->bs->firstfatoffset + (uint64_t)i * this->bs->fatsize;
+	  this->vfile->seek(offset);
+	  this->vfile->read(this->__fat, this->bs->fatsize);
+	}
+      else
+	this->__fat = NULL;
+      for (uint8_t i = 0; i != this->bs->numfat; i++)
+	{
+	  this->freeClustersCount(i);
+	  this->allocatedClustersCount(i);
+	}
+
     }
   catch(vfsError e)
     {
@@ -78,10 +121,12 @@ uint64_t	FileAllocationTable::clusterOffsetInFat(uint64_t cluster, uint8_t which
   return (baseoffset + idx);
 }
 
-uint32_t	FileAllocationTable::cluster12(uint64_t offset, uint32_t current)
+uint32_t	FileAllocationTable::ioCluster12(uint32_t current, uint8_t which)
 {
   uint16_t	next;
+  uint64_t	offset;
 
+  offset = this->clusterOffsetInFat((uint64_t)current, which);
   this->vfile->seek(offset);
   this->vfile->read(&next, 2);
   if (current & 0x0001)
@@ -91,24 +136,79 @@ uint32_t	FileAllocationTable::cluster12(uint64_t offset, uint32_t current)
   return (uint32_t)next;
 }
 
-uint32_t	FileAllocationTable::cluster16(uint64_t offset)
+uint32_t	FileAllocationTable::ioCluster16(uint32_t current, uint8_t which)
 {
   uint16_t	next;
+  uint64_t	offset;
 
+  offset = this->clusterOffsetInFat((uint64_t)current, which);
   this->vfile->seek(offset);
   this->vfile->read(&next, 2);
-  next &= 0xFFFF;
   return (uint32_t)next;
 }
 
-uint32_t	FileAllocationTable::cluster32(uint64_t offset)
+uint32_t	FileAllocationTable::ioCluster32(uint32_t current, uint8_t which)
+{
+  uint32_t	next;
+  uint64_t	offset;
+
+  offset = this->clusterOffsetInFat((uint64_t)current, which);
+  this->vfile->seek(offset);
+  this->vfile->read(&next, 4);
+  next &= 0x0FFFFFFF;
+  return next;
+}
+
+uint32_t	FileAllocationTable::cluster12(uint32_t current, uint8_t which)
+{
+  uint16_t	next;
+  uint32_t	idx;
+
+  next = 0;
+  if (which < this->bs->numfat)
+    {
+      if (which == 0 && this->__fat != NULL)
+	{
+	  idx = current + current / 2;
+	  idx = ((idx / this->bs->ssize) * this->bs->ssize) + (idx % this->bs->ssize);
+	  memcpy(&next, (uint8_t*)this->__fat+idx, 2);
+	}
+      else
+	next = this->ioCluster12(current, which);
+    }
+  return (uint32_t)next;
+}
+
+uint32_t	FileAllocationTable::cluster16(uint32_t current, uint8_t which)
+{
+  uint16_t	next;
+
+  next = 0;
+  if (which < this->bs->numfat)
+    {
+      if (which == 0 && this->__fat != NULL)
+	next = *((uint16_t*)this->__fat+current);
+      else
+	next = this->ioCluster16(current, which);
+    }
+  return (uint32_t)next;
+}
+
+uint32_t	FileAllocationTable::cluster32(uint32_t current, uint8_t which)
 {
   uint32_t	next;
 
-  this->vfile->seek(offset);
-  next = 0x0FFFFFF8;
-  this->vfile->read(&next, 4);
-  next &= 0x0FFFFFFF;
+  next = 0;
+  if (which < this->bs->numfat)
+    {
+      if (which == 0 && this->__fat != NULL)
+	{
+	  next = *((uint32_t*)this->__fat+current);
+	  next &= 0x0FFFFFFF;
+	}
+      else
+	next = this->ioCluster32(current, which);
+    }
   return next;
 }
 
@@ -118,20 +218,29 @@ uint32_t	FileAllocationTable::nextCluster(uint32_t current, uint8_t which)
   uint32_t	next;
 
   next = 0;
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else if (current > this->bs->totalcluster)
     throw(vfsError(std::string("Fat module: provided cluster is too high")));
   else
     {
-      offset = this->clusterOffsetInFat((uint64_t)current, which);
+      //offset = this->clusterOffsetInFat((uint64_t)current, which);
       //printf("offset for reading cluster: 0x%llx\n", offset);
       if (this->bs->fattype == 12)
-	next = this->cluster12(offset, current);
+	{
+	  next = this->cluster12(current, which);
+	  //next = this->cluster12(offset, current);
+	}
       if (this->bs->fattype == 16)
-	next = this->cluster16(offset);
+	{
+	  next = this->cluster16(current, which);
+	  //next = this->cluster16(offset);
+	}
       if (this->bs->fattype == 32)
-	next = this->cluster32(offset);
+	{
+	  next = this->cluster32(current, which);
+	  //next = this->cluster32(offset);
+	}
     }
   return next;
 }
@@ -158,7 +267,7 @@ std::vector<uint32_t>	FileAllocationTable::clusterChain(uint32_t cluster, uint8_
   uint64_t		max;
   uint32_t		eoc;
 
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else if (cluster > this->bs->totalcluster)
     throw(vfsError(std::string("Fat module: provided cluster is too high")));
@@ -200,13 +309,13 @@ bool			FileAllocationTable::isFreeCluster(uint32_t cluster, uint8_t which)
   uint32_t		content;
   uint64_t		offset;
 
-  offset = this->clusterOffsetInFat((uint64_t)cluster, which);
+  //offset = this->clusterOffsetInFat((uint64_t)cluster, which);
   if (this->bs->fattype == 12)
-    content = this->cluster12(offset, cluster);
+    content = this->cluster12(cluster, which);
   if (this->bs->fattype == 16)
-    content = this->cluster16(offset);
+    content = this->cluster16(cluster, which);
   if (this->bs->fattype == 32)
-    content = this->cluster32(offset);
+    content = this->cluster32(cluster, which);
   if (content == 0)
     return true;
   else
@@ -218,7 +327,7 @@ std::vector<uint64_t>	FileAllocationTable::listFreeClustersOffset(uint8_t which)
   uint32_t		cidx;
   std::vector<uint64_t>	freeclusters;
 
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
     for (cidx = 0; cidx != this->bs->totalcluster; cidx++)
@@ -232,7 +341,7 @@ std::vector<uint32_t>	FileAllocationTable::listFreeClusters(uint8_t which)
   uint32_t		cidx;
   std::vector<uint32_t>	freeclusters;
 
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
     for (cidx = 0; cidx != this->bs->totalcluster; cidx++)
@@ -243,12 +352,25 @@ std::vector<uint32_t>	FileAllocationTable::listFreeClusters(uint8_t which)
 
 uint32_t		FileAllocationTable::freeClustersCount(uint8_t which)
 {
-  uint32_t		freeclust;
+  uint32_t					freeclust;
+  uint32_t					cidx;
+  std::map<uint32_t, uint32_t>::iterator	it;
 
   freeclust = 0;
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
+    {
+      if ((it = this->__freeClustCount.find(which)) != this->__freeClustCount.end())
+	freeclust = it->second;
+      else
+	{
+	  for (cidx = 0; cidx != this->bs->totalcluster; cidx++)
+	    if (this->isFreeCluster(cidx, which))
+	      freeclust++;
+	  this->__freeClustCount[which] = freeclust;
+	}
+    }
     return freeclust;
 }
 
@@ -256,7 +378,7 @@ std::list<uint32_t>	FileAllocationTable::listAllocatedClusters(uint8_t which)
 {
   std::list<uint32_t>	alloc;
 
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
     return alloc;
@@ -264,20 +386,33 @@ std::list<uint32_t>	FileAllocationTable::listAllocatedClusters(uint8_t which)
 
 uint32_t		FileAllocationTable::allocatedClustersCount(uint8_t which)
 {
-  uint32_t		alloc;
+  uint32_t					cidx;
+  uint32_t					alloc;
+  std::map<uint32_t, uint32_t>::iterator	it;
 
   alloc = 0;
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
-    return alloc;
+    {
+      if ((it = this->__allocClustCount.find(which)) != this->__allocClustCount.end())
+	alloc = it->second;
+      else
+	{
+	  for (cidx = 0; cidx != this->bs->totalcluster; cidx++)
+	    if (!this->isFreeCluster(cidx, which))
+	      alloc++;
+	  this->__allocClustCount[which] = alloc;
+	}
+    }
+  return alloc;
 }
 
 std::list<uint32_t>	FileAllocationTable::listBadClusters(uint8_t which)
 {
   std::list<uint32_t>	badclust;
 
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
     return badclust;
@@ -287,7 +422,7 @@ std::list<uint32_t>	FileAllocationTable::listBadClustersCount(uint8_t which)
 {
   std::list<uint32_t>	badclust;
 
-  if (which > this->bs->numfat)
+  if (which >= this->bs->numfat)
     throw(vfsError(std::string("Fat module: provided fat number for reading is too high")));
   else
     return badclust;
@@ -315,4 +450,42 @@ uint32_t		FileAllocationTable::offsetToCluster(uint64_t offset)
 
 void			FileAllocationTable::diffFats()
 {
+}
+
+void			FileAllocationTable::makeNodes(Node* parent)
+{
+  FileAllocationTableNode*	node;
+  std::stringstream		sstr;
+  uint64_t			size;
+  uint8_t			i;
+
+  for (i = 0; i != this->bs->numfat; i++)
+    {
+      sstr << "FAT " << i + 1;
+      node = new FileAllocationTableNode(sstr.str(), this->bs->fatsize, parent, this->fatfs);
+      //this->__fclusterscount.push_back(this->freeClustersCount(i));
+      //this->__aclusterscount.push_back(this->allocatedClustersCount(i));
+      node->setContext(this, i);
+      sstr.str("");
+    }
+}
+
+void			FileAllocationTable::fileMapping(FileMapping* fm, uint8_t which)
+{
+  uint64_t		offset;
+  
+  offset = this->bs->firstfatoffset + (uint64_t)which * (uint64_t)this->bs->fatsize;
+  fm->push(0, this->bs->fatsize, this->origin, offset);
+}
+
+Attributes			FileAllocationTable::attributes(uint8_t which)
+{
+  Attributes		attrs;
+  
+  if (which < this->bs->numfat)
+    {
+      attrs["free clusters"] = new Variant(this->freeClustersCount(which));
+      attrs["allocated clusters"] = new Variant(this->allocatedClustersCount(which));
+    }
+  return attrs;
 }
