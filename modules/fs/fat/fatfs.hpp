@@ -33,6 +33,7 @@ public:
   Node*			root;
   Node*			parent;
   bool			carveunalloc;
+  bool			checkslack;
   class FatTree*	tree;
   class BootSector*	bs;
   class FileAllocationTable*	fat;

@@ -24,38 +24,6 @@
 #include "entries.hpp"
 #include "TwoThreeTree.hpp"
 
-// 		      if ((entry[0] != '.') && (memcmp(entry, "\0\0\0\0\0\0\0\0", 8) != 0))
-// 			{
-// 			  this->ectx->pushDosEntry(entry);
-// 			  dos = this->converter->entryToDos(entry);
-// 			  uint32_t next = dos->clustlow;
-// 			  next |= (dos->clusthigh << 16);
-// 			  curnode = new Node(std::string(shortname((char*)dos->name, (char*)dos->ext)), dos->size, parent, this->fs);
-// 			  delete dos;
-// 			  curnode->setDir();
-//  			  if (entry[0] == 0xe5)
-// 			    curnode->setDeleted();
-// 			  this->depth += 1;
-// 			  this->walk(next, curnode);
-// 			  this->depth -= 1;
-// 			}
-// 		      //this->ctx->process();
-// 		    }
-// 		  else
-// 		    {
-// 		      if (memcmp(entry, "\0\0\0\0\0\0\0\0", 8) != 0)
-// 			{
-// 			  dos = this->converter->entryToDos(entry);
-// 			  curnode = new Node(std::string(shortname((char*)dos->name, (char*)dos->ext)), dos->size, parent, this->fs);
-// 			  curnode->setFile();
-//  			  if (entry[0] == 0xe5)
-// 			    curnode->setDeleted();
-// 			  delete dos;
-// 			}
-// 		    }
-// 		}
-// 	    }
-// 	}
 
 typedef struct	s_deletedItems
 {
@@ -67,15 +35,20 @@ class FatTree
 {
 private:
   Node*				origin;
+  uint32_t			allocount;
+  uint32_t			processed;
   VFile*			vfile;
   class Fatfs*			fs;
   std::vector<deletedItems*>	deleted;
+  std::map<uint32_t, Node*>	_slacknodes;
+  std::set<uint32_t>		deletedUsedClusters;
   TwoThreeTree			*allocatedClusters;
   uint32_t			depth;
+  void				makeSlackNodes();
   void				processDeleted();
   void				walkDeleted(uint32_t cluster, Node* parent);
   void				updateDeletedItems(ctx* c, Node* parent);
-  void				updateAllocatedClusters(uint32_t cluster);
+  uint32_t			updateAllocatedClusters(uint32_t cluster);
   Node*				allocNode(ctx* c, Node* parent);
   void				walk(uint32_t cluster, Node* parent);
   void				rootdir(Node* parent);
@@ -85,6 +58,7 @@ public:
   EntriesManager*		emanager;
   FatTree();
   ~FatTree();
+  void		processUnallocated(Node* parent);
   void		walk_free(Node* parent);
   void		process(Node* origin, class Fatfs* fs, Node* parent);
   std::string	volname() {return __volname;}

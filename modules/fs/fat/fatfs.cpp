@@ -45,6 +45,7 @@ void		Fatfs::process()
 	  if (this->bs->totalsize < this->parent->size())
 	    fss = new FileSystemSlack("file system slack", this->parent->size() - this->bs->totalsize, this->root, this);
 	  this->fat->makeNodes(this->root);
+	  this->tree->processUnallocated(this->root);
 	  this->registerTree(this->parent, this->root);
 	  if (this->carveunalloc)
 	    this->tree->walk_free(this->root);
@@ -69,6 +70,10 @@ void		Fatfs::setContext(std::map<std::string, Variant*> args) throw (std::string
     this->carveunalloc = true;
   else
     this->carveunalloc = false;
+  if ((it = args.find("check_slack")) != args.end())
+    this->checkslack = true;
+  else
+    this->checkslack = false;
   return;
 }
 
