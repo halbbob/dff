@@ -66,6 +66,8 @@ void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 {
   uint8_t	i;
   uint64_t	offset;
+  std::stringstream	sstr;
+  uint32_t		freeclust;
 
   this->origin = origin;
   this->fatfs = fatfs;
@@ -83,8 +85,12 @@ void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 	this->__fat = NULL;
       for (uint8_t i = 0; i != this->bs->numfat; i++)
 	{
-	  this->freeClustersCount(i);
-	  this->allocatedClustersCount(i);
+	  sstr << "count free clusters in FAT " << (unsigned char)i;
+	  this->fatfs->stateinfo = sstr.str();
+	  freeclust = this->freeClustersCount(i);
+	  sstr.str("");
+	  this->__allocClustCount[i] = this->bs->totalcluster - freeclust;
+	  //this->allocatedClustersCount(i);
 	}
 
     }
