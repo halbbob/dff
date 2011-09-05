@@ -14,9 +14,6 @@
 #  Jeremy Mounier <jmo@digital-forensic.org>
 #
 
-#import sys
-#Is digit
-#import re
 import os
 
 from PyQt4.QtCore import Qt, SIGNAL
@@ -58,7 +55,7 @@ class stringLFScrollBar(QScrollBar):
 
     def initCallBacks(self):
         self.connect(self, SIGNAL("sliderMoved(int)"), self.moved) 
-#        self.connect(self, SIGNAL("actionTriggered(int)"), self.triggered) 
+        self.connect(self, SIGNAL("actionTriggered(int)"), self.triggered) 
 
     def setValues(self):
         self.setMinimum(self.min)
@@ -97,16 +94,18 @@ class stringLFScrollBar(QScrollBar):
 #          Navigation Operations       #
 ########################################
 
-#    def triggered(self, action):
-#        if action == QAbstractSlider.SliderSingleStepAdd:
-#            self.whex.view.move(self.singleStep(), 1)
-#        elif action == QAbstractSlider.SliderSingleStepSub:
-#            self.whex.view.move(self.singleStep(), 0)
-#        elif action == QAbstractSlider.SliderPageStepSub:
-#            self.whex.view.move(self.pageStep(), 0)
-#        elif action == QAbstractSlider.SliderPageStepAdd:
-#            self.whex.view.move(self.pageStep(), 1)
 
+    def triggered(self, action):
+        if action in [QAbstractSlider.SliderSingleStepAdd,
+                      QAbstractSlider.SliderPageStepAdd]:
+            add = self.sliderPosition() - self.value()
+            v = self.value() + add
+            self.moved(v)
+        elif action in [QAbstractSlider.SliderSingleStepSub,
+                        QAbstractSlider.SliderPageStepSub]:
+            sub = self.value() - self.sliderPosition()
+            v = self.value() - 1
+            self.moved(v)
 
     def moved(self, value):
         if self.isLFMOD():
