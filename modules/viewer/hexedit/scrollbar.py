@@ -113,9 +113,6 @@ class pageScrollBar(QScrollBar):
         return (offset / (self.heditor.pagesPerBlock * self.heditor.pageSize))
 
     def triggered(self, action):
-        offset = self.heditor.startBlockOffset
-
-        addOffset = self.heditor.pagesPerBlock * self.heditor.pageSize
         if action in [QAbstractSlider.SliderSingleStepAdd,
                       QAbstractSlider.SliderPageStepAdd]:
             add = self.sliderPosition() - self.value()
@@ -179,7 +176,16 @@ class byteScrollBar(QScrollBar):
         self.setRange(0, self.max)
 
     def triggered(self, action):
-        pass
+        if action in [QAbstractSlider.SliderSingleStepAdd,
+                      QAbstractSlider.SliderPageStepAdd]:
+            add = self.sliderPosition() - self.value()
+            v = self.value() + add
+            self.moved(v)
+        elif action in [QAbstractSlider.SliderSingleStepSub,
+                        QAbstractSlider.SliderPageStepSub]:
+            sub = self.value() - self.sliderPosition()
+            v = self.value() - 1
+            self.moved(v)
 
     def moved(self, value):
         if value != self.max:
