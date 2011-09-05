@@ -240,6 +240,7 @@ void	BootSector::fillCtx()
       this->fatsize = this->sectperfat * this->ssize;
       this->fillFatType();
       this->fillExtended();
+      this->fs->res["fat type"] = new Variant(this->fattype);
       this->fs->res["oemname"] = new Variant(this->oemname);
       this->fs->res["sector size"] = new Variant(this->ssize);
       this->fs->res["cluster size"] = new Variant(this->csize);
