@@ -64,9 +64,8 @@ FileAllocationTable::~FileAllocationTable()
 
 void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 {
-  uint8_t	i;
-  uint64_t	offset;
   std::stringstream	sstr;
+  uint64_t		offset;
   uint32_t		freeclust;
 
   this->origin = origin;
@@ -77,7 +76,7 @@ void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
       this->vfile = this->origin->open();
       if ((this->bs->fatsize < 1024*1024*10) && ((this->__fat = malloc(this->bs->fatsize)) != NULL))
 	{
-	  offset = this->bs->firstfatoffset + (uint64_t)i * this->bs->fatsize;
+	  offset = this->bs->firstfatoffset;
 	  this->vfile->seek(offset);
 	  this->vfile->read(this->__fat, this->bs->fatsize);
 	}
@@ -85,7 +84,7 @@ void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 	this->__fat = NULL;
       for (uint8_t i = 0; i != this->bs->numfat; i++)
 	{
-	  sstr << "count free clusters in FAT " << (unsigned char)i;
+	  sstr << "count free clusters in FAT " << i+1;
 	  this->fatfs->stateinfo = sstr.str();
 	  freeclust = this->freeClustersCount(i);
 	  sstr.str("");
@@ -220,7 +219,6 @@ uint32_t	FileAllocationTable::cluster32(uint32_t current, uint8_t which)
 
 uint32_t	FileAllocationTable::nextCluster(uint32_t current, uint8_t which)
 {
-  uint64_t	offset;
   uint32_t	next;
 
   next = 0;
@@ -313,7 +311,6 @@ std::vector<uint32_t>	FileAllocationTable::clusterChain(uint32_t cluster, uint8_
 bool			FileAllocationTable::isFreeCluster(uint32_t cluster, uint8_t which)
 {
   uint32_t		content;
-  uint64_t		offset;
 
   //offset = this->clusterOffsetInFat((uint64_t)cluster, which);
   if (this->bs->fattype == 12)
@@ -462,7 +459,6 @@ void			FileAllocationTable::makeNodes(Node* parent)
 {
   FileAllocationTableNode*	node;
   std::stringstream		sstr;
-  uint64_t			size;
   uint8_t			i;
 
   for (i = 0; i != this->bs->numfat; i++)
