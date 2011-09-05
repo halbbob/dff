@@ -29,6 +29,33 @@
 	#include "wstdint.h"
 #endif
 
+class FileSlack: public Node
+{
+private:
+  uint64_t	__offset;
+  class Fatfs*	__fs;
+public:
+  FileSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~FileSlack();
+  void			setContext(uint64_t offset);
+  virtual void		fileMapping(FileMapping* fm);
+  virtual Attributes	_attributes();
+};
+
+class UnallocatedSpace: public Node
+{
+private:
+  class Fatfs*	__fs;
+  uint32_t	__scluster;
+  uint32_t	__count;
+public:
+  UnallocatedSpace(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~UnallocatedSpace();
+  void				setContext(uint32_t scluster, uint32_t count);
+  virtual void			fileMapping(FileMapping* fm);
+  virtual Attributes		_attributes(void);
+};
+
 class ReservedSectors: public Node
 {
 private:

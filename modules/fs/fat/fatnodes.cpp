@@ -16,6 +16,69 @@
 
 #include "fatnodes.hpp"
 
+FileSlack::FileSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
+{
+  this->__fs = fs;
+}
+
+FileSlack::~FileSlack()
+{
+}
+
+void		FileSlack::setContext(uint64_t offset)
+{
+  this->__offset = offset;
+}
+
+void		FileSlack::fileMapping(FileMapping* fm)
+{
+  fm->push(0, this->size(), this->__fs->parent, this->__offset);
+}
+
+Attributes	FileSlack::_attributes()
+{
+  Attributes	attrs;
+
+  attrs["starting offset"] = new Variant(this->__offset);
+  return attrs;
+}
+
+
+UnallocatedSpace::UnallocatedSpace(std::string name, uint64_t size, Node* parent, class Fatfs* fs): Node(name, size, parent, fs)
+{
+  this->__fs = fs;
+}
+
+UnallocatedSpace::~UnallocatedSpace()
+{
+}
+
+void		UnallocatedSpace::setContext(uint32_t scluster, uint32_t count)
+{
+  this->__scluster = scluster;
+  this->__count = count;
+}
+
+void		UnallocatedSpace::fileMapping(FileMapping* fm)
+{
+  uint64_t	soffset;
+  uint64_t	size;
+
+  soffset = this->__fs->fat->clusterToOffset(this->__scluster);
+  size = (uint64_t)this->__count * this->__fs->bs->csize;
+  fm->push(0, size, this->__fs->parent, soffset);
+}
+
+Attributes	UnallocatedSpace::_attributes(void)
+{
+  Attributes	attrs;
+
+  attrs["starting cluster"] = new Variant(this->__scluster);
+  attrs["total clusters"] = new Variant(this->__count);
+  return attrs;
+}
+
+
 ReservedSectors::ReservedSectors(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
 {
   this->fs = fs;
@@ -194,7 +257,7 @@ Attributes	FatNode::_attributes()
       delete dos;
       try
 	{
-	  uint64_t clustsize = this->fs->bs->csize * this->fs->bs->ssize;
+	  uint64_t clustsize = (uint64_t)this->fs->bs->csize * this->fs->bs->ssize;
 	  if (this->__clustrealloc)
 	    attr["first cluster (!! reallocated to another existing entry)"] = new Variant(this->cluster);
 	  else
