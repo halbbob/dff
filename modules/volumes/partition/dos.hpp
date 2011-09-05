@@ -99,6 +99,7 @@ public:
   void			setCtx(DosPartition* handler, uint64_t entry, uint8_t type);
   virtual void		fileMapping(FileMapping* fm);
   virtual Attributes	_attributes(void);
+  virtual Variant*	dataType();
 };
 
 #define PRIMARY		0x01

@@ -289,6 +289,19 @@ DosPartitionNode::~DosPartitionNode()
 {
 }
 
+Variant*	DosPartitionNode::dataType()
+{
+  Attributes	dtype;
+
+  if (this->__type == UNALLOCATED)
+    {
+      dtype["partition"] = new Variant(std::string("unallocated"));
+      return new Variant(dtype);
+    }
+  else
+    return Node::dataType();
+}
+
 void	DosPartitionNode::fileMapping(FileMapping* fm)
 {
   this->__handler->mapping(fm, this->__entry, this->__type);
