@@ -200,14 +200,14 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
   def columnCount(self, index):
     return 2
 
-  def addNode(self, node):
+  def addNode(self, pnode):
     """
     This method is called when an event is emitted by the VFS (when a node is added into the
     VFS for example, and the view needs to be redrawed).
     """
-    if node != None:
+    if pnode != None:
       self.beginInsertRows(QModelIndex(), len(self.node_list), len(self.node_list))
-      self.node_list.append(node.this)
+      self.node_list.append(pnode)
       self.endInsertRows()
       #if len(self.node_list) < 100:
       #self.fetchedItems += 1

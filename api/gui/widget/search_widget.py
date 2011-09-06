@@ -16,10 +16,9 @@
 from PyQt4 import QtCore, QtGui
 
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog, QTableView, QMessageBox
-from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect
+from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect, SLOT
 
 from api.events.libevents import EventHandler, event
-from api.search.find import Filters
 
 from api.gui.widget.SearchNodeBrowser import SearchNodeBrowser
 
@@ -65,14 +64,15 @@ class FilterThread(QThread, EventHandler):
     self.recursive = True
     self.onefolder = False
 
+
   def setContext(self, clauses, rootnode, model=None):
     if model:
       self.model = model
       self.connect(self, SIGNAL("started"), self.model.launch_search)
       self.connect(self, SIGNAL("finished"), self.model.end_search)
-      self.connect(self.model, SIGNAL("stop_search()"), self.quit)
+      self.connect(self.model, SIGNAL("stop_search()"), self.stopSearch)
     elif self.__parent:
-      self.connect(self.__parent, SIGNAL("stop_search()"), self.quit)
+      self.connect(self.__parent, SIGNAL("stop_search()"), self.stopSearch)
     self.rootnode = rootnode
     self.filters.compile(str(clauses))
 
@@ -80,20 +80,22 @@ class FilterThread(QThread, EventHandler):
   def Event(self, e):
     if e != None:
       if e.value != None:
-        if e.type == 0x200:
+        if e.type == Filter.EndOfProcessing:
+          self.emit(SIGNAL("finished"))
+        if e.type == Filter.TotalNodesToProcess:
           self.total = e.value.value()
-          #self.emit(SIGNAL("TotalNodes"), int(e.value.value()))
-        if e.type == 0x201:
+        if e.type == Filter.ProcessedNodes:
           self.processed += 1
-          #self.emit(SIGNAL("CountNodes"), int(e.value.value()))
-        if e.type == 0x202:
+        if e.type == Filter.NodeMatched:
           self.match += 1
-          self.emit(SIGNAL("NodeMatched"), e.value.value())
+          val = e.value.value()
+          self.emit(SIGNAL("NodeMatched"), val.this)
         pc = self.processed * 100 / self.total
         if pc > self.percent:
           self.percent = pc
           self.emit(SIGNAL("CountNodes"), self.percent)
 
+        
   def setRecursive(self, rec):
     self.recursive = rec
 
@@ -110,17 +112,15 @@ class FilterThread(QThread, EventHandler):
       self.filters.processFolder(self.rootnode)
     else:
       self.filters.process(self.rootnode, self.recursive)
-    self.emit(SIGNAL("finished"))
     self.model = None
 
-  def quit(self):
+  def stopSearch(self):
     e = event()
     e.thisown = False
-    e.type = 0x204
+    e.type = Filter.StopProcessing
     e.value = None
     self.filters.Event(e)
-    self.emit(SIGNAL("finished"))
-    QThread.quit(self)
+
 
 class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   """
@@ -209,8 +209,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     self.connect(self.filterThread, SIGNAL("CountNodes"), self.__progressUpdate)
     self.connect(self.filterThread, SIGNAL("NodeMatched"), self.__matchedUpdate)
-    #self.connect(self, SIGNAL("TotalNodes"), self.searchBar.setMaximum)
-    #self.connect(self, SIGNAL("CountNodes"), self.searchBar.setValue)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
     QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
     #self.searchBar.setMaximum(100)
@@ -221,11 +219,9 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
 
   def __matchedUpdate(self, val):
-    pass
     self.__totalhits += 1
-    self.emit(SIGNAL("NodeMatched"), val)
     self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
-
+    self.emit(SIGNAL("NodeMatched"), val)
 
   def case_sens_changed(self, state):
     self.rebuildQuery()
@@ -408,6 +404,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     self.emit(SIGNAL("NewSearch"))
     self.__totalhits = 0
+    self.searchBar.setValue(0)
     self.totalHits.setText("0  " + self.tr("match(s)"))
     self.exportButton.setEnabled(False)
     idx = self.typeName.currentIndex()
