@@ -26,22 +26,32 @@ class Filter : public EventHandler
 public:
   Filter(std::string fname);
   ~Filter();
-  std::string	query();
-  std::string	filterName();
-  virtual void	Event(event* e);
-  void		setFilterName(std::string fname) throw (std::string);
-  void		compile(std::string query) throw (std::string);
-  void		processFolder(Node* nodeptr) throw (std::string);
-  void		process(Node* nodeptr, bool recursive=true) throw (std::string);
-  void		process(uint64_t nodeid, bool recursive=true) throw (std::string);
-  void		process(uint16_t fsoid, bool recursive=true) throw (std::string);
+  std::string		query();
+  std::string		filterName();
+  virtual void		Event(event* e);
+  void			setFilterName(std::string fname) throw (std::string);
+  void			compile(std::string query) throw (std::string);
+  void			processFolder(Node* nodeptr) throw (std::string);
+  void			process(Node* nodeptr, bool recursive=true) throw (std::string);
+  void			process(uint64_t nodeid, bool recursive=true) throw (std::string);
+  void			process(uint16_t fsoid, bool recursive=true) throw (std::string);
+  std::vector<Node*>	matchedNodes();
+  enum EventTypes
+    {
+      TotalNodesToProcess = 0x200,
+      ProcessedNodes = 0x201,
+      NodeMatched = 0x202,
+      StopProcessing = 0x204,
+      EndOfProcessing = 0x205
+    };
 private:
-  void		__process(Node* nodeptr, uint64_t* processed, event* e);
-  std::string	__fname;
-  uint32_t	__uid;
-  std::string	__query;
-  AstNode*	__root;
-  bool		__stop;
+  void			__process(Node* nodeptr, uint64_t* processed, event* e);
+  std::vector<Node*>	__matchednodes;
+  std::string		__fname;
+  uint32_t		__uid;
+  std::string		__query;
+  AstNode*		__root;
+  bool			__stop;
 };
 
 #endif
