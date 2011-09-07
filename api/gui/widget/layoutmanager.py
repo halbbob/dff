@@ -688,7 +688,8 @@ class addLocalPathButton(QPushButton):
             else:
                 sFileName = QFileDialog.getExistingDirectory(self.parent, title, os.path.expanduser('~'), QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
                 if isinstance(self.container, QListWidget):
-                    item = QListWidgetItem(str(sFileName), self.container)
+                    if sFileName:
+                        item = QListWidgetItem(str(sFileName), self.container)
                 else:
                     self.container.insert(sFileName)
         else:
