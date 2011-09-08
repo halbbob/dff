@@ -251,7 +251,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
 
         self.connect(self.actionPreview, SIGNAL("triggered(bool)"), self.preview.setUpdate)
-        print self.actionPreview.isChecked()
 
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
