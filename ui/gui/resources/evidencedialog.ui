@@ -5,18 +5,22 @@
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>487</width>
-    <height>163</height>
-   </rect>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>15</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
     <width>400</width>
     <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>400</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -25,8 +29,8 @@
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,50,1">
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,10">
      <item>
       <widget class="QLabel" name="label_3">
@@ -59,7 +63,7 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,10">
      <item>
       <widget class="QCheckBox" name="rawcheck">
@@ -105,17 +109,10 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
-    <widget class="QWidget" name="pathselector" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>2</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
+   <item>
+    <layout class="QVBoxLayout" name="pathlayout"/>
    </item>
-   <item row="3" column="0">
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

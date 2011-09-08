@@ -11,6 +11,7 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+#  Jeremy Mounier <jmo@digital-forensic.org>
 #
 
 import os
@@ -197,12 +198,12 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     if "aff" not in self.loader.modules:
       self.affcheck.setEnabled(False)
     self.rawcheck.setChecked(True)
-    layout = QHBoxLayout()
-    layout.setMargin(0)
+
     self.manager = layoutManager()
-    self.manager.addPathList("local", typeId.Path, [], [])
-    layout.addWidget(self.manager)
-    self.pathselector.setLayout(layout)
+
+    self.manager.addPathList("local", typeId.Path, [], [])    
+
+    self.pathlayout.addWidget(self.manager)
 
   def changeEvent(self, event):
     """ Search for a language change event
