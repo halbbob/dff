@@ -249,17 +249,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.preview = Preview(self)
         self.addDockWidgets(self.preview, 'preview', master=False)
         self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
-        pinButton = QCheckBox()
-        pinButton.setChecked(True)
-        pinButton.connect(pinButton, SIGNAL("stateChanged(int)"), self.preview.setUpdate)
-        voidWidget = QWidget(self.dockWidget["preview"])
-        vlayout = QVBoxLayout()
-        vlayout.insertSpacing(0, -10)
-        hlayout = QHBoxLayout()
-        hlayout.insertSpacing(0, -5)
-        vlayout.addLayout(hlayout)
-        hlayout.addWidget(pinButton)
-        voidWidget.setLayout(vlayout)
+
+        self.connect(self.actionPreview, SIGNAL("triggered(bool)"), self.preview.setUpdate)
+        print self.actionPreview.isChecked()
+
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
 

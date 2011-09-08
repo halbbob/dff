@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,6 +74,7 @@
     <addaction name="actionShell"/>
     <addaction name="actionPython_interpreter"/>
     <addaction name="separator"/>
+    <addaction name="actionPreview"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -246,6 +247,17 @@
    </property>
    <property name="text">
     <string>Browse</string>
+   </property>
+  </action>
+  <action name="actionPreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preview</string>
    </property>
   </action>
  </widget>
