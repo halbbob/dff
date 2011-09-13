@@ -426,7 +426,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
       self.filterThread.start()
     except RuntimeError as err:
-      box = QMessageBox(QMessageBox.Warning, self.tr("Invalid Clause"),
+      box = QMessageBox(QMessageBox.Warning, self.tr("Invalid clause"),
                         str(err), QMessageBox.Ok, self)
       box.exec_()
       

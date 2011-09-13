@@ -67,7 +67,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
-    # No more checkBoxAttributes there is now an attributes pannel icon
+    # No more checkBoxAttributes there is now an attributes panel icon
     self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
 
     self.connect(self.addToBookmark, SIGNAL("clicked()"), self.bookmark)
