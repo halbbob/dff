@@ -138,6 +138,7 @@ bool		NumericFilter::evaluate(Node* node) throw (std::string)
   // std::cout << "attribute: " << this->__attr << std::endl;
   // std::cout << "comparison: " << this->__cmp << std::endl;
   process = false;
+  v = NULL;
   if (this->_stop)
     return false;
   if (this->__attr == "size")
@@ -147,19 +148,19 @@ bool		NumericFilter::evaluate(Node* node) throw (std::string)
     }
   else
     {
-      if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+      try
 	{
-	  try
+	  if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
 	    {
 	      value = v->value<uint64_t>();
 	      delete v;
 	      process = true;
 	    }
-	  catch (std::string err)
-	    {
-	      delete v;
-	      throw err;
-	    }
+	}
+      catch (std::string err)
+	{
+	  if (v != NULL)
+	    delete v;
 	}
     }
   if (process && !this->_stop)
@@ -348,6 +349,8 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
   Variant*		v;
   bool			process;
 
+  v = NULL;
+  process = false;
   if (this->_stop)
     return false;
   if (this->__attr == "name")
@@ -359,28 +362,40 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
     process = true;
   else if (this->__attr == "mime")
     {
-      if ((v = node->dataType()) != NULL)
+      try
 	{
-	  vmap = v->value<Attributes>();
-	  if (((it = vmap.find("magic mime")) != vmap.end()) && (it->second != NULL))
+	  if ((v = node->dataType()) != NULL)
 	    {
-	      try
+	      vmap = v->value<Attributes>();
+	      if (((it = vmap.find("magic mime")) != vmap.end()) && (it->second != NULL))
 		{
 		  values.push_back(it->second->value<std::string>());
-		}
-	      catch (std::string err)
-		{
-		  throw err;
+		  process = true;
 		}
 	    }
-	  process = true;
+	}
+      catch (...)
+	{
+	  if (v != NULL)
+	    delete v;
 	}
     }
   else
     {
-      if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
-	if (v->type() == typeId::String)
-	  values.push_back(v->value<std::string>());
+      try
+	{
+	  if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+	    if (v->type() == typeId::String)
+	      {
+		values.push_back(v->value<std::string>());
+		process = true;
+	      }
+	}
+      catch (...)
+	{
+	  if (v != NULL)
+	    delete v;
+	}
     }
   if (process && !this->_stop)
     {
@@ -431,6 +446,7 @@ bool		StringFilter::__devaluate(Node* node)
   int64_t				idx;
 
   found = false;
+  v = NULL;
   if (node->size() == 0)
     return found;
   try
@@ -446,13 +462,13 @@ bool		StringFilter::__devaluate(Node* node)
 	      cit++;
 	    }
 	  this->deconnection(v);
-	  delete v;
 	}
     }
   catch (vfsError err)
     {
-      return found;
     }
+  if (v != NULL)
+    delete v;
   return found;
 }
 
@@ -485,6 +501,7 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
   Variant*	v;
 
   process = false;
+  v = NULL;
   if (this->_stop)
     return false;
   if (this->__attr == "deleted")
@@ -500,12 +517,23 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
 	value = false;
       process = true;
     }
-  else if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+  else
     {
-      if (v->type() == typeId::Bool)
+      try
 	{
-	  value = v->value<bool>();
-	  process = true;
+	  if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+	    {
+	      if (v->type() == typeId::Bool)
+		{
+		  value = v->value<bool>();
+		  process = true;
+		}
+	    }
+	}
+      catch (...)
+	{
+	  if (v != NULL)
+	    delete v;
 	}
     }
   if (process && !this->_stop)
@@ -562,31 +590,46 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
   Variant		*v;
 
   found = false;
+  v = NULL;
+  ts = NULL;
+  vt = NULL;
   if (this->_stop)
     return false;
   if (this->__attr == "time")
     {
-      if ((ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME)) == NULL)
-	return false;
-      else
+      try
 	{
-	  mit = ts->begin();
-	  while ((mit != ts->end()) && !found && !this->_stop)
+	  if ((ts = node->attributesByType(typeId::VTime, ABSOLUTE_ATTR_NAME)) != NULL)
 	    {
-	      if ((mit->second != NULL) && ((vt = mit->second->value<vtime*>()) != NULL))
-		found = this->__evaluate(vt);
-	      mit++;
+	      mit = ts->begin();
+	      while ((mit != ts->end()) && !found && !this->_stop)
+		{
+		  if ((mit->second != NULL) && ((vt = mit->second->value<vtime*>()) != NULL))
+		    found = this->__evaluate(vt);
+		  mit++;
+		}
 	    }
+	}
+      catch (...)
+	{
 	}
     }
   else
     {
-      if (((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) == NULL) ||
-	  (v->type() != typeId::VTime))
-	return false;
-      else
-	found = this->__evaluate(v->value<vtime*>());
+      try
+	{
+	  if (((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL) &&
+	      (v->type() == typeId::VTime))
+	    found = this->__evaluate(v->value<vtime*>());
+	}
+      catch (...)
+	{
+	}
     }
+  if (v != NULL)
+    delete v;
+  if (ts != NULL)
+    delete ts;
   if (this->__values.size() > 1)
     if (this->__cmp == CmpOperator::EQ)
       return (found == true);
