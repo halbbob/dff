@@ -23,7 +23,7 @@ class Preview(QStackedWidget):
     def __init__(self, parent):
         super(QStackedWidget, self).__init__()
         self.__mainWindow = parent        
-        self.name = "    " + self.tr("Preview")
+        self.name = self.tr("Preview")
         self.loader = loader()
 	self.lmodules = self.loader.modules
 	void = QWidget()
@@ -68,4 +68,4 @@ class Preview(QStackedWidget):
 	 self.addWidget(self.previousWidget)
 
     def retranslateUi(self, widget):
-       widget.setWindowTitle("    " + QApplication.translate("Preview", "Preview", None, QApplication.UnicodeUTF8))
+       widget.setWindowTitle(QApplication.translate("Preview", "Preview", None, QApplication.UnicodeUTF8))

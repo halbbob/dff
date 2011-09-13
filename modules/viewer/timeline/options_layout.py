@@ -23,7 +23,7 @@ from api.types.libtypes import Variant
 from api.events.libevents import event
 
 class OptionsLayout(QTabWidget):
-    ''' Manages right pannel.
+    ''' Manages right panel.
 
     Provides general informations, navigation and timestamp selection.
     Navigation allow user to zoom in timeline.

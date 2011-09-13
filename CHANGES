@@ -1763,7 +1763,7 @@ Author: cma <cma@digital-forensic.org>
 Date:   Fri Feb 25 12:36:08 2011 +0100
 
     Removes old useles and slow Element class in list_thread.py
-    Creates node matching by date range in timeline.py to made 'Export' reworks when selection (in navigation pannel) is active.
+    Creates node matching by date range in timeline.py to made 'Export' reworks when selection (in navigation panel) is active.
     Need to:
      - refresh vfs when node has been exported (VLink created), especially tree on the left
      - improves dichotomic matching ; it as actually too slow when select/zoom/sekect/zoom

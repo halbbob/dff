@@ -37,7 +37,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
     self.button = {}
- 
+    
+     # Force thumbSize height to be the same as viewbox height, because
+    # thumbSize comboBox doesn't have any icon, height is smaller.
+    self.thumbSize.setFixedHeight(self.viewbox.sizeHint().height())
+    
     self.history = []
     self.history.append("/")
     self.currentPathId = -1
@@ -63,12 +67,14 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
-    self.createCheckBoxAttribute()
+    # No more checkBoxAttributes there is now an attributes panel icon
+    self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
+
     self.connect(self.addToBookmark, SIGNAL("clicked()"), self.bookmark)
     self.connect(self.search, SIGNAL("clicked()"), self.searchActivated)
     self.connect(self.imagethumb, SIGNAL("clicked()"), self.imagethumbActivated)
+    self.connect(self.attrView, SIGNAL("clicked()"), self.attrViewActivated)
 
-    self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
 
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
@@ -152,10 +158,12 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
     self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
 
-  def checkboxAttributeChanged(self, state):
-    if state:
-       self.propertyTable.setVisible(True)
+  def attrViewActivated(self):
+    if self.propertyTable.isHidden():
+        self.attrView.setIcon(QIcon(QPixmap(":lists_attr.png")))
+        self.propertyTable.setVisible(True)
     else:
+        self.attrView.setIcon(QIcon(QPixmap(":lists_attr_disable.png")))
         self.propertyTable.setVisible(False)	
 
   def moveToTop(self):
@@ -188,11 +196,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
       self.parent.model.setImagesThumbnails(False)
-      self.imagethumb.setIcon(QIcon(QPixmap(":image.png")))
+      self.imagethumb.setIcon(QIcon(QPixmap(":image_disable.png")))
       self.parent.model.reset()
     else:
       self.parent.model.setImagesThumbnails(True)
-      self.imagethumb.setIcon(QIcon(QPixmap(":image_disable.png")))
+      self.imagethumb.setIcon(QIcon(QPixmap(":image.png")))
       self.parent.model.reset()
 
  
@@ -208,11 +216,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      self.thumbSize.setEnabled(False)
   
   def thumbActivated(self):
-     self.checkboxAttribute.setEnabled(True)
-     if self.checkboxAttribute.isChecked():
-       self.propertyTable.setVisible(True)
-     else :
-        self.propertyTable.setVisible(False)
      self.parent.tableView.setVisible(False)
      self.parent.thumbsView.setVisible(True)
      self.thumbSize.setEnabled(True)

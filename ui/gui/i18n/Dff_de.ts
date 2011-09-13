@@ -18,7 +18,7 @@ Author(s):
 Dennis Schreiber dschreiber@gmx.de
 Johannes Stuettgen johannes.stuettgen@gmail.com
 -->
-<!DOCTYPE TS><TS version="1.1" language="de_DE">
+<!DOCTYPE TS><TS version="2.0" language="de_DE" sourcelanguage="">
 <context>
     <name>About</name>
     <message>
@@ -63,75 +63,85 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>AdvSearch</name>
     <message>
-        <location filename="../../../api/gui/widget/search_widget.py" line="372"/>
+        <location filename="../../../api/gui/widget/search_widget.py" line="408"/>
         <source>match(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/search_widget.py" line="426"/>
+        <source>current match(s): </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/search_widget.py" line="429"/>
+        <source>Invalid clause</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>BuildSearchClause</name>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="391"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="387"/>
         <source>Contains</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="392"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="388"/>
         <source>Name does not contain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="393"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="389"/>
         <source>Name contains</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="394"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="390"/>
         <source>From dictionnary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="395"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="391"/>
         <source>Does not contain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="396"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="392"/>
         <source>Size at least</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="397"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="393"/>
         <source>Size at most</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="398"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="394"/>
         <source>Date less than</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="399"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="395"/>
         <source>Date most than</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="400"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="396"/>
         <source>Deleted</source>
         <translation type="unfinished">gelöscht</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="401"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="397"/>
         <source>Type</source>
         <translation type="unfinished">Typ</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="402"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="398"/>
         <source>Mime-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="403"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="399"/>
         <source>Extended attributes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -552,37 +562,37 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>ListNodeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="545"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Name</source>
         <translation type="unfinished">Name</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="546"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Size</source>
         <translation type="unfinished">Größe</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="547"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="567"/>
         <source>Accessed time</source>
         <translation type="unfinished">Zugriffszeit</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="548"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="568"/>
         <source>Changed time</source>
         <translation type="unfinished">Änderungszeit</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="549"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="569"/>
         <source>Modified time</source>
         <translation type="unfinished">Modifikationszeit</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="550"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="570"/>
         <source>Module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="551"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="571"/>
         <source>Deleted</source>
         <translation type="unfinished">gelöscht</translation>
     </message>
@@ -590,134 +600,144 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="44"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="28"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="155"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="141"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="119"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="105"/>
         <source>Load</source>
         <translation>Laden</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="131"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="117"/>
         <source>Open evidence file(s)</source>
         <translation>Öffne Beweismitteldatei(en)</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="143"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="129"/>
         <source>Open local device</source>
         <translation>Öffne lokales Gerät</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="14"/>
         <source>Digital Forensics Framework</source>
         <translation>Digital Forensics Framework</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="75"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="60"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="54"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="38"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="61"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="46"/>
         <source>IDE</source>
         <translation>IDE</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="167"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="153"/>
         <source>Preferences</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="68"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="53"/>
         <source>?</source>
         <translation>?</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="81"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="66"/>
         <source>View</source>
         <translation>Ansicht</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="179"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="165"/>
         <source>Maximize</source>
         <translation>Maximieren</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="191"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="177"/>
         <source>Fullscreen mode</source>
         <translation>Vollansicht Modus</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="215"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="201"/>
         <source>Shell</source>
         <translation>Shell</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="203"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="189"/>
         <source>Browser</source>
         <translation>Browser</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="227"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="213"/>
         <source>Python interpreter</source>
         <translation>Python interpreter</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="122"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="108"/>
         <source>Load module</source>
         <translation>Modul laden</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="251"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="237"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="103"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="89"/>
         <source>Toolbar</source>
         <translation>Symbolleiste</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="114"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="100"/>
         <source>About DFF ...</source>
         <translation>Über DFF</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/mainwindow.ui" line="239"/>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="225"/>
         <source>DFF Documentation</source>
         <translation>DFF Dokumentation</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="389"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="399"/>
         <source>Error while loading help</source>
         <translation>Fehler beim Laden der Hilfe</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="390"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="400"/>
         <source>&lt;br&gt;You can check on-line help at &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt;.</source>
         <translation>&lt;br&gt;Du kannst die Online-Hilfe auf &lt;a href=&quot;http://wiki.digital-forensic.org/&quot;&gt;http://wiki.digital-forensic.org&lt;/a&gt; aufsuchen.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="391"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="401"/>
         <source>Not an help file.</source>
         <translation>keine Hilfedatei.</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/mainwindow.py" line="392"/>
+        <location filename="../../../ui/gui/mainwindow.py" line="402"/>
         <source>Documentation path not found.</source>
         <translation>Pfad zur Dokumentation nicht gefunden.</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="249"/>
+        <source>Browse</source>
+        <translation type="unfinished">Durchsuchen</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/mainwindow.ui" line="260"/>
+        <source>Preview</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -872,32 +892,32 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
         <translation>relevante Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="292"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="293"/>
         <source>Apply module</source>
         <translation>Modul anwenden</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="292"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="293"/>
         <source>Do you want to apply module </source>
         <translation>Soll das Modul angewendet werden </translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="292"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="293"/>
         <source> on this node ?</source>
         <translation> auf diesen Knoten?</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="293"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="294"/>
         <source>Always</source>
         <translation>Immer</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="368"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="369"/>
         <source>Empty files</source>
         <translation>leere Dateien</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/nodebrowser.py" line="369"/>
+        <location filename="../../../api/gui/widget/nodebrowser.py" line="370"/>
         <source>the following nodes could not be opened with Hex viewer because they are either empty or folders
 </source>
         <translation>Die folgenden Knoten konnten nicht mit dem Hex-Betrachter geöffnet werden, da diese entweder leer oder Verzeichnisse sind</translation>
@@ -954,65 +974,80 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
         <translation>Zurück zum Wurzelverzeichnis</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="187"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="190"/>
         <source>List</source>
         <translation>Liste</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="196"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="199"/>
         <source>Icons</source>
         <translation>Symbole</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="318"/>
+        <location filename="../resources/nodeviewbox.ui" line="318"/>
         <source>Attributes</source>
-        <translation>Attribute</translation>
+        <translation type="obsolete">Attribute</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="243"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="271"/>
         <source>Add to bookmarks</source>
         <translation>zu den Lesezeichen hinzufügen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="272"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="300"/>
         <source>Display search engine</source>
         <translation>Zeige Suchmaschine</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="329"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="218"/>
         <source>Small</source>
         <translation>Klein</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="334"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="223"/>
         <source>Medium</source>
         <translation>Mittel</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="339"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="228"/>
         <source>Large</source>
         <translation>Groß</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="217"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="245"/>
         <source>Activate thumbnails</source>
         <translation>Aktiviere Miniaturbilder</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/box/nodeviewbox.py" line="343"/>
+        <location filename="../../../api/gui/box/nodeviewbox.py" line="346"/>
         <source>You must specify at least one node.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="298"/>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="326"/>
         <source>Attributes selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="186"/>
+        <source>View as</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="214"/>
+        <source>Icon size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="352"/>
+        <source>Show attributes panel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>OptWidget</name>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="361"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="357"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1041,17 +1076,17 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>Preferences</name>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="336"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="335"/>
         <source>Create directory</source>
         <translation>Erstelle Verzeichnis</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="336"/>
         <source>Directory creation failure</source>
         <translation>Erstellung des Verzeichnisses fehlgeschlagen</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/dialog/preferences.py" line="338"/>
+        <location filename="../../../ui/gui/dialog/preferences.py" line="337"/>
         <source>History file is not writable</source>
         <translation>History-Datei ist nicht schreibbar</translation>
     </message>
@@ -1182,6 +1217,14 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
         <location filename="../../../ui/gui/resources/preferences.ui" line="665"/>
         <source>Provided path is a readable file.</source>
         <translation>Das angegebene Verzeichnis ist ein lesbares Verzeichnis.</translation>
+    </message>
+</context>
+<context>
+    <name>Preview</name>
+    <message>
+        <location filename="../../../ui/gui/widget/preview.py" line="71"/>
+        <source>Preview</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1322,17 +1365,17 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>SearchS</name>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="261"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="257"/>
         <source>Kilo byte(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="262"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="258"/>
         <source>Mega byte(s)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="263"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="259"/>
         <source>Giga byte(s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1546,7 +1589,7 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1335"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1355"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
@@ -1554,37 +1597,37 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1021"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1041"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1022"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1042"/>
         <source>Size</source>
         <translation>Größe</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1023"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1043"/>
         <source>Accessed time</source>
         <translation>Zugriffszeit</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1024"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1044"/>
         <source>Changed time</source>
         <translation>Änderungszeit</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1025"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1045"/>
         <source>Modified time</source>
         <translation>Modifikationszeit</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1026"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1046"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1027"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1047"/>
         <source>Deleted</source>
         <translation>gelöscht</translation>
     </message>
@@ -1643,37 +1686,37 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>evidenceDialog</name>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="23"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="27"/>
         <source>Select evidence type</source>
         <translation>Wähle Typ des Beweismittels</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="131"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="128"/>
         <source>Add evidence directory</source>
         <translation>Füge Beweismittelverzeichnis hinzu</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="136"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="133"/>
         <source>Add evidence files</source>
         <translation>Füge Beweismitteldateien hinzu</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="56"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="60"/>
         <source>Open local files or directory</source>
         <translation>Öffne lokale Dateien oder Verzeichnisse</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="73"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="77"/>
         <source>RAW format</source>
         <translation>RAW-Format</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="89"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="93"/>
         <source>EWF format</source>
         <translation>EWF-Format</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="99"/>
+        <location filename="../../../ui/gui/resources/evidencedialog.ui" line="103"/>
         <source>AFF Format</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1681,27 +1724,27 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 <context>
     <name>procMB</name>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="147"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="148"/>
         <source>Results</source>
         <translation>Ergebnisse</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="149"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="150"/>
         <source>No results</source>
         <translation>keine Ergebnisse</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="146"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="147"/>
         <source>Provided Arguments</source>
         <translation>übergebene Argumente</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="148"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="149"/>
         <source>Processus Information</source>
         <translation>Prozess Information</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/widget/taskmanager.py" line="145"/>
+        <location filename="../../../ui/gui/widget/taskmanager.py" line="146"/>
         <source>Output</source>
         <translation type="unfinished">Ausgabe</translation>
     </message>
