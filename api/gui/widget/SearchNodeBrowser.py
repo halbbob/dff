@@ -310,6 +310,5 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       self.menuModule.setTitle(self.actionOpen_with.text())
       self.submenuRelevant.setTitle(self.actionRelevant_module.text())
       self.model.translation()
-      self.treeModel.translation()
     else:
       QWidget.changeEvent(self, event)
