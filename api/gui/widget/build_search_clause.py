@@ -217,9 +217,9 @@ class SearchD(QWidget, Ui_SearchDate):
     else:
       prefix += " >= "
     date_time = self.dateTimeEdit.dateTime()
-    if self.date_str.isChecked():
-      return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
-    return prefix + "ts(" + str(date_time.toTime_t()) + ")"
+    #if self.date_str.isChecked():
+    return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
+    #return prefix + "ts(" + str(date_time.toTime_t()) + ")"
 
 class SearchS(QWidget, Ui_SearchSize):
   def __init__(self, parent = None):
@@ -298,8 +298,8 @@ class OptWidget(QWidget):
                        typeId.UInt64: SearchS,
                        typeId.String: SearchStr,
                        typeId.CArray: SearchStr,
-                       typeId.Node: SearchDict,
-                       typeId.Path: SearchDict,
+                       #typeId.Node: SearchDict,
+                       #typeId.Path: SearchDict,
                        typeId.VTime: SearchD,
                        typeId.Bool: FileIsDeleted,
                        typeId.List: MimeType,
@@ -315,8 +315,8 @@ class OptWidget(QWidget):
                        typeId.UInt64 + 100: SearchS,
                        typeId.String + 100: SearchStr,
                        typeId.CArray + 100: SearchStr,
-                       typeId.Node + 100: SearchDict,
-                       typeId.Path + 100: SearchDict,
+                       #typeId.Node + 100: SearchDict,
+                       #typeId.Path + 100: SearchDict,
                        typeId.VTime + 100: SearchD,
                        typeId.Bool + 100: IsFile}
 
@@ -370,7 +370,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.optionList.addItem(self.sizeMaxTr, QVariant(typeId.UInt64 + 100))
       self.optionList.addItem(self.dateMaxTr, QVariant(typeId.VTime + 100))
       self.optionList.addItem(self.dateMinTr, QVariant(typeId.VTime))
-      self.optionList.addItem(self.fromDictTr, QVariant(typeId.Path))
+      #self.optionList.addItem(self.fromDictTr, QVariant(typeId.Path))
       self.optionList.addItem(self.dataDeletedTr , QVariant(typeId.Bool))
       self.optionList.addItem(self.dataIsFileTr, QVariant(typeId.Bool + 100))
       self.optionList.addItem(self.mimeTypeTr, QVariant(typeId.List))
