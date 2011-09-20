@@ -51,7 +51,6 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
-    self.VFS.connection(self)
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
