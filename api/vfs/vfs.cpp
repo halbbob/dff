@@ -77,7 +77,7 @@ std::vector<fso*>	VFS::fsobjs()
 
 uint64_t	VFS::totalNodes()
 {
-  int	i;
+  size_t	i;
   uint64_t	totalnodes;
 
   totalnodes = this->__orphanednodes.size();
@@ -94,7 +94,7 @@ Node*	VFS::getNodeById(uint64_t id)
   fsoid = id >> 48;
   if ((fsoid == 0) && (id < this->__orphanednodes.size()))
     return this->__orphanednodes[id];
-  else if ((fsoid > 0) && ((fsoid - 1) < this->__fsobjs.size()))
+  else if ((fsoid > 0) && ((fsoid - 1) < (uint16_t)this->__fsobjs.size()))
     {
       if ((fsobj = this->__fsobjs[fsoid-1]) != NULL)
 	return fsobj->getNodeById(id);
