@@ -65,25 +65,24 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
         self.notIndexed.linkActivated.connect(self.index_opt2)
         self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
-      self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+      #self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
       if IndexerFound:
         QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
         QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
-      self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+      #self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     self.filterThread = FilterThread()
-    self.filterThread.filters.connection(self)
 
     # Future feature
     self.indexOpt.hide()
 
 
-  def Event(self, e):
-    node = e.value.value()
-    if e.type == 514:
-      self.emit(SIGNAL("add_node"), long(node.this))
+  #def Event(self, e):
+  #  node = e.value.value()
+  #  if e.type == 514:
+  #    self.emit(SIGNAL("add_node"), long(node.this))
 
   def index_opt2(self, url):
     self.explain_this_odd_behavior()
@@ -271,7 +270,6 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
         self.filterThread.setRecursive(True)
 
       clause = "name == w(\"*" + str(self.searchClause.text()) + "*\",i)"
-      print clause      
       self.filterThread.setContext(clause, self.parent.model.rootItem, self.parent.model)
       self.filterThread.start()
 

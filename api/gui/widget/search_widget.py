@@ -89,7 +89,7 @@ class FilterThread(QThread, EventHandler):
         if e.type == Filter.NodeMatched:
           self.match += 1
           val = e.value.value()
-          self.emit(SIGNAL("NodeMatched"), val.this)
+          self.model.addNode(val.this)
         pc = self.processed * 100 / self.total
         if pc > self.percent:
           self.percent = pc
@@ -112,7 +112,7 @@ class FilterThread(QThread, EventHandler):
       self.filters.processFolder(self.rootnode)
     else:
       self.filters.process(self.rootnode, self.recursive)
-    self.model = None
+
 
   def stopSearch(self):
     e = event()
@@ -208,7 +208,6 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
 
     self.connect(self.filterThread, SIGNAL("CountNodes"), self.__progressUpdate)
-    self.connect(self.filterThread, SIGNAL("NodeMatched"), self.__matchedUpdate)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
     QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
     #self.searchBar.setMaximum(100)
@@ -216,12 +215,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def __progressUpdate(self, val):
     self.searchBar.setValue(val)
     self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+    self.totalHits.setText(self.tr("current match(s): ") + str(self.model.rowCount()))
 
-
-  def __matchedUpdate(self, val):
-    self.__totalhits += 1
-    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
-    self.emit(SIGNAL("NodeMatched"), val)
 
   def case_sens_changed(self, state):
     self.rebuildQuery()
@@ -420,10 +415,11 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     try:
       self.filterThread.setContext(self.completeClause.text(), self.vfs.getnode(str(self.path.text())))
+      self.filterThread.model = self.model
       self.searchBar.show()
       self.launchSearchButton.hide()
       self.stopSearchButton.show()
-      self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+      self.totalHits.setText(self.tr("current match(s): 0"))
       self.filterThread.start()
     except RuntimeError as err:
       box = QMessageBox(QMessageBox.Warning, self.tr("Invalid clause"),
