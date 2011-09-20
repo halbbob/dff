@@ -24,7 +24,6 @@ from api.module.module import *
 from api.module.script import *
 from api.types.libtypes import Argument, typeId
 
-import re
 
 class TextEdit(QTextEdit):
   def __init__(self, cat):
@@ -62,7 +61,7 @@ class Scroll(QScrollBar):
       self.min = 0
       self.single = 1
       self.page = 32
-      self.max = self.cat.lines
+      self.max = self.cat.lines - 1
 
     def initCallBacks(self):
       self.connect(self, SIGNAL("sliderMoved(int)"), self.moved) 
@@ -137,23 +136,15 @@ class CAT(QWidget, Script):
     padd = 0
     if line > padd:
       padd = 1
-
-    self.vfile.seek(self.offsets[line] + padd)
+    self.vfile.seek(self.offsets[line]+padd)
     self.text.clear()
     self.text.append(QString.fromUtf8(self.vfile.read(1024*10)))
     self.text.moveCursor(QTextCursor.Start)
 
+
   def linecount(self):
     offsets = [0]
-    buf_size = 1024 * 1024
-    buf = self.vfile.read(buf_size)
-    bufit = 0
-    while buf:
-      s = re.finditer('\n', buf)
-      for i in s:
-        offsets.append((buf_size * bufit) + i.start())
-      buf = self.vfile.read(buf_size)
-      bufit += 1
+    offsets.extend(self.vfile.indexes('\n'))
     self.lines = len(offsets)
     return offsets
 
