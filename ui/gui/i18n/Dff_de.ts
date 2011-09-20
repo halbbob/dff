@@ -1330,16 +1330,6 @@ Johannes Stuettgen johannes.stuettgen@gmail.com
 </context>
 <context>
     <name>SearchDate</name>
-    <message>
-        <location filename="../../../ui/gui/resources/search_date.ui" line="20"/>
-        <source>Timestamp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../ui/gui/resources/search_date.ui" line="30"/>
-        <source>String</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SearchDict</name>
