@@ -28,6 +28,8 @@ typedef std::vector<uint64_t>		NumberList;
 typedef std::vector<std::string>	StringList;
 typedef std::vector<vtime*>		TimeList;
 
+typedef std::list<Variant*>		VLIST;
+
 class Processor
 {
 public:
@@ -127,9 +129,10 @@ private:
   CmpOperator::Op	__cmp;
   uint32_t		__cost;
   std::string		__attr;
-  NumberList		__values;
-  bool			__evaluate(uint64_t value, uint64_t provided);
-  bool			__levaluate(uint64_t value);
+  attributeNameType	__tname;
+  NumberList		__rvalues;
+  bool			__sevaluate(uint64_t lvalue, uint64_t rvalue);
+  bool			__levaluate(uint64_t lvalue);
 };
 
 
@@ -153,13 +156,14 @@ private:
   EType			__etype;
   CmpOperator::Op	__cmp;
   uint32_t		__cost;
+  attributeNameType	__tname;
   std::string		__attr;
   StringList		__strvalues;
   Processor*		__proc;
   std::vector<Search*>	__ctxs;
   void			__pcompile();
   void			__scompile();
-  bool			__sevaluate(StringList values);
+  bool			__sevaluate(const StringList& values);
   bool			__devaluate(Node* node);
 };
 
@@ -175,6 +179,7 @@ public:
 private:
   CmpOperator::Op	__cmp;
   uint32_t		__cost;
+  attributeNameType	__tname;
   std::string		__attr;
   bool			__val;
 };
@@ -192,6 +197,7 @@ public:
 private:
   CmpOperator::Op	__cmp;
   uint32_t		__cost;
+  attributeNameType	__tname;
   std::string		__attr;
   TimeList		__values;
   bool			__evaluate(vtime* val);

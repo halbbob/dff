@@ -108,16 +108,16 @@ bool		Logical::evaluate(Node* node) throw (std::string)
 
 NumericFilter::~NumericFilter()
 {
-  this->__values.clear();
+  this->__rvalues.clear();
 }
 
 NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, uint64_t value) : __attr(attr)
 {
   this->__cmp = cmp;
-  this->__values.push_back(value);
+  this->__rvalues.push_back(value);
 }
 
-NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, const NumberList& values) : __attr(attr), __values(values)
+NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, const NumberList& values) : __attr(attr), __rvalues(values)
 {
   this->__cmp = cmp;
 }
@@ -125,15 +125,24 @@ NumericFilter::NumericFilter(const std::string& attr, CmpOperator::Op cmp, const
 void		NumericFilter::compile() throw (std::string)
 {
   if (this->__attr != "size")
-    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+    {
+      this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+      if (this->__attr.find(".") != std::string::npos)
+	this->__tname = ABSOLUTE_ATTR_NAME;
+      else
+	this->__tname = RELATIVE_ATTR_NAME;
+    }
+  else
+    this->__tname = ABSOLUTE_ATTR_NAME;
   return;
 }
 
 bool		NumericFilter::evaluate(Node* node) throw (std::string)
 {
-  uint64_t	value;
+  uint64_t	lvalue;
   bool		process;
   Variant*	v;
+  VLIST		vlist;
   
   // std::cout << "attribute: " << this->__attr << std::endl;
   // std::cout << "comparison: " << this->__cmp << std::endl;
@@ -143,45 +152,54 @@ bool		NumericFilter::evaluate(Node* node) throw (std::string)
     return false;
   if (this->__attr == "size")
     {
-      value = node->size();
+      lvalue = node->size();
       process = true;
     }
   else
     {
       try
 	{
-	  if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+	  if ((v = node->attributesByName(this->__attr, this->__tname)) != NULL)
 	    {
-	      value = v->value<uint64_t>();
+	      if (this->__tname == ABSOLUTE_ATTR_NAME)
+		lvalue = v->value<uint64_t>();
+	      else
+		{
+		  vlist = v->value< VLIST >();
+		  if (vlist.size() == 1 && vlist.front() != NULL)
+		    lvalue = vlist.front()->value<uint64_t>();
+		  vlist.clear();		  
+		}
 	      delete v;
 	      process = true;
 	    }
 	}
       catch (std::string err)
 	{
+	  vlist.clear();
 	  if (v != NULL)
 	    delete v;
 	}
     }
   if (process && !this->_stop)
-    if (this->__values.size() == 1)
-      return this->__evaluate(value, this->__values[0]);
+    if (this->__rvalues.size() == 1)
+      return this->__sevaluate(lvalue, this->__rvalues[0]);
     else
-      return this->__levaluate(value);
+      return this->__levaluate(lvalue);
   else
     return false;
 }
 
-bool		NumericFilter::__levaluate(uint64_t value)
+bool		NumericFilter::__levaluate(uint64_t lvalue)
 {
-  NumberList::iterator	it;
-  bool			found;
+  NumberList::iterator		it;
+  bool				found;
 
-  it = this->__values.begin();
   found = false;
-  while ((it != this->__values.end()) && (!found) && (!this->_stop))
+  it = this->__rvalues.begin();
+  while ((it != this->__rvalues.end()) && (!found) && (!this->_stop))
     {
-      if (value == *it)
+      if (lvalue == *it)
 	found = true;
       it++;
     }
@@ -193,35 +211,35 @@ bool		NumericFilter::__levaluate(uint64_t value)
     return false;
 }
 
-bool		NumericFilter::__evaluate(uint64_t value, uint64_t provided)
+bool		NumericFilter::__sevaluate(uint64_t lvalue, uint64_t rvalue)
 {
   if (this->__cmp == CmpOperator::EQ)
-    if (value == provided)
+    if (lvalue == rvalue)
       return true;
     else
       return false;
   else if (this->__cmp == CmpOperator::NEQ)
-    if (value != provided)
+    if (lvalue != rvalue)
       return true;
     else
       return false;
   else if (this->__cmp == CmpOperator::LT)
-    if (value < provided)
+    if (lvalue < rvalue)
       return true;
     else
       return false;
   else if (this->__cmp == CmpOperator::LTE)
-    if (value <= provided)
+    if (lvalue <= rvalue)
       return true;
     else
       return false;
   else if (this->__cmp == CmpOperator::GT)
-    if (value > provided)
+    if (lvalue > rvalue)
       return true;
     else
       return false;
   else if (this->__cmp == CmpOperator::GTE)
-    if (value >= provided)
+    if (lvalue >= rvalue)
       return true;
     else
       return false;
@@ -332,7 +350,15 @@ void		StringFilter::__scompile()
 void		StringFilter::compile() throw (std::string)
 {
   if ((this->__attr != "mime") && (this->__attr != "name") && (this->__attr != "data"))
-    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+    {
+      this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+      if (this->__attr.find(".") != std::string::npos)
+	this->__tname = ABSOLUTE_ATTR_NAME;
+      else
+	this->__tname = RELATIVE_ATTR_NAME;
+    }
+  else
+    this->__tname = ABSOLUTE_ATTR_NAME;
   if (this->__etype == PROCESSOR)
     this->__pcompile();
   else if (this->__etype == STRING)
@@ -348,6 +374,7 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
   Attributes::iterator	it;
   Variant*		v;
   bool			process;
+  VLIST			vlist;
 
   v = NULL;
   process = false;
@@ -367,11 +394,13 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
 	  if ((v = node->dataType()) != NULL)
 	    {
 	      vmap = v->value<Attributes>();
-	      if (((it = vmap.find("magic mime")) != vmap.end()) && (it->second != NULL))
+	      if (((it = vmap.find("magic mime")) != vmap.end()) && (it->second != NULL) && (it->second->type() == typeId::String))
 		{
 		  values.push_back(it->second->value<std::string>());
 		  process = true;
 		}
+	      vmap.clear();
+	      delete v;
 	    }
 	}
       catch (...)
@@ -384,15 +413,31 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
     {
       try
 	{
-	  if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
-	    if (v->type() == typeId::String)
-	      {
-		values.push_back(v->value<std::string>());
-		process = true;
-	      }
+	  if ((v = node->attributesByName(this->__attr, this->__tname)) != NULL)
+	    {
+	      if (this->__tname == ABSOLUTE_ATTR_NAME && v->type() == typeId::String)
+		{
+		  values.push_back(v->value<std::string>());
+		  process = true;
+		}
+	      else if (this->__tname == RELATIVE_ATTR_NAME && v->type() == typeId::List)
+		{
+		  vlist = v->value< VLIST >();
+		  Variant*	vptr;
+		  if ((vlist.size() == 1) && (((vptr = vlist.front()) != NULL) && (vptr->type() == typeId::String)))
+		    {
+		      values.push_back(vptr->value< std::string >());
+		      process = true;
+		    }
+		  vlist.clear();
+		}
+	      else
+		delete v;
+	    }
 	}
       catch (...)
 	{
+	  vlist.clear();
 	  if (v != NULL)
 	    delete v;
 	}
@@ -404,6 +449,7 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
 	ret = this->__devaluate(node);
       else
 	ret = this->__sevaluate(values);
+      values.clear();
       if (this->__cmp == CmpOperator::EQ)
 	return (ret == true);
       else if (this->__cmp == CmpOperator::NEQ)
@@ -415,9 +461,9 @@ bool		StringFilter::evaluate(Node* node) throw (std::string)
     return false;
 }
 
-bool		StringFilter::__sevaluate(StringList values)
+bool		StringFilter::__sevaluate(const StringList& values)
 {
- StringList::iterator			vit;
+ StringList::const_iterator		vit;
  std::vector<Search*>::iterator		cit;
  bool					found;
  
@@ -490,7 +536,15 @@ BooleanFilter::BooleanFilter(const std::string& attr, CmpOperator::Op cmp, bool 
 void		BooleanFilter::compile() throw (std::string)
 {
   if ((this->__attr != "deleted") && (this->__attr != "file"))
-    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+    {
+      this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+      if (this->__attr.find(".") != std::string::npos)
+	this->__tname = ABSOLUTE_ATTR_NAME;
+      else
+	this->__tname = RELATIVE_ATTR_NAME;
+    }
+  else
+    this->__tname = ABSOLUTE_ATTR_NAME;
   return;
 }
 
@@ -499,6 +553,7 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
   bool		value;
   bool		process;
   Variant*	v;
+  VLIST		vlist;
 
   process = false;
   v = NULL;
@@ -521,17 +576,30 @@ bool		BooleanFilter::evaluate(Node* node) throw (std::string)
     {
       try
 	{
-	  if ((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL)
+	  if ((v = node->attributesByName(this->__attr, this->__tname)) != NULL)
 	    {
-	      if (v->type() == typeId::Bool)
+	      if (this->__tname == ABSOLUTE_ATTR_NAME && v->type() == typeId::Bool)
 		{
-		  value = v->value<bool>();
+		  value = v->value< bool >();
 		  process = true;
 		}
+	      else if (this->__tname == RELATIVE_ATTR_NAME && v->type() == typeId::List)
+		{
+		  vlist = v->value< VLIST >();
+		  Variant*	vptr;
+		  if ((vlist.size() == 1) && (((vptr = vlist.front()) != NULL) && (vptr->type() == typeId::Bool)))
+		    {
+		      value = vptr->value< bool >();
+		      process = true;
+		    }
+		  vlist.clear();
+		}
+	      delete v;
 	    }
 	}
       catch (...)
 	{
+	  vlist.clear();
 	  if (v != NULL)
 	    delete v;
 	}
@@ -577,7 +645,15 @@ TimeFilter::TimeFilter(const std::string& attr, CmpOperator::Op cmp, const TimeL
 void		TimeFilter::compile() throw (std::string)
 {
   if (this->__attr != "time")
-    this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+    {
+      this->__attr = this->__attr.substr(1, this->__attr.size() - 2);
+      if (this->__attr.find(".") != std::string::npos)
+	this->__tname = ABSOLUTE_ATTR_NAME;
+      else
+	this->__tname = RELATIVE_ATTR_NAME;
+    }
+  else
+    this->__tname = ABSOLUTE_ATTR_NAME;
   return;
 }
 
@@ -588,6 +664,7 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
   vtime*		vt;
   bool			found;
   Variant		*v;
+  VLIST			vlist;
 
   found = false;
   v = NULL;
@@ -618,14 +695,25 @@ bool		TimeFilter::evaluate(Node* node) throw (std::string)
     {
       try
 	{
-	  if (((v = node->attributesByName(this->__attr, ABSOLUTE_ATTR_NAME)) != NULL) &&
-	      (v->type() == typeId::VTime))
-	    found = this->__evaluate(v->value<vtime*>());
+	  if ((v = node->attributesByName(this->__attr, this->__tname)) != NULL)
+	    {
+	      if (this->__tname == ABSOLUTE_ATTR_NAME && v->type() == typeId::VTime)
+		found = this->__evaluate(v->value<vtime*>());
+	      else if (this->__tname == RELATIVE_ATTR_NAME && v->type() == typeId::List)
+		{
+		  vlist = v->value< VLIST >();
+		  Variant	*vptr;
+		  if (vlist.size() == 1 && (((vptr = vlist.front()) != NULL) && (vptr->type() == typeId::VTime)))
+		    found = this->__evaluate(vptr->value<vtime*>());
+		}
+	      vlist.clear();
+	    }
 	}
       catch (...)
 	{
 	}
     }
+  vlist.clear();
   if (v != NULL)
     delete v;
   if (ts != NULL)
