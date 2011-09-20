@@ -77,14 +77,16 @@ protected:
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*);
   EXPORT void				attributesByTypeFromVariant(Variant*, uint8_t, Attributes*, std::string current);
 
-  EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, Variant**);
-  EXPORT void	 			attributeByAbsoluteNameFromVariant(Variant* variant, std::string name, Variant**);
+  EXPORT void	 			attributesByNameFromVariant(Variant* variant, std::string name, std::list<Variant*> *result);
+  EXPORT Variant* 			attributeByAbsoluteNameFromVariant(Variant* variant, std::string name);
 
   EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names);
   EXPORT void	 			attributesNamesFromVariant(Variant* variant, std::list<std::string>* names, std::string current);
 
   EXPORT void				attributesNamesAndTypesFromVariant(Variant* variant, std::map<std::string, uint8_t> *namestypes, std::string current);
   EXPORT bool				constantValuesMatch(Constant* constant, Attributes vars);
+  EXPORT void				__compatibleModulesByType(const std::map<std::string, Constant*>& cmime, Attributes& dtypes, std::list<std::string>* result);
+  EXPORT void				__compatibleModulesByExtension(const std::map<std::string, Constant*>& constants, std::string& ext, std::list<std::string>* result);
 public:
   EXPORT 				Node(std::string name, uint64_t size=0, Node* parent=NULL, fso* fsobj=NULL);
   EXPORT 				Node();
@@ -109,6 +111,8 @@ public:
   EXPORT std::string			path();
   EXPORT std::string			name();
   EXPORT std::string			absolute();
+  EXPORT std::string			extension();
+
 
   EXPORT virtual bool			isFile();
   EXPORT virtual bool			isDir();
