@@ -152,7 +152,7 @@
             while ((i != lsize) && err.empty())
               {
                 item = PyList_GetItem(obj, i);
-                if ((v = new_Variant__SWIG_18(item, itype)) == NULL)
+                if ((v = new_Variant__SWIG_19(item, itype)) == NULL)
                   err = "Constant < " + self->name() + "  >\n provided list of values must be of type < " + typeId::Get()->typeToName(itype) + " >";
                 else
                   vlist.push_back(v);
@@ -330,7 +330,7 @@
             {
                 item = PyList_GetItem(predef_obj, i);
                 //Maybe change this call with _wrap_new_Variant to not depend on swig overload method generation (at the moment it s SWIG_18 but could change if new Variant ctor implemented...). Then use Swig_ConvertPtr to get Variant from the returned PyObject.
-                if ((v = new_Variant__SWIG_18(item, itype)) == NULL)
+                if ((v = new_Variant__SWIG_19(item, itype)) == NULL)
                   err = "Argument < " + self->name() + "  >\n predefined parameters must be of type < " + typeId::Get()->typeToName(self->type()) + " >";
                 else
                   vlist.push_back(v);
@@ -390,7 +390,7 @@
 	    SWIG_PYTHON_THREAD_END_BLOCK;
 	    throw(std::string("Argument < " + arg->name() + " >\npredefined parameters are immutable and those provided do not correspond to available ones"));
 	  }
-        if ((v = new_Variant__SWIG_18(obj, arg->type())) == NULL)
+        if ((v = new_Variant__SWIG_19(obj, arg->type())) == NULL)
           {
 	    SWIG_PYTHON_THREAD_END_BLOCK;
 	    throw(std::string("Argument < " + arg->name() + " >\nparameter is not compatible"));
@@ -526,7 +526,7 @@
                     {
                       Variant * v = new Variant;
                       if (itype == Argument::Empty)
-                        v = new_Variant__SWIG_18(itemval, typeId::Bool);
+                        v = new_Variant__SWIG_19(itemval, typeId::Bool);
                       else if (itype == Argument::Single)
                         v = Config_generateSingleInput(self, itemval, *argit);
                       else if (itype == Argument::List)
@@ -1152,7 +1152,7 @@
           for (it = 0; it != size; it++)
             {
               item = PyList_GetItem(obj, it);
-              if ((vitem = new_Variant__SWIG_18(item, type)) == NULL)
+              if ((vitem = new_Variant__SWIG_19(item, type)) == NULL)
               {
                  lbreak = true;
                  break;
@@ -1561,7 +1561,9 @@
         if valType in self.funcMapper.keys():
             func = getattr(self, self.funcMapper[valType])
             if func != None:
-                return func()
+                val = func()
+                val.thisown = False
+                return val
             else:
                 return None
         else:
