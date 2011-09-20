@@ -65,6 +65,7 @@ public:
   ~ReservedSectors();
   virtual void			fileMapping(FileMapping* fm);
   virtual Attributes		_attributes(void);
+  virtual Variant*		dataType();
 };
 
 class FileSystemSlack: public Node

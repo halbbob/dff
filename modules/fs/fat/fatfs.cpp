@@ -41,7 +41,7 @@ void		Fatfs::process()
 	  this->root->setDir();
 	  this->root->addChild(fsroot);
 	  if (this->bs->reserved != 0)
-	    rs = new ReservedSectors("reserved sectors", (uint64_t)(this->bs->reserved - 1) * this->bs->ssize, this->root, this);
+	    rs = new ReservedSectors("reserved sectors", (uint64_t)(this->bs->reserved) * (uint64_t)this->bs->ssize, this->root, this);
 	  if (this->bs->totalsize < this->parent->size())
 	    fss = new FileSystemSlack("file system slack", this->parent->size() - this->bs->totalsize, this->root, this);
 	  this->fat->makeNodes(this->root);

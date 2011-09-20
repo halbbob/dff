@@ -232,7 +232,7 @@ void	BootSector::fillCtx()
   this->prevsect = *((uint32_t*)this->bs.prevsect);
   if (this->err != 0)
     {
-      std::cout << "error: " << this->errlog << std::endl;
+      //std::cout << "error: " << this->errlog << std::endl;
       throw("bad bootsector");
     }
   else
@@ -243,7 +243,7 @@ void	BootSector::fillCtx()
       this->fs->res["fat type"] = new Variant(this->fattype);
       this->fs->res["oemname"] = new Variant(this->oemname);
       this->fs->res["sector size"] = new Variant(this->ssize);
-      this->fs->res["cluster size"] = new Variant(this->csize);
+      this->fs->res["sectors per cluster"] = new Variant(this->csize);
       this->fs->res["reserved cluster"] = new Variant(this->reserved);
       this->fs->res["number of fat"] = new Variant(this->numfat);
       this->fs->res["number of entries in root directory"] = new Variant(this->numroot);
