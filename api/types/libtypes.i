@@ -124,6 +124,7 @@
 %template(__VList) Variant::value< std::list<Variant *> >;
 %template(__VMap) Variant::value< std::map<std::string, Variant *> >;
 
+
 %extend Constant
 {
   void  addValues(PyObject* obj) throw (std::string)
@@ -749,6 +750,15 @@
 
 %extend std::map<std::string, Variant * >
 {
+  ~map<std::string, Variant* >()
+    {
+      std::map<std::string, Variant*>::iterator	mit;
+      for (mit = self->begin(); mit != self->end(); mit++)
+	if (mit->second != NULL)
+	  delete mit->second;
+      delete self;
+    }
+
   bool operator==(PyObject* obj)
   {
     SWIG_PYTHON_THREAD_BEGIN_BLOCK;
@@ -1562,7 +1572,8 @@
             func = getattr(self, self.funcMapper[valType])
             if func != None:
                 val = func()
-                val.thisown = False
+                if valType in [typeId.VTime, typeId.List, typeId.Map]:
+                    val.thisown = False
                 return val
             else:
                 return None
