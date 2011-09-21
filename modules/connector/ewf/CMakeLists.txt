@@ -46,7 +46,7 @@ endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 if(WIN32)
   set(ewf_files
     EWF.py
-    ewf.dll
+    libewf.dll
     zlib.dll
   )
 else(WIN32)
