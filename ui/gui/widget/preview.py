@@ -61,10 +61,10 @@ class Preview(QStackedWidget):
  	 args["preview"] = True
 	 conf = self.loader.get_conf(str(previewModule))
   	 genargs = conf.generate(args)
-	 genargs.thisown = False
 	 self.previousWidget = self.lmodules[previewModule].create()
 	 self.previousWidget.start(genargs)
 	 self.previousWidget.g_display()
+         self.previousWidget.setAttribute(Qt.WA_DeleteOnClose)
 	 self.addWidget(self.previousWidget)
 
     def retranslateUi(self, widget):
