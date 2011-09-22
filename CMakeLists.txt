@@ -357,7 +357,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT")
 #  ui/ui.py
 # See corresponding CMakeLists.txt for CONFIGURE_FILE.
 SET(CPACK_PACKAGE_VERSION_MAJOR "1") 
-SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_MINOR "2")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
@@ -458,23 +458,24 @@ IF(WIN32 AND NOT UNIX)
 	
 	
   if (WINALL)
-    if (HAVE_64_BIT)
-      SET(CPACK_SYSTEM_NAME "win64_all_in_one")
-    else(HAVE_64_BIT)
+	add_subdirectory (Prerequisites)
+    if (WIN32)
       SET(CPACK_SYSTEM_NAME "win32_all_in_one")
-    endif(HAVE_64_BIT)
+    else(WIN32)
+      SET(CPACK_SYSTEM_NAME "win64_all_in_one")
+    endif(WIN32)
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
       "
-       MessageBox MB_YESNO \\\"Install Python 2.7.1 ? \\\" /SD IDYES IDNO endPython
-        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.7.1.msi\\\" /passive'
+       MessageBox MB_YESNO \\\"Install ${PYTHON_INSTALLER} ? \\\" /SD IDYES IDNO endPython
+        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\${PYTHON_INSTALLER}\\\" /passive'
         Goto endPython   
        endPython:
-        MessageBox MB_YESNO \\\"Install PyQt 4.8.4-1 ? \\\" /SD IDYES IDNO endPyQt
-        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.4-1.exe\\\"'
+        MessageBox MB_YESNO \\\"Install ${PYQT_INSTALLER}? \\\" /SD IDYES IDNO endPyQt
+        ExecWait '\\\"Prerequisites\\\\${PYQT_INSTALLER}\\\"'
         Goto endPyQt
        endPyQt:
        MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
-        ExecWait '\\\"Prerequisites\\\\vcredist_x86.exe\\\" /q:a'
+        ExecWait '\\\"Prerequisites\\\\${VCREDIST_INSTALLER}\\\" /q:a'
         Goto endVS
        endVS:
        RMDir /r \\\"$INSTDIR\\\\dff\\\\Prerequisites\\\"
@@ -549,9 +550,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_
 add_subdirectory (api)
 add_subdirectory (modules)
 add_subdirectory (ui)
-if (NOT UNIX AND WINALL)
-  add_subdirectory (Prerequisites)
-endif(NOT UNIX AND WINALL)
 
 if (UNIX)
 ADD_CUSTOM_COMMAND(
