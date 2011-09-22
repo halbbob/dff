@@ -40,5 +40,5 @@ if __name__ == "__main__":
     argv = usage(sys.argv[1:])
     ui = ui('gui', argv.debug)
     if argv.batch != None:
-	ui.cmd("batch " + argv.batch)
+       ui.cmd("batch " + argv.batch)
     ui.launch()
