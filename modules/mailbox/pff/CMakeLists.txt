@@ -66,6 +66,7 @@ if(WIN32)
   set(pff_files
     PFF.py
     libpff.dll
+    libbfio.dll
   )
 else(WIN32)
   set(pff_files
