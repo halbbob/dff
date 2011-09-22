@@ -241,15 +241,10 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
           clause[widget.edit.field] = (widget.edit.text())
 
       table_clause_widget = SearchClause(self)
-      table_clause_widget.clause_widget.setShowGrid(False)
-      table_clause_widget.clause_widget.verticalHeader().hide()
-      table_clause_widget.clause_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
-      table_clause_widget.clause_widget.setAlternatingRowColors(True)
       table_clause_widget.clause_widget.insertColumn(0)
       table_clause_widget.clause_widget.insertColumn(1)
-      table_clause_widget.clause_widget.setHorizontalHeaderItem(0, QTableWidgetItem("Field"))
-      table_clause_widget.clause_widget.setHorizontalHeaderItem(1, QTableWidgetItem("Clause"))
       table_clause_widget.clause_widget.horizontalHeader().setStretchLastSection(True)
+      table_clause_widget.clause_widget.horizontalHeader().setFixedHeight(5)
 
       if QtCore.PYQT_VERSION_STR >= "4.5.0":
         table_clause_widget.clause_widget.itemChanged.connect(self.editing_clause)
@@ -270,10 +265,16 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
       for i in clause:
         table_clause_widget.clause_widget.insertRow(table_clause_widget.clause_widget.rowCount())
+	item = QTableWidgetItem(i)
+	item.setFlags(Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled))
+	item.setToolTip(self.fieldText)
         table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, \
-                                                    0, QTableWidgetItem(i))
+                                                    0, item)
+	item = QTableWidgetItem(clause[i])
+	item.setFlags(Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled))
+	item.setToolTip(self.clauseText)
         table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 1,\
-                                                    QTableWidgetItem(clause[i]))
+                                                   item)
         table_clause_widget.clause_widget.resizeRowToContents(table_clause_widget.clause_widget.rowCount() - 1)
         if nb_line == 0:
           text += ("(" + i + " " + clause[i] + ")")
@@ -296,8 +297,11 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
           table_clause_widget.or_clause.hide()
           table_clause_widget.and_clause.hide()
           table_clause_widget.bool_operator.deleteLater()
-          
-        table_clause_widget.clause_widget.setMaximumHeight(nb_line * 25 + 50)
+         
+# Set height to : (rows amount * row size) + margin + header height, visible to have resize available
+        table_clause_widget.clause_widget.setMaximumHeight((table_clause_widget.clause_widget.rowCount() *    \
+                                                           table_clause_widget.clause_widget.rowHeight(0)) + \
+							   4 + 5)
         self.completeClause.setText(text)
         self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0, Qt.AlignTop)
         self.clause_list.append(table_clause_widget)
@@ -433,4 +437,5 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.search_in_node = path
 
   def translation(self):
-    pass
+    self.fieldText = self.tr("Field")
+    self.clauseText = self.tr("Clause")

@@ -50,7 +50,6 @@ set(ui_resources_files
   search_mime_type.ui
   search_size.ui
   search_str.ui
-  select_mime_types.ui
   shell.ui
   taskmanager.ui
   selectattrs.ui
