@@ -79,13 +79,16 @@ vtime::vtime(std::string ts)
 
 bool	vtime::operator==(vtime* v)
 {
-  return ((this->year == v->year) && 
-	  (this->month == v->month) &&
-	  (this->day == v->day) &&
-	  (this->hour == v->hour) &&
-	  (this->minute == v->minute) &&
-	  (this->second == v->second) &&
-	  (this->usecond == v->usecond));
+  if (v != NULL)
+    return ((this->year == v->year) && 
+	    (this->month == v->month) &&
+	    (this->day == v->day) &&
+	    (this->hour == v->hour) &&
+	    (this->minute == v->minute) &&
+	    (this->second == v->second) &&
+	    (this->usecond == v->usecond));
+  else
+    return false;
 }
 
 bool	vtime::operator!=(vtime* v)
@@ -95,7 +98,10 @@ bool	vtime::operator!=(vtime* v)
 
 bool	vtime::operator>(vtime* v)
 {
-  return ((this->year > v->year) || ((this->year == v->year) && ((this->month > v->month) || ((this->month == v->month) && ((this->day > v->day) || ((this->day == v->day) && ((this->hour > v->hour) || ((this->hour == v->hour) && ((this->minute > v->minute) || ((this->minute == v->minute) && ((this->second > v->second) || ((this->second == v->second) && (this->usecond > v->usecond)))))))))))));
+  if (v != NULL)
+    return ((this->year > v->year) || ((this->year == v->year) && ((this->month > v->month) || ((this->month == v->month) && ((this->day > v->day) || ((this->day == v->day) && ((this->hour > v->hour) || ((this->hour == v->hour) && ((this->minute > v->minute) || ((this->minute == v->minute) && ((this->second > v->second) || ((this->second == v->second) && (this->usecond > v->usecond)))))))))))));
+  else
+    return true;
 }
 
 bool	vtime::operator<(vtime* v)
@@ -105,7 +111,10 @@ bool	vtime::operator<(vtime* v)
 
 bool	vtime::operator>=(vtime* v)
 {
-  return ((this->year > v->year) || ((this->year == v->year) && ((this->month > v->month) || ((this->month == v->month) && ((this->day > v->day) || ((this->day == v->day) && ((this->hour > v->hour) || ((this->hour == v->hour) && ((this->minute > v->minute) || ((this->minute == v->minute) && ((this->second > v->second) || ((this->second == v->second) && ((this->usecond > v->usecond) || (this->usecond == v->usecond))))))))))))));
+  if (v != NULL)
+    return ((this->year > v->year) || ((this->year == v->year) && ((this->month > v->month) || ((this->month == v->month) && ((this->day > v->day) || ((this->day == v->day) && ((this->hour > v->hour) || ((this->hour == v->hour) && ((this->minute > v->minute) || ((this->minute == v->minute) && ((this->second > v->second) || ((this->second == v->second) && ((this->usecond > v->usecond) || (this->usecond == v->usecond))))))))))))));
+  else
+    return true;
 }
 
 bool	vtime::operator<=(vtime* v)

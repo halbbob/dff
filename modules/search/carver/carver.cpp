@@ -67,13 +67,8 @@ uint64_t	Carver::tell()
 
 void		Carver::Event(event* e)
 {
-  this->stop = true;
-  event*	e1;
-
-  e1 = new event;
-  e1->type = etype::OTHER;
-  e1->value = new Variant(std::string("terminated"));
-  this->notify(e1);
+  if (e != NULL && e->type == Carver::Stop)
+    this->stop = true;
 }
 
 void		Carver::start(std::map<std::string, Variant*> args)
@@ -89,9 +84,10 @@ void		Carver::start(std::map<std::string, Variant*> args)
   this->mapper();
   this->registerTree(this->inode, this->root);
   e1 = new event;
-  e1->type = etype::OTHER;
-  e1->value = new Variant(std::string("terminated"));
+  e1->type = Carver::EndOfProcessing;
+  e1->value = NULL;
   this->notify(e1);
+  delete e1;
 }
 
 int		Carver::Read(char *buffer, unsigned int size)
@@ -132,13 +128,13 @@ description*	Carver::createDescription(std::map<std::string, Variant*> ctx)
   descr->header = new pattern;
   descr->header->needle = (unsigned char*)(cpattern["needle"]->toCArray());
   descr->header->size = cpattern["size"]->value<uint32_t>();
-  descr->header->wildcard = cpattern["wildcard"]->value<char>();
+  descr->header->wildcard = '\0';//cpattern["wildcard"]->value<char>();
 
   cpattern = ctx["footer"]->value<std::map<std::string, Variant*> >();
   descr->footer = new pattern;
   descr->footer->needle = (unsigned char*)(cpattern["needle"]->toCArray());
   descr->footer->size = cpattern["size"]->value<uint32_t>();
-  descr->footer->wildcard = cpattern["wildcard"]->value<char>();
+  descr->footer->wildcard = '\0';//cpattern["wildcard"]->value<char>();
   descr->window = ctx["window"]->value<uint32_t>();
   descr->aligned = ctx["aligned"]->value<bool>();
   
@@ -205,8 +201,8 @@ void		Carver::mapper()
   e1 = new event;
   buffer = (char*)malloc(sizeof(char) * BUFFSIZE);
   int seek;
-  e->type = etype::SEEK;
-  e1->type = etype::OTHER;
+  e->type = Carver::Position;
+  e1->type = Carver::Matches;
   total_headers = 0;
   ctxsize = this->ctx.size();
   while (((bytes_read = this->Read(buffer, BUFFSIZE)) > 0) && (!this->stop))
