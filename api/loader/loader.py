@@ -66,6 +66,7 @@ class loader():
         def Load(self, args):
             module_path = args
             mode = None
+            self.loadingErrors = ""
             try:
 	      self.pprint("loading modules in " + module_path)
               mode = os.stat(module_path)[ST_MODE]
@@ -78,7 +79,12 @@ class loader():
                 self.LoadFile(module_path)
               else:
                print "unsupported stat type"
-
+            if len(self.loadingErrors):
+                print "\n" + self.loadingErrors
+                print "\n" + "If you really need theses modules, please consider either"
+                print "\n   - to install dependencies by yourself"
+                print "\n   - or to have a look at our professional support -- http://www.arxsys.fr/support"
+ 
 
         def _versionFromLine(self, line):
             ''' 
@@ -223,10 +229,13 @@ class loader():
                sys.modules[modname] = module
                self.cm.registerConf(mod.conf)
 
-            except:
-               print('[ERROR]\tloading ' + modname + ' from ' + pathname)
-               exc_type, exc_value, exc_traceback = sys.exc_info()
-               traceback.print_exception(exc_type, exc_value, exc_traceback, None, sys.stdout)
+            except ImportError as e:
+               if not len(self.loadingErrors):
+                   header = "Errors encountered while loading the following modules:"
+                   self.loadingErrors = len(header) * "*" + "\n" + header + "\n" + len(header) * "*" + "\n"
+               self.loadingErrors += '\nloading ' + modname + ' from ' + pathname + "\n"
+               self.loadingErrors += 8 * " " + str(e) + "\n"
+
 
         def __init__(self):
             self.cm = ConfigManager.Get()
