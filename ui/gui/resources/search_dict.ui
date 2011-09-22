@@ -40,7 +40,7 @@
      <item row="0" column="2">
       <widget class="QPushButton" name="editDictContent">
        <property name="toolTip">
-        <string>Edit dictionnary</string>
+        <string>Edit dictionary</string>
        </property>
        <property name="text">
         <string/>

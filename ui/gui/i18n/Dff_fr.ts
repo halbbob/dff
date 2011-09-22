@@ -15,8 +15,7 @@ and IRC channels for your use.
 Author(s):
 Christophe Malinge cma@digital-forensic.org
 -->
-<!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<!DOCTYPE TS><TS version="2.0" language="fr" sourcelanguage="">
 <context>
     <name>About</name>
     <message>
@@ -61,85 +60,95 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>AdvSearch</name>
     <message>
-        <location filename="../../../api/gui/widget/search_widget.py" line="408"/>
+        <location filename="../../../api/gui/widget/search_widget.py" line="406"/>
         <source>match(s)</source>
         <translation>correspondance(s)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/search_widget.py" line="426"/>
+        <location filename="../../../api/gui/widget/search_widget.py" line="453"/>
         <source>current match(s): </source>
         <translation>correspondance(s) trouvée(s) : </translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/search_widget.py" line="429"/>
+        <location filename="../../../api/gui/widget/search_widget.py" line="428"/>
         <source>Invalid clause</source>
         <translation>Clause invalide</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/search_widget.py" line="451"/>
+        <source>Field</source>
+        <translation>Champ</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/search_widget.py" line="452"/>
+        <source>Clause</source>
+        <translation>Clause</translation>
     </message>
 </context>
 <context>
     <name>BuildSearchClause</name>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="387"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="379"/>
         <source>Contains</source>
         <translation>Contient</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="388"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="380"/>
         <source>Name does not contain</source>
         <translation>Nom ne contient pas</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="389"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="381"/>
         <source>Name contains</source>
         <translation>Nom contient</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="390"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="382"/>
         <source>From dictionnary</source>
-        <translation>Depuis dictionnaire</translation>
+        <translation type="obsolete">Depuis dictionnaire</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="391"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="383"/>
         <source>Does not contain</source>
         <translation>Ne contient pas</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="392"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="384"/>
         <source>Size at least</source>
         <translation>Taille au moins</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="393"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="385"/>
         <source>Size at most</source>
         <translation>Taille au plus</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="394"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="386"/>
         <source>Date less than</source>
         <translation>Date au moins</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="395"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="387"/>
         <source>Date most than</source>
         <translation>Date au plus</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="396"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="388"/>
         <source>Deleted</source>
         <translation>Effacé</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="397"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="389"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="398"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="390"/>
         <source>Mime-type</source>
         <translation>Type Mime</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="399"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="391"/>
         <source>Extended attributes</source>
         <translation>Attributs étendus</translation>
     </message>
@@ -162,6 +171,11 @@ Christophe Malinge cma@digital-forensic.org
         <location filename="../../../ui/gui/resources/build_search_clause.ui" line="83"/>
         <source>Clause(s)</source>
         <translation>Clause(s)</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="382"/>
+        <source>From dictionary</source>
+        <translation>Depuis dictionnaire</translation>
     </message>
 </context>
 <context>
@@ -210,8 +224,13 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>DictListEdit</name>
     <message>
-        <location filename="../../../ui/gui/resources/edit_dict.ui" line="6"/>
+        <location filename="../resources/edit_dict.ui" line="6"/>
         <source>Edit dictionnary</source>
+        <translation type="obsolete">Édition du dictionnaire</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/edit_dict.ui" line="6"/>
+        <source>Edit dictionary</source>
         <translation>Édition du dictionnaire</translation>
     </message>
 </context>
@@ -560,37 +579,37 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>ListNodeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="560"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="561"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="567"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="562"/>
         <source>Accessed time</source>
         <translation>Date d&apos;accès</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="568"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Changed time</source>
         <translation>Date de changement</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="569"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Modified time</source>
         <translation>Date de modification</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="570"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="571"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Deleted</source>
         <translation>Effacé</translation>
     </message>
@@ -742,9 +761,14 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>MimeType</name>
     <message>
-        <location filename="../../../ui/gui/resources/search_mime_type.ui" line="21"/>
+        <location filename="../resources/search_mime_type.ui" line="21"/>
         <source>Select Mime type</source>
-        <translation>Sélectionner le type Mime</translation>
+        <translation type="obsolete">Sélectionner le type Mime</translation>
+    </message>
+    <message>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="68"/>
+        <source>Select one or several mime-types</source>
+        <translation>Sélectionner un ou plusieurs types Mimes</translation>
     </message>
 </context>
 <context>
@@ -1041,7 +1065,7 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>OptWidget</name>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="357"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="349"/>
         <source>Remove</source>
         <translation>Effacer</translation>
     </message>
@@ -1307,29 +1331,31 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>SearchClause</name>
     <message>
-        <location filename="../../../ui/gui/resources/search_clause.ui" line="20"/>
+        <location filename="../../../ui/gui/resources/search_clause.ui" line="26"/>
         <source>Or</source>
         <translation>Ou</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/search_clause.ui" line="30"/>
+        <location filename="../../../ui/gui/resources/search_clause.ui" line="36"/>
         <source>And</source>
         <translation>Et</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/search_clause.ui" line="60"/>
+        <location filename="../../../ui/gui/resources/search_clause.ui" line="103"/>
         <source>Remove</source>
         <translation>Effacer</translation>
     </message>
 </context>
 <context>
-    <name>SearchDate</name>
-</context>
-<context>
     <name>SearchDict</name>
     <message>
-        <location filename="../../../ui/gui/resources/search_dict.ui" line="43"/>
+        <location filename="../resources/search_dict.ui" line="43"/>
         <source>Edit dictionnary</source>
+        <translation type="obsolete">Édition du dictionnaire</translation>
+    </message>
+    <message>
+        <location filename="../../../ui/gui/resources/search_dict.ui" line="43"/>
+        <source>Edit dictionary</source>
         <translation>Édition du dictionnaire</translation>
     </message>
 </context>
@@ -1349,17 +1375,17 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>SearchS</name>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="257"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="249"/>
         <source>Kilo byte(s)</source>
         <translation>Kilo octet(s)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="258"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="250"/>
         <source>Mega byte(s)</source>
         <translation>Méga octet(s)</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/widget/build_search_clause.py" line="259"/>
+        <location filename="../../../api/gui/widget/build_search_clause.py" line="251"/>
         <source>Giga byte(s)</source>
         <translation>Giga octet(s)</translation>
     </message>
@@ -1491,9 +1517,9 @@ Christophe Malinge cma@digital-forensic.org
         <translation>Sélectionner les attributs à afficher</translation>
     </message>
     <message>
-        <location filename="../../../ui/gui/resources/selectattrs.ui" line="50"/>
+        <location filename="../resources/selectattrs.ui" line="50"/>
         <source>Attributes selection : add an attributes to display in the node browser</source>
-        <translation>Sélection d&apos;attributs : ajouter un attribut à afficher dans le navigateur</translation>
+        <translation type="obsolete">Sélection d&apos;attributs : ajouter un attribut à afficher dans le navigateur</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="77"/>
@@ -1515,13 +1541,18 @@ Christophe Malinge cma@digital-forensic.org
         <source>Sort by deleted</source>
         <translation>Tri fonction des éléments effacés</translation>
     </message>
+    <message>
+        <location filename="../../../ui/gui/resources/selectattrs.ui" line="50"/>
+        <source>Attributes selection : add an attribute to display in the node browser</source>
+        <translation>Sélection d&apos;attributs : ajouter un attribut à afficher dans le navigateur</translation>
+    </message>
 </context>
 <context>
     <name>SelectMimeTypes</name>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="47"/>
         <source>Select one or several mime-types</source>
-        <translation>Sélectionner un ou plusieurs types Mimes</translation>
+        <translation type="obsolete">Sélectionner un ou plusieurs types Mimes</translation>
     </message>
 </context>
 <context>
@@ -1573,7 +1604,7 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>TreeModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1355"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1350"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
@@ -1581,37 +1612,37 @@ Christophe Malinge cma@digital-forensic.org
 <context>
     <name>VFSItemModel</name>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1041"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1036"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1042"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1037"/>
         <source>Size</source>
         <translation>Taille</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1043"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1038"/>
         <source>Accessed time</source>
         <translation>Date d&apos;accès</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1044"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1039"/>
         <source>Changed time</source>
         <translation>Date de changement</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1045"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1040"/>
         <source>Modified time</source>
         <translation>Date de modification</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1046"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1041"/>
         <source>Module</source>
         <translation>Module</translation>
     </message>
     <message>
-        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1047"/>
+        <location filename="../../../api/gui/model/vfsitemmodel.py" line="1042"/>
         <source>Deleted</source>
         <translation>Effacé</translation>
     </message>

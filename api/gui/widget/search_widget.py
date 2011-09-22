@@ -16,7 +16,7 @@
 from PyQt4 import QtCore, QtGui
 
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog, QTableView, QMessageBox
-from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect, SLOT
+from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect, SLOT, QEvent
 
 from api.events.libevents import EventHandler, event
 
@@ -214,8 +214,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
   def __progressUpdate(self, val):
     self.searchBar.setValue(val)
-    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
-    self.totalHits.setText(self.tr("current match(s): ") + str(self.model.rowCount()))
+    self.totalHits.setText(self.currentMatchsText + str(self.model.rowCount()))
 
 
   def case_sens_changed(self, state):
@@ -423,7 +422,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       self.searchBar.show()
       self.launchSearchButton.hide()
       self.stopSearchButton.show()
-      self.totalHits.setText(self.tr("current match(s): 0"))
+      self.totalHits.setText(self.currentMatchsText + "0")
       self.filterThread.start()
     except RuntimeError as err:
       box = QMessageBox(QMessageBox.Warning, self.tr("Invalid clause"),
@@ -436,6 +435,19 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def setCurrentNode(self, path):
     self.search_in_node = path
 
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+      self.translation()
+    else:
+      QWidget.changeEvent(self, event)
+
   def translation(self):
     self.fieldText = self.tr("Field")
     self.clauseText = self.tr("Clause")
+    self.currentMatchsText = self.tr("current match(s): ")

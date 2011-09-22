@@ -150,14 +150,14 @@ class OptionsLayout(QTabWidget):
       Called once countThread is over.
       '''
       if not self.configuration:
-# First, create configuration dictionnary
+# First, create configuration dictionary
         i = 0
         for timeFamily, timeList in self.timeline.timeMap.items():
           if len(timeList):
-# One sub dictionnary per time family
+# One sub dictionary per time family
             self.configuration.append([timeFamily, []])
             for oneMetric in timeList:
-# One sub sub dictionnary per family sub time
+# One sub sub dictionary per family sub time
 #  checked indicate if item is displayed
 #  color indicate which color to use
               if i < len(self.timeline.colors):

@@ -379,7 +379,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.textTr = self.tr("Contains")
       self.notNameTr = self.tr("Name does not contain")
       self.NameTr = self.tr("Name contains")
-      self.fromDictTr = self.tr("From dictionnary")
+      self.fromDictTr = self.tr("From dictionary")
       self.notContains = self.tr("Does not contain")
       self.sizeMinTr = self.tr("Size at least")
       self.sizeMaxTr = self.tr("Size at most")
