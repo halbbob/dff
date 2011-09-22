@@ -458,7 +458,10 @@ IF(WIN32 AND NOT UNIX)
 	
 	
   if (WINALL)
-	add_subdirectory (Prerequisites)
+    add_subdirectory (Prerequisites)
+    message(STATUS "python installer: ${PYTHON_INSTALLER}")
+    message(STATUS "pyqt installer: ${PYQT_INSTALLER}")
+    message(STATUS "vcredist installer: ${VCREDIST_INSTALLER}")
     if (WIN32)
       SET(CPACK_SYSTEM_NAME "win32_all_in_one")
     else(WIN32)
