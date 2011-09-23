@@ -214,7 +214,8 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
   def __progressUpdate(self, val):
     self.searchBar.setValue(val)
-    self.totalHits.setText(self.currentMatchsText + str(self.model.rowCount()))
+    self.__totalhits = self.model.rowCount()
+    self.totalHits.setText(self.currentMatchsText + str(self.__totalhits))
 
 
   def case_sens_changed(self, state):
