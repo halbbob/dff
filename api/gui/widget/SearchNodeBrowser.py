@@ -83,9 +83,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def addTableView(self): 
     self.tableView = NodeTableView(self)
     self.tableView.horizontalHeader().setStretchLastSection(True)
-    # self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
-    self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
     self.browserLayout.addWidget(self.tableView)
 
