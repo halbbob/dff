@@ -38,7 +38,7 @@ class Preview(QStackedWidget):
        self.mustUpdate = state 
 
     def update(self, node):
-       if self.mustUpdate and node.size():
+       if self.isVisible() and self.mustUpdate and node.size():
          if self.previousNode == node.this:
 	   return
          else:
@@ -64,7 +64,8 @@ class Preview(QStackedWidget):
 	 self.previousWidget = self.lmodules[previewModule].create()
 	 self.previousWidget.start(genargs)
 	 self.previousWidget.g_display()
-         self.previousWidget.setAttribute(Qt.WA_DeleteOnClose)
+         if str(self.previousWidget).find("player.PLAYER") == -1:
+             self.previousWidget.setAttribute(Qt.WA_DeleteOnClose)
 	 self.addWidget(self.previousWidget)
 
     def retranslateUi(self, widget):
