@@ -103,7 +103,6 @@ set(resources_srcs
   ui_is_deleted.py
   ui_idewizard.py
   ui_preferences.py
-  ui_select_mime_types.py
   ui_devicesdialog.py
   ui_bookmarkdialog.py
   ui_search_mime_type.py
