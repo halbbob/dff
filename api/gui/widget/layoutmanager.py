@@ -40,7 +40,6 @@ class NavigationBar(QWidget, Ui_NodeViewBox):
         self.viewbox.hide()
         self.attrSelect.hide()
         self.addToBookmark.hide()
-        self.checkboxAttribute.hide()
         self.search.hide()
         self.imagethumb.hide()
         self.thumbSize.hide()
