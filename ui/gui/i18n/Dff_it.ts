@@ -16,7 +16,8 @@ and IRC channels for your use.
 Author(s):
 Francesco Acchiappati
 -->
-<!DOCTYPE TS><TS version="2.0" language="it" sourcelanguage="">
+<!DOCTYPE TS>
+<TS version="2.0" language="it">
 <context>
     <name>About</name>
     <message>
@@ -63,7 +64,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/widget/search_widget.py" line="406"/>
         <source>match(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Corrispondenze</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/search_widget.py" line="453"/>
@@ -73,17 +74,17 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/widget/search_widget.py" line="428"/>
         <source>Invalid clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Clausola non valida</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/search_widget.py" line="451"/>
         <source>Field</source>
-        <translation type="unfinished"></translation>
+        <translation>Campi</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/search_widget.py" line="452"/>
         <source>Clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Clausola</translation>
     </message>
 </context>
 <context>
@@ -91,87 +92,87 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="379"/>
         <source>Contains</source>
-        <translation type="unfinished"></translation>
+        <translation>Contiene</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="380"/>
         <source>Name does not contain</source>
-        <translation type="unfinished"></translation>
+        <translation>Il nome non contiene</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="381"/>
         <source>Name contains</source>
-        <translation type="unfinished"></translation>
+        <translation>Il nome contiene</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="383"/>
         <source>Does not contain</source>
-        <translation type="unfinished"></translation>
+        <translation>Non contiene</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="384"/>
         <source>Size at least</source>
-        <translation type="unfinished"></translation>
+        <translation>La dimensione è almeno di</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="385"/>
         <source>Size at most</source>
-        <translation type="unfinished"></translation>
+        <translation>La dimensione è al massimo di</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="386"/>
         <source>Date less than</source>
-        <translation type="unfinished"></translation>
+        <translation>Data precedente a</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="387"/>
         <source>Date most than</source>
-        <translation type="unfinished"></translation>
+        <translation>Data successiva a</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="388"/>
         <source>Deleted</source>
-        <translation type="unfinished">Cancellato</translation>
+        <translation>Cancellato</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="389"/>
         <source>Type</source>
-        <translation type="unfinished">Tipo</translation>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="390"/>
         <source>Mime-type</source>
-        <translation type="unfinished"></translation>
+        <translation>Mime-Type</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="391"/>
         <source>Extended attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Attributi estesi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/build_search_clause.ui" line="14"/>
         <source>Build a search clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Crea un nuovo criterio di ricerca</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/build_search_clause.ui" line="28"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/build_search_clause.ui" line="45"/>
         <source>Add extended attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi attributi estesi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/build_search_clause.ui" line="83"/>
         <source>Clause(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Criteri</translation>
     </message>
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="382"/>
         <source>From dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>Da dizionario</translation>
     </message>
 </context>
 <context>
@@ -222,7 +223,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/edit_dict.ui" line="6"/>
         <source>Edit dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifica dizionario</translation>
     </message>
 </context>
 <context>
@@ -289,12 +290,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/is_file_or_folder.ui" line="15"/>
         <source>File</source>
-        <translation type="unfinished">File</translation>
+        <translation>File</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/is_file_or_folder.ui" line="25"/>
         <source>Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Directory</translation>
     </message>
 </context>
 <context>
@@ -559,12 +560,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/is_deleted.ui" line="15"/>
         <source>No</source>
-        <translation type="unfinished"></translation>
+        <translation>No</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/is_deleted.ui" line="25"/>
         <source>Yes</source>
-        <translation type="unfinished"></translation>
+        <translation>sì</translation>
     </message>
 </context>
 <context>
@@ -572,37 +573,37 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="560"/>
         <source>Name</source>
-        <translation type="unfinished">Nome</translation>
+        <translation>Nome</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="561"/>
         <source>Size</source>
-        <translation type="unfinished">Dimensione</translation>
+        <translation>Dimensione</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="562"/>
         <source>Accessed time</source>
-        <translation type="unfinished">Accessed time</translation>
+        <translation>Accessed time</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="563"/>
         <source>Changed time</source>
-        <translation type="unfinished">Changed time</translation>
+        <translation>Changed time</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="564"/>
         <source>Modified time</source>
-        <translation type="unfinished">Modified time</translation>
+        <translation>Modified time</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="565"/>
         <source>Module</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulo</translation>
     </message>
     <message>
         <location filename="../../../api/gui/model/vfsitemmodel.py" line="566"/>
         <source>Deleted</source>
-        <translation type="unfinished">Cancellato</translation>
+        <translation>Cancellato</translation>
     </message>
 </context>
 <context>
@@ -740,12 +741,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="249"/>
         <source>Browse</source>
-        <translation type="unfinished">Sfoglia</translation>
+        <translation>Sfoglia</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/mainwindow.ui" line="260"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Anteprime</translation>
     </message>
 </context>
 <context>
@@ -753,7 +754,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="68"/>
         <source>Select one or several mime-types</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona uno o più MIME-types</translation>
     </message>
 </context>
 <context>
@@ -761,72 +762,72 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="24"/>
         <source>Index content</source>
-        <translation type="unfinished"></translation>
+        <translation>Contenuto dell&apos;indice</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="42"/>
         <source>Select the directories you wish to index. Changes will take effect when you click on &apos;OK&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona le directory che desideri indicizzare. Le modifiche avranno effetto quando cliccherai su &apos;OK&apos;</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="70"/>
         <source>Select nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona nodi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="77"/>
         <source>Indexed items</source>
-        <translation type="unfinished"></translation>
+        <translation>Elementi indicizzati</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="90"/>
         <source>Advanced</source>
-        <translation type="unfinished"></translation>
+        <translation>Avanzate</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="96"/>
         <source>Attributes list</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista degli attributi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="114"/>
         <source>Select which nodes&apos; attributes you wish to index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona quali nodi degli attributi desideri indicizzare</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="149"/>
         <source>File type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo di file</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="167"/>
         <source>Select what types of nodes you wish to index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona quali tipi di nodi desideri indicizzare</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="195"/>
         <source>Mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Mime types</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="213"/>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opzioni</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="219"/>
         <source>Index file content</source>
-        <translation type="unfinished"></translation>
+        <translation>Contenuto del file degli indice</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="226"/>
         <source>Index attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Attributi dell&apos;indice</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/modif_index.ui" line="14"/>
         <source>Indexer options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opzioni di indicizzazione</translation>
     </message>
 </context>
 <context>
@@ -936,27 +937,27 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/node_f_box.ui" line="24"/>
         <source>Quick search:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricerca rapida</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/node_f_box.ui" line="34"/>
         <source>Search recursively</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricerca ricursivamente</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/node_f_box.ui" line="83"/>
         <source>Advanced search</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricerca avanzata</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/node_f_box.ui" line="112"/>
         <source>Index options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opzioni di indicizzazione</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/node_f_box.ui" line="54"/>
         <source>Launch quick search</source>
-        <translation type="unfinished"></translation>
+        <translation>Avvia ricerca rapida</translation>
     </message>
 </context>
 <context>
@@ -1029,27 +1030,27 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/box/nodeviewbox.py" line="346"/>
         <source>You must specify at least one node.</source>
-        <translation type="unfinished"></translation>
+        <translation>Devi specificare almeno un nodo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="326"/>
         <source>Attributes selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Selezione attributi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="186"/>
         <source>View as</source>
-        <translation type="unfinished"></translation>
+        <translation>Visualizza come</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="214"/>
         <source>Icon size</source>
-        <translation type="unfinished"></translation>
+        <translation>Dimensione icona</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/nodeviewbox.ui" line="352"/>
         <source>Show attributes panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Visualizza pannello attributi</translation>
     </message>
 </context>
 <context>
@@ -1057,7 +1058,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../api/gui/widget/build_search_clause.py" line="349"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi</translation>
     </message>
 </context>
 <context>
@@ -1065,12 +1066,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/or_and.ui" line="15"/>
         <source>Or</source>
-        <translation type="unfinished"></translation>
+        <translation>Oppure</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/or_and.ui" line="25"/>
         <source>And</source>
-        <translation type="unfinished"></translation>
+        <translation>E</translation>
     </message>
 </context>
 <context>
@@ -1232,7 +1233,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/widget/preview.py" line="71"/>
         <source>Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>Anteprima</translation>
     </message>
 </context>
 <context>
@@ -1323,17 +1324,17 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/search_clause.ui" line="26"/>
         <source>Or</source>
-        <translation type="unfinished"></translation>
+        <translation>Oppure</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search_clause.ui" line="36"/>
         <source>And</source>
-        <translation type="unfinished"></translation>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search_clause.ui" line="103"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi</translation>
     </message>
 </context>
 <context>
@@ -1341,7 +1342,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/search_dict.ui" line="43"/>
         <source>Edit dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifica dizionario</translation>
     </message>
 </context>
 <context>
@@ -1349,12 +1350,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/search_empty.ui" line="15"/>
         <source>Empty</source>
-        <translation type="unfinished"></translation>
+        <translation>Vuoto</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search_empty.ui" line="22"/>
         <source>Not empty</source>
-        <translation type="unfinished"></translation>
+        <translation>Non vuoto</translation>
     </message>
 </context>
 <context>
@@ -1400,12 +1401,12 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/search_size.ui" line="46"/>
         <source>Exclusive</source>
-        <translation type="unfinished"></translation>
+        <translation>Escludendo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search_size.ui" line="56"/>
         <source>Inclusive</source>
-        <translation type="unfinished"></translation>
+        <translation>Includendo</translation>
     </message>
 </context>
 <context>
@@ -1413,7 +1414,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/search_str.ui" line="28"/>
         <source>Case sensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Case sensitive</translation>
     </message>
 </context>
 <context>
@@ -1421,77 +1422,77 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="48"/>
         <source>Check all results</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona tutti i risultati</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="51"/>
         <source>Select all</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona tutti</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="71"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Esporta</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="95"/>
         <source>Attributes</source>
-        <translation type="unfinished">Attributi</translation>
+        <translation>Attributi</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="112"/>
         <source>Search options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opzioni di ricerca</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="131"/>
         <source>Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Percorso</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="148"/>
         <source>Name contains</source>
-        <translation type="unfinished"></translation>
+        <translation>Il nome contiene</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="158"/>
         <source>Case sensitive</source>
-        <translation type="unfinished"></translation>
+        <translation>Case sensitive</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="172"/>
         <source>Add search clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi criterio di ricerca</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="290"/>
         <source>Resulting search clause</source>
-        <translation type="unfinished"></translation>
+        <translation>Criterio di ricerca risultante</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="324"/>
         <source>match(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Corrispondenze</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="344"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Ferma</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="351"/>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Trova</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="14"/>
         <source>Advanced search</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricerca avanzata</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/search.ui" line="204"/>
         <source>Search queries</source>
-        <translation type="unfinished"></translation>
+        <translation>Query di ricerca</translation>
     </message>
 </context>
 <context>
@@ -1499,32 +1500,32 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="30"/>
         <source>Select attributes to display</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona gli attributi da visualizzare</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="77"/>
         <source>Dynamic attributes</source>
-        <translation type="unfinished"></translation>
+        <translation>Attributi dinamici</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="133"/>
         <source>Data types</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipi di dato</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="185"/>
         <source>Display module name</source>
-        <translation type="unfinished"></translation>
+        <translation>Visualizza il nome del modulo</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="195"/>
         <source>Sort by deleted</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordina per cancellati/non cancellati</translation>
     </message>
     <message>
         <location filename="../../../ui/gui/resources/selectattrs.ui" line="50"/>
         <source>Attributes selection : add an attribute to display in the node browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Selezione attributi : aggiungi un attributo da visualizzare nel browser dei nodi</translation>
     </message>
 </context>
 <context>
@@ -1733,7 +1734,7 @@ Francesco Acchiappati
     <message>
         <location filename="../../../ui/gui/widget/taskmanager.py" line="146"/>
         <source>Output</source>
-        <translation type="unfinished">Output</translation>
+        <translation>Output</translation>
     </message>
 </context>
 </TS>
