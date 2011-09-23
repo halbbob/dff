@@ -330,7 +330,8 @@ class OptWidget(QWidget):
     
   def removeOption(self, changed):
     text = self.label.text()
-    self.parent.optionList.addItem(text, self.type)
+    if self.type != typeId.Argument:
+      self.parent.optionList.addItem(text, self.type)
     self.parent.addedOpt.remove(self)
     self.label.hide()
     self.edit.hide()
