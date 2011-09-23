@@ -399,16 +399,19 @@ class attrDialog(QDialog, Ui_SelectAttr):
         self.types.addItem(i)
     
     try :
-      attrs = node.attributes()[module.name].value()
-      attrs.thisown = False
-      for j in model.header_list:
-        self.selectedAttrs.addItem(j)
-      for i in attrs:
-        if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
-          try:
-            model.header_list.index(i)
-          except:
-            self.allAttrs.addItem(i)
+      mattrs = node.attributes()
+      if mattrs != None:
+        attrs = mattrs[module.name].value()
+        #attrs = module_attrs.value()
+        #attrs.thisown = False
+        for j in model.header_list:
+          self.selectedAttrs.addItem(j)
+        for key in attrs.iterkeys():
+          if (attrs[key].type() != typeId.Map) and (attrs[key].type() != typeId.List):
+            try:
+              model.header_list.index(str(key))
+            except:
+              self.allAttrs.addItem(str(key))
     except IndexError:
 	pass
     model.header_list = []

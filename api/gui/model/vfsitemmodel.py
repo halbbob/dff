@@ -791,7 +791,8 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
           return QVariant() # index error
         elif nb_c >= len(self.header_list): # the data is a dataType
           type = self.type_list[nb_c - len(self.header_list)]
-          possible_type = node.dataType().value()
+          dtypes = node.dataType()
+          possible_type = dtypes.value()
           return QVariant(possible_type[str(type)].value())
         else:
           if self.cacheAttr[0] != long(node.this): 
