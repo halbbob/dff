@@ -148,16 +148,6 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      self.parent.model.setRootPath(self.vfs.getnode("/"))
 
 
-  def createCheckBoxAttribute(self):
-    if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.checkboxAttribute.setCheckState(True)
-    else:
-      self.checkboxAttribute.setChecked(True)
-    self.checkboxAttribute.setEnabled(True)
-    self.checkboxAttribute.setTristate(False)
-
-    self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
-
   def attrViewActivated(self):
     if self.propertyTable.isHidden():
         self.attrView.setIcon(QIcon(QPixmap(":lists_attr.png")))

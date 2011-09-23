@@ -192,8 +192,8 @@ class DialogNodeBrowser(QDialog):
         self.baseLayout.setSpacing(0)
         self.splitterLayout = QSplitter(self)
         self.splitterLayout.setMinimumWidth(640)
-        self.baseLayout.addWidget(self.navBar)
-        self.baseLayout.addWidget(self.splitterLayout)
+        self.baseLayout.addWidget(self.navBar, 1)
+        self.baseLayout.addWidget(self.splitterLayout, 50)
         self.setLayout(self.baseLayout)
 
 
