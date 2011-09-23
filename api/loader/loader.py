@@ -229,7 +229,7 @@ class loader():
                sys.modules[modname] = module
                self.cm.registerConf(mod.conf)
 
-            except ImportError as e:
+            except Exception as e:
                if not len(self.loadingErrors):
                    header = "Errors encountered while loading the following modules:"
                    self.loadingErrors = len(header) * "*" + "\n" + header + "\n" + len(header) * "*" + "\n"
