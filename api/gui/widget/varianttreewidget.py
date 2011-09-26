@@ -13,8 +13,8 @@
 #  Frederic Baguelin <fba@digital-forensic.org>
 #
 
-from PyQt4.QtCore import Qt, QString, QEvent
-from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem
+from PyQt4.QtCore import Qt, QString, QEvent, SIGNAL
+from PyQt4.QtGui import QTreeWidget, QTreeWidgetItem, QMessageBox
 from api.types.libtypes import typeId
 from ui.gui.resources.ui_varianttreewidget import Ui_VariantTreeWidget
 
@@ -23,13 +23,15 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
         QTreeWidget.__init__(self, parent)
         self.setupUi(self)
 
+        self.connect(self, SIGNAL("itemDoubleClicked(QTreeWidgetItem*, int)"), self.displayItem)
 
     def setItemText(self, item, vval):
         if vval == None:
 	    item.setText(1, str("None")) 
         elif vval.type() == typeId.VTime:
             vtime = vval.value()
-            item.setText(1, str(vtime.get_time()))
+	    if vtime:
+              item.setText(1, str(vtime.get_time()))
         elif vval.type() in [typeId.Int16, typeId.UInt16, typeId.Int32, typeId.UInt32, typeId.Int64, typeId.UInt64]:
             item.setText(1, vval.toString() + " - " + vval.toHexString())
         elif vval.type() in [typeId.Char, typeId.String, typeId.CArray]:
@@ -46,6 +48,7 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
     def fillMap(self, parent, vmap):
         for key in vmap.iterkeys():
             item = QTreeWidgetItem(parent)
+#            item.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)
             item.setText(0, QString.fromUtf8(key))
             vval = vmap[key]
             expand = True
@@ -79,6 +82,18 @@ class VariantTreeWidget(QTreeWidget, Ui_VariantTreeWidget):
                 item = QTreeWidgetItem(parent)
                 self.setItemText(item, vval)
 
+    def displayItem(self, item, col):
+        message = QString()
+        it = 0
+        for it in xrange(0,item.columnCount()):
+            message.append(item.text(it))
+            if it != item.columnCount() - 1:
+                message.append(":\n")
+        msg = QMessageBox(self)
+        msg.setText(message)
+        msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
 
     def changeEvent(self, event):
         """ Search for a language change event
