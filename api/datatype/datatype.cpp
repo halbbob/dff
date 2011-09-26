@@ -15,6 +15,9 @@
  */
 
 #include "datatype.hpp"
+#include "threading.hpp"
+
+mutex_def(type_mutex);
 
 DataTypeManager* 	DataTypeManager::Get()
 {
@@ -24,6 +27,7 @@ DataTypeManager* 	DataTypeManager::Get()
 
 DataTypeManager::DataTypeManager()
 {
+  mutex_init(&type_mutex);
   idCounter = 0;
 }
 
@@ -42,6 +46,7 @@ Variant*	DataTypeManager::type(Node* node)
   std::list<DataTypeHandler* >::iterator	handler;
   std::map<std::string, Variant *>		vars;
 
+  mutex_lock(&type_mutex);
   if ((this->nodeTypeId[node].empty()))
   {
     if (!(this->handlers.empty()))
@@ -66,7 +71,8 @@ Variant*	DataTypeManager::type(Node* node)
   std::vector<uint32_t>::iterator end = nodeTypeId[node].end();
   for (; it != end; it++)
     vars[typeIdHandler[*it]->name] = new Variant(typeIdString[*it]);
-   
+  mutex_unlock(&type_mutex);
+  
   Variant* var	= new Variant(vars);
 
   return var;
