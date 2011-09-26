@@ -36,7 +36,6 @@ endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
 set(datatype_srcs
   __init__.py
-  #magichandler.py
   mimetree.py
   libdatatype.py    
   )
