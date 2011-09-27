@@ -55,16 +55,16 @@ class Open(Script):
       if typeattr != None:
         if typeattr.type() == typeId.Map:
           res = self.vtreeprinter.fillMap(1, typeattr.value())
-          print  "No module register type " + res
+          print  "No module registered to handle following types " + res
         elif typeattr.type() == typeId.List:
           res = self.vtreeprinter.fillList(1, typeattr.value())
-          print  "No module register type " + res
+          print  "No module registered to handle following types " + res
         elif typeattr.type() == typeId.Node:
-          print  "No module register type " + str(typeattr.value().absolute())
+          print  "No module registered to handle node " + str(typeattr.value().absolute())
         else:
-          print  "No module register type " + str(typeattr.toString())
+          print  "No module registered to handle " + str(typeattr.toString())
       else:
-        print "No type attribute setted for node " + str(node.absolute())
+        print "No type attributes setted for node " + str(node.absolute())
 
 
 class open(Module): 
