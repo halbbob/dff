@@ -27,22 +27,24 @@ set (magichandler_srcs
 
 SET_SOURCE_FILES_PROPERTIES(libmagichandler.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(libmagichandler python libmagichandler.i magichandler.cpp)
-SWIG_LINK_LIBRARIES(libmagichandler ${PYTHON_LIBRARIES} magic)
 
 if(CMAKE_GENERATOR MATCHES "Visual Studio")
-set_target_properties (${SWIG_MODULE_libmagichandler_REAL_NAME} PROPERTIES
-  RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
-  RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
-  RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_CURRENT_BINARY_DIR}"
-  SUFFIX ".pyd")
+  SWIG_LINK_LIBRARIES(libmagichandler ${PYTHON_LIBRARIES} ${CMAKE_CURRENT_SOURCE_DIR}/magic1.lib _libtypes _libdatatype _libvfs)
+  set_target_properties (${SWIG_MODULE_libmagichandler_REAL_NAME} PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_CURRENT_BINARY_DIR}"
+	SUFFIX ".pyd")
   set(magichandler_srcs
 	__init__.py
 	libmagichandler.py
  	magic.mgc
  	magic1.dll
  	regex2.dll
+	zlib1.dll
 	)
 else (CMAKE_GENERATOR MATCHES "Visual Studio")
+  SWIG_LINK_LIBRARIES(libmagichandler ${PYTHON_LIBRARIES} magic _libtypes _libdatatype _libvfs)
   set(magichandler_srcs
 	__init__.py
 	libmagichandler.py
