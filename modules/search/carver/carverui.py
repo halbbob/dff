@@ -127,4 +127,4 @@ class carverui(Module):
                                "parameters": {"type": Parameter.NotEditable,
                                               "predefined": predefined}
                                })
-    self.tags = "Search"
+    self.tags = "builtins"

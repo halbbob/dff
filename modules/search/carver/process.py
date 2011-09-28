@@ -133,7 +133,6 @@ class CarvingProcess(QWidget, EventHandler):
                 val.thisown = False
                 vpattern["aligned"] = val
                 lpatterns.append(vpattern)
-                print vpattern
         vpatterns = Variant(lpatterns)
         vpatterns.thisown = False
         return vpatterns
@@ -150,7 +149,6 @@ class CarvingProcess(QWidget, EventHandler):
         startoff = Variant(self.offsetSpinBox.value(), typeId.UInt64)
         startoff.thisown = False
         args["start-offset"] = startoff
-        print args
         factor = round(float(self.filesize) / 2147483647)
         self.startButton.setEnabled(False)
         self.stopButton.setEnabled(True)
