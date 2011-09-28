@@ -96,8 +96,9 @@ class CarverUi(Script):
         vstartoff = Variant(startoff, typeId.UInt64)
         vstartoff.thisown = False
         margs["start-offset"] = vstartoff
-        self.tm.add("carver", margs, ["console"])
-
+        proc = self.tm.add("carver", margs, ["console"])
+        if proc:
+            proc.event.wait()
 
     def c_display(self):
         pass
