@@ -38,7 +38,7 @@ class BATCH(Script):
 	if line[0] == "#":
 	   print line[1:]
         else:
-	  cmds = self.lp.makeCommands(line[:-1])
+	  cmds = self.lp.makeCommands(line)
 	  for cmd in cmds:
 	    exec_type = ["console"]
 	    config = self.cm.configByName(cmd[0])
