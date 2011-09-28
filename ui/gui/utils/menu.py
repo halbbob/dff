@@ -68,7 +68,9 @@ class MenuTags():
    def Load(self):   
        self.listMenuAction = []
        setags = Utils.getSetTags()
-       for tags in setags:
+       selist = list(setags)
+       selist.sort()
+       for tags in selist:
           if not tags == "builtins":
             self.listMenuAction.append(self.parent.menuModule.addMenu(MenuModules(self.parent, self.mainWindow, tags, self.selectItem)))
         
