@@ -32,6 +32,7 @@ class WebView(QWebView):
   def __init__(self, web):
     QWebView.__init__(self)
     self.web = web
+    self.page().setLinkDelegationPolicy(QWebPage.DelegateExternalLinks)
 
   def replaceImageElements(self):
     imgs = self.page().currentFrame().findAllElements("img")
