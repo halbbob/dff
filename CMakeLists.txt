@@ -470,7 +470,7 @@ IF(WIN32 AND NOT UNIX)
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
       "
        MessageBox MB_YESNO \\\"Install ${PYTHON_INSTALLER} ? \\\" /SD IDYES IDNO endPython
-        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\${PYTHON_INSTALLER}\\\" /passive'
+        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\${PYTHON_INSTALLER}\\\" /passive ALLUSERS=1'
         Goto endPython   
        endPython:
         MessageBox MB_YESNO \\\"Install ${PYQT_INSTALLER}? \\\" /SD IDYES IDNO endPyQt

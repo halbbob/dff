@@ -27,6 +27,12 @@ Constant::Constant(std::string name, uint8_t type, std::string description)
 
 Constant::~Constant()
 {
+  std::list<Variant*>::iterator	vit;
+  
+  for (vit = this->__values.begin(); vit != this->__values.end(); vit++)
+    if (*vit != NULL)
+      delete *vit;
+  this->__values.clear();
 }
 
 std::string			Constant::name()

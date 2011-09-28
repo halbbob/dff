@@ -37,10 +37,11 @@ private:
   ConfigManager(const ConfigManager&);
   
 public:
-  EXPORT static ConfigManager*		Get();
+  EXPORT static ConfigManager*			Get();
+  EXPORT void					unregisterConf(std::string confname);
   EXPORT void					registerConf(class Config* c) throw(std::string);
   EXPORT std::list<class Config*>		configs();
-  EXPORT std::list<std::string>		configsName();
+  EXPORT std::list<std::string>			configsName();
   EXPORT class Config*				configByName(std::string confname);
   EXPORT std::map<std::string, Constant*>	constantsByName(std::string constname);
   EXPORT std::map<std::string, Argument*>	argumentsByName(std::string argname);
