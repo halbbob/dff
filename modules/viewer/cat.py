@@ -138,7 +138,7 @@ class CAT(QWidget, Script):
       padd = 1
     self.vfile.seek(self.offsets[line]+padd)
     self.text.clear()
-    self.text.append(QString.fromUtf8(self.vfile.read(1024*10)))
+    self.text.textCursor().insertText(QString.fromUtf8(self.vfile.read(1024*10)))
     self.text.moveCursor(QTextCursor.Start)
 
 
