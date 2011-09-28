@@ -96,7 +96,7 @@ class TablesList():
     self.header = "\xDF\xDA\x17\x00\xD7\x98\xD3\x0A"
     self.list = []
     file = fullfs.open()
-    tableListOf = file.find(self.header, 8, "")
+    tableListOf = file.find(self.header)
     file.seek(tableListOf + 16)
     buff = file.read(blockSize - 16)
     for x in range(0, nId):
