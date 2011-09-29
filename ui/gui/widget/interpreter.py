@@ -21,6 +21,8 @@ from code import InteractiveInterpreter
 from ui.redirect import RedirectIO
 from ui.gui.resources.ui_interpreter import Ui_Interpreter
 
+import threading
+
 class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
     def __init__(self, parent=None, log=''):
         QTextEdit.__init__(self, parent)
@@ -28,6 +30,7 @@ class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
         self.setupUi(self)
         self.name = self.windowTitle()
         self.log = log or ''
+        self.__canwrite = True
 
         if parent is None:
             self.eofKey = Qt.Key_D
@@ -54,7 +57,19 @@ class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
         self.ps1 = ">>> "
         self.ps2 = "... "
         self.writePrompt()
-        self.more = self.runsource("from api.vfs import *; v = vfs.vfs()")
+        api_imports = ["from api.types.libtypes import Variant, VList, VMap, vtime, typeId, Argument, Parameter, ConfigManager, Constant, Config, Path",
+                       "from api.vfs.vfs import vfs",
+                       "from api.vfs.libvfs import VFS, FileMapping, ABSOLUTE_ATTR_NAME, RELATIVE_ATTR_NAME",
+                       "from api.filters.libfilters import Filter",
+                       "from api.search.libsearch import Search",
+                       "from api.events.libevents import EventHandler, event",
+                       "from api.datatype.libdatatype import DataTypeManager, DataTypeHandler",
+                       "from api.loader.loader import loader",
+                       "from api.module.module import Module, Script",
+                       "from api.magic.libmagichandler import MagicType, MimeType",
+                       "from api.taskmanager.taskmanager import TaskManager"]
+        for api_import in api_imports:
+            self.more = self.runsource(api_import)
 
     def writePrompt(self):
         self.write('\n')
@@ -128,6 +143,18 @@ class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
             self.write('\n')
             self.run()
 
+    def runsource_callback(self, source):
+        self.__canwrite = False
+        self.more = self.runsource(source)
+        if self.more:
+            self.write(self.ps2)
+        else:
+            self.write(self.ps1)
+            self.lines = []
+        self.__clearLine()
+        self.__canwrite = True
+
+
     def run(self):
         self.pointer = 0
         self.history.append(QString(self.line))
@@ -136,14 +163,16 @@ class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
         except Exception,e:
             print e
 	source = '\n'.join(self.lines)
-        self.more = self.runsource(source)
+        thread = threading.Thread(target=self.runsource_callback, args=(source, ))
+        thread.start()
+        #self.more = self.runsource(source)
+        #if self.more:
+        #    self.write(self.ps2)
+        #else:
+        #    self.write(self.ps1)
+        #    self.lines = []
+        #self.__clearLine()
 
-        if self.more:
-            self.write(self.ps2)
-        else:
-            self.write(self.ps1)
-            self.lines = []
-        self.__clearLine()
 
     def __clearLine(self):
         """
@@ -169,6 +198,10 @@ class InterpreterView(QTextEdit, InteractiveInterpreter, Ui_Interpreter):
         """
         text  = e.text()
         key   = e.key()
+
+        if not self.__canwrite:
+            e.ignore()
+            return
 
         if key == Qt.Key_Backspace:
             if self.point:
