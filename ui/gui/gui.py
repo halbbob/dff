@@ -22,8 +22,16 @@ from mainwindow import MainWindow
 from translator import Translator
 from api.loader.loader import loader
 
-# import Resource QT
 from ui.gui.resources import gui_rc
+
+class SplashScreen(QSplashScreen):
+  def __init__(self, pixmap, windowFlag, versionNumber):
+     QSplashScreen.__init__(self, pixmap, windowFlag)
+     self.versionNumber = versionNumber
+
+  def drawContents(self, painter):
+     QSplashScreen.drawContents(self, painter) 
+     painter.drawText(10, 178, "Version " + str(self.versionNumber))	
 
 class gui():
     def __init__(self, debug = False):
@@ -36,9 +44,9 @@ class gui():
         self.app.installTranslator(self.translator.getGeneric())
         self.app.installTranslator(self.translator.getDFF())
         self.app.setApplicationName("Digital Forensics Framework")
-	self.app.setApplicationVersion("${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+	self.app.setApplicationVersion("1.2.0")
         pixmap = QPixmap(":splash.png")
-        self.splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
+        self.splash = SplashScreen(pixmap, Qt.WindowStaysOnTopHint, self.app.applicationVersion())
         self.splash.setMask(pixmap.mask()) 
 
     def launch(self, modPath = None):
