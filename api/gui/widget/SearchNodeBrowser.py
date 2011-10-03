@@ -25,7 +25,6 @@ from api.taskmanager.taskmanager import TaskManager
 from api.types import libtypes
 from api.types.libtypes import typeId, Variant
 
-from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 

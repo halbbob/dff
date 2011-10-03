@@ -28,6 +28,8 @@ from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
 from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
 
+from api.gui.widget.search_widget import AdvSearch
+
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
@@ -211,10 +213,12 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      self.thumbSize.setEnabled(True)
 
   def searchActivated(self):
-    if self.parent.nodeFilterBox.isVisible():
-      self.parent.nodeFilterBox.setVisible(False) 
-    else:
-      self.parent.nodeFilterBox.setVisible(True) 
+    adv = AdvSearch(self)
+
+    self.parent.parent.addSearchTab(adv)
+    adv.setCurrentNode(self.parent.model.rootItem)
+    adv.path.setText(adv.search_in_node.absolute())
+
 
   def rootpathchanged(self, node):
     path = node.absolute()
