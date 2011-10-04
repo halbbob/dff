@@ -46,9 +46,7 @@ if ( WIN32 )
 		libsearch.py
 		find.py
 		__init__.py
-		tre4.dll
-		libiconv2.dll
-		libintl3.dll
+		tre.dll
 		)
 else ( WIN32 )
 	set(libsearch_srcs

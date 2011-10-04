@@ -53,6 +53,8 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="file.png">icons/filesystem/file.png</file>
     <file alias="info.png">icons/actions/info.png</file>
     <file alias="list.png">icons/app/lists.png</file>
+    <file alias="lists_attr.png">icons/app/lists_attr.png</file>
+    <file alias="lists_attr_disable.png">icons/app/lists_attr_disable.png</file>
     <file alias="document.png">icons/mime/doc.png</file>
     <file alias="pdf.png">icons/mime/pdf.png</file>
     <file alias="sound.png">icons/mime/sound.png</file>

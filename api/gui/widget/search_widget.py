@@ -16,7 +16,7 @@
 from PyQt4 import QtCore, QtGui
 
 from PyQt4.QtGui import QWidget, QDateTimeEdit, QLineEdit, QHBoxLayout, QLabel, QPushButton, QMessageBox, QListWidget, QTableWidget, QTableWidgetItem, QAbstractItemView, QIcon, QInputDialog, QTableView, QMessageBox
-from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect, SLOT
+from PyQt4.QtCore import QVariant, SIGNAL, QThread, Qt, QFile, QIODevice, QStringList, QRect, SLOT, QEvent
 
 from api.events.libevents import EventHandler, event
 
@@ -89,7 +89,7 @@ class FilterThread(QThread, EventHandler):
         if e.type == Filter.NodeMatched:
           self.match += 1
           val = e.value.value()
-          self.emit(SIGNAL("NodeMatched"), val.this)
+          self.model.addNode(val.this)
         pc = self.processed * 100 / self.total
         if pc > self.percent:
           self.percent = pc
@@ -112,7 +112,7 @@ class FilterThread(QThread, EventHandler):
       self.filters.processFolder(self.rootnode)
     else:
       self.filters.process(self.rootnode, self.recursive)
-    self.model = None
+
 
   def stopSearch(self):
     e = event()
@@ -208,20 +208,15 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
 
     self.connect(self.filterThread, SIGNAL("CountNodes"), self.__progressUpdate)
-    self.connect(self.filterThread, SIGNAL("NodeMatched"), self.__matchedUpdate)
     self.connect(self.filterThread, SIGNAL("finished"), self.searchFinished)
     QtCore.QObject.connect(self.selectAll, SIGNAL("stateChanged(int)"), self.select_all)
     #self.searchBar.setMaximum(100)
 
   def __progressUpdate(self, val):
     self.searchBar.setValue(val)
-    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+    self.__totalhits = self.model.rowCount()
+    self.totalHits.setText(self.currentMatchsText + str(self.__totalhits))
 
-
-  def __matchedUpdate(self, val):
-    self.__totalhits += 1
-    self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
-    self.emit(SIGNAL("NodeMatched"), val)
 
   def case_sens_changed(self, state):
     self.rebuildQuery()
@@ -246,15 +241,10 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
           clause[widget.edit.field] = (widget.edit.text())
 
       table_clause_widget = SearchClause(self)
-      table_clause_widget.clause_widget.setShowGrid(False)
-      table_clause_widget.clause_widget.verticalHeader().hide()
-      table_clause_widget.clause_widget.setSelectionBehavior(QAbstractItemView.SelectRows)
-      table_clause_widget.clause_widget.setAlternatingRowColors(True)
       table_clause_widget.clause_widget.insertColumn(0)
       table_clause_widget.clause_widget.insertColumn(1)
-      table_clause_widget.clause_widget.setHorizontalHeaderItem(0, QTableWidgetItem("Field"))
-      table_clause_widget.clause_widget.setHorizontalHeaderItem(1, QTableWidgetItem("Clause"))
       table_clause_widget.clause_widget.horizontalHeader().setStretchLastSection(True)
+      table_clause_widget.clause_widget.horizontalHeader().setFixedHeight(5)
 
       if QtCore.PYQT_VERSION_STR >= "4.5.0":
         table_clause_widget.clause_widget.itemChanged.connect(self.editing_clause)
@@ -275,10 +265,16 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
       for i in clause:
         table_clause_widget.clause_widget.insertRow(table_clause_widget.clause_widget.rowCount())
+	item = QTableWidgetItem(i)
+	item.setFlags(Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled))
+	item.setToolTip(self.fieldText)
         table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, \
-                                                    0, QTableWidgetItem(i))
+                                                    0, item)
+	item = QTableWidgetItem(clause[i])
+	item.setFlags(Qt.ItemFlags(Qt.ItemIsUserCheckable | Qt.ItemIsEnabled))
+	item.setToolTip(self.clauseText)
         table_clause_widget.clause_widget.setItem(table_clause_widget.clause_widget.rowCount() - 1, 1,\
-                                                    QTableWidgetItem(clause[i]))
+                                                   item)
         table_clause_widget.clause_widget.resizeRowToContents(table_clause_widget.clause_widget.rowCount() - 1)
         if nb_line == 0:
           text += ("(" + i + " " + clause[i] + ")")
@@ -301,8 +297,11 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
           table_clause_widget.or_clause.hide()
           table_clause_widget.and_clause.hide()
           table_clause_widget.bool_operator.deleteLater()
-          
-        table_clause_widget.clause_widget.setMaximumHeight(nb_line * 25 + 50)
+         
+# Set height to : (rows amount * row size) + margin + header height, visible to have resize available
+        table_clause_widget.clause_widget.setMaximumHeight((table_clause_widget.clause_widget.rowCount() *    \
+                                                           table_clause_widget.clause_widget.rowHeight(0)) + \
+							   4 + 5)
         self.completeClause.setText(text)
         self.advancedOptions.addWidget(table_clause_widget, self.advancedOptions.rowCount(), 0, Qt.AlignTop)
         self.clause_list.append(table_clause_widget)
@@ -420,13 +419,14 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
 
     try:
       self.filterThread.setContext(self.completeClause.text(), self.vfs.getnode(str(self.path.text())))
+      self.filterThread.model = self.model
       self.searchBar.show()
       self.launchSearchButton.hide()
       self.stopSearchButton.show()
-      self.totalHits.setText(self.tr("current match(s): ") + str(self.__totalhits))
+      self.totalHits.setText(self.currentMatchsText + "0")
       self.filterThread.start()
     except RuntimeError as err:
-      box = QMessageBox(QMessageBox.Warning, self.tr("Invalid Clause"),
+      box = QMessageBox(QMessageBox.Warning, self.tr("Invalid clause"),
                         str(err), QMessageBox.Ok, self)
       box.exec_()
       
@@ -436,5 +436,19 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
   def setCurrentNode(self, path):
     self.search_in_node = path
 
+  def changeEvent(self, event):
+    """ Search for a language change event
+    
+    This event have to call retranslateUi to change interface language on
+    the fly.
+    """
+    if event.type() == QEvent.LanguageChange:
+      self.retranslateUi(self)
+      self.translation()
+    else:
+      QWidget.changeEvent(self, event)
+
   def translation(self):
-    pass
+    self.fieldText = self.tr("Field")
+    self.clauseText = self.tr("Clause")
+    self.currentMatchsText = self.tr("current match(s): ")

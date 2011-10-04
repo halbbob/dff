@@ -22,8 +22,8 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(../include)
 
 SET_SOURCE_FILES_PROPERTIES(libdatatype.i PROPERTIES CPLUSPLUS ON)
-SWIG_ADD_MODULE(libdatatype python libdatatype.i datatype.cpp) 
-SWIG_LINK_LIBRARIES(libdatatype ${PYTHON_LIBRARIES} _libtypes )
+SWIG_ADD_MODULE(libdatatype python libdatatype.i datatype.cpp)
+SWIG_LINK_LIBRARIES(libdatatype ${PYTHON_LIBRARIES} _libtypes)
 
 if (CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_libdatatype_REAL_NAME} PROPERTIES
@@ -36,7 +36,7 @@ endif ( CMAKE_GENERATOR MATCHES "Visual Studio")
 
 set(datatype_srcs
   __init__.py
-  magichandler.py
+  mimetree.py
   libdatatype.py    
   )
 

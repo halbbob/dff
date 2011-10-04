@@ -134,8 +134,6 @@ public:
 class EntriesManager
 {
 private:
-  Node*				origin;
-  VFile*			vfile;
   ctx*				c;
   uint8_t			fattype;
 //   uint64_t			lfnmetaoffset;

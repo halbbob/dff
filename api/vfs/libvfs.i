@@ -698,9 +698,26 @@ Open the node and return a pointer to a VFile instance
 %feature("director") VLink;
 %feature("director") AttributesHandler;
 
-%newobject Node::open();
+
 %newobject VFile::search();
-%newobject Node::attributesTypesAndNames();
+
+%newobject Node::open();
+%newobject Node::dataType;
+%newobject Node::attributes;
+%newobject Node::attributesByName;
+%newobject Node::attributesByType;
+%newobject Node::attributesNames;
+%newobject Node::attributesNamesAndTypes;
+%newobject Node::compatibleModules;
+
+%newobject VLink::open();
+%newobject VLink::dataType;
+%newobject VLink::attributes;
+%newobject VLink::attributesByName;
+%newobject VLink::attributesByType;
+%newobject VLink::attributesNames;
+%newobject VLink::attributesNamesAndTypes;
+%newobject VLink::compatibleModules;
 
 
 %exception Node::dataType

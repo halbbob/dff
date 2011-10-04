@@ -30,6 +30,19 @@ ConfigManager*	ConfigManager::Get()
     return &single;
 }
 
+void					ConfigManager::unregisterConf(std::string confname)
+{
+  std::map<std::string, Config*>::iterator	it;
+
+  it = this->__configs.find(confname);
+  if (it != this->__configs.end())
+    {
+      if (it->second != NULL)
+	delete it->second;
+      this->__configs.erase(it);
+    }
+}
+
 void					ConfigManager::registerConf(class Config* conf) throw(std::string)
 {
   std::string	cname;

@@ -33,6 +33,17 @@ Argument::Argument(std::string name, uint16_t flags, std::string description)
 
 Argument::~Argument()
 {
+  std::list<Variant*>::iterator		vit;
+  std::list<Argument*>::iterator	ait;
+
+  for (vit = this->__parameters.begin(); vit != this->__parameters.end(); vit++)
+    if (*vit != NULL)
+      delete *vit;
+  this->__parameters.clear();
+  for (ait = this->__subarguments.begin(); ait != this->__subarguments.end(); ait++)
+    if (*ait != NULL)
+      delete *ait;
+  this->__subarguments.clear();
 }
 
 std::string			Argument::name()

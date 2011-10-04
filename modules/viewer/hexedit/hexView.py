@@ -92,7 +92,7 @@ class wHex(QWidget):
 
 class hexView(QGraphicsView):
     def __init__(self, parent):
-        QGraphicsView.__init__(self)
+        QGraphicsView.__init__(self, None, parent)
         self.init(parent)
         self.initShape()
 
@@ -100,16 +100,17 @@ class hexView(QGraphicsView):
         self.whex = parent
         self.heditor = self.whex.heditor
         #Init scene
-        self.scene = QGraphicsScene()
-        self.setScene(self.scene)
+        self.__scene = QGraphicsScene(self)
+        self.setScene(self.__scene)
+
         #Get heditor stuff
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setAlignment(Qt.AlignLeft)
 
     def setItems(self):
-        self.scene.addItem(self.whex.offsetitem)
-        self.scene.addItem(self.whex.hexitem)
-        self.scene.addItem(self.whex.asciitem)
+        self.__scene.addItem(self.whex.offsetitem)
+        self.__scene.addItem(self.whex.hexitem)
+        self.__scene.addItem(self.whex.asciitem)
 
     def initShape(self):
         self.initHeads()
@@ -117,12 +118,12 @@ class hexView(QGraphicsView):
         offsetLine = QGraphicsLineItem(QLineF(90, 0, 90, 700))
         asciiLine = QGraphicsLineItem(QLineF(480, 0, 480, 700))
         #Add to scene
-        self.scene.addItem(offsetLine)
-        self.scene.addItem(asciiLine)
+        self.__scene.addItem(offsetLine)
+        self.__scene.addItem(asciiLine)
 
     def setCursors(self):
-        self.scene.addItem(self.whex.hexcursor)
-        self.scene.addItem(self.whex.asciicursor)
+        self.__scene.addItem(self.whex.hexcursor)
+        self.__scene.addItem(self.whex.asciicursor)
 
     def initHeads(self):
         self.offHead = QGraphicsTextItem()
@@ -150,11 +151,11 @@ class hexView(QGraphicsView):
         self.hexHead.setPos(95, 0)
         self.asciiHead.setPos(520, 0)
         #Add to scene
-        self.scene.addItem(self.offHead)
-        self.scene.addItem(self.hexHead)
-        self.scene.addItem(self.asciiHead)
+        self.__scene.addItem(self.offHead)
+        self.__scene.addItem(self.hexHead)
+        self.__scene.addItem(self.asciiHead)
         headLine = QGraphicsLineItem(QLineF(0, 20, 615, 20))
-        self.scene.addItem(headLine)
+        self.__scene.addItem(headLine)
 
 
     def move(self, step, way):

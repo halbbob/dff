@@ -11,50 +11,47 @@
 # 
 # Author(s):
 #  Christophe Malinge <cma@digital-forensic.org>
-# 
-# Compile magic Python bindings for Windows. Libraries like regex2.dll,
-# zlib1.dll, magic1.dll and magic1.lib are already compiled and versionned
-# as it.
+#  Frederic Baguelin <fba@digital-forensic.org>
 # 
 
-if(WIN32 AND NOT UNIX)
-  add_custom_target(magic1.lib ALL
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different
-	${CMAKE_CURRENT_SOURCE_DIR}/magic1.lib ${CMAKE_CURRENT_BINARY_DIR}/magic1.lib
-	)
+FIND_PACKAGE(SWIG REQUIRED)
+INCLUDE(${SWIG_USE_FILE})
 
-  include_directories(${PYTHON_INCLUDE_PATH})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-  add_library(magic SHARED py_magic.c)
-  target_link_libraries(magic magic1 ${PYTHON_LIBRARIES})
-  add_dependencies(magic magic1.lib)
+include_directories(${PYTHON_INCLUDE_PATH})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(../include)
 	
-  if(CMAKE_GENERATOR MATCHES "Visual Studio")
-	set_target_properties (magic PROPERTIES
-	SUFFIX ".pyd"
+set (magichandler_srcs
+    magichandler.cpp
+)
+
+SET_SOURCE_FILES_PROPERTIES(libmagichandler.i PROPERTIES CPLUSPLUS ON)
+SWIG_ADD_MODULE(libmagichandler python libmagichandler.i magichandler.cpp)
+
+if(CMAKE_GENERATOR MATCHES "Visual Studio")
+  SWIG_LINK_LIBRARIES(libmagichandler ${PYTHON_LIBRARIES} ${CMAKE_CURRENT_SOURCE_DIR}/magic1.lib _libtypes _libdatatype _libvfs)
+  set_target_properties (${SWIG_MODULE_libmagichandler_REAL_NAME} PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_CURRENT_BINARY_DIR}"
-  	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
-  	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_CURRENT_BINARY_DIR}"
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_CURRENT_BINARY_DIR}"
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_CURRENT_BINARY_DIR}"
+	SUFFIX ".pyd")
+  set(magichandler_srcs
+	__init__.py
+	libmagichandler.py
+ 	magic.mgc
+ 	magic1.dll
+ 	regex2.dll
+	zlib1.dll
 	)
-  endif(CMAKE_GENERATOR MATCHES "Visual Studio")
+else (CMAKE_GENERATOR MATCHES "Visual Studio")
+  SWIG_LINK_LIBRARIES(libmagichandler ${PYTHON_LIBRARIES} magic _libtypes _libdatatype _libvfs)
+  set(magichandler_srcs
+	__init__.py
+	libmagichandler.py
+	)
+endif(CMAKE_GENERATOR MATCHES "Visual Studio")
 
-  set(magic_srcs
-    __init__.py
-    magic.mgc
-    magic1.dll
-    magic.pyd
-    zlib1.dll
-    regex2.dll
-    )
-	
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py)
 
-else(WIN32 AND NOT UNIX)
-
-  set(magic_srcs
-    magic.mgc
-    )
-
-endif(WIN32 AND NOT UNIX)
-
-install_file(magic ${magic_srcs})
+install_lib(${SWIG_MODULE_libmagichandler_REAL_NAME})
+install_file(magichandler ${magichandler_srcs})

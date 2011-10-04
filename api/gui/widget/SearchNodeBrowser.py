@@ -25,7 +25,6 @@ from api.taskmanager.taskmanager import TaskManager
 from api.types import libtypes
 from api.types.libtypes import typeId, Variant
 
-from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
 from api.gui.widget.nodeview import NodeThumbsView, NodeTableView, NodeTreeView, NodeLinkTreeView 
@@ -51,7 +50,6 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
 
     self.vfs = vfs.vfs()
     self.VFS = VFS.Get()
-    self.VFS.connection(self)
     self.loader = loader.loader()
     self.lmodules = self.loader.modules
     self.taskmanager = TaskManager()
@@ -84,9 +82,7 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
   def addTableView(self): 
     self.tableView = NodeTableView(self)
     self.tableView.horizontalHeader().setStretchLastSection(True)
-    # self.tableView.setModel(self.model)
     self.tableView.setColumnWidth(0, 200)
-    self.tableView.setSortingEnabled(True)
     self.tableView.setSizePolicy(QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum))
     self.browserLayout.addWidget(self.tableView)
 
@@ -310,6 +306,5 @@ class SearchNodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
       self.menuModule.setTitle(self.actionOpen_with.text())
       self.submenuRelevant.setTitle(self.actionRelevant_module.text())
       self.model.translation()
-      self.treeModel.translation()
     else:
       QWidget.changeEvent(self, event)

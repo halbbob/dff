@@ -46,7 +46,6 @@ FORMS           += ../../../ui/gui/resources/search_empty.ui
 FORMS           += ../../../ui/gui/resources/search_mime_type.ui
 FORMS           += ../../../ui/gui/resources/search_size.ui
 FORMS           += ../../../ui/gui/resources/search_str.ui
-FORMS           += ../../../ui/gui/resources/select_mime_types.ui
 FORMS           += ../../../ui/gui/resources/selectattrs.ui
 FORMS           += ../../../ui/gui/resources/shell.ui
 FORMS           += ../../../ui/gui/resources/taskmanager.ui

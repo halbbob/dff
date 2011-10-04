@@ -30,39 +30,28 @@ from ui.gui.resources.ui_is_deleted import Ui_IsDeleted
 from ui.gui.resources.ui_search_mime_type import Ui_MimeType
 from ui.gui.resources.ui_build_search_clause import Ui_BuildSearchClause
 from ui.gui.resources.ui_edit_dict import Ui_DictListEdit
-from ui.gui.resources.ui_select_mime_types import Ui_selectMimeTypes
 from ui.gui.resources.ui_search_attrs import Ui_SearchAttributes
 
 from ui.gui.widget.SelectMimeTypes import MimeTypesTree
-
-class SelectMimeTypes(Ui_selectMimeTypes, QDialog):
-  def __init__(self, parent = None):
-    super(QDialog, self).__init__()
-    self.setupUi(self)
-    self.translation()
-    self.mime_types.setHeaderLabels([self.mimeTypeTr])
-    self.mime = MimeTypesTree(self.mime_types)
-
-  def translation(self):
-    self.mimeTypeTr = self.tr("Select one or several mime-types")
 
 class MimeType(Ui_MimeType, QWidget):
   def __init__(self, parent = None):
     super(QWidget, self).__init__()
     self.setupUi(self)
+    self.translation()
     self.text_t = ""
     self.field = "mime"
-    self.edit_dialog = SelectMimeTypes()
+    self.selected_mime_types.hide()
+    self.mime_types.setHeaderLabels([self.mimeTypeTr])
+    self.mime = MimeTypesTree(self.mime_types)
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.edit_mime_types.clicked.connect(self.editMimeTypes)
+      self.mime_types.clicked.connect(self.editMimeTypes)
     else:
-      QtCore.QObject.connect(self.edit_mime_types, SIGNAL("clicked(bool)"), self.editMimeTypes)
+      QtCore.QObject.connect(self.mime_types, SIGNAL("clicked(bool)"), self.editMimeTypes)
     
   def editMimeTypes(self, changed):
-    ret = self.edit_dialog.exec_()
-    if QDialog.Accepted:
       self.selected_mime_types.clear()
-      selectedItems = self.edit_dialog.mime.selectedItems()
+      selectedItems = self.mime.selectedItems()
       for item in selectedItems:
         self.selected_mime_types.addItem(item)
 
@@ -74,6 +63,9 @@ class MimeType(Ui_MimeType, QWidget):
       text_t += ("\"" +  self.selected_mime_types.itemText(i) + "\"")
     text_t += "]"
     return text_t
+
+  def translation(self):
+    self.mimeTypeTr = self.tr("Select one or several mime-types")
 
 class SearchAttributes(Ui_SearchAttributes, QWidget):
   def __init__(self, parent = None):
@@ -217,9 +209,9 @@ class SearchD(QWidget, Ui_SearchDate):
     else:
       prefix += " >= "
     date_time = self.dateTimeEdit.dateTime()
-    if self.date_str.isChecked():
-      return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
-    return prefix + "ts(" + str(date_time.toTime_t()) + ")"
+    #if self.date_str.isChecked():
+    return prefix + str(date_time.toString("yyyy-MM-ddThh:mm:ss"))
+    #return prefix + "ts(" + str(date_time.toTime_t()) + ")"
 
 class SearchS(QWidget, Ui_SearchSize):
   def __init__(self, parent = None):
@@ -298,8 +290,8 @@ class OptWidget(QWidget):
                        typeId.UInt64: SearchS,
                        typeId.String: SearchStr,
                        typeId.CArray: SearchStr,
-                       typeId.Node: SearchDict,
-                       typeId.Path: SearchDict,
+                       #typeId.Node: SearchDict,
+                       #typeId.Path: SearchDict,
                        typeId.VTime: SearchD,
                        typeId.Bool: FileIsDeleted,
                        typeId.List: MimeType,
@@ -315,8 +307,8 @@ class OptWidget(QWidget):
                        typeId.UInt64 + 100: SearchS,
                        typeId.String + 100: SearchStr,
                        typeId.CArray + 100: SearchStr,
-                       typeId.Node + 100: SearchDict,
-                       typeId.Path + 100: SearchDict,
+                       #typeId.Node + 100: SearchDict,
+                       #typeId.Path + 100: SearchDict,
                        typeId.VTime + 100: SearchD,
                        typeId.Bool + 100: IsFile}
 
@@ -338,7 +330,8 @@ class OptWidget(QWidget):
     
   def removeOption(self, changed):
     text = self.label.text()
-    self.parent.optionList.addItem(text, self.type)
+    if self.type != typeId.Argument:
+      self.parent.optionList.addItem(text, self.type)
     self.parent.addedOpt.remove(self)
     self.label.hide()
     self.edit.hide()
@@ -370,7 +363,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.optionList.addItem(self.sizeMaxTr, QVariant(typeId.UInt64 + 100))
       self.optionList.addItem(self.dateMaxTr, QVariant(typeId.VTime + 100))
       self.optionList.addItem(self.dateMinTr, QVariant(typeId.VTime))
-      self.optionList.addItem(self.fromDictTr, QVariant(typeId.Path))
+      #self.optionList.addItem(self.fromDictTr, QVariant(typeId.Path))
       self.optionList.addItem(self.dataDeletedTr , QVariant(typeId.Bool))
       self.optionList.addItem(self.dataIsFileTr, QVariant(typeId.Bool + 100))
       self.optionList.addItem(self.mimeTypeTr, QVariant(typeId.List))
@@ -387,7 +380,7 @@ class BuildSearchClause(QDialog, Ui_BuildSearchClause):
       self.textTr = self.tr("Contains")
       self.notNameTr = self.tr("Name does not contain")
       self.NameTr = self.tr("Name contains")
-      self.fromDictTr = self.tr("From dictionnary")
+      self.fromDictTr = self.tr("From dictionary")
       self.notContains = self.tr("Does not contain")
       self.sizeMinTr = self.tr("Size at least")
       self.sizeMaxTr = self.tr("Size at most")

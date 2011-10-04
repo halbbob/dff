@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>SearchDate</class>
  <widget class="QWidget" name="SearchDate">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>385</width>
+    <height>22</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string notr="true"/>
   </property>
@@ -13,23 +21,6 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QDateTimeEdit" name="dateTimeEdit"/>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="timestamp">
-       <property name="text">
-        <string>Timestamp</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="date_str">
-       <property name="text">
-        <string>String</string>
-       </property>
-      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">

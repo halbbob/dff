@@ -26,8 +26,10 @@ class LOAD(Script):
     self.loader = loader.loader()
 
   def start(self, args):
-    path = args['file'].value()
-    self.loader.do_load(path.path)
+    paths = args['files'].value()
+    for vpath in paths:
+      path = vpath.value()
+      self.loader.do_load(path.path)
 
 class load(Module):
   """Load an external module"""

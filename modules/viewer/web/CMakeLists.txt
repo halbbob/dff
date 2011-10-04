@@ -10,18 +10,11 @@
 # and IRC channels for your use.
 # 
 # Author(s):
-#  Frederic Baguelin <fba@digital-forensic.org>
+#  Jeremy MOUNIER <fba@digital-forensic.org>
 
-add_subdirectory(hexedit)
-add_subdirectory(bindiff)
-add_subdirectory(timeline)
-add_subdirectory(web)
-
-set(viewer_srcs
+set(web_srcs
   __init__.py
-  cat.py
-  viewerimage.py
-  player.py
+  web.py
 )
 
-install_file(viewer ${viewer_srcs})
+install_file(web ${web_srcs})

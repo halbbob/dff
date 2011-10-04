@@ -47,7 +47,7 @@ Christophe Malinge cma@digital-forensic.org
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Attributes selection : add an attributes to display in the node browser</string>
+          <string>Attributes selection : add an attribute to display in the node browser</string>
          </property>
         </widget>
        </item>

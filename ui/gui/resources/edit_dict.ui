@@ -3,7 +3,7 @@
  <class>DictListEdit</class>
  <widget class="QDialog" name="DictListEdit">
   <property name="windowTitle">
-   <string>Edit dictionnary</string>
+   <string>Edit dictionary</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

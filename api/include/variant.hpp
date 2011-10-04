@@ -56,25 +56,27 @@ public:
     {
       Invalid = 0,
       // classic types
-      String = 1,
-      CArray = 2,
-      Char = 3,
-      Int16 = 4,
-      UInt16 = 5,
-      Int32 = 6,
-      UInt32 = 7,
-      Int64 = 8,
-      UInt64 = 9,
-      Bool = 10,
-      Map = 11,
-      List = 12,
+      String,
+      CArray,
+      Char,
+      // Int8,
+      // UInt8,
+      Int16,
+      UInt16,
+      Int32,
+      UInt32,
+      Int64,
+      UInt64,
+      Bool,
+      Map,
+      List,
       // dff types
-      VTime = 13,
-      Node = 14,
-      Path = 15,
-      Argument = 16,
+      VTime,
+      Node,
+      Path,
+      Argument,
       // user types
-      VoidPtr = 17
+      VoidPtr
     };
 
   EXPORT uint8_t	getType(std::string type);
@@ -87,6 +89,7 @@ class Variant
 public:
 
   EXPORT Variant();
+  EXPORT Variant(class Variant* );
   EXPORT ~Variant();
   EXPORT Variant(std::string str);
   EXPORT Variant(char *carray);
@@ -376,12 +379,14 @@ public:
   EXPORT uint8_t	type();
   EXPORT std::string	typeName();
 
-private:  
+private:
   uint8_t	_type;
 union Data
 {
   bool		b;
   char		c;
+  // int8_t	c;
+  // uint8_t	uc;
   int16_t	s;
   uint16_t	us;
   int32_t	i;

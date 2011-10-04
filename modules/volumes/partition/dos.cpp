@@ -355,7 +355,6 @@ DosPartition::~DosPartition()
 
 void		DosPartition::mapping(FileMapping* fm, uint64_t entry, uint8_t type)
 {
-  metadatum*	meta;
   metaiterator	mit;
   uint64_t	offset;
   uint64_t	size;
@@ -639,7 +638,6 @@ void	DosPartition::readMbr() throw (vfsError)
   dos_partition_record	record;
   uint8_t		i;
   dos_pte*		pte;
-  DosPartitionNode*	node;
   uint32_t		disk_sig;
   Attributes		mbrattr;
   metadatum*		meta;

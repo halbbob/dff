@@ -156,7 +156,6 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     self.rootItem = None
     self.__parent = __parent
     self.connect(self.__parent, SIGNAL("NewSearch"), self.clean)
-    self.connect(self.__parent, SIGNAL("NodeMatched"), self.addNode)
     self.VFS = VFS.Get()
     self.map = {}
     self.imagesthumbnails = None
@@ -209,11 +208,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
       self.beginInsertRows(QModelIndex(), len(self.node_list), len(self.node_list))
       self.node_list.append(pnode)
       self.endInsertRows()
-      #if len(self.node_list) < 100:
-      #self.fetchedItems += 1
-      #self.insertRows(len(self.node_list), 1, 
-      #self.emit(SIGNAL("layoutAboutToBeChanged()"))
-      #self.emit(SIGNAL("layoutChanged()"))
+
 
   def clean(self):
     self.emit(SIGNAL("modelAboutToBeReset()"))
@@ -637,10 +632,10 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
   def end_search(self):
     self.searching = False
 
-  def fillingList(self, node):
+  def addNode(self, pnode):
     if self.searching == True:
-      n = self.VFS.getNodeFromPointer(long(node))
-      self.node_list.append(n)
+      node = self.VFS.getNodeFromPointer(long(pnode))
+      self.node_list.append(node)
       self.emit(SIGNAL("layoutAboutToBeChanged()"))
       self.emit(SIGNAL("layoutChanged()"))
 
@@ -796,7 +791,8 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
           return QVariant() # index error
         elif nb_c >= len(self.header_list): # the data is a dataType
           type = self.type_list[nb_c - len(self.header_list)]
-          possible_type = node.dataType().value()
+          dtypes = node.dataType()
+          possible_type = dtypes.value()
           return QVariant(possible_type[str(type)].value())
         else:
           if self.cacheAttr[0] != long(node.this): 
