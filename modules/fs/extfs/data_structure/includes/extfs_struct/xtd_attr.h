@@ -19,10 +19,13 @@
 #ifndef __EXT_ATTR_HEADER_H__
 #define __EXT_ATTR_HEADER_H__
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
 
 typedef struct	__ext_attr_header_s
 {

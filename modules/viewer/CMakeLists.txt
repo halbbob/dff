@@ -15,6 +15,7 @@
 add_subdirectory(hexedit)
 add_subdirectory(bindiff)
 add_subdirectory(timeline)
+add_subdirectory(web)
 
 set(viewer_srcs
   __init__.py

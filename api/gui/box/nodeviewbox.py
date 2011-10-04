@@ -28,23 +28,22 @@ from ui.gui.resources.ui_nodeviewbox import Ui_NodeViewBox
 from ui.gui.resources.ui_bookmarkdialog import Ui_AddBookmark
 from ui.gui.resources.ui_selectattrs import Ui_SelectAttr
 
-try:
-  from api.index import libindex
-  INDEX_ENABLED = True
-except ImportError:
-  INDEX_ENABLED = False
+from api.gui.widget.search_widget import AdvSearch
 
 class NodeViewBox(QWidget, Ui_NodeViewBox):
   def __init__(self, parent):
     QWidget.__init__(self)
     self.setupUi(self)
-    if not INDEX_ENABLED:
-      self.search.hide()
+    #self.search.hide()
     self.vfs = vfs()
     self.VFS = libvfs.VFS.Get()
     self.parent = parent
     self.button = {}
- 
+    
+     # Force thumbSize height to be the same as viewbox height, because
+    # thumbSize comboBox doesn't have any icon, height is smaller.
+    self.thumbSize.setFixedHeight(self.viewbox.sizeHint().height())
+    
     self.history = []
     self.history.append("/")
     self.currentPathId = -1
@@ -70,12 +69,14 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
     self.connect(self.viewbox, SIGNAL("activated(int)"), self.viewboxChanged)
 
-    self.createCheckBoxAttribute()
+    # No more checkBoxAttributes there is now an attributes panel icon
+    self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
+
     self.connect(self.addToBookmark, SIGNAL("clicked()"), self.bookmark)
     self.connect(self.search, SIGNAL("clicked()"), self.searchActivated)
     self.connect(self.imagethumb, SIGNAL("clicked()"), self.imagethumbActivated)
+    self.connect(self.attrView, SIGNAL("clicked()"), self.attrViewActivated)
 
-    self.connect(self.attrSelect, SIGNAL("clicked()"), self.attrSelectView)
 
     self.parent.connect(self.thumbSize, SIGNAL("currentIndexChanged(QString)"), self.parent.sizeChanged)
     
@@ -149,20 +150,12 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      self.parent.model.setRootPath(self.vfs.getnode("/"))
 
 
-  def createCheckBoxAttribute(self):
-    if QtCore.PYQT_VERSION_STR >= "4.5.0":
-      self.checkboxAttribute.setCheckState(True)
+  def attrViewActivated(self):
+    if self.propertyTable.isHidden():
+        self.attrView.setIcon(QIcon(QPixmap(":lists_attr.png")))
+        self.propertyTable.setVisible(True)
     else:
-      self.checkboxAttribute.setChecked(True)
-    self.checkboxAttribute.setEnabled(True)
-    self.checkboxAttribute.setTristate(False)
-
-    self.connect(self.checkboxAttribute, SIGNAL("stateChanged(int)"), self.checkboxAttributeChanged)
-
-  def checkboxAttributeChanged(self, state):
-    if state:
-       self.propertyTable.setVisible(True)
-    else:
+        self.attrView.setIcon(QIcon(QPixmap(":lists_attr_disable.png")))
         self.propertyTable.setVisible(False)	
 
   def moveToTop(self):
@@ -195,11 +188,11 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
   def imagethumbActivated(self):
     if self.parent.model.imagesThumbnails():
       self.parent.model.setImagesThumbnails(False)
-      self.imagethumb.setIcon(QIcon(QPixmap(":image.png")))
+      self.imagethumb.setIcon(QIcon(QPixmap(":image_disable.png")))
       self.parent.model.reset()
     else:
       self.parent.model.setImagesThumbnails(True)
-      self.imagethumb.setIcon(QIcon(QPixmap(":image_disable.png")))
+      self.imagethumb.setIcon(QIcon(QPixmap(":image.png")))
       self.parent.model.reset()
 
  
@@ -215,20 +208,17 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
      self.thumbSize.setEnabled(False)
   
   def thumbActivated(self):
-     self.checkboxAttribute.setEnabled(True)
-     if self.checkboxAttribute.isChecked():
-       self.propertyTable.setVisible(True)
-     else :
-        self.propertyTable.setVisible(False)
      self.parent.tableView.setVisible(False)
      self.parent.thumbsView.setVisible(True)
      self.thumbSize.setEnabled(True)
 
   def searchActivated(self):
-    if self.parent.nodeFilterBox.isVisible():
-      self.parent.nodeFilterBox.setVisible(False) 
-    else:
-      self.parent.nodeFilterBox.setVisible(True) 
+    adv = AdvSearch(self)
+
+    self.parent.parent.addSearchTab(adv)
+    adv.setCurrentNode(self.parent.model.rootItem)
+    adv.path.setText(adv.search_in_node.absolute())
+
 
   def rootpathchanged(self, node):
     path = node.absolute()
@@ -271,6 +261,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
           return
       selectedBookName = selectedCategory
       selectedBookmark = self.vfs.getnode('/Bookmarks/' + str(selectedBookName.toUtf8()))
+
       for (pnode, state) in self.parent.model.checkedNodes:
         p = self.VFS.getNodeFromPointer(pnode)
         n = VLink(p, selectedBookmark)
@@ -402,16 +393,19 @@ class attrDialog(QDialog, Ui_SelectAttr):
         self.types.addItem(i)
     
     try :
-      attrs = node.attributes()[module.name].value()
-      attrs.thisown = False
-      for j in model.header_list:
-        self.selectedAttrs.addItem(j)
-      for i in attrs:
-        if (attrs[i].type() != typeId.Map) and (attrs[i].type() != typeId.List):
-          try:
-            model.header_list.index(i)
-          except:
-            self.allAttrs.addItem(i)
+      mattrs = node.attributes()
+      if mattrs != None:
+        attrs = mattrs[module.name].value()
+        #attrs = module_attrs.value()
+        #attrs.thisown = False
+        for j in model.header_list:
+          self.selectedAttrs.addItem(j)
+        for key in attrs.iterkeys():
+          if (attrs[key].type() != typeId.Map) and (attrs[key].type() != typeId.List):
+            try:
+              model.header_list.index(str(key))
+            except:
+              self.allAttrs.addItem(str(key))
     except IndexError:
 	pass
     model.header_list = []

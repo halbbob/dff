@@ -22,6 +22,7 @@ from distutils.version import StrictVersion
 from api.module.module import *
 from stat import *
 from api.types.libtypes import ConfigManager
+from api.vfs.libvfs import VFS, fso, mfso
 
 __module_prepend__ = '__dff_module_'
 __module_append__ = '_version__'
@@ -66,6 +67,7 @@ class loader():
         def Load(self, args):
             module_path = args
             mode = None
+            self.loadingErrors = ""
             try:
 	      self.pprint("loading modules in " + module_path)
               mode = os.stat(module_path)[ST_MODE]
@@ -78,7 +80,12 @@ class loader():
                 self.LoadFile(module_path)
               else:
                print "unsupported stat type"
-
+            if len(self.loadingErrors):
+                print "\n" + self.loadingErrors
+                print "\n" + "If you really need theses modules, please consider either"
+                print "\n   - to install dependencies by yourself"
+                print "\n   - or to have a look at our professional support -- http://www.arxsys.fr/support"
+ 
 
         def _versionFromLine(self, line):
             ''' 
@@ -208,28 +215,56 @@ class loader():
             if warnwithoutload:
                 self.pprint('[WARN]\tnot loading ' + status + ': API required version greather than actual API component version')
                 return
+            usedmodules = self.vfs.fsobjs()
             if modname in sys.modules:
-              module = sys.modules[modname]
-              del module
+                module = sys.modules[modname]
+                cl = getattr(module, modname)
+                tmod = cl()
+                #if issubclass(tmod.cl, mfso) or issubclass(tmod.cl, fso):
+                #    return
+                rmodname = tmod.name
+                removable = True
+                #for usedmodule in usedmodules:
+                #    print rmodname, usedmodule
+                #    if rmodname == usedmodule.name:
+                #        removable = False
+                if removable:
+                    self.cm.unregisterConf(rmodname)
+                    del tmod
+                    del module
+                    self.__load(module_path, modname, status, False)
+                else:
+                    print "module", modname, "cannot be deleted because it is already in use"  
+            else:
+                self.__load(module_path, modname, status, True)
 
+        
+        def __load(self, module_path, modname, status, first=True):
             file, pathname, description = imp.find_module(modname, [os.path.dirname(module_path)])
             try:
-               module = imp.load_module(modname, file, pathname, description)
-               cl = getattr(module, modname)
-	       mod = cl()
-	       self.modules[mod.name] = mod
-#               self.pprint("loading " + modname + " from " + pathname +  " [OK]")
-               self.pprint('[OK]\tloading ' + modname + ' ' + status) 
-               sys.modules[modname] = module
-               self.cm.registerConf(mod.conf)
+                module = imp.load_module(modname, file, pathname, description)
+                cl = getattr(module, modname)
+                mod = cl()
+                self.modules[mod.name] = mod
+                sys.modules[modname] = module
+                self.cm.registerConf(mod.conf)
+                self.pprint('[OK]\tloading ' + modname + ' ' + status) 
 
-            except:
-               print('[ERROR]\tloading ' + modname + ' from ' + pathname)
-               exc_type, exc_value, exc_traceback = sys.exc_info()
-               traceback.print_exception(exc_type, exc_value, exc_traceback, None, sys.stdout)
+            except Exception as e:
+                if first:
+                    if not len(self.loadingErrors):
+                        header = "Errors encountered while loading the following modules:"
+                        self.loadingErrors = len(header) * "*" + "\n" + header + "\n" + len(header) * "*" + "\n"
+                    self.loadingErrors += '\nloading ' + modname + ' from ' + pathname + "\n"
+                    self.loadingErrors += 8 * " " + str(e) + "\n"
+                else:
+                    print "loading ", modname, "from", pathname, "failed\n"
+                    print " " * 3, str(e)
+
 
         def __init__(self):
             self.cm = ConfigManager.Get()
+            self.vfs = VFS.Get()
             self.cmodules = {}
             self.scripts = {}
             self.builtins = {}

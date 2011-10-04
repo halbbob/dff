@@ -11,6 +11,7 @@
 # 
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
+#  Jeremy Mounier <jmo@digital-forensic.org>
 #
 
 import os
@@ -30,6 +31,8 @@ from api.types.libtypes import typeId
 from ui.gui.dialog.preferences import Preferences
 from ui.gui.resources.ui_about import Ui_About
 from ui.gui.resources.ui_evidencedialog import Ui_evidenceDialog
+
+from ui.gui.widget.modulesmanager import *
 
 class Dialog(QObject):
   def __init__(self, parent):
@@ -143,6 +146,19 @@ class Dialog(QObject):
         about = About()
         about.exec_()
 
+  def manager(self):
+        """ Open module browser dialog """
+        module = browserDialog(self.parent)
+        ir = module.exec_()
+        if ir > 0:
+          module.browser.execute()
+
+#class managerDialog(QDialog):
+#    def __init__(self,  mainWindow):
+#        QDialog.__init__(self, mainWindow)
+#        l = QVBoxLayout()
+#        l.addWidget(modulesManager(self))
+#        self.setLayout(l)
 
 class About(QDialog, Ui_About):
   def __init__(self):
@@ -182,12 +198,12 @@ class evidenceDialog(QDialog, Ui_evidenceDialog):
     if "aff" not in self.loader.modules:
       self.affcheck.setEnabled(False)
     self.rawcheck.setChecked(True)
-    layout = QHBoxLayout()
-    layout.setMargin(0)
+
     self.manager = layoutManager()
-    self.manager.addPathList("local", typeId.Path, [], [])
-    layout.addWidget(self.manager)
-    self.pathselector.setLayout(layout)
+
+    self.manager.addPathList("local", typeId.Path, [], [])    
+
+    self.pathlayout.addWidget(self.manager)
 
   def changeEvent(self, event):
     """ Search for a language change event

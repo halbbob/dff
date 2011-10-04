@@ -17,9 +17,11 @@
 #define __DEVICE_HPP__
 
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
 #include <iostream>
 #include <vector>
@@ -29,8 +31,8 @@ using namespace std;
 class Device
 {
 public:
-  						Device();
-  virtual				~Device();
+				Device();
+  virtual			~Device();
   virtual wchar_t*	 	blockDevice(void);
   virtual wchar_t*		serialNumber(void);
   virtual wchar_t*	 	model(void);

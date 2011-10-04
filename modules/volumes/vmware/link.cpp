@@ -30,15 +30,10 @@ Link::Link(diskDescriptor *desc, int type, Node *vmdkroot)
 
   if (this->_pcid == CID_NOPARENT)
     {
-      //      std::cout << "Baselink yes " << std::endl;     
       this->_baseLink = true;
     }
   else
     this->_baseLink = false;
-  
-  //  this->listExtents();
-    // this->_storageVolumeSize = (ext->sectors * SECTOR_SIZE);
-  
 }
 
 Link::~Link()
@@ -62,13 +57,7 @@ int	Link::listExtents()
   list<string>	extnames;
 
   extnames = this->_descriptor->getExtentNames();
-
-  //  std::cout << "extnames size :  " << extnames.size() << std::endl; 
-
   Node *parent = this->_vmdkroot->parent();
-	  
-  //  std::cout << "parent :  " << parent->name() << std::endl;
-  
   std::vector<Node *>next = parent->children();
 
   for( list<string>::iterator name=extnames.begin(); name!=extnames.end(); ++name)
@@ -77,15 +66,11 @@ int	Link::listExtents()
 	{
 	  if ((*name) == (*in)->name())
 	    {
-	      //	      std::cout << "founded " << (*in)->name() << std::endl;
 	      addExtent((*in));
 	    }
 	}
     }
  
-  //  std::cout << "ext size :  " << this->_extents.size() << std::endl; 
-  //  std::cout << "extname size :  " << extnames.size() << std::endl; 
-  
   if (this->_extents.size() == extnames.size())
     {
       this->setLinkStorageVolumeSize();

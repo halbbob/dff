@@ -18,13 +18,14 @@
 
 VFS&	VFS::Get()
 { 
-    static VFS single; 
-    return single; 
+    static VFS single;
+    return single;
 }
 
 VFS::VFS()
 {
-  root = new VfsRoot("/");
+  this->root = new VfsRoot("/");
+  this->__orphanednodes.push_back(this->root);
   cwd = root;
 }
 
@@ -49,6 +50,59 @@ Node* VFS::GetCWD(void)
 set<Node *>* VFS::GetTree(void)
 {
   return (&Tree);
+}
+
+uint16_t	VFS::registerFsobj(fso* fsobj) throw (vfsError)
+{
+  if (fsobj != NULL)
+    this->__fsobjs.push_back(fsobj);
+  else
+    throw (vfsError("registerFsobj() NULL pointer provided"));
+  return (uint16_t)(this->__fsobjs.size());
+}
+
+uint64_t	VFS::registerOrphanedNode(Node* n) throw (vfsError)
+{
+  if (n != NULL)
+    this->__orphanednodes.push_back(n);
+  else
+    throw (vfsError("registerOrphanedNode() NULL pointer provided"));
+  return (uint64_t)(this->__orphanednodes.size() - 1);
+}
+
+std::vector<fso*>	VFS::fsobjs()
+{
+  return this->__fsobjs;
+}
+
+uint64_t	VFS::totalNodes()
+{
+  size_t	i;
+  uint64_t	totalnodes;
+
+  totalnodes = this->__orphanednodes.size();
+  for (i = 0; i != this->__fsobjs.size(); i++)
+    totalnodes += this->__fsobjs[i]->nodeCount();
+  return totalnodes;
+}
+
+Node*	VFS::getNodeById(uint64_t id)
+{
+  uint16_t	fsoid;
+  fso*		fsobj;
+
+  fsoid = id >> 48;
+  if ((fsoid == 0) && (id < this->__orphanednodes.size()))
+    return this->__orphanednodes[id];
+  else if ((fsoid > 0) && ((fsoid - 1) < (uint16_t)this->__fsobjs.size()))
+    {
+      if ((fsobj = this->__fsobjs[fsoid-1]) != NULL)
+	return fsobj->getNodeById(id);
+      else
+	return NULL;
+    }
+  else
+    return NULL;
 }
 
 Node* VFS::GetNode(string path, Node* where)
@@ -84,17 +138,17 @@ Node* VFS::GetNode(string path)
   Node* tmp = root;
   do
   {
-     if (rpath.find('/') != string::npos)	
-     {
-       lpath = rpath.substr(0, rpath.find('/'));
-       rpath = rpath.substr(rpath.find('/') + 1); 
-     }
-     else
-     { 
-       lpath = rpath;
-       rpath = "";
-     }
-     tmp = GetNode(lpath, tmp);
+    if (rpath.find('/') != std::string::npos)
+      {
+	lpath = rpath.substr(0, rpath.find('/'));
+	rpath = rpath.substr(rpath.find('/') + 1); 
+      }
+    else
+      { 
+	lpath = rpath;
+	rpath = "";
+      }
+    tmp = GetNode(lpath, tmp);
   }  while (tmp && rpath.size());
   return (tmp);
 }

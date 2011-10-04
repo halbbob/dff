@@ -53,6 +53,8 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="file.png">icons/filesystem/file.png</file>
     <file alias="info.png">icons/actions/info.png</file>
     <file alias="list.png">icons/app/lists.png</file>
+    <file alias="lists_attr.png">icons/app/lists_attr.png</file>
+    <file alias="lists_attr_disable.png">icons/app/lists_attr_disable.png</file>
     <file alias="document.png">icons/mime/doc.png</file>
     <file alias="pdf.png">icons/mime/pdf.png</file>
     <file alias="sound.png">icons/mime/sound.png</file>
@@ -111,6 +113,7 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="bookmark_category_add.png">icons/actions/bookmark_category_add.png</file>
     <file alias="bookmark_rm.png">icons/actions/bookmark_rm.png</file>
     <file alias="bookmark_toolbar.png">icons/actions/bookmark.png</file>
+    <file alias="dict.png">icons/actions/man.png</file>
 
     <file alias="editcut">icons/actions/editcut.png</file>
     <file alias="encrypted">icons/actions/encrypted.png</file>
@@ -167,6 +170,10 @@ Jeremy Mounier jmo@digital-forensic.org
     <file alias="meeting">icons/mailbox/meeting.png</file>
     <file alias="notes">icons/mailbox/notes.png</file>
     <file alias="tasks">icons/mailbox/tasks.png</file>
+
+    <file alias="db_opt.png">icons/actions/db_opt.png</file>
+    <file alias="search_small.png">icons/actions/search_small.png</file>
+    <file alias="search_advance.png">icons/actions/search_advance.png</file>
 
 </qresource>
 </RCC>

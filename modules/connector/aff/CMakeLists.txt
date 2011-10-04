@@ -19,16 +19,24 @@ INCLUDE(${SWIG_USE_FILE})
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
+include_directories(${AFF_INCLUDE_DIR})
 
 set(aff_srcs
     aff.cpp
     affnode.cpp
 )
 
+message(STATUS "${AFF_VERSION}")
+IF (${AFF_VERSION} VERSION_GREATER "3.6.6")
+   add_definitions (-DNEW_AFF_LIB)
+ENDIF (${AFF_VERSION} VERSION_GREATER "3.6.6")
+
+
 SET_SOURCE_FILES_PROPERTIES(aff.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(AFF python aff.i ${aff_srcs})
 if(WIN32)
-  SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs afflib libeay32 ssleay32 zlib Ws2_32)
+  SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${AFF_LIBRARY})
+  FILE(COPY ${AFF_DYN_LIBRARIES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 else(WIN32)
   SWIG_LINK_LIBRARIES(AFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${AFF_LIBRARY})
 endif(WIN32)

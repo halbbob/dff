@@ -23,18 +23,22 @@ from PyQt4.QtGui import QWidget, QDialog
 from api.vfs.vfs import vfs
 from api.events.libevents import EventHandler
 from api.types.libtypes import typeId
-
 from ui.gui.resources.ui_node_f_box import Ui_NodeFBox
 from ui.conf import Conf
+from api.search.find import Filters
+from api.gui.widget.search_widget import FilterThread
+from api.gui.widget.build_search_clause import SearchStr
+from api.gui.widget.build_search_clause import SearchD
+from api.gui.widget.build_search_clause import SearchS
+from api.gui.widget.search_widget import AdvSearch
 
 try:
-  from api.gui.widget.search_widget import SearchStr, SearchD, SearchS, OptWidget, AdvSearch, FilterThread
   from api.index.libindex import IndexSearch, Index
   from ui.gui.widget.modif_index import ModifIndex
-  from api.search.find import Filters
   IndexerFound = True
 except ImportError:
   IndexerFound = False
+
 from ui.conf import Conf    
 
 class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
@@ -44,41 +48,41 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
   def __init__(self, parent, model):
     QWidget.__init__(self)
     Ui_NodeFBox.__init__(parent)
-
-  def __init__future(self, parent, model):
-    QWidget.__init__(self)
-    Ui_NodeFBox.__init__(parent)
     EventHandler.__init__(self)
     self.parent = parent
-    self.filterThread = FilterThread()
-    self.filterThread.filters.connection(self)
 
     self.setupUi(self)
     self.model = model
     self.translation()
+
     if IndexerFound:
       self.opt = ModifIndex(self, model)
     self.vfs = vfs()
+
     if QtCore.PYQT_VERSION_STR >= "4.5.0":
       self.search.clicked.connect(self.searching)
       if IndexerFound:
         self.notIndexed.linkActivated.connect(self.index_opt2)
         self.indexOpt.clicked.connect(self.explain_this_odd_behavior)
       self.advancedSearch.clicked.connect(self.adv_search)
-
-      self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+      #self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
     else:
       QtCore.QObject.connect(self.search, SIGNAL("clicked(bool)"), self.searching)
       if IndexerFound:
         QtCore.QObject.connect(self.index_opt, SIGNAL("clicked(bool)"), self.explain_this_odd_behavior)
         QtCore.QObject.connect(self.notIndexed, SIGNAL("linkActivated()"), self.index_opt2)
       QtCore.QObject.connect(self.advancedSearch, SIGNAL("clicked(bool)"), self.adv_search)
-      self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+      #self.connect(self, SIGNAL("add_node"), self.parent.model.fillingList)
+    self.filterThread = FilterThread()
 
-  def Event(self, e):
-    node = e.value.value()
-    if e.type == 514:
-      self.emit(SIGNAL("add_node"), long(node.this))
+    # Future feature
+    self.indexOpt.hide()
+
+
+  #def Event(self, e):
+  #  node = e.value.value()
+  #  if e.type == 514:
+  #    self.emit(SIGNAL("add_node"), long(node.this))
 
   def index_opt2(self, url):
     self.explain_this_odd_behavior()
@@ -210,7 +214,6 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
       none_word = str(self.adv.noneWord.text())
       one_word = str(self.adv.oneWord.text())
 
-      # LOL : to avoid a weird crash. Attempting to input the "t" string to clucene results in a crash
       if all_word == "t":
         all_word = ""
       if none_word == "t":
@@ -261,12 +264,12 @@ class NodeFilterBox(QWidget, Ui_NodeFBox, EventHandler):
   def searching(self, changed):
     if not self.searchClause.text().isEmpty():
       if self.recurse.checkState() != Qt.Checked:
-        self.filterThread.filters.setRecursive(False)
+        self.filterThread.setOneFolder(True)
       else:
-        self.filterThread.filters.setRecursive(True)
-      clause = {}
-      clause["name"] = "w(\'*" + str(self.searchClause.text()) + "*\',i)"
-      print clause      
+        self.filterThread.setOneFolder(False)
+        self.filterThread.setRecursive(True)
+
+      clause = "name == w(\"*" + str(self.searchClause.text()) + "*\",i)"
       self.filterThread.setContext(clause, self.parent.model.rootItem, self.parent.model)
       self.filterThread.start()
 

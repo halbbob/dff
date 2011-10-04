@@ -21,6 +21,8 @@
 
 
 %{
+#include "node.hpp"
+#include "vlink.hpp"
 #include "variant.hpp"
 #include "vtime.hpp"
 #include "export.hpp"
@@ -38,7 +40,7 @@
 __dff_module_partition_version__ = "1.0.0"
 
 from api.module.module import *
-from api.types.libtypes import Argument, typeId
+from api.types.libtypes import Argument, typeId, Parameter
 
 class PARTITION(Module):
   """Create partition table found in the underlaying file"""
@@ -46,7 +48,19 @@ class PARTITION(Module):
     Module.__init__(self, 'partition', Partition)
     self.conf.addArgument({"name": "file",
                            "description": "file containing one or more partition(s)",
-	                   "input": Argument.Required|Argument.Single|typeId.Node})    
+	                   "input": Argument.Required|Argument.Single|typeId.Node})
+
+    self.conf.addArgument({"name": "sector-size",
+	                   "description": "The size, in bytes, of the underlying device sectors (default is 512)",
+	                   "input": Argument.Optional|Argument.Single|typeId.UInt32,
+                           "parameters": {"type": Parameter.Editable,
+	                                  "predefined": [512, 4096]}
+                           })
+
+    self.conf.addArgument({"name": "offset",
+			   "description": "offset where the volume containing the partition system starts",
+	                   "input": Argument.Optional|Argument.Single|typeId.UInt64})
+    
     self.conf.addConstant({"name": "mime-type", 
  	                   "type": typeId.String,
  	                   "description": "managed mime type",

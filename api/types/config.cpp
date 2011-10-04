@@ -25,6 +25,17 @@ Config::Config(std::string origin, std::string description)
 
 Config::~Config()
 {
+  std::map<std::string, Argument*>::iterator	ait;
+  std::map<std::string, Constant*>::iterator	cit;
+  
+  for (ait = this->__arguments.begin(); ait != this->__arguments.end(); ait++)
+    if (ait->second != NULL)
+      delete ait->second;
+  this->__arguments.clear();
+  for (cit = this->__constants.begin(); cit != this->__constants.end(); cit++)
+    if (cit->second != NULL)
+      delete cit->second;
+  this->__constants.clear();
 }
 
 std::string		Config::origin()

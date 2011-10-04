@@ -19,17 +19,31 @@ project (dff)
 cmake_minimum_required (VERSION 2.6)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
-#### Project-wide requirements
+SET(CMAKE_INCLUDE_PATH "${INCLUDEDIR}")
+SET(CMAKE_LIBRARY_PATH "${LIBDIR}")
+
+#FILE(DOWNLOAD "http://sourceforge.net/projects/libbfio/files/libbfio-alpha/libbfio-alpha-20110625/libbfio-alpha-20110625.tar.gz/download" ./libbfio/libbfio.tar.gz SHOW_PROGESS)
+#execute_process(COMMAND "C:/Program Files (x86)/7-Zip/7z.exe" -y x -olibbfio libbfio/libbfio.tar.gz)
+#execute_process(COMMAND "C:/Program Files (x86)/7-Zip/7z.exe" -y x -olibbfio libbfio/libbfio.tar)
+#execute_process(COMMAND "C:/Program Files (x86)/Microsoft Visual Studio 10.0/Common7/Tools/vsvars32.bat")
+#execute_process(COMMAND "devenv" libbfio/libbfio-20110625/msvscpp/libbfio.sln /upgrade)
+#execute_process(COMMAND "msbuild" /p:Configuration=Release /t:Build libbfio/libbfio-20110625/msvscpp/libbfio.sln)
+
 
 # check 64 bit
 if( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
   set( HAVE_64_BIT 0 )
 else( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
-  SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE64)
-  set( HAVE_64_BIT 1 )
+   if (WIN32)
+       SET( HAVE_64_BIT 0 )
+   else (WIN32)
+       SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DSWIGWORDSIZE64)
+       SET( HAVE_64_BIT 1 )
+   endif (WIN32)
 endif( "${CMAKE_SIZEOF_VOID_P}" EQUAL 4 )
 
 option(ENABLE_DEBUG "Compile using -g flag ? Useful for debugging" OFF)
+add_definitions(-D__STDC_LIMIT_MACROS)
 if(UNIX)
   if(ENABLE_DEBUG)
     add_definitions(-D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -g -Wall)
@@ -69,6 +83,36 @@ if (${SWIGOK})
   MESSAGE(FATAL_ERROR "Need SWIG version >= 1.3.38 (current version is ${SWIG_VERSION})")
 endif (${SWIGOK})
 
+
+find_package(AFF)
+find_package(BFIO)
+find_package(EWF)
+find_package(PFF)
+find_package(TRE)
+
+IF (TRE_FOUND)
+   add_definitions(-DHAVE_TRE)
+   include_directories(${TRE_INCLUDE_DIR})
+   message(STATUS "TRE installed version: ${TRE_VERSION}
+   approximative matching support : ${TRE_HAVE_APPROX}
+   wide character support         : ${TRE_HAVE_WCHAR}
+   multibyte character support    : ${TRE_HAVE_MULTIBYTE}")
+ENDIF (TRE_FOUND)
+
+IF (PFF_FOUND)
+   message(STATUS "PFF installed version: ${PFF_VERSION}")
+ENDIF (PFF_FOUND)
+
+IF (BFIO_FOUND)
+   message(STATUS "BFIO installed version: ${BFIO_VERSION}")
+ENDIF (BFIO_FOUND)
+
+IF (EWF_FOUND)
+   message(STATUS "EWF installed version: ${EWF_VERSION}")
+   message(STATUS "library: ${EWF_LIBRARY}")
+ENDIF (EWF_FOUND)
+
+
 # Project-wide swig options
 #SET(CMAKE_SWIG_FLAGS "-py3")
 
@@ -89,6 +133,7 @@ endif(NOT HAVE_FUSE)
 
 IF(WIN32)
   SET(CMAKE_SWIG_FLAGS ${CMAKE_SWIG_FLAGS} -DWIN32 -DSWIGWIN)
+  add_definitions("/W3 /D_CRT_SECURE_NO_WARNINGS /wd4290 /nologo")
 ENDIF(WIN32)
 
 
@@ -221,49 +266,6 @@ if (ENABLE_INDEXER)
    endif(CLUCENE_CONFIG_INCLUDE_PATH)
 endif(ENABLE_INDEXER)
 
-## LibPFF check for PFF module, added separatly on windows
-# Need libbfio separate installation for DFF to be able to use PFF.
-# To summarize, install http://libbfio.sf.net first, before http://libpff.sf.net .
-if(UNIX)
-  if(INSTALL)
-    # Link with static version at install, until PFF be added to respective packages streams
-    find_library(PFF_MAIN_LIBRARY NAMES libpff.a)
-  else(INSTALL)
-    find_library(PFF_MAIN_LIBRARY NAMES pff)
-  endif(INSTALL)
-  if(PFF_MAIN_LIBRARY)
-    message(STATUS "PFF library found: ${PFF_MAIN_LIBRARY}")
-    if(INSTALL)
-      find_library(PFF_BFIO_LIBRARY NAMES libbfio.a)
-    else(INSTALL)
-      find_library(PFF_BFIO_LIBRARY NAMES bfio)
-    endif(INSTALL)
-    if(PFF_BFIO_LIBRARY)
-      message(STATUS "Separate PFF bfio library found: ${PFF_BFIO_LIBRARY}")
-    else(PFF_BFIO_LIBRARY)
-      message(STATUS "Separate PFF bfio library not found, unable to use PFF library, PFF module will not be build.")
-    endif(PFF_BFIO_LIBRARY)
-  else(PFF_MAIN_LIBRARY)
-    message(STATUS "PFF library not found, PFF module will not be build.")
-  endif(PFF_MAIN_LIBRARY)
-endif(UNIX)
-
-## AFFlib check for AFF connector, added separatly on windows
-# TODO ; we need afflib >= 3.6, this have to be checked
-if(UNIX)
-  if(INSTALL)
-    # Link with static version at install, until AFF >= 3.6 be added to respective packages streams
-    find_library(AFF_LIBRARY NAMES libafflib.a)
-  else(INSTALL)
-    find_library(AFF_LIBRARY NAMES afflib)
-  endif(INSTALL)
-  if(AFF_LIBRARY)
-    message(STATUS "AFF library found: ${AFF_LIBRARY}")
-  else(AFF_LIBRARY)
-    message(STATUS "AFF library not found, AFF connector will not be build.")
-  endif(AFF_LIBRARY)
-endif(UNIX)
-
 
 # Backing up original install prefix, some files have to sit elsewhere than python path, see at the end of this file.
 SET(CMAKE_INSTALL_ORIG_PREFIX ${CMAKE_INSTALL_PREFIX})
@@ -273,6 +275,8 @@ SET(CMAKE_INSTALL_PREFIX ${PYTHON_SITE_PACKAGES_PATH}/${CMAKE_PROJECT_NAME}/)
 ## Main purpose of this macro if to copy Python files at install.
 # It also deploys .py files in build directory if there is one.
 LIST(APPEND PYC_FILES "")
+
+
 macro(install_file target_name)
   foreach(file ${ARGN})
     # Be carreful:
@@ -353,7 +357,7 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYRIGHT")
 #  ui/ui.py
 # See corresponding CMakeLists.txt for CONFIGURE_FILE.
 SET(CPACK_PACKAGE_VERSION_MAJOR "1") 
-SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_MINOR "2")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "DFF")
 
@@ -454,23 +458,27 @@ IF(WIN32 AND NOT UNIX)
 	
 	
   if (WINALL)
-    if (HAVE_64_BIT)
-      SET(CPACK_SYSTEM_NAME "win64_all_in_one")
-    else(HAVE_64_BIT)
+    add_subdirectory (Prerequisites)
+    message(STATUS "python installer: ${PYTHON_INSTALLER}")
+    message(STATUS "pyqt installer: ${PYQT_INSTALLER}")
+    message(STATUS "vcredist installer: ${VCREDIST_INSTALLER}")
+    if (WIN32)
       SET(CPACK_SYSTEM_NAME "win32_all_in_one")
-    endif(HAVE_64_BIT)
+    else(WIN32)
+      SET(CPACK_SYSTEM_NAME "win64_all_in_one")
+    endif(WIN32)
     SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS ${CPACK_NSIS_EXTRA_INSTALL_COMMANDS}
       "
-       MessageBox MB_YESNO \\\"Install Python 2.7.1 ? \\\" /SD IDYES IDNO endPython
-        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\python-2.7.1.msi\\\" /passive'
+       MessageBox MB_YESNO \\\"Install ${PYTHON_INSTALLER} ? \\\" /SD IDYES IDNO endPython
+        ExecWait '\\\"msiexec\\\" /i \\\"Prerequisites\\\\${PYTHON_INSTALLER}\\\" /passive ALLUSERS=1'
         Goto endPython   
        endPython:
-        MessageBox MB_YESNO \\\"Install PyQt 4.8.4-1 ? \\\" /SD IDYES IDNO endPyQt
-        ExecWait '\\\"Prerequisites\\\\PyQt-Py2.7-x86-gpl-4.8.4-1.exe\\\"'
+        MessageBox MB_YESNO \\\"Install ${PYQT_INSTALLER}? \\\" /SD IDYES IDNO endPyQt
+        ExecWait '\\\"Prerequisites\\\\${PYQT_INSTALLER}\\\"'
         Goto endPyQt
        endPyQt:
        MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
-        ExecWait '\\\"Prerequisites\\\\vcredist_x86.exe\\\" /q:a'
+        ExecWait '\\\"Prerequisites\\\\${VCREDIST_INSTALLER}\\\" /q:a'
         Goto endVS
        endVS:
        RMDir /r \\\"$INSTDIR\\\\dff\\\\Prerequisites\\\"
@@ -545,9 +553,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ressources/linux_launcher.sh ${CMAKE_
 add_subdirectory (api)
 add_subdirectory (modules)
 add_subdirectory (ui)
-if (NOT UNIX AND WINALL)
-  add_subdirectory (Prerequisites)
-endif(NOT UNIX AND WINALL)
 
 if (UNIX)
 ADD_CUSTOM_COMMAND(
@@ -558,3 +563,4 @@ ADD_CUSTOM_COMMAND(
 
 ADD_CUSTOM_TARGET(tags DEPENDS ${CMAKE_BINARY_DIR}/ctags)
 endif (UNIX)
+

@@ -21,9 +21,11 @@
 
 #include "node.hpp"
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
 
 #define EXT4_BG_INODE_UNINIT    0x0001 /* Inode table/bitmap not in use */

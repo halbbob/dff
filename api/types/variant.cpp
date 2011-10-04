@@ -17,6 +17,8 @@
 #include "variant.hpp"
 #include "typeinfo"
 #include "string.h"
+#include <stdio.h>
+
 
 typeId*	typeId::Get()
 {
@@ -95,7 +97,7 @@ std::string	typeId::typeToName(uint8_t t)
   if (it != this->rmapping.end())
     return it->second;
   else
-    return "";
+    return std::string("");
 }
 
 
@@ -104,9 +106,116 @@ Variant::Variant()
   this->_type = typeId::Invalid;
 }
 
+Variant::Variant(class Variant* orig)
+{
+  if (orig != NULL && orig->type() != typeId::Invalid)
+    {
+      this->_type = orig->type();
+      if ((this->_type == typeId::String) || (this->_type == typeId::CArray))
+        this->__data.str = new std::string(orig->value<std::string>());
+      if (this->_type == typeId::Char)
+	this->__data.c = orig->value<char>();
+      if (this->_type == typeId::UInt16)
+	this->__data.us = orig->value<uint16_t>();
+      if (this->_type == typeId::Int16)
+	this->__data.s = orig->value<int16_t>();
+      if (this->_type == typeId::UInt32)
+	this->__data.ui = orig->value<uint32_t>();
+      if (this->_type == typeId::Int32)
+	this->__data.i = orig->value<int32_t>();
+      if (this->_type == typeId::UInt64)
+	this->__data.ull = orig->value<uint64_t>();
+      if (this->_type == typeId::Int64)
+	this->__data.ll = orig->value<int64_t>();
+      if (this->_type == typeId::Bool)
+	this->__data.b = orig->value<bool>();
+      if (this->_type == typeId::VTime)
+	{
+	  vtime*	vt = orig->value<vtime*>();
+	  this->__data.ptr = new vtime(vt->year, vt->month, vt->day, vt->hour, vt->minute, vt->second, vt->usecond);
+	}
+      if (this->_type == typeId::Node)
+	this->__data.ptr = (void*)orig->value<class Node*>();
+      if (this->_type == typeId::Path)
+	this->__data.ptr = (void*)orig->value<class Path*>();
+      if (this->_type == typeId::Argument)
+	this->__data.ptr = (void*)orig->value<class Argument*>();
+      if (this->_type == typeId::List)
+	{
+	  std::list<Variant*>*		lmine;
+	  std::list<Variant*>		lorig;
+	  std::list<Variant*>::iterator	it;
+
+	  lorig = orig->value< std::list<Variant*> >();
+	  lmine = new std::list<Variant*>;
+	  for (it = lorig.begin(); it != lorig.end(); it++)
+	    lmine->push_back(new Variant(*it));
+	  this->__data.ptr = (void*)lmine;
+	}
+      if (this->_type == typeId::Map)
+	{
+	  std::map<std::string, Variant*>*		mmine;
+	  std::map<std::string, Variant*>		morig;
+	  std::map<std::string, Variant*>::iterator	mit;
+
+	  mmine = new std::map<std::string, Variant*>;
+	  morig = orig->value< std::map<std::string, Variant*> >();
+	  for (mit = morig.begin(); mit != morig.end(); mit++)
+	    mmine->insert(std::pair<std::string, Variant*>(mit->first, new Variant(mit->second)));
+	  this->__data.ptr = (void*)mmine;
+	}
+      if (this->_type == typeId::VoidPtr)
+	this->__data.ptr = orig->value<void*>();
+    }
+}
+
 Variant::~Variant()
 {
+  if ((this->_type == typeId::String) || (this->_type == typeId::CArray))
+    {
+      if (this->__data.str != NULL)
+	delete this->__data.str;
+      this->__data.str = NULL;
+    }
+  if (this->_type == typeId::VTime)
+    {
+      if (this->__data.ptr != NULL)
+	{
+	  vtime*	vt = (vtime*)this->__data.ptr;
+	  delete vt;
+	}
+      this->__data.ptr = NULL;
+    }
+  if (this->_type == typeId::List)
+    {
+      std::list<Variant*>*		l;
+      std::list<Variant*>::iterator	it;
+      
+      if (this->__data.ptr != NULL)
+	{
+	  l = (std::list<Variant*>*)this->__data.ptr;
+	  for (it = l->begin(); it != l->end(); it++)
+	    delete *(it);
+	  delete l;
+	}
+      this->__data.ptr = NULL;
+    }
+  if (this->_type == typeId::Map)
+    {
+      std::map<std::string, Variant*>*	m;
+      std::map<std::string, Variant*>::iterator	it;
+    
+      if (this->__data.ptr != NULL)
+	{
+	  m = (std::map<std::string, Variant*>*)this->__data.ptr;
+	  for (it = m->begin(); it != m->end(); it++)
+	    delete it->second;
+	  delete m;
+	}
+      this->__data.ptr = NULL;
+    }
 }
+
 
 Variant::Variant(std::string str)
 {
@@ -129,98 +238,84 @@ Variant::Variant(char c)
 Variant::Variant(int16_t s)
 {
   this->__data.s = s;
-  //std::cout << "Variant(int16_t) " << s << std::endl;
   this->_type = typeId::Int16;
 }
 
 Variant::Variant(uint16_t us)
 {
   this->__data.us = us;
-  //std::cout << "Variant(uint16_t) " << us << std::endl;
   this->_type = typeId::UInt16;
 }
 
 Variant::Variant(int32_t i)
 {
   this->__data.i = i;
-  //std::cout << "Variant(int32_t) " << i << std::endl;
   this->_type = typeId::Int32;
 }
 
 Variant::Variant(uint32_t ui)
 {
   this->__data.ui = ui;
-  //std::cout << "Variant(uint32_t) " << ui << std::endl;
   this->_type = typeId::UInt32;
 }
 
 Variant::Variant(int64_t ll)
 {
   this->__data.ll = ll;
-  //std::cout << "Variant(int64_t) " << ll << std::endl;
   this->_type = typeId::Int64;
 }
 
 Variant::Variant(uint64_t ull)
 {
   this->__data.ull = ull;
-  //std::cout << "Variant(uint64_t) " << ull << std::endl;
   this->_type = typeId::UInt64;
 }
 
 Variant::Variant(bool b)
 {
   this->__data.b = b;
-  //std::cout << "Variant(bool) " << b << std::endl;
   this->_type = typeId::Bool;
 }
 
 Variant::Variant(vtime *vt)
 {
   this->__data.ptr = (void*)vt;
-  //std::cout << "Variant(vtime)" << std::endl;
   this->_type = typeId::VTime;
 }
 
 Variant::Variant(class Node *node)
 {
   this->__data.ptr = node;
-  //std::cout << "Variant(Node*)" << std::endl;
   this->_type = typeId::Node;
 }
 
 Variant::Variant(Path *path)
 {
   this->__data.ptr = path;
-  //std::cout << "Variant(Path*)" << std::endl;
   this->_type = typeId::Path;
 }
 
 Variant::Variant(Argument *arg)
 {
   this->__data.ptr = arg;
-  //std::cout << "Variant(Argument*)" << std::endl;
   this->_type = typeId::Argument;
 }
 
 Variant::Variant(std::list<Variant*> l)
 {
   this->__data.ptr = (void*)new std::list<Variant*>(l);
-  //std::cout << "Variant(std::list<Variant*>)" << std::endl;
   this->_type = typeId::List;
 }
 
 Variant::Variant(std::map<std::string, Variant*> m)
 {
   this->__data.ptr = (void*)new std::map<std::string, Variant *>(m);
-  //std::cout << "Variant(std::map<std::string, Variant*>)" << std::endl;
   this->_type = typeId::Map;
 }
 
 Variant::Variant(void *user)
 {
   this->__data.ptr = (void*)user;
-  //std::cout << "Variant(void*)" << std::endl;
   this->_type = typeId::VoidPtr;
 }
 
@@ -242,11 +337,11 @@ std::string	Variant::toString() throw (std::string)
     res << this->__data.ull;
   else if (this->_type == typeId::Char)
     res << this->__data.c;
-  else if (this->_type == typeId::CArray)
+  else if (this->_type == typeId::CArray && this->__data.str != NULL)
     res << *(this->__data.str);
-  else if (this->_type == typeId::String)
+  else if (this->_type == typeId::String && this->__data.str != NULL)
     res << *(this->__data.str);
-  else if (this->_type == typeId::Path)
+  else if (this->_type == typeId::Path && this->__data.ptr != NULL)
     {
       class Path*	p;
       p = static_cast<class Path*>(this->__data.ptr);
@@ -259,12 +354,15 @@ std::string	Variant::toString() throw (std::string)
       else
 	res << "False";
     }
+  else if (this->_type == typeId::VTime && this->__data.ptr != NULL)
+    {
+      vtime* vt = (vtime*)this->__data.ptr;
+      res << vt->day << "/" << vt->month << "/" << vt->year << " " << vt->hour << ":" << vt->minute << ":" << vt->second << ":" << vt->usecond;
+    }
   else
     throw std::string("Cannot convert type < " + this->typeName() + " > to < std::string >");
   return res.str();
 }
-
-#include <stdio.h>
 
 std::string	Variant::toHexString() throw (std::string)
 {
@@ -893,8 +991,6 @@ bool	Variant::operator>(Variant* v)
 	  ull = static_cast<uint64_t>(ll);
 	  return (ull > v->toUInt64());
 	}
-      //else if (otype == typeId::Bool)
-      //	return True;
       else
 	return false;
     }
@@ -924,7 +1020,6 @@ bool	Variant::operator>(Variant* v)
       else
 	return false;
     }
-  //else if (this->_type == typeId::Bool)
   else if (this->_type == typeId::String)
     {
       if ((v->type() == typeId::String) || (v->type() == typeId::CArray) || (v->type() == typeId::Char))

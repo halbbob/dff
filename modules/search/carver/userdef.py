@@ -47,9 +47,6 @@ class PatternsTable(QWidget):
 
 
     def patternArea(self):
-        self.wildcardLabel = QLabel("Wilcard")
-        self.wildcard = QLineEdit()
-        self.wildcard.setMaxLength(1)
         self.filetypeLabel = QLabel("File type")
         self.filetype = QLineEdit()
         self.alignedLabel = QLabel("block aligned")
@@ -63,8 +60,6 @@ class PatternsTable(QWidget):
         self.connect(self.addEntry, SIGNAL("clicked()"), self.insertPattern)
         self.grid.addWidget(self.filetypeLabel, 0, 0)
         self.grid.addWidget(self.filetype, 0, 1, 1, 2)
-        self.grid.addWidget(self.wildcardLabel, 1, 0)
-        self.grid.addWidget(self.wildcard, 1, 1, 1, 2)
         self.createPattern("Header", 2)
         self.createPattern("Footer", 3)
         self.grid.addWidget(self.windowLabel, 4, 0)
@@ -77,8 +72,8 @@ class PatternsTable(QWidget):
     def patternTable(self):
         self.patterns = QTableWidget()
         self.patterns.setShowGrid(False)
-        self.patterns.setColumnCount(6)
-        self.patterns.setHorizontalHeaderLabels(["Filetype", "Wildcard", "Header", "Footer", "Window", "Block aligned"])
+        self.patterns.setColumnCount(5)
+        self.patterns.setHorizontalHeaderLabels(["Filetype", "Header", "Footer", "Window", "Block aligned"])
         self.patterns.horizontalHeader().setStretchLastSection(True)
         self.connect(self.patterns.verticalHeader(), SIGNAL("sectionClicked(int)"), self.patterns.removeRow)
         self.grid.addWidget(self.patterns, 7, 0, 1, 3)
@@ -108,8 +103,8 @@ class PatternsTable(QWidget):
             self.warning(msg)
             return False
 
-        if kwargs["headerType"] == "Hexadecimal" and not self.isHex(kwargs["header"], kwargs["wildcard"]):
-            msg = "Header must be an even number of chars (wildcard included)"
+        if kwargs["headerType"] == "Hexadecimal" and not self.isHex(kwargs["header"]):
+            msg = "Header must be an even number of chars"
             self.warning(msg)
             return False
         
@@ -118,8 +113,8 @@ class PatternsTable(QWidget):
             self.warning(msg)
             return False
 
-        if kwargs["footerType"] == "Hexadecimal" and not self.isHex(kwargs["header"], kwargs["wildcard"]):
-            msg = "Footer must be an even number of chars (wildcard included)"
+        if kwargs["footerType"] == "Hexadecimal" and not self.isHex(kwargs["header"]):
+            msg = "Footer must be an even number of chars"
             self.warning(msg)
             return False
 
@@ -133,7 +128,6 @@ class PatternsTable(QWidget):
 
     def insertPattern(self):
         filetype = str(self.filetype.text())
-        wildcard = str(self.wildcard.text())
         header = str(self.headerEntry.text())
         headerType = str(self.headerType.currentText())
         footer = str(self.footerEntry.text())
@@ -143,13 +137,11 @@ class PatternsTable(QWidget):
 
         #Validate most of provided items
         kwargs = {"type": filetype, "header": header, "headerType": headerType, 
-                  "footer": footer, "footerType": footerType, "wildcard": wildcard,
-                  "window": int(window.replace(" bytes", ""))}
+                  "footer": footer, "footerType": footerType, "window": int(window.replace(" bytes", ""))}
         if not self.validate(**kwargs):
             return
 
         filetypeItem = QTableWidgetItem(filetype)
-        wildcardItem = QTableWidgetItem(wildcard)
         headerItem = QTableWidgetItem(header + " (" + headerType[0:3] + ")")
         footerItem = QTableWidgetItem(footer + " (" + footerType[0:3] + ")")
         windowItem = QTableWidgetItem(window)
@@ -159,15 +151,14 @@ class PatternsTable(QWidget):
         row = self.patterns.rowCount() - 1
         self.patterns.setVerticalHeaderItem(row, vertHeader)
         self.patterns.setItem(row, 0, filetypeItem)
-        self.patterns.setItem(row, 1, wildcardItem)
-        self.patterns.setItem(row, 2, headerItem)
-        self.patterns.setItem(row, 3, footerItem)
-        self.patterns.setItem(row, 4, windowItem)
-        self.patterns.setItem(row, 5, alignedItem)
+        self.patterns.setItem(row, 1, headerItem)
+        self.patterns.setItem(row, 2, footerItem)
+        self.patterns.setItem(row, 3, windowItem)
+        self.patterns.setItem(row, 4, alignedItem)
         self.patterns.resizeRowToContents(row)
 
         
-    def isHex(self, str, wildcard):
+    def isHex(self, str):
         HEXCHAR = "0123456789abcdefABCDEF"
         hexStr = ""
         even = False
@@ -177,9 +168,6 @@ class PatternsTable(QWidget):
                     even = False
                 else:
                     even = True
-            elif wildcard != None and str[i] == wildcard:
-                if even:
-                    return False
             else:
                 return False
         if even:
@@ -187,7 +175,7 @@ class PatternsTable(QWidget):
         return True
     
 
-    def toHex(self, str, wildcard):
+    def toHex(self, str):
         HEXCHAR = "0123456789abcdefABCDEF"
         hexStr = ""
         evenhex = ""
@@ -198,11 +186,6 @@ class PatternsTable(QWidget):
                     evenhex = ""
                 else:
                     evenhex = str[i]
-            elif wildcard != None and str[i] == wildcard:
-                if evenhex == "":
-                    hexStr += wildcard
-                else:
-                    raise ValueError, "argument 'str' must be an even number of char"
             else:
                 raise ValueError, "argument 'str' contains not valid characters"
         if len(evenhex) != 0:
@@ -210,14 +193,14 @@ class PatternsTable(QWidget):
         return hexStr
 
 
-    def textToPattern(self, text, wildcard):
+    def textToPattern(self, text):
         idx = text.find("(")
         pattern = ""
         if idx != -1:
             type = text[idx+1:idx+4]
             pattern = text[0:idx-1]
             if type == "Hex":
-                pattern = self.toHex(pattern, wildcard)
+                pattern = self.toHex(pattern)
         return pattern
 
 
@@ -226,15 +209,13 @@ class PatternsTable(QWidget):
         rowCount = self.patterns.rowCount()
         for row in range(0, rowCount):
             filetype = str(self.patterns.item(row, 0).text())
-            wildcard = str(self.patterns.item(row, 1).text())
             selected[filetype] = []
             pattern = []
-            pattern.append(self.textToPattern(str(self.patterns.item(row, 2).text()), wildcard))
-            pattern.append(self.textToPattern(str(self.patterns.item(row, 3).text()), wildcard))
-            pattern.append(int(self.patterns.item(row, 4).text().replace(" bytes", "")))
+            pattern.append(self.textToPattern(str(self.patterns.item(row, 1).text())))
+            pattern.append(self.textToPattern(str(self.patterns.item(row, 2).text())))
+            pattern.append(int(self.patterns.item(row, 3).text().replace(" bytes", "")))
             selected[filetype].append([pattern])
-            selected[filetype].append(wildcard)
-            if self.patterns.item(row, 5).text() == "True":
+            if self.patterns.item(row, 4).text() == "True":
                 selected[filetype].append(True)
             else:
                 selected[filetype].append(False)

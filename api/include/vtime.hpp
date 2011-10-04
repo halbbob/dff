@@ -20,9 +20,11 @@
 #include "export.hpp"
 
 #ifndef WIN32
-  #include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-  #include "wstdint.h"
+	#include "wstdint.h"
 #endif
 
 #include <time.h>
@@ -30,6 +32,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 /**
  * Nanoseconds between 01.01.1601 and 01.01.1970
@@ -51,19 +55,26 @@
 class vtime
 {
 public:
-  EXPORT		vtime(uint64_t value, uint32_t type);
   EXPORT		vtime();
-  EXPORT virtual	~vtime();
   EXPORT 		vtime(int, int, int, int, int, int, int);
-  int 			year;	
-  int 			month;	
-  int 			day;	
-  int 			hour;	
-  int 			minute;	
-  int 			second;	
-  int 			usecond; 
+  EXPORT		vtime(uint64_t value, uint32_t type);
+  EXPORT		vtime(std::string ts);
+  EXPORT bool		operator==(vtime* v);
+  EXPORT bool		operator!=(vtime* v);
+  EXPORT bool		operator>(vtime* v);
+  EXPORT bool		operator<(vtime* v);
+  EXPORT bool		operator>=(vtime* v);
+  EXPORT bool		operator<=(vtime* v);
+  EXPORT virtual	~vtime();
+  int 			year;
+  int 			month;
+  int 			day;
+  int 			hour;
+  int 			minute;
+  int 			second;
+  int 			usecond;
   int			wday;
-  int			yday;	
+  int			yday;
   int			dst;
 };
 

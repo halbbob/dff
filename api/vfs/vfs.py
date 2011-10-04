@@ -41,9 +41,13 @@ class vfs():
             elif isinstance(top, Node):
                 item = child
             if child.hasChildren() or child.isDir():
+                if child.size():
+                    files.append(item)
                 dirs.append(item)
-            if child.size() > 0:
+            else:
                 files.append(item)
+            #if child.size() > 0:
+            #    files.append(item)
         if topdown:
             yield top, dirs, files
         for name in dirs:
@@ -95,7 +99,7 @@ class vfs():
     def deletenode(self, node):
 	return self.libvfs.DeleteNode(node)
 
-       # return a Node's Dictionnary with directory of nodeDir
+       # return a Node's Dictionary with directory of nodeDir
     def listingDirectories(self, nodeDir):
         if nodeDir == False:
             return False
@@ -106,7 +110,7 @@ class vfs():
                 listing.append(i)
         return listing
     
-    # return a Node's Dictionnary with files and directory of nodeDir
+    # return a Node's Dictionary with files and directory of nodeDir
     def listingDirectoriesAndFiles(self, nodeDir):
         if nodeDir == False:
             return False

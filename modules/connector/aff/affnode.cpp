@@ -18,7 +18,11 @@
 
 int		AffNode::addSegmentAttribute(Attributes* vmap, AFFILE* af, const char* segname)
 {
+#ifdef NEW_AFF_LIB
     uint32_t arg;
+#else
+    unsigned long arg;
+#endif
     unsigned char *data = 0;
     if (segname[0] == 0)
 	return (0); 

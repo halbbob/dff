@@ -227,10 +227,9 @@ int		diskDescriptor::createExtentNames()
   for( list<string>::iterator ext=this->_extents.begin(); ext!=this->_extents.end(); ++ext)
     {
       string extname = parseExtentName((*ext));
-      std::cout << "extname :  " << extname << std::endl;
       this->_extNames.push_back(extname);
     }
-    return (0); //? XXX FIX ME !
+    return (0);
 }
 
 void	diskDescriptor::setParentFileName()

@@ -2,27 +2,38 @@
 <ui version="4.0">
  <class>NodeFBox</class>
  <widget class="QWidget" name="NodeFBox">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1133</width>
-    <height>51</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>1</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>1</number>
+   </property>
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Quick search :</string>
+      <string>Quick search:</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QLineEdit" name="searchClause"/>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="recurse">
+     <property name="text">
+      <string>Search recursively</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="notIndexed">
@@ -32,23 +43,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="recurse">
-     <property name="text">
-      <string>Recurse</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="checkBox">
-     <property name="text">
-      <string>Search in files content</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QPushButton" name="search">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="toolTip">
-      <string>Search</string>
+      <string>Launch quick search</string>
      </property>
      <property name="text">
       <string/>
@@ -57,10 +60,25 @@
       <iconset resource="gui.qrc">
        <normaloff>:/search_small.png</normaloff>:/search_small.png</iconset>
      </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="advancedSearch">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Advanced search</string>
      </property>
@@ -71,10 +89,25 @@
       <iconset resource="gui.qrc">
        <normaloff>:/search_advance.png</normaloff>:/search_advance.png</iconset>
      </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
     <widget class="QPushButton" name="indexOpt">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
      <property name="toolTip">
       <string>Index options</string>
      </property>
@@ -85,7 +118,29 @@
       <iconset resource="gui.qrc">
        <normaloff>:/db_opt.png</normaloff>:/db_opt.png</iconset>
      </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

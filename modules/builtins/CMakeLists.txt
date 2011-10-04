@@ -17,6 +17,7 @@
 
 set(builtins_srcs
   cd.py
+  batch.py
   fg.py
   history.py
   info.py

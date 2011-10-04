@@ -21,13 +21,14 @@ from api.taskmanager.taskmanager import TaskManager
 from PyQt4.QtGui import QWidget, QVBoxLayout, QGridLayout, QLabel, QProgressBar, QHBoxLayout, QCheckBox, QPushButton, QTabWidget, QSplitter
 from PyQt4.Qt import SIGNAL
 
-from typeSelection import filetypes, wildcard
+from typeSelection import filetypes
 
 import string
 
 import time
 
 from modules.search.carver.utils import QFFSpinBox
+from modules.search.carver.CARVER import Carver
 
 class CarvingProcess(QWidget, EventHandler):
     def __init__(self, selector, vnode):
@@ -96,12 +97,7 @@ class CarvingProcess(QWidget, EventHandler):
         lpatterns.thisown = False
         for filetype in selected.iterkeys():
             patterns = selected[filetype][0]
-            wildcard = selected[filetype][1]
-            aligned = selected[filetype][2]
-            print filetype
-            print "  patterns", patterns
-            print "  wildcard", wildcard
-            print "  aligned", aligned
+            aligned = selected[filetype][1]
             for pattern in patterns:
                 vpattern = VMap()
                 vpattern.thisown = False
@@ -124,22 +120,6 @@ class CarvingProcess(QWidget, EventHandler):
                 val = Variant(len(pattern[1]), typeId.UInt32)
                 val.thisown = False
                 footer["size"] = val
-                if pattern[0].find(wildcard) != -1:
-                    val = Variant(wildcard, typeId.Char)
-                    val.thisown = False
-                    header["wildcard"] = val
-                else:
-                    val = Variant("", typeId.Char)
-                    val.thisown = False
-                    header["wildcard"] = val
-                if pattern[1].find(wildcard) != -1:
-                    val = Variant(wildcard, typeId.Char)
-                    val.thisown = False
-                    footer["wildcard"] = val
-                else:
-                    val = Variant("", typeId.Char)
-                    val.thisown = False
-                    footer["wildcard"] = val
                 vheader = Variant(header)
                 vheader.thisown = False
                 vpattern["header"] = vheader
@@ -153,7 +133,6 @@ class CarvingProcess(QWidget, EventHandler):
                 val.thisown = False
                 vpattern["aligned"] = val
                 lpatterns.append(vpattern)
-                print vpattern
         vpatterns = Variant(lpatterns)
         vpatterns.thisown = False
         return vpatterns
@@ -170,7 +149,6 @@ class CarvingProcess(QWidget, EventHandler):
         startoff = Variant(self.offsetSpinBox.value(), typeId.UInt64)
         startoff.thisown = False
         args["start-offset"] = startoff
-        print args
         factor = round(float(self.filesize) / 2147483647)
         self.startButton.setEnabled(False)
         self.stopButton.setEnabled(True)
@@ -229,33 +207,33 @@ class CarvingProcess(QWidget, EventHandler):
 
 
     def Event(self, e):
-        if e.type == event.SEEK:
-            self.emit(SIGNAL("update"), e)
-        elif e.type == event.OTHER:
-            if e.value.type() == typeId.String and e.value == "terminated":
-                self.emit(SIGNAL("ended"), "")
-            else:
-                self.emit(SIGNAL("update"), e)
+        if e.type == Carver.Position:
+            self.emit(SIGNAL("updatePosition"), e)
+        elif e.type == Carver.Matches:
+            self.emit(SIGNAL("updateMatches"), e)
+        elif e.type == Carver.EndOfProcessing:
+            self.emit(SIGNAL("ended"), "")
 
 
-    def update(self, e):
-        if e.type == event.SEEK:
-            ref = time.time() - self.time
-            self.time = time.time()
-            if not str(ref).startswith("0.0"):
-                ref *= self.parsetime
-                res = self.timesec2str(ref)
-                self.estimatedLabel.setText("estimated time: " + res)
-            res = self.timesec2str(time.time() - self.starttime)
-            self.elapsedLabel.setText("elapsed time:    " + res)
-            i = int(e.value.value() / self.factor)
-            if i > 2147483647:
-                i = 2147483647
-            self.emit(SIGNAL("valueChanged(int)"), i)
-            info = self.currentProgress.text() + " - " + self.totalLabel.text()
-            self.emit(SIGNAL("stateInfo(QString)"), info)
-        else:
-            self.totalLabel.setText("total headers found: " + str(e.value))
+    def updatePosition(self, e):
+        ref = time.time() - self.time
+        self.time = time.time()
+        if not str(ref).startswith("0.0"):
+            ref *= self.parsetime
+            res = self.timesec2str(ref)
+            self.estimatedLabel.setText("estimated time: " + res)
+        res = self.timesec2str(time.time() - self.starttime)
+        self.elapsedLabel.setText("elapsed time:    " + res)
+        i = int(e.value.value() / self.factor)
+        if i > 2147483647:
+            i = 2147483647
+        self.emit(SIGNAL("valueChanged(int)"), i)
+        info = self.currentProgress.text() + " - " + self.totalLabel.text()
+        self.emit(SIGNAL("stateInfo(QString)"), info)
+
+
+    def updateMatches(self, e):
+        self.totalLabel.setText("total headers found: " + str(e.value))
             
 
 
@@ -273,14 +251,13 @@ class CarvingProcess(QWidget, EventHandler):
         self.connect(self, SIGNAL("valueChanged(int)"), self.currentProgress.setValue)
         self.time = time.time()
         self.starttime = time.time()
-        self.connect(self, SIGNAL("update"), self.update)
+        self.connect(self, SIGNAL("updateMatches"), self.updateMatches)
+        self.connect(self, SIGNAL("updatePosition"), self.updatePosition)
 
 
     def killJob(self):
         e = event()
         e.thisown = False
-        val = Variant(1)
-        val.thisown = False
-        e.value = val
-        e.type = event.SEEK
+        e.value = None
+        e.type = Carver.Stop
         self.notify(e)

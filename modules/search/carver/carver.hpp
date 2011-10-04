@@ -65,6 +65,13 @@ private:
   std::string		needleToHexString(unsigned char* needle, int size);
 
 public:
+  enum	EventTypes
+    {
+      Position = 0x01,
+      Matches = 0x02,
+      EndOfProcessing = 0x03,
+      Stop = 0x04
+    };
   Carver();
   ~Carver();
   uint64_t		tell();

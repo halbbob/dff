@@ -39,7 +39,7 @@ class Extractor(QDialog, Ui_ExtractDialog):
 
     def launch(self, nodes):
         self.nodes = nodes
-        self.show()
+        self.exec_()
 
 
     def getArgs(self):

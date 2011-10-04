@@ -17,6 +17,7 @@
 #include "dos.hpp"
 #include <iostream>
 #include <iomanip>
+#include <string>
 #include <sstream>
 
 char partition_types[256][128] = 
@@ -28,7 +29,7 @@ char partition_types[256][128] =
   "DOS 3.0+ 16-bit FAT (up to 32M)",
   "DOS 3.3+ Extended Partition",
   "DOS 3.31+ 16-bit FAT (over 32M)",
-  "QNX2.x pre-1988 (see below under IDs 4d-4f)",
+  "QNX2.x pre-1988",
   "QNX 1.x and 2.x (qny)",
   "QNX 1.x and 2.x (qnz)",
   "OPUS",
@@ -279,109 +280,61 @@ char partition_types[256][128] =
   "Xenix Bad Block Table"
 };
 
-std::string	uint32ToStr(uint32_t ui32)
+
+DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, Partition* fsobj):  Node(name, size, parent, fsobj)
 {
-  ostringstream os;
-
-  os << ui32;
-  return os.str();
-}
-
-std::string	uint64ToStr(uint64_t ui64)
-{
-  ostringstream os;
-
-  os << ui64;
-  return os.str();
-}
-
-DosPartitionNode::DosPartitionNode(std::string name, uint64_t size, Node* parent, Partition* fsobj, Node* origin):  Node(name, size, parent, fsobj)
-{
-  this->origin = origin;
-  this->setFile();
 }
 
 DosPartitionNode::~DosPartitionNode()
 {
 }
 
-void	DosPartitionNode::fileMapping(FileMapping* fm)
+Variant*	DosPartitionNode::dataType()
 {
-  uint64_t	offset;
+  Attributes	dtype;
 
-  offset = ((uint64_t)this->base + this->pte->lba) * 512;
-  if (( this->size() - this->origin->size()) > 0)
-  {
-     fm->push(0, this->origin->size(), this->origin, offset);
-     fm->push(this->origin->size(), this->size() - this->origin->size());
-  }
+  if (this->__type == UNALLOCATED)
+    {
+      dtype["partition"] = new Variant(std::string("unallocated"));
+      return new Variant(dtype);
+    }
   else
-    fm->push(0, this->size(), this->origin, offset);
+    return Node::dataType();
 }
 
+void	DosPartitionNode::fileMapping(FileMapping* fm)
+{
+  this->__handler->mapping(fm, this->__entry, this->__type);
+}
 
 Attributes	DosPartitionNode::_attributes(void)
 {
-  std::string				str_type;
-  std::string				startsect;
-  uint64_t				startoffset;
-  std::map<std::string, Variant* >	vmap; 
-
-
-  if ((this->type & LOGICAL) == LOGICAL)
-    {
-      //memset(startsect, 0, 64);
-      startsect = uint32ToStr(this->base) + "+" + uint32ToStr(this->pte->lba);
-      //sprintf(startsect, "%u+%d", this->base, this->pte->lba);
-      vmap["starting sector"] = new Variant(std::string(startsect));
-      startoffset = ((uint64_t)this->base + (uint64_t)this->pte->lba) * 512;
-      vmap["starting offset"] = new Variant(startoffset);
-    }
-  else
-    {
-      vmap["starting sector"] = new Variant(this->pte->lba);
-      vmap["starting offset"] = new Variant((uint64_t)this->pte->lba * 512);
-    }
-  vmap["total sectors"] = new Variant(this->pte->total_blocks);
-  vmap["total size (bytes)"] = new Variant((uint64_t)this->pte->total_blocks * 512);
-  vmap["entry offset"] = new Variant(this->entryoffset);
-  if (this->pte->status == 0x80)
-    vmap["status"] = new Variant(std::string("bootable"));
-  else if (this->pte->status == 0x00)
-    vmap["status"] = new Variant(std::string("non bootable"));
-  else
-    vmap["status"] = new Variant(std::string("invalid"));
-  str_type = "";
-  if ((this->type & PRIMARY) == PRIMARY)
-    str_type += "(primary";
-  if ((this->type & LOGICAL) == LOGICAL)
-    str_type += "(logical";
-  if ((this->type & EXTENDED) == EXTENDED)
-    str_type += "(extended";
-  if ((this->type & HIDDEN) == HIDDEN)
-    str_type += " | hidden)";
-  else
-    str_type += ") ";
-  str_type += partition_types[this->pte->type];
-  vmap["type"] = new Variant(str_type);
-
-  return (vmap);
+  return this->__handler->entryAttributes(this->__entry, this->__type);
 }
 
-void	DosPartitionNode::setCtx(uint64_t entryoffset, dos_pte* pte, uint8_t type, uint32_t base)
+void	DosPartitionNode::setCtx(DosPartition* handler, uint64_t entry, uint8_t type)
 {
-  this->pte = pte;
-  this->entryoffset = entryoffset;
-  this->type = type;
-  this->base = base;
+  this->__handler = handler;
+  this->__entry = entry;
+  this->__type = type;
 }
+
+/*
+ * ---------------------------------------------
+ * Starting implementation of DosPartition class
+ * ---------------------------------------------
+*/
 
 DosPartition::DosPartition()
 {
   this->vfile = NULL;
   this->root = NULL;
   this->origin = NULL;
-  this->partnum = 1;
+  this->__logical = 0;
+  this->__primary = 0;
+  this->__hidden = 0;
+  this->__extended = 0;
+  this->__slot = 1;
 }
 
 DosPartition::~DosPartition()
@@ -400,33 +353,180 @@ DosPartition::~DosPartition()
     }
 }
 
+void		DosPartition::mapping(FileMapping* fm, uint64_t entry, uint8_t type)
+{
+  metaiterator	mit;
+  uint64_t	offset;
+  uint64_t	size;
+  uint64_t	tsize;
+  bool		process;
+
+  process = false;
+  if ((type == UNALLOCATED) && ((mit = this->unallocated.find(entry)) != this->unallocated.end()))
+    {
+      offset = this->offset + mit->first * this->sectsize;
+      size = mit->second->entry_offset * this->sectsize;
+      process = true;
+    }
+  else if ((type != UNALLOCATED) && ((mit = this->allocated.find(entry)) != this->allocated.end()))
+    {
+      offset = this->offset + mit->first * this->sectsize;
+      size = (uint64_t)mit->second->pte->total_blocks * this->sectsize;
+      process = true;
+    }
+  if (process)
+    {
+      //XXX NEED CASE DUMP
+      if (offset > this->origin->size())
+	fm->push(0, size);
+      //XXX NEED CASE DUMP
+      else if (offset + size > this->origin->size())
+	{
+	  tsize = this->origin->size() - offset;
+	  fm->push(0, tsize, this->origin, offset);
+	  fm->push(tsize, tsize - size);
+	}
+      else
+	fm->push(0, size, this->origin, offset);
+    }
+}
+
+
+Attributes	DosPartition::__entryAttributes(metaiterator mit)
+{
+  Attributes		vmap;
+  std::stringstream	ostr;
+
+  if (mit->second->type == UNALLOCATED)
+    {
+      vmap["starting sector"] = new Variant(mit->first);
+      vmap["ending sector"] = new Variant(mit->second->entry_offset - 1);
+      vmap["total sectors"] = new Variant(mit->second->entry_offset - mit->first);
+      ostr.str("");
+      ostr << "Unallocated #" << mit->second->sslot;
+      vmap["entry type"] = new Variant(ostr.str());
+    }
+  else
+    {
+      vmap["starting sector"] = new Variant(mit->first);
+      vmap["ending sector"] = new Variant(mit->first + mit->second->pte->total_blocks - 1);
+      vmap["total sectors"] = new Variant(mit->second->pte->total_blocks);
+      if (mit->second->pte->status == 0x80)
+	vmap["status"] = new Variant(std::string("bootable (0x80)"));
+      else if (mit->second->pte->status == 0x00)
+	vmap["status"] = new Variant(std::string("not bootable (0x00)"));
+      else
+	{
+	  ostr << "invalid (0x" << std::setw(2) << std::setfill('0') << std::hex << (int)mit->second->pte->status << ")";
+	  vmap["status"] = new Variant(ostr.str());
+	  ostr.str("");
+	}
+      ostr.str("");
+      if ((mit->second->type & PRIMARY) == PRIMARY)
+	ostr << "Primary #";
+      else if ((mit->second->type & LOGICAL) == LOGICAL)
+	ostr << "Logical #";
+      else if ((mit->second->type & EXTENDED) == EXTENDED)
+	ostr << "Extended #";
+      ostr << mit->second->sslot; 
+      if ((mit->second->type & HIDDEN) == HIDDEN)
+	ostr << " | Hidden";
+      vmap["entry type"] = new Variant(ostr.str());
+      ostr.str("");
+      ostr << partition_types[mit->second->pte->type] << " (0x" << std::setw(2) << std::setfill('0') << std::hex << (int)mit->second->pte->type << ")";
+      vmap["partition type"] = new Variant(ostr.str());
+      vmap["entry offset"] = new Variant(mit->second->entry_offset);
+    }
+  return vmap;
+} 
+
+Attributes	DosPartition::entryAttributes(uint64_t entry, uint8_t type)
+{
+  metaiterator		mit;
+  Attributes		vmap;
+
+  if ((type == UNALLOCATED) && ((mit = this->unallocated.find(entry)) != this->unallocated.end()))
+    vmap = this->__entryAttributes(mit);
+  else if ((type != UNALLOCATED) && ((mit = this->allocated.find(entry)) != this->allocated.end()))
+    vmap = this->__entryAttributes(mit);
+  return vmap;
+}
+
+void		DosPartition::makeResults()
+{
+  std::stringstream	ostr;
+  metaiterator		mit;
+  Attributes		metares;
+  Attributes		rootext;
+  Attributes		unallocres;
+
+  
+  for (mit = this->allocated.begin(); mit != this->allocated.end(); mit++)
+    {
+      if ((mit->second->type & EXTENDED) == EXTENDED)
+	{
+	  ostr.str("");
+	  ostr << "Extended #" << mit->second->sslot;
+	  if (mit->second->sslot > 1)
+	    metares[ostr.str()] = new Variant(this->__entryAttributes(mit));
+	  else
+	    rootext = this->__entryAttributes(mit);
+	}
+      else if ((mit->second->type & PRIMARY) == PRIMARY)
+	{
+	  ostr.str("");
+	  ostr << "Primary #" << mit->second->sslot << " (effective slot #" << mit->second->slot << ")";
+	  this->res[ostr.str()] = new Variant(this->__entryAttributes(mit));
+	}
+      else
+	{
+	  ostr.str("");
+	  ostr << "Logical #" << mit->second->sslot << " (effective slot #" << mit->second->slot << ")";
+	  rootext[ostr.str()] = new Variant(this->__entryAttributes(mit));
+	}
+    }
+  for (mit = this->unallocated.begin(); mit != this->unallocated.end(); mit++)
+    {
+      ostr.str("");
+      ostr << "Unallocated #" << mit->second->sslot;
+      unallocres[ostr.str()] = new Variant(this->__entryAttributes(mit));
+    }
+  if (metares.size())
+    this->res["Meta"] = new Variant(metares);
+  if (unallocres.size())
+    this->res["Unalloc"] = new Variant(unallocres);
+  if (rootext.size())
+    this->res["Extended #1"] = new Variant(rootext);
+}
 
 Attributes	DosPartition::result()
 {
   return this->res;
 }
 
-void	DosPartition::open(VFile* vfile, uint64_t offset, Node* root, Partition* fsobj, Node* origin)
+void	DosPartition::open(Node* origin, uint64_t offset, uint32_t sectsize, Partition* fsobj) throw (vfsError)
 {
-  if (vfile != NULL)
+  this->__slot = 1;
+  this->__primary = 1;
+  this->__hidden = 0;
+  this->__logical = 1;
+  this->__extended = 1;
+  this->origin = origin;
+  this->offset = offset;
+  this->sectsize = sectsize;
+  this->fsobj = fsobj;
+  this->root = fsobj->root;
+  this->vfile = this->origin->open();
+  try
     {
-      try
-	{
-	  this->root = root;
-	  this->origin = origin;
-	  this->fsobj = fsobj;
-	  this->vfile = vfile;
-	  this->readMbr(offset);
-	}
-      catch (vfsError e)
-	{
-	  throw vfsError("[PARTITION] Error while processing MBR\n" + e.error);
-	}
+      this->readMbr();
     }
-  else
+  catch (vfsError err)
     {
-      throw vfsError("[PARTITION] provided vfile is NULL, can't read\n");
     }
+  this->makeUnallocated();
+  this->makeNodes();
+  this->makeResults();
 }
 
 dos_pte*	DosPartition::toPte(uint8_t* buff)
@@ -437,6 +537,7 @@ dos_pte*	DosPartition::toPte(uint8_t* buff)
 
   memcpy(&lba, buff+8, 4);
   memcpy(&total_blocks, buff+12, 4);
+  //XXX try to used CHS instead ! Need geometry
   if ((lba == 0) && (total_blocks == 0))
     return NULL;
   else
@@ -449,114 +550,190 @@ dos_pte*	DosPartition::toPte(uint8_t* buff)
     }
 }
 
-DosPartitionNode*	DosPartition::createNode(dos_pte* pte, uint64_t offset, uint8_t type, uint32_t base)
-{
-  DosPartitionNode*	node;
-  uint64_t		size;
-  std::string		partname;
-  Attributes		attrs;
-  Attributes		vmap;
+// std::cout << mit->first << " -- " << mit->first + mit->second->pte->total_blocks - 1 << " -- " << mit->second->pte->total_blocks 
+// 	  << " -- EXTENDED" << std::endl;
 
-  partname =  "part" + uint32ToStr(this->partnum);
-  this->partnum += 1;
-  size = (uint64_t)(pte->total_blocks) * 512;
-  node = new DosPartitionNode(partname, size, this->root, this->fsobj, this->origin);
-  node->setCtx(offset, pte, type, base);
-  return node;
+void	DosPartition::makeNodes()
+{
+  std::stringstream	ostr;
+  metaiterator		mit;
+  DosPartitionNode*	pnode;
+  Node*			root_unalloc;
+  uint64_t		size;
+
+
+  if (this->allocated.size() > 0)
+    {
+      for (mit = this->allocated.begin(); mit != this->allocated.end(); mit++)
+	{
+	  if ((mit->second->type & EXTENDED) != EXTENDED)
+	    {
+	      ostr << "Partition " << mit->second->slot;
+	      size = (uint64_t)mit->second->pte->total_blocks * this->sectsize;
+	      pnode = new DosPartitionNode(ostr.str(), size, this->root, this->fsobj);
+	      pnode->setCtx(this, mit->first, mit->second->type);
+	      ostr.str("");
+	      // std::cout << mit->first << " -- " << mit->first + mit->second->pte->total_blocks - 1 << " -- " << mit->second->pte->total_blocks 
+	      // 		<< " -- " <<  partition_types[mit->second->pte->type] << std::endl;
+	    }
+	}
+    }
+  if (this->unallocated.size() > 0)
+    {
+      if ((root_unalloc = new Node("Unallocated", 0, this->root, this->fsobj)) != NULL)
+	{
+	  for (mit = this->unallocated.begin(); mit != this->unallocated.end(); mit++)
+	    {
+	      ostr << mit->first << "s--" << mit->second->entry_offset - 1 << "s";
+	      size = (mit->second->entry_offset - mit->first) * this->sectsize;
+	      pnode = new DosPartitionNode(ostr.str(), size, root_unalloc, this->fsobj);
+	      pnode->setCtx(this, mit->first, UNALLOCATED);
+	      ostr.str("");
+	      //std::cout << mit->first << " -- " << mit->second->entry_offset - 1 << " -- " << mit->second->entry_offset - mit->first << " -- UNALLOCATED" << std::endl;
+	    }
+	}
+    }
 }
 
-void	DosPartition::readMbr(uint64_t offset)
+void	DosPartition::makeUnallocated()
+{
+  std::map<uint64_t, metadatum*>::iterator	mit;
+  metadatum*					meta;
+  uint64_t					sidx;
+  uint32_t					counter;
+
+  sidx = 0;
+  counter = 1;
+  for (mit = this->allocated.begin(); mit != this->allocated.end(); mit++)
+    {
+      if ((mit->second->type & EXTENDED) != EXTENDED)
+	{
+	  if (mit->first > sidx)
+	    {
+	      meta = new metadatum;
+	      meta->pte = NULL;
+	      meta->entry_offset = mit->first;
+	      meta->type = UNALLOCATED;
+	      meta->slot = (uint32_t)-1;
+	      meta->sslot = counter++;
+	      this->unallocated[sidx] = meta;
+	    }
+	  sidx = mit->first + mit->second->pte->total_blocks;
+	}
+    }
+  if ((this->offset + (sidx * this->sectsize)) < this->origin->size())
+    {
+      meta = new metadatum;
+      meta->pte = NULL;
+      meta->entry_offset = ((this->origin->size() - this->offset) / this->sectsize);
+      meta->type = UNALLOCATED;
+      meta->sslot = counter++;
+      meta->slot = (uint32_t)-1;
+      this->unallocated[sidx] = meta;
+    }  
+}
+
+void	DosPartition::readMbr() throw (vfsError)
 {
   dos_partition_record	record;
   uint8_t		i;
   dos_pte*		pte;
-  std::list<Variant*>	res;
-  DosPartitionNode*	node;
   uint32_t		disk_sig;
-  Attributes		mbrattr;;
+  Attributes		mbrattr;
+  metadatum*		meta;
 
-  try
+  this->vfile->seek(this->offset);
+  if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
     {
-      this->vfile->seek(offset);
-      if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
+      if (record.signature != 0xAA55)
+	mbrattr["signature"] = new Variant(std::string("Not setted"));
+      else
+	mbrattr["signature"] = new Variant(record.signature);
+      memcpy(&disk_sig, record.a.mbr.disk_signature, 4);
+      mbrattr["disk signature"] = new Variant(disk_sig);
+      this->res["mbr"] = new Variant(mbrattr);
+      for (i = 0; i != 4; i++)
 	{
-	  if (record.signature != 0xAA55)
-	    mbrattr["signature"] = new Variant(std::string("Not setted"));
-	  else
-	    mbrattr["signature"] = new Variant(record.signature);
-
-	  memcpy(&disk_sig, record.a.mbr.disk_signature, 4);
-	  mbrattr["disk signature"] = new Variant(disk_sig);
-	  this->res["mbr"] = new Variant(mbrattr);
-	  for (i = 0; i != 4; i++)
+	  if ((pte = this->toPte(record.partitions+(i*16))) != NULL)
 	    {
-	      if ((pte = this->toPte(record.partitions+(i*16))) != NULL)
+	      meta = new metadatum;
+	      meta->pte = pte;
+	      meta->entry_offset = this->offset + 446 + i * 16;
+	      if (IS_EXTENDED(pte->type))
+	      	{
+		  meta->slot = (uint32_t)-1;
+		  meta->sslot = this->__extended++;
+		  meta->type = EXTENDED;
+	      	  this->ebr_base = pte->lba;
+	      	  this->readEbr(pte->lba);
+	      	}
+	      else
 		{
-		  if (is_ext(pte->type))
-		    {
-		      std::list<Variant*>	vlist;
-
-		      node = this->createNode(pte, offset + 446 + i * 16, EXTENDED);
-		      vlist.push_back(new Variant(node->_attributes()));
-		      this->ebr_base = (uint64_t)(pte->lba);
-		      this->readEbr(&vlist, pte->lba);
-		      this->res[node->name()] = new Variant(vlist);
-		    }
-		  else
-		    {
-		      node = this->createNode(pte, offset + 446 + i * 16, PRIMARY);
-		      this->res[node->name()] = new Variant(node->_attributes());
-		    }
+		  meta->slot = this->__slot++;
+		  meta->sslot = this->__primary++;
+		  meta->type = PRIMARY;
 		}
+	      this->allocated[pte->lba] = meta;
 	    }
 	}
     }
-  catch(vfsError e)
-    {
-      throw vfsError("[PARTITION] error while reading MBR\n" + e.error);
-    }
 }
 
-void	DosPartition::readEbr(std::list<Variant*> *vlist, uint32_t cur, uint32_t shift)
+void	DosPartition::readEbr(uint64_t csector, uint64_t shift) throw (vfsError)
 {
   dos_partition_record	record;
   uint8_t		i;
   dos_pte*		pte;
   uint64_t		offset;
-  DosPartitionNode*	node;
+  metadatum*		meta;
 
-  try
+  offset = this->offset + csector*this->sectsize;
+  this->vfile->seek(offset);
+  if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
     {
-      offset = this->vfile->seek((uint64_t)(cur)*512);
-      if (this->vfile->read(&record, sizeof(dos_partition_record)) > 0)
+      for (i = 0; i != 4; i++)
 	{
-	  for (i = 0; i != 4; i++)
+	  if ((pte = this->toPte(record.partitions+(i*16))) != NULL)
 	    {
-	      if ((pte = this->toPte(record.partitions+(i*16))) != NULL)
+	      if (IS_EXTENDED(pte->type))
 		{
-		  if (is_ext(pte->type))
+		  if ((this->ebr_base + pte->lba) != csector)
 		    {
-		      if ((this->ebr_base + pte->lba) != cur)
-			this->readEbr(vlist, this->ebr_base + (uint64_t)(pte->lba), pte->lba);
+		      meta = new metadatum;
+		      meta->pte = pte;
+		      meta->entry_offset = offset + 446 + i * 16;
+		      meta->slot = (uint32_t)-1;
+		      meta->sslot = this->__extended++;
+		      if (i > 2)
+			{
+			  this->__hidden++;
+			  meta->type = EXTENDED|HIDDEN;
+			}
 		      else
-			;
+			meta->type = EXTENDED;
+		      this->allocated[this->ebr_base + pte->lba] = meta;
+		      this->readEbr(this->ebr_base + (uint64_t)(pte->lba), pte->lba);
 		    }
 		  else
+		    ;
+		}
+	      else
+		{
+		  meta = new metadatum;
+		  meta->pte = pte;
+		  meta->entry_offset = offset + 446 + i * 16;
+		  meta->slot = this->__slot++;
+		  meta->sslot = this->__logical++;
+		  if (i > 2)
 		    {
- 		      if (i > 2)
-			node = this->createNode(pte, offset + 446 + i * 16, LOGICAL|HIDDEN, this->ebr_base + shift);
-		      else
-			node = this->createNode(pte, offset + 446 + i * 16, LOGICAL, this->ebr_base + shift);
-		      Attributes	lpart;
-		      lpart[node->name()] = new Variant(node->_attributes());
-		      vlist->push_back(new Variant(lpart));
+		      this->__hidden++;
+		      meta->type = LOGICAL|HIDDEN;
 		    }
+		  else
+		    meta->type = LOGICAL;
+		  this->allocated[this->ebr_base + shift + pte->lba] = meta;
 		}
 	    }
 	}
-    }
-  catch(vfsError e)
-    {
-      throw vfsError("[PARTITION] error while reading EBR\n" + e.error);
     }
 }

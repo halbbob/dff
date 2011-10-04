@@ -20,6 +20,8 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, QCheckBox, QGridLayout, QLabel, QL
 from modules.viewer.hexedit.utils import *
 from modules.viewer.hexedit.messagebox import *
 
+from api.events.libevents import EventHandler
+
 import binascii
 
 class search(QWidget):
@@ -32,6 +34,7 @@ class search(QWidget):
         self.heditor = parent
         #Open a new instance for I/O
         self.file = self.heditor.node.open()
+        self.__size = self.heditor.node.size()
         #Last search type tag [0:hex|1:characters]
         self.lastSearchType = 0
         #Init Thread
@@ -39,6 +42,7 @@ class search(QWidget):
         #tupple of searched patterns [key:hex(pattern)|value:offsetslist]
         self.searchedPatterns = {}
         self.connect(self.search_th, SIGNAL("searchDone()"), self.searchdone)
+        self.connect(self.search_th, SIGNAL("currentPos"), self.updatePBar)
 
     def initShape(self):
         self.vbox = QVBoxLayout()
@@ -223,26 +227,30 @@ class search(QWidget):
             msg.exec_()            
 
 
+    def updatePBar(self, pos):
+        rpos = self.__size - pos
+        rsize = self.__size - self.search_th.startOffset
+        self.searchlabel.setText(str((rsize - rpos) * 100 / rsize) + " %")
+
+
     def keyPressEvent(self, kEvent):
         key = kEvent.key()
         if key == Qt.Key_Return or key == Qt.Key_Enter:
             self.searchit()
         
 
-class searchThread(QThread):
+class searchThread(QThread, EventHandler):
     def __init__(self, file):
         QThread.__init__(self)
+        EventHandler.__init__(self)
         self.file = file
+        self.file.connection(self)
         self.pattern = ""
         self.wild = ""
 
     def run(self):
-        if self.wild == "":
-            wild = None
-        else:
-            wild = self.wild
-
-        self.res = self.file.search(self.pattern, len(self.pattern), wild, self.startOffset)
+        wild = self.wild
+        self.res = self.file.search(str(self.pattern), len(self.pattern), str(wild), self.startOffset)
         self.emit(SIGNAL("searchDone()"))
 
     def setData(self, pattern, startOffset, wild):
@@ -252,6 +260,11 @@ class searchThread(QThread):
 
     def getResults(self):
         return self.res
+
+
+    def Event(self, e):
+        self.emit(SIGNAL("currentPos"), e.value.value())
+
 
 class resultab(QTabWidget):
     def __init__(self, parent):

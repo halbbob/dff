@@ -18,6 +18,8 @@ if (ENABLE_INDEXER)
    add_subdirectory (indexer)
 endif (ENABLE_INDEXER)
 
+add_subdirectory(find)
+
 set(search_srcs
   __init__.py
 )

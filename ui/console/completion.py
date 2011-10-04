@@ -58,6 +58,8 @@ class Context():
                 return str(os.getcwd() + "/" + parameter).replace("//", "/")
             else:
                 return parameter
+        elif argument.type() == typeId.String:
+            return parameter.replace("\ ", " ")
         else:
             return parameter
 

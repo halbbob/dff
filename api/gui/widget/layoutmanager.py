@@ -40,7 +40,6 @@ class NavigationBar(QWidget, Ui_NodeViewBox):
         self.viewbox.hide()
         self.attrSelect.hide()
         self.addToBookmark.hide()
-        self.checkboxAttribute.hide()
         self.search.hide()
         self.imagethumb.hide()
         self.thumbSize.hide()
@@ -193,8 +192,8 @@ class DialogNodeBrowser(QDialog):
         self.baseLayout.setSpacing(0)
         self.splitterLayout = QSplitter(self)
         self.splitterLayout.setMinimumWidth(640)
-        self.baseLayout.addWidget(self.navBar)
-        self.baseLayout.addWidget(self.splitterLayout)
+        self.baseLayout.addWidget(self.navBar, 1)
+        self.baseLayout.addWidget(self.splitterLayout, 50)
         self.setLayout(self.baseLayout)
 
 
@@ -688,7 +687,8 @@ class addLocalPathButton(QPushButton):
             else:
                 sFileName = QFileDialog.getExistingDirectory(self.parent, title, os.path.expanduser('~'), QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
                 if isinstance(self.container, QListWidget):
-                    item = QListWidgetItem(str(sFileName), self.container)
+                    if sFileName:
+                        item = QListWidgetItem(str(sFileName), self.container)
                 else:
                     self.container.insert(sFileName)
         else:

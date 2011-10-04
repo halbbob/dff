@@ -19,12 +19,14 @@
 #ifndef __JOURNAL_H__
 #define __JOURNAL_H__
 
-#include "node.hpp"
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
 
 /*! \def __J_SIGNATURE
     \brief The journal block signature.

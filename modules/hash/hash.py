@@ -59,22 +59,6 @@ class HASH(Script):
         self.vfs = vfs.vfs()
         self.attributeHash = AttributeHash("hash") 
 	self.calculatedHash = {}
-
-    def getHash(self,  algorithm):
-        if algorithm == "md5":
-            return hashlib.md5()
-        elif algorithm == "sha1":
-            return hashlib.sha1()
-        elif algorithm == "sha224":
-            return hashlib.sha224()
-        elif algorithm == "sha256":
-            return hashlib.sha256()
-        elif algorithm == "sha384":
-            return hashlib.sha384()
-        elif algorithm == "sha512":
-            return hashlib.sha512()
-        else:
-            return -1
         
     def start(self, args):
 	try:
@@ -82,42 +66,58 @@ class HASH(Script):
         except IndexError:
 	  algorithms = [Variant("md5")]
         node = args["file"].value()
+        lalgorithms = []
         for algo in algorithms:
 	    algo = algo.value()
             if self.attributeHash.haveHashCalculated(node, algo):
 		continue
-            hash = self.hashCalc(node, algo)
-            if hash != "":
-                self.attributeHash.setHash(node, algo, hash)
+            lalgorithms.append(algo)
+        hinstances, errors = self.hashCalc(node, lalgorithms)
+        if len(hinstances):
+            for hinstance in hinstances:
+                hexdigest = hinstance.hexdigest()
+                name = hinstance.name
+                self.attributeHash.setHash(node, name, hexdigest)
                 node.registerAttributes(self.attributeHash)
-            else:
-                err = Variant(str(algo + " hashing failed on " + node.absolute()))
-                err.thisown = False
-                self.res["error"] = err
+                vres = Variant(hexdigest)
+                vres.thisown = False
+                self.res[name] = vres
+        if len(errors):
+            verr = Variant(errors)
+            verr.thisown = False
+            self.res["error"] = verr
 
 
-    def hashCalc(self, node, algorithm):
-        try :
-            f = node.open()
-            if not node.size():
-                return 
-        except IOError, e:
-            print e
-            return ""
-        h = self.getHash(algorithm)
-        buff = f.read(8192)
-        total = len(buff) 
-        while len(buff) > 0:
-            self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
-            h.update(buff)
+    def hashCalc(self, node, algorithms):
+        buffsize = 10*1024*1024
+        hinstances = []
+        errors = ""
+        if node.size() == 0:
+            return ([], node.absolute() + " has no data")
+        for algo in algorithms:
+            if hasattr(hashlib, algo):
+                func = getattr(hashlib, algo)
+                instance = func()
+                hinstances.append(instance)
+        if len(hinstances):
             try :
-                buff = f.read(8192)
-                total += len(buff)
-            except vfsError:
-                pass
-            self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
-        f.close()
-        return h.hexdigest()
+                f = node.open()
+            except IOError as e:
+                return ([], node.absolute() + " " + e.message)
+            buff = f.read(buffsize)
+            total = len(buff)
+            while len(buff) > 0:
+                self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%"
+                for hinstance in hinstances:
+                    hinstance.update(buff)
+                try :
+                    buff = f.read(buffsize)
+                    total += len(buff)
+                except IOError as e:
+                    errors += "can't read between offsets " + str(total) + " and " + str(total+buffsize) + "\n"
+                self.stateinfo = node.name() + " %d" % ((total / float(node.size())) * 100) + "%" 
+            f.close()
+        return (hinstances, errors)
 
     
 class hash(Module):

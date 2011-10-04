@@ -19,10 +19,13 @@
 #ifndef JOURNAL_TYPE_H
 #define JOURNAL_TYPE_H
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
 
 template <typename T> class JournalType
 {

@@ -47,11 +47,8 @@ void	VMware::start(std::map<std::string, Variant*> args)
   
   this->_rootdir = this->_vmdkroot->parent();
   err = this->createLinks(_vmdkroot, "0");
-  //std::cout << "ERROR : " << err << std::endl;
   if (err != -1)
     {
-      //      std::cout << "Links : " << this->_links.size() << std::endl;
-      //      this->res->add_const("Links", this->_links.size());
       this->createNodes();
     }
   
@@ -62,16 +59,12 @@ Node	*VMware::getParentVMDK(string parentFileName)
 {
   Node *parent = this->_vmdkroot->parent();
   
-  //  std::cout << "parentFileName :  " << parentFileName << std::endl;
-  //  std::cout << "parent :  " << parent->name() << std::endl;
-  
   std::vector<Node *>next = parent->children();
   
   for( std::vector<Node*>::iterator in=next.begin(); in!=next.end(); ++in)
     {
       if ((*in)->name() == parentFileName)
 	{
-	  std::cout << "founded " << (*in)->name() << std::endl;
 	  return (*in);
 	}
     }
@@ -143,8 +136,6 @@ int	VMware::createLinks(Node *vmdkroot, string pcid)
 
 	  Link *lnk = new Link(dd, ft, vmdkroot);
 	  err = lnk->listExtents();
-	  // std::cout << "CID :  " << cid << std::endl;
-	  // std::cout << "PCID :  " << npcid << std::endl;
 	  _links[cid] = lnk;
 
 	  if (err != -1 && npcid != CID_NOPARENT)

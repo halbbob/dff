@@ -30,8 +30,6 @@ extern "C"
   
     if (node->hasChildren())
     {
-      //attr = static_cast<u_attrib *>(node->attr);
-      //attr->get_stat(stbuf); 
       stbuf->st_mode = S_IFDIR | 0755;
       stbuf->st_nlink = 2 + node->childCount();
     }

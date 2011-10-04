@@ -71,7 +71,6 @@ void pff::start(std::map<std::string, Variant*> args)
   res["Result"] = new Variant(std::string("Mailbox parsed successfully."));
 }
 
-//use clone mode, use lot more memory but more than passing a flag and iterator
 void    pff::create_recovered(void)
 {
   int 				number_of_recovered_items 	= 0; 

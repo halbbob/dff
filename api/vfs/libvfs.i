@@ -684,9 +684,11 @@ Open the node and return a pointer to a VFile instance
 %include "std_vector.i"
 %include "std_except.i"
 #ifndef WIN32
-%include "stdint.i"
+	%include "stdint.i"
+#elif _MSC_VER >= 1600
+	%include "stdint.i"
 #else
-%include "wstdint.i"
+	%include "wstdint.i"
 #endif
 %include "windows.i"
 
@@ -696,8 +698,26 @@ Open the node and return a pointer to a VFile instance
 %feature("director") VLink;
 %feature("director") AttributesHandler;
 
-%newobject Node::open();
+
 %newobject VFile::search();
+
+%newobject Node::open();
+%newobject Node::dataType;
+%newobject Node::attributes;
+%newobject Node::attributesByName;
+%newobject Node::attributesByType;
+%newobject Node::attributesNames;
+%newobject Node::attributesNamesAndTypes;
+%newobject Node::compatibleModules;
+
+%newobject VLink::open();
+%newobject VLink::dataType;
+%newobject VLink::attributes;
+%newobject VLink::attributesByName;
+%newobject VLink::attributesByType;
+%newobject VLink::attributesNames;
+%newobject VLink::attributesNamesAndTypes;
+%newobject VLink::compatibleModules;
 
 
 %exception Node::dataType
@@ -762,10 +782,48 @@ Open the node and return a pointer to a VFile instance
   delete $1;
 }
 
+%typecheck(SWIG_TYPECHECK_CHAR) unsigned char
+{
+  $1 = (((PyString_Check($input) && ((PyString_Size($input) == 1) || PyString_Size($input) == 0))) 
+	|| (PyInt_Check($input) && ((PyInt_AsLong($input) >= 0) && (PyInt_AsLong($input) <= 255)))) ? 1 : 0;
+}
+
+%typemap(in) (unsigned char wildcard)
+{
+  if (!PyString_Check($input) || (PyString_Size($input) > 1))
+    {
+      PyErr_SetString(PyExc_ValueError, "Expecting a string");
+      return NULL;
+    }
+  $1 = (unsigned char) PyString_AsString($input)[0];
+}
+
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen);
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start);
+%ignore   VFile::find(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end);
+
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen);
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start);
+%ignore   VFile::rfind(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end);
+
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount, uint64_t start);
+%ignore   VFile::count(unsigned char* needle, uint32_t nlen, unsigned char wildcard, int32_t maxcount, uint64_t start, uint64_t end);
+
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen);
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard);
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start);
+%ignore	  VFile::indexes(unsigned char* needle, uint32_t nlen, unsigned char wildcard, uint64_t start, uint64_t end);
+
 %{
 
 #include "eventhandler.hpp"
 #include "vfs.hpp"
+#include "attributesindexer.hpp"
 #include "exceptions.hpp"
 #include "fdmanager.hpp"
 #include "filemapping.hpp"
@@ -783,6 +841,7 @@ Open the node and return a pointer to a VFile instance
 %import "../events/libevents.i"
 
 %include "../include/vfs.hpp"
+%include "../include/attributesindexer.hpp"
 %include "../include/export.hpp"
 %include "../include/fdmanager.hpp"
 %include "../include/filemapping.hpp"
@@ -795,13 +854,15 @@ Open the node and return a pointer to a VFile instance
 
 namespace std
 {
-  %template(VecNode)    vector<Node*>;
-  %template(ListNode)   list<Node*>;
-  %template(SetNode)    set<Node *>;
-  %template(VectChunck)  vector<chunck *>;
-  %template(Listui64)	list<uint64_t>;
-  %template(ListString) list<std::string>;
-  %template(MapTime)	map<string, vtime*>;
+  %template(VecNode)		vector<Node*>;
+  %template(ListNode)		list<Node*>;
+  %template(SetNode)		set<Node *>;
+  %template(VectChunck)		vector<chunck *>;
+  %template(Listui64)		list<uint64_t>;
+  %template(ListString)		list<std::string>;
+  %template(MapTime)		map<string, vtime*>;
+  %template(MapNameTypes)	map<string, uint8_t>;
+  %template(FsoVect)		vector<fso*>;
   /* %template(MapAttributes) map<std::string, Variant*>; */
 };
 
@@ -809,6 +870,28 @@ namespace std
 %fragment(SWIG_Traits_frag(Variant));
 %traits_swigtype(vtime);
 %fragment(SWIG_Traits_frag(vtime));
+
+%extend VFile
+{
+%pythoncode
+    %{
+    def __iter__(self):
+        return self
+    
+    def next(self):
+        cpos = self.tell()
+        idx = self.find('\n')
+        if idx != -1:
+           self.seek(cpos)
+           buff = self.read(idx - cpos+1)
+           if len(buff) == 0:
+               raise StopIteration()
+           else:
+               return buff
+        else:
+           raise StopIteration()
+    %}
+};
 
 %extend VFS
 {

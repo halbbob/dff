@@ -88,6 +88,7 @@ typedef struct	s_ctx
   uint8_t	checksum;
   bool		dir;
   bool		deleted;
+  bool		volume;
   uint32_t	size;
   uint32_t	cluster;
   uint64_t	lfnmetaoffset;
@@ -133,8 +134,6 @@ public:
 class EntriesManager
 {
 private:
-  Node*				origin;
-  VFile*			vfile;
   ctx*				c;
   uint8_t			fattype;
 //   uint64_t			lfnmetaoffset;

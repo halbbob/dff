@@ -20,9 +20,11 @@ set(widget_srcs
   SelectMimeTypes.py
   mime_types.py
   modules.py
+  modulesmanager.py
   interpreter.py
   shell.py
   stdio.py
+  preview.py
 )
 
 install_file(widget ${widget_srcs})

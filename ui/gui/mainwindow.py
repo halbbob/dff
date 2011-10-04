@@ -19,7 +19,7 @@ import sys
 from Queue import *
 
 # Form Custom implementation of MAINWINDOW
-from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar
+from PyQt4.QtGui import QAction,  QApplication, QDockWidget, QFileDialog, QIcon, QMainWindow, QMessageBox, QMenu, QTabWidget, QTextEdit, QTabBar, QPushButton, QCheckBox, QHBoxLayout, QVBoxLayout, QWidget
 from PyQt4.QtCore import QEvent, Qt,  SIGNAL, QModelIndex, QSettings, QFile, QString, QTimer
 from PyQt4 import QtCore, QtGui
 
@@ -42,6 +42,9 @@ from ui.gui.widget.stdio import STDErr, STDOut
 
 from ui.gui.widget.shell import ShellActions
 from ui.gui.widget.interpreter import InterpreterActions
+from ui.gui.widget.preview import Preview
+
+#from ui.gui.widget.modulesmanager import managerDialog
 
 from ui.gui.utils.utils import Utils
 from ui.gui.utils.menu import MenuTags
@@ -50,7 +53,6 @@ from ui.gui.resources.ui_mainwindow import Ui_MainWindow
 
 # Documentation
 from ui.gui.widget.help import Help
-
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self,  app, debug = False):
@@ -79,7 +81,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	self.interpreterActions = InterpreterActions(self)
         self.initDockWidgets()
         self.setCentralWidget(None)
-
         # Signals handling
         ## File menu
         self.connect(self.actionOpen_evidence, SIGNAL("triggered()"), self.dialog.addFiles)
@@ -89,8 +90,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPreferences, SIGNAL("triggered()"), self.dialog.preferences)
         ## Module menu
         self.connect(self.actionLoadModule, SIGNAL("triggered()"), self.dialog.loadDriver)
+        self.connect(self.actionBrowse_modules, SIGNAL("triggered()"), self.dialog.manager)
         ## Ide menu
-        self.connect(self.actionIdeOpen, SIGNAL("triggered()"), self.addIde)        
+        self.connect(self.actionIdeOpen, SIGNAL("triggered()"), self.addIde)
         ## View menu
         self.connect(self.actionMaximize, SIGNAL("triggered()"), self.maximizeDockwidget)
         self.connect(self.actionFullscreen_mode, SIGNAL("triggered()"), self.fullscreenMode)
@@ -99,7 +101,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connect(self.actionPython_interpreter, SIGNAL("triggered()"), self.interpreterActions.create)        ## About menu
         self.connect(self.actionHelp, SIGNAL("triggered()"), self.addHelpWidget)
         self.connect(self.actionAbout, SIGNAL("triggered()"), self.dialog.about)
-
         # list used to build toolbar
         # None will be a separator
         self.toolbarList = [self.actionOpen_evidence,
@@ -113,6 +114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             None,
                             self.actionMaximize,
                             self.actionFullscreen_mode,
+                            self.actionBrowse_modules,
                             ]
 
         # Set up toolbar
@@ -169,8 +171,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.addDockWidgets(NodeBrowser(self), 'nodeBrowser')
         else:
             nb = NodeBrowser(self)
-            nb.model.setRootPath(nb.vfs.getnode(rootpath.absolute()))
+	    if type(rootpath) == type(''):
+	         nb.model.setRootPath(nb.vfs.getnode(rootpath))
+	    else:
+	         nb.model.setRootPath(rootpath)
             self.addDockWidgets(nb, 'nodeBrowser')
+
+    def addSearchTab(self, search):
+        self.addDockWidgets(search, 'Searchr')
 
     def addHelpWidget(self):
         conf = Conf()
@@ -238,8 +246,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.addDockWidgets(self.wstderr, 'stderr', master=False)
         self.wmodules = Modules(self)
         self.addDockWidgets(self.wmodules, 'modules', master=False)
+        self.preview = Preview(self)
+        self.addDockWidgets(self.preview, 'preview', master=False)
+        self.connect(self, SIGNAL("previewUpdate"), self.preview.update)
+
+        self.connect(self.actionPreview, SIGNAL("triggered(bool)"), self.preview.setUpdate)
+
         self.refreshSecondWidgets()
         self.refreshTabifiedDockWidgets()
+
 
     def maximizeDockwidget(self):
         if self.last_state is None:
@@ -293,7 +308,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for tabGroup in allTabs:
             for i in range(tabGroup.count()):
                 for v in self.dockWidget.values():
-                    if tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
+                    if v.widget() and tabGroup.tabText(i).startsWith(v.windowTitle()) and not v.widget().windowIcon().isNull():
                         tabGroup.setTabIcon(i, v.widget().windowIcon()) 
 
 #############  END OF DOCKWIDGETS FUNCTIONS ###############
@@ -305,6 +320,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def initCallback(self):
         self.sched.set_callback("add_qwidget", self.qwidgetResult)
         self.connect(self, SIGNAL("qwidgetResultView"), self.qwidgetResultView)
+        self.connect(self, SIGNAL("strResultView"), self.strResultView)
 
     def qwidgetResult(self, qwidget):
         self.emit(SIGNAL("qwidgetResultView"), qwidget)

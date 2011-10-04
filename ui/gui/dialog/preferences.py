@@ -274,7 +274,6 @@ class Preferences(QDialog, Ui_PreferencesDialog):
         f_dialog = self.fileDialog(self.index_name_line.text())
         if f_dialog.exec_():
             name = str(f_dialog.selectedFiles()[0])
-            # FIXME windows ?
             pos = name.rfind("/")
             if pos != -1:
                 name = name[pos + 1:]

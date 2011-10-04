@@ -25,7 +25,7 @@ from api.taskmanager.taskmanager import TaskManager
 from api.types import libtypes
 from api.types.libtypes import typeId, Variant
 
-#from api.gui.box.nodefilterbox import NodeFilterBox
+from api.gui.box.nodefilterbox import NodeFilterBox
 from api.gui.box.nodeviewbox import NodeViewBox
 from api.gui.dialog.applymodule import ApplyModule
 from api.gui.dialog.extractor import Extractor
@@ -121,11 +121,11 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
  
   def addOptionsView(self):
     self.nodeViewBox = NodeViewBox(self)
-    #self.nodeFilterBox = NodeFilterBox(self, self.treeModel)
-    #self.nodeFilterBox.vfs_item_model(self.model)
-    #self.baseLayout.insertWidget(0,self.nodeFilterBox)
+    self.nodeFilterBox = NodeFilterBox(self, self.treeModel)
+    self.nodeFilterBox.vfs_item_model(self.model)
+    self.baseLayout.insertWidget(0,self.nodeFilterBox)
     self.baseLayout.insertWidget(0, self.nodeViewBox)
-    #self.nodeFilterBox.setVisible(False)
+    self.nodeFilterBox.setVisible(False)
 
   def addModel(self, path):
     self.model = VFSItemModel(self, True, True)
@@ -221,6 +221,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
     if key in [Qt.Key_Up, Qt.Key_Down, Qt.Key_PageUp, Qt.Key_PageDown]:
       if self.nodeViewBox.propertyTable.isVisible():
         self.nodeViewBox.propertyTable.fill(node)
+      self.mainwindow.emit(SIGNAL("previewUpdate"), node)	
     if key == Qt.Key_Return:
       if self.currentView().enterInDirectory:
         if node.hasChildren() or node.isDir():
@@ -236,6 +237,7 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
      if mouseButton == Qt.LeftButton:
          if self.nodeViewBox.propertyTable.isVisible():
             self.nodeViewBox.propertyTable.fill(node)
+	 self.mainwindow.emit(SIGNAL("previewUpdate"), node)
      if mouseButton == Qt.RightButton:
        self.menuRelevant = MenuRelevant(self, self.parent, node)
        if node.hasChildren() or node.isDir():
@@ -283,12 +285,11 @@ class NodeBrowser(QWidget, EventHandler, Ui_NodeBrowser):
           if "Viewers" in self.lmodules[mod].tags:
 	    break
        try:
-         priority = modulePriority[mod] #XXX put in conf
+         priority = modulePriority[mod]
        except KeyError:
          modulePriority[mod] = 0
          priority = 0
        if not priority: 
-        #XXX translate
          mbox = QMessageBox(QMessageBox.Question, self.tr("Apply module"), self.tr("Do you want to apply module ") + str(mod) + self.tr(" on this node ?"), QMessageBox.Yes | QMessageBox.No, self)
          mbox.addButton(self.tr("Always"), QMessageBox.AcceptRole)
 	 reply = mbox.exec_() 

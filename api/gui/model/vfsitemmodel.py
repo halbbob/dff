@@ -70,9 +70,9 @@ class ImageThumb():
      if node.size() > 6:
        try:
          file = node.open()
-         head = file.find("\xff\xd8\xff", 3, "", 3)
+         head = file.find("\xff\xd8\xff", "", 3)
          if head > 0 and head < node.size():
-           foot = file.find("\xff\xd9", 2, "", long(head))
+           foot = file.find("\xff\xd9", "", long(head))
            if foot > 0 and foot < node.size():
              file.seek(head)
              buff = file.read(foot + 2 - head)
@@ -135,6 +135,7 @@ typeWorker.start()
 
 
 class ListNodeModel(QAbstractItemModel, EventHandler):
+  numberPopulated = QtCore.pyqtSignal(int)
   """
   The ListNodeModel, inheriting QAbstractItemModel, is used to represent a list of nodes.
 
@@ -155,7 +156,6 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     self.rootItem = None
     self.__parent = __parent
     self.connect(self.__parent, SIGNAL("NewSearch"), self.clean)
-    self.connect(self.__parent, SIGNAL("NodeMatched"), self.addNode)
     self.VFS = VFS.Get()
     self.map = {}
     self.imagesthumbnails = None
@@ -177,22 +177,43 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
 
     self.cacheAttr = (None, None)
 
-  def addNode(self, e):
+  #def canFetchMore(self, index):
+  #  if self.fetchedItems < len(self.node_list):
+  #    return True
+  #  return False
+
+  #def fetchMore(self, index):
+  #  reminder = len(self.node_list) - self.fetchedItems
+  #  item_to_fetch = 0
+
+  #  if reminder < 100:
+  #    item_to_fetch = reminder
+  #  else:
+  #    item_to_fetch = 100
+
+  #  self.beginInsertRows(QModelIndex(), self.fetchedItems, self.fetchedItems + item_to_fetch - 1)
+  #  self.fetchedItems += item_to_fetch
+  #  self.endInsertRows()
+  #  self.numberPopulated.emit(item_to_fetch)
+
+  def columnCount(self, index):
+    return 2
+
+  def addNode(self, pnode):
     """
     This method is called when an event is emitted by the VFS (when a node is added into the
     VFS for example, and the view needs to be redrawed).
     """
-    if e != None and e.value != None:
-      node = e.value.value()
-      self.node_list.append(node.this)
-      # emit signals to redraw the gui
-      self.emit(SIGNAL("layoutAboutToBeChanged()"))
-      self.emit(SIGNAL("layoutChanged()"))
+    if pnode != None:
+      self.beginInsertRows(QModelIndex(), len(self.node_list), len(self.node_list))
+      self.node_list.append(pnode)
+      self.endInsertRows()
 
 
   def clean(self):
     self.emit(SIGNAL("modelAboutToBeReset()"))
     self.node_list = []
+    self.fetchedItems = 0
     self.emit(SIGNAL("modelReset()"))
 
 
@@ -223,7 +244,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
     \returns the number of children of lines of the index `parent`.
     """
     return len(self.node_list)
-
+  
 
   def headerData(self, section, orientation, role=Qt.DisplayRole):
     """
@@ -402,6 +423,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
       childItem = self.node_list[row]
     else:
       return QModelIndex()
+
     index = self.createIndex(row, column, long(childItem))
     return index
 
@@ -412,14 +434,7 @@ class ListNodeModel(QAbstractItemModel, EventHandler):
 
     \return the parent index of `index` or an invalid QModelIndex if an erroc occurs.
     """
-    #if not index.isValid():
     return QModelIndex()
-    #childItem = self.VFS.getNodeFromPointer(index.internalId())
-    #parentItem = childItem.parent()
-    #if parentItem.this == self.rootItem.this:
-    #  return QModelIndex()
-    #index = self.createIndex(parentItem.at() , 0, long(parentItem.this))
-    #return index
 
 
   def hasChildren(self, parent):
@@ -617,10 +632,10 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
   def end_search(self):
     self.searching = False
 
-  def fillingList(self, node):
+  def addNode(self, pnode):
     if self.searching == True:
-      n = self.VFS.getNodeFromPointer(long(node))
-      self.node_list.append(n)
+      node = self.VFS.getNodeFromPointer(long(pnode))
+      self.node_list.append(node)
       self.emit(SIGNAL("layoutAboutToBeChanged()"))
       self.emit(SIGNAL("layoutChanged()"))
 
@@ -776,7 +791,8 @@ class VFSItemModel(QAbstractItemModel, EventHandler):
           return QVariant() # index error
         elif nb_c >= len(self.header_list): # the data is a dataType
           type = self.type_list[nb_c - len(self.header_list)]
-          possible_type = node.dataType().value()
+          dtypes = node.dataType()
+          possible_type = dtypes.value()
           return QVariant(possible_type[str(type)].value())
         else:
           if self.cacheAttr[0] != long(node.this): 

@@ -182,6 +182,9 @@
    </item>
    <item>
     <widget class="QComboBox" name="viewbox">
+     <property name="toolTip">
+      <string>View as</string>
+     </property>
      <item>
       <property name="text">
        <string>List</string>
@@ -203,6 +206,31 @@
     </widget>
    </item>
    <item>
+    <widget class="QComboBox" name="thumbSize">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Icon size</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>Small</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Medium</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Large</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="imagethumb">
      <property name="maximumSize">
       <size>
@@ -218,7 +246,7 @@
      </property>
      <property name="icon">
       <iconset resource="gui.qrc">
-       <normaloff>:/image.png</normaloff>:/image.png</iconset>
+       <normaloff>:/image_disable.png</normaloff>:/image_disable.png</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -288,6 +316,15 @@
    </item>
    <item>
     <widget class="QPushButton" name="attrSelect">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Attributes selection</string>
+     </property>
      <property name="icon">
       <iconset resource="gui.qrc">
        <normaloff>:/list.png</normaloff>:/list.png</iconset>
@@ -304,32 +341,32 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkboxAttribute">
+    <widget class="QPushButton" name="attrView">
+     <property name="maximumSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Show attributes panel</string>
+     </property>
      <property name="text">
-      <string>Attributes</string>
+      <string/>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QComboBox" name="thumbSize">
-     <property name="enabled">
-      <bool>false</bool>
+     <property name="icon">
+      <iconset resource="gui.qrc">
+       <normaloff>:/lists_attr.png</normaloff>:/lists_attr.png</iconset>
      </property>
-     <item>
-      <property name="text">
-       <string>Small</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Medium</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Large</string>
-      </property>
-     </item>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

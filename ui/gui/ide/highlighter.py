@@ -37,8 +37,6 @@ class Highlighter(QSyntaxHighlighter):
     def setRule(self, pattern, format):
         if (pattern != ""):
             self.highlightingRules.insert(0, highlightRule(pattern,format))
-#        else:
-#            del self.highlightingRules[name]
         self.rehighlight()
 
     def highlightBlock(self, text):

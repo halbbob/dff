@@ -19,6 +19,8 @@
 
 #ifndef WIN32
 #include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
 #include "wstdint.h"
 #endif
@@ -28,17 +30,22 @@
 #include <iomanip>
 #include <vector>
 
-typedef struct
+typedef struct 
 {
-  enum etype
+  enum
     {
       OPEN = 0,
       CLOSE = 1,
       READ = 2,
       WRITE = 3,
       SEEK = 4,
-      OTHER = 5
-    } type;
+      OTHER = 5    
+    };
+}	etype;
+
+typedef struct
+{
+  uint32_t	type;
   Variant*	value;
 }		event;
 
@@ -47,12 +54,12 @@ class EventHandler
 private:
   std::vector<class EventHandler *>	watchers;
 public:
-  EXPORT EventHandler();
-  EXPORT virtual		~EventHandler() {};
-  EXPORT virtual void		Event(event *e) = 0;
-  EXPORT bool			connection(class EventHandler *obs);
-  EXPORT bool			deconnection(class EventHandler *obs);
-  EXPORT bool			notify(event *e);
+  EXPORT 				EventHandler();
+  EXPORT virtual			~EventHandler() {};
+  EXPORT virtual void			Event(event *e) = 0;
+  EXPORT bool				connection(class EventHandler *obs);
+  EXPORT bool				deconnection(class EventHandler *obs);
+  EXPORT bool				notify(event *e);
 };
 
 #endif

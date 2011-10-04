@@ -19,6 +19,8 @@
 
 #ifndef WIN32
   #include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
   #include "wstdint.h"
 #endif
@@ -39,26 +41,39 @@ typedef std::map<std::string, Variant* > RunTimeArguments;
 class fso
 {
 private:
-  std::list<class Node *>	__update_queue;
+  std::vector<Node *>			__nodes;
+  uint16_t				__uid;
+  std::vector<class fso*>		__children;
+  fso*					__parent;
 public:
-  std::map<std::string, Variant* > res;
-  std::string			stateinfo;
-  std::string			name;
+  std::map<std::string, Variant* > 	res;
+  std::string				stateinfo;
+  std::string				name;
 
   EXPORT fso(std::string name);
   EXPORT virtual ~fso();
-  EXPORT virtual void		start(std::map<std::string, Variant*> args) = 0;
-  EXPORT virtual int32_t 	vopen(class Node *n) = 0;
-  EXPORT virtual int32_t 	vread(int32_t fd, void *rbuff, uint32_t size) = 0;
-  EXPORT virtual int32_t 	vwrite(int32_t fd, void *wbuff, uint32_t size) = 0;
-  EXPORT virtual int32_t 	vclose(int32_t fd) = 0;
-  EXPORT virtual uint64_t	vseek(int32_t fd, uint64_t offset, int32_t whence) = 0;
-  EXPORT virtual uint32_t	status(void) = 0;
-  EXPORT virtual uint64_t	vtell(int32_t fd) = 0;
-  EXPORT virtual void		setVerbose(bool verbose){}
-  EXPORT virtual bool		verbose() { return false; }
-  EXPORT std::list<Node *>	updateQueue();
-  EXPORT void			registerTree(Node* parent, Node* head);
+  EXPORT virtual void			start(std::map<std::string, Variant*> args) = 0;
+  EXPORT virtual int32_t 		vopen(class Node *n) = 0;
+  EXPORT virtual int32_t 		vread(int32_t fd, void *rbuff, uint32_t size) = 0;
+  EXPORT virtual int32_t 		vwrite(int32_t fd, void *wbuff, uint32_t size) = 0;
+  EXPORT virtual int32_t 		vclose(int32_t fd) = 0;
+  EXPORT virtual uint64_t		vseek(int32_t fd, uint64_t offset, int32_t whence) = 0;
+  EXPORT virtual uint32_t		status(void) = 0;
+  EXPORT virtual uint64_t		vtell(int32_t fd) = 0;
+  EXPORT virtual void			setVerbose(bool verbose){}
+  EXPORT virtual bool			verbose() { return false; }
+  EXPORT void				registerTree(Node* parent, Node* head);
+  EXPORT uint64_t			registerNode(Node* n);
+  EXPORT std::vector<Node*>		nodes();
+  EXPORT uint64_t			nodeCount();
+  EXPORT uint16_t			uid();
+  EXPORT Node*				getNodeById(uint64_t id);
+  EXPORT bool				hasChildren();
+  EXPORT std::vector<class fso*>	children();
+  EXPORT uint32_t			childCount();
+  EXPORT void				setParent(class fso* parent);
+  EXPORT class fso*			parent();
+  EXPORT void				addChild(class fso* child);
 };
 
 #endif

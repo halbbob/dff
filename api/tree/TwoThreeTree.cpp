@@ -64,9 +64,13 @@ void	TwoThreeTree::clear()
 
 void	TwoThreeTree::clear(TwoThreeNode * node)
 {
+  if (node == NULL)
+    return ;
+
   if (node->isLeaf())
     {
       delete node;
+      node = NULL;
       return ;
     }
   if (node->isTwoNode())
@@ -86,6 +90,7 @@ void	TwoThreeTree::clear(TwoThreeNode * node)
 	clear(node->rightChild());
     }
   delete node;
+  node = NULL;
 }
 
 TwoThreeNode *		TwoThreeTree::add(TwoThreeNode* node, uint32_t val)
@@ -144,6 +149,9 @@ TwoThreeNode *	TwoThreeTree::split(TwoThreeNode * node, uint32_t val,
   uint32_t		mid;
   uint32_t		max;
 
+  if (node == NULL)
+    return NULL;
+
   if (val < node->leftVal())
     {
       min = val;
@@ -174,6 +182,7 @@ TwoThreeNode *	TwoThreeTree::split(TwoThreeNode * node, uint32_t val,
 	  parent->setLeftChild(l);
 	  parent->setRightChild(r);
 	  delete node;
+	  node = NULL;
 	  return NULL;
 	}
       parent->setLeftChild(l);
@@ -227,6 +236,7 @@ TwoThreeNode *	TwoThreeTree::split(TwoThreeNode * node, uint32_t val,
 	}
     }
   delete node;
+  node = NULL;
   return NULL;
 }
 
@@ -368,6 +378,8 @@ TwoThreeNode *	TwoThreeTree::swap(TwoThreeNode * node, uint32_t val)
   uint32_t		tmp;
   TwoThreeNode *	node_bak = node;
 
+  if (node == NULL)
+    return NULL;
   while  (!node->isLeaf()) // if we are not in a leaf, we swap
     {
       if (node->isTwoNode())

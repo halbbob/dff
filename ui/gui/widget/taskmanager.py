@@ -16,10 +16,15 @@
 
 import time
 from datetime import datetime
+from Queue import Empty
+
 from PyQt4.QtGui import QAction, QApplication, QDockWidget, QIcon,  QHBoxLayout, QPushButton, QTabWidget, QTreeWidget, QTreeWidgetItem, QWidget, QDialog, QGridLayout, QLabel, QComboBox, QVBoxLayout, QHBoxLayout, QDialogButtonBox
 from PyQt4.QtCore import QRect, QSize, Qt, SIGNAL, QEvent
+
 from api.taskmanager.taskmanager import TaskManager
 from api.gui.widget.varianttreewidget import VariantTreeWidget
+from api.gui.widget.textedit import TextEdit
+
 from ui.gui.resources.ui_taskmanager import Ui_TaskManager
 
 class Processus(QTreeWidget, Ui_TaskManager):
@@ -85,11 +90,26 @@ class procMB(QDialog):
         self.tm = TaskManager()
         self.pid = pid
         res = {}
+        args = {}
         self.tabwidget = QTabWidget(self)
+	stream = None
         for proc in self.tm.lprocessus:
             if str(proc.pid) == self.pid:
                 res = proc.res
                 args = proc.args
+			
+		if proc.streamOut == None: 
+  		  try :
+                      proc.streamOut = ''
+                      txt = proc.stream.get(0)
+                      proc.streamOut += txt
+                      while txt:
+                          txt = proc.stream.get(0)
+                          proc.streamOut += txt
+	          except Empty:
+		      pass
+		if proc.streamOut and proc.streamOut != '':
+		  stream = proc.streamOut
         self.box = QVBoxLayout()
         self.setLayout(self.box)
         self.box.addWidget(self.tabwidget)
@@ -105,6 +125,10 @@ class procMB(QDialog):
             self.tabwidget.addTab(self.treeargs, self.argname)
             for i in [0, 1]:
                 self.treeargs.resizeColumnToContents(i)
+	if stream:
+  	   textWidget = TextEdit(proc)
+           textWidget.emit(SIGNAL("puttext"), proc.streamOut)
+	   self.tabwidget.addTab(textWidget, self.outputname)
         if len(res) > 0:
             self.treeres = VariantTreeWidget(self)
             self.treeres.fillMap(self.treeres, res)
@@ -119,6 +143,7 @@ class procMB(QDialog):
             
 
     def translation(self):
+        self.outputname = self.tr("Output")
         self.argname = self.tr("Provided Arguments")
         self.resname = self.tr("Results")
         self.nameTitle = self.tr('Processus Information')

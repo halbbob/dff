@@ -21,7 +21,7 @@ from api.types.libtypes import typeId, Argument, Parameter
 from api.taskmanager.taskmanager import TaskManager
 from api.types.libtypes import typeId, Argument, Parameter, VList, VMap, Variant
 
-from typeSelection import filetypes, wildcard
+from typeSelection import filetypes
 
 import string
 
@@ -71,22 +71,6 @@ class CarverUi(Script):
                             val = Variant(len(p[1]), typeId.UInt32)
                             val.thisown = False
                             footer["size"] = val
-                            if p[0].find(wildcard) != -1:
-                                val = Variant(wildcard, typeId.Char)
-                                val.thisown = False
-                                header["wildcard"] = val
-                            else:
-                                val = Variant("", typeId.Char)
-                                val.thisown = False
-                                header["wildcard"] = val
-                            if p[1].find(wildcard) != -1:
-                                val = Variant(wildcard, typeId.Char)
-                                val.thisown = False
-                                footer["wildcard"] = val
-                            else:
-                                val = Variant("", typeId.Char)
-                                val.thisown = False
-                                footer["wildcard"] = val
                             vheader = Variant(header)
                             vheader.thisown = False
                             pattern["header"] = vheader
@@ -112,8 +96,9 @@ class CarverUi(Script):
         vstartoff = Variant(startoff, typeId.UInt64)
         vstartoff.thisown = False
         margs["start-offset"] = vstartoff
-        self.tm.add("carver", margs, ["console"])
-
+        proc = self.tm.add("carver", margs, ["console"])
+        if proc:
+            proc.event.wait()
 
     def c_display(self):
         pass
@@ -143,4 +128,4 @@ class carverui(Module):
                                "parameters": {"type": Parameter.NotEditable,
                                               "predefined": predefined}
                                })
-    self.tags = "Search"
+    self.tags = "builtins"

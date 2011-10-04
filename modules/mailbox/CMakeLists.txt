@@ -12,6 +12,6 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
-if(WIN32 OR (PFF_MAIN_LIBRARY AND PFF_BFIO_LIBRARY))
+IF (PFF_FOUND AND BFIO_FOUND)
   add_subdirectory (pff)
-endif(WIN32 OR (PFF_MAIN_LIBRARY AND PFF_BFIO_LIBRARY))
+ENDIF (PFF_FOUND AND BFIO_FOUND)

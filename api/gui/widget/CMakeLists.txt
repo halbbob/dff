@@ -24,7 +24,11 @@ set(apiguiwidget_srcs
   propertytable.py
   textedit.py
   devicesdialog.py
+  generateModuleShape.py
   completer.py
+  SearchNodeBrowser.py
+  search_widget.py
+  build_search_clause.py
 )
 
 install_file(apiguiwidget ${apiguiwidget_srcs})

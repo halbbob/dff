@@ -20,51 +20,111 @@
 #ifndef WIN32
 #include <stdint.h>
 #else
-#include "wstdint.h"
+	#if _MSC_VER >= 1600
+		#include <stdint.h>
+	#else
+		#include "wstdint.h"
+	#endif
 #endif
 #include <string>
 #include <list>
+#include <vector>
 #include "export.hpp"
 
-using namespace std;
+#include "fastsearch.hpp"
+#ifdef HAVE_TRE
+	#include <tre/tre.h>
+	#ifdef WIN32
+		#undef HAVE_ALLOCA
+		#undef HAVE_ALLOCA_H
+		#define tre_free tre_regfree;
+	#else
+		#ifdef __cplusplus
+		extern "C" {
+		#endif
+			extern void tre_free(regex_t *preg);
+		#ifdef __cplusplus
+		}
+		#endif
+	#endif
+#endif
 
-class algorithm
+class FastSearch
 {
 public:
-  //virtual algorithm(unsigned char *needle, unsigned int needlesize, unsigned char wildcard);
-  //  virtual ~algorithm();
-  virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen) = 0;
-  virtual list<unsigned int>	*search(unsigned char *haystack, unsigned int hslen, unsigned int *count) = 0;
-  virtual bool			preprocess() = 0;
-  virtual bool			setNeedle(unsigned char *needle) = 0;
-  virtual bool			setNeedleSize(unsigned int size) = 0;
-  virtual bool			setWildcard(unsigned char wildcard) = 0;
-  virtual unsigned char		*getNeedle() = 0;
-  virtual unsigned char		getWildcard() = 0;
+  EXPORT FastSearch();
+  EXPORT virtual ~FastSearch();
+  EXPORT virtual int32_t	find(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard='\0');
+  EXPORT virtual int32_t	rfind(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard='\0');
+  EXPORT virtual int32_t       count(unsigned char* haystack, uint32_t hslen, unsigned char* needle, uint32_t ndlen, unsigned char wildcard='\0', int32_t maxcount=-1);
 };
+
+
+typedef int32_t	(*sfunc)(const unsigned char*, int32_t, const unsigned char*, int32_t, int32_t, int);
 
 class Search
 {
-private:
-  algorithm		*algo;
-  unsigned char		*needle;
-  unsigned int		needleSize;
-  unsigned char		wildcard;
-  bool			aligned;
-  uint64_t		blockSize;
-  bool			preprocessed;
-
 public:
+  enum PatternSyntax
+    {
+      Fixed = 0,
+      Wildcard = 1,
+      Regexp = 2,
+      Fuzzy = 3
+    };
+  enum CaseSensitivity
+    {
+      CaseInsensitive = 0,
+      CaseSensitive = 1
+    };
   EXPORT Search();
-  EXPORT Search(unsigned char *needle, unsigned int needlesize, unsigned char wildcard);
+  EXPORT Search(std::string pattern, CaseSensitivity cs = CaseSensitive, PatternSyntax syntax = Fixed);
   EXPORT ~Search();
-  EXPORT bool			setNeedle(unsigned char *n);
-  EXPORT bool			setNeedleSize(unsigned int size);
-  EXPORT bool			setWildcard(unsigned char w);
-  EXPORT bool			setBlockSize(unsigned int bs);
-  EXPORT bool			setAligned(bool aligned);
-  EXPORT list<unsigned int>	*run(unsigned char *haystack, unsigned int hslen);
-  EXPORT list<unsigned int>	*run(unsigned char *haystack, unsigned int hslen, unsigned int *count);
+  EXPORT uint32_t		needleLength();
+  EXPORT void			setPattern(std::string pattern);
+  EXPORT std::string		pattern();
+  EXPORT void			setPatternSyntax(PatternSyntax syntax);
+  EXPORT PatternSyntax		patternSyntax();
+  EXPORT void			setCaseSensitivity(CaseSensitivity cs);
+  EXPORT CaseSensitivity	caseSensitivity();
+  //void			setFuzzyWeight();
+  EXPORT int32_t		find(char* haystack, uint32_t hslen) throw (std::string);
+  EXPORT int32_t		find(std::string haystack) throw (std::string);
+  EXPORT int32_t		rfind(char* haystack, uint32_t hslen) throw (std::string);
+  EXPORT int32_t		rfind(std::string haystack) throw (std::string);
+  EXPORT int32_t		count(char* haystack, uint32_t hslen, int32_t maxcount=-1) throw (std::string);
+  EXPORT int32_t		count(std::string haystack, int32_t maxcount=-1) throw (std::string);
+  EXPORT void			compile() throw (std::string);
+  // std::vector<uint32_t>	indexes(char* haystack, uint32_t hslen) throw (std::string);
+  // std::vector<uint32_t>	indexes(std::string haystack) throw (std::string);
+private:
+#ifdef HAVE_TRE
+  regex_t			__preg;
+  regaparams_t			__aparams;
+#endif
+  std::vector<std::string>	__wctxs;
+  std::string			__pattern;
+  CaseSensitivity		__cs;
+  PatternSyntax			__syntax;
+  bool				__compiled;
+  bool				__needtrefree;
+  uint32_t			__nlen;
+
+  //find methods implementation
+  EXPORT int32_t			__ffind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__wfind(unsigned char* haystack, uint32_t hslen, sfunc s, size_t vpos, uint32_t window);
+  EXPORT int32_t			__refind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__afind(char* haystack, uint32_t hslen);
+
+  //rfind methods implementation
+  EXPORT int32_t			__frfind(char* haystack, uint32_t hslen);
+  EXPORT int32_t			__wrfind(char* haystack, uint32_t hslen);
+  
+  //count methods implementation
+  EXPORT int32_t			__fcount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__wcount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__recount(char* haystack, uint32_t hslen, int32_t maxcount);
+  EXPORT int32_t			__acount(char* haystack, uint32_t hslen, int32_t maxcount);
 };
 
 #endif

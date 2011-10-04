@@ -16,6 +16,137 @@
 
 #include "fatnodes.hpp"
 
+FileSlack::FileSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
+{
+  this->__fs = fs;
+}
+
+FileSlack::~FileSlack()
+{
+}
+
+void		FileSlack::setContext(uint64_t offset)
+{
+  this->__offset = offset;
+}
+
+void		FileSlack::fileMapping(FileMapping* fm)
+{
+  fm->push(0, this->size(), this->__fs->parent, this->__offset);
+}
+
+Attributes	FileSlack::_attributes()
+{
+  Attributes	attrs;
+
+  attrs["starting offset"] = new Variant(this->__offset);
+  return attrs;
+}
+
+
+UnallocatedSpace::UnallocatedSpace(std::string name, uint64_t size, Node* parent, class Fatfs* fs): Node(name, size, parent, fs)
+{
+  this->__fs = fs;
+}
+
+UnallocatedSpace::~UnallocatedSpace()
+{
+}
+
+void		UnallocatedSpace::setContext(uint32_t scluster, uint32_t count)
+{
+  this->__scluster = scluster;
+  this->__count = count;
+}
+
+void		UnallocatedSpace::fileMapping(FileMapping* fm)
+{
+  uint64_t	soffset;
+  uint64_t	size;
+
+  soffset = this->__fs->fat->clusterToOffset(this->__scluster);
+  size = (uint64_t)this->__count * this->__fs->bs->csize * this->__fs->bs->ssize;
+  fm->push(0, size, this->__fs->parent, soffset);
+}
+
+Attributes	UnallocatedSpace::_attributes(void)
+{
+  Attributes	attrs;
+
+  attrs["starting cluster"] = new Variant(this->__scluster);
+  attrs["total clusters"] = new Variant(this->__count);
+  return attrs;
+}
+
+
+ReservedSectors::ReservedSectors(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
+{
+  this->fs = fs;
+}
+
+ReservedSectors::~ReservedSectors()
+{
+}
+
+Variant*	ReservedSectors::dataType()
+{
+  Attributes	dtype;
+
+  dtype["fatfs"] = new Variant(std::string("reserved sectors"));
+  return new Variant(dtype);
+}
+
+void		ReservedSectors::fileMapping(FileMapping* fm)
+{
+  fm->push(0, (uint64_t)(this->fs->bs->reserved) * (uint64_t)this->fs->bs->ssize, this->fs->parent, 0);
+}
+
+Attributes	ReservedSectors::_attributes(void)
+{
+  Attributes	attrs;
+
+  attrs["starting sector"] = new Variant(1);
+  attrs["total sectors"] = new Variant(this->fs->bs->reserved);
+  return attrs;
+}
+
+
+FileSystemSlack::FileSystemSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs) : Node(name, size, parent, fs)
+{
+  this->fs = fs;
+}
+
+FileSystemSlack::~FileSystemSlack()
+{
+}
+
+void		FileSystemSlack::fileMapping(FileMapping* fm)
+{
+  uint64_t	offset;
+  uint64_t	size;
+
+  offset = this->fs->bs->totalsize;
+  size = this->fs->parent->size() - offset;
+  fm->push(0, size, this->fs->parent, offset);
+}
+
+Attributes	FileSystemSlack::_attributes(void)
+{
+  Attributes	attrs;
+  uint64_t	esect;
+  uint64_t	tsect;
+  uint64_t	ssect;
+  
+  esect = this->fs->parent->size() / this->fs->bs->ssize;
+  tsect = (this->fs->parent->size() - this->fs->bs->totalsize) / this->fs->bs->ssize;
+  ssect = esect - tsect;
+  attrs["ending sector"] = new Variant(esect);
+  attrs["total sectors"] = new Variant(tsect);
+  attrs["starting sector"] = new Variant(ssect);
+  return attrs;
+}
+
+
 
 FatNode::FatNode(std::string name, uint64_t size, Node* parent, class Fatfs* fs): Node(name, size, parent, fs)
 {
@@ -110,8 +241,6 @@ Attributes	FatNode::_attributes()
   Attributes	attr;
   VFile*	vf;
   std::vector<uint32_t>	clusters;
-  //std::list<Variant*>	clustlist;
-  unsigned int			i;
   uint8_t*			entry;
   EntriesManager*		em;
   dosentry*			dos;
@@ -124,7 +253,6 @@ Attributes	FatNode::_attributes()
     {
       vf->seek(this->dosmetaoffset);
       vf->read(entry, sizeof(dosentry));
-      vf->close();
       dos = em->toDos(entry);
       free(entry);
       attr["modified"] = new Variant(this->dosToVtime(dos->mtime, dos->mdate));
@@ -136,36 +264,40 @@ Attributes	FatNode::_attributes()
       attr["Hidden"] = new Variant(bool(dos->attributes & ATTR_HIDDEN));
       attr["System"] = new Variant(bool(dos->attributes & ATTR_SYSTEM));
       attr["Archive"] = new Variant(bool(dos->attributes & ATTR_ARCHIVE));
-      attr["Volume"] = new Variant(bool(dos->attributes & ATTR_VOLUME));  
+      attr["Volume"] = new Variant(bool(dos->attributes & ATTR_VOLUME));
       delete dos;
       try
-	{
-	  uint64_t clustsize = this->fs->bs->csize * this->fs->bs->ssize;
-	  if (this->__clustrealloc)
-	    attr["first cluster (!! reallocated to another existing entry)"] = new Variant(this->cluster);
-	  else
-	    {
-	      if ((!this->isDeleted()) && (this->size()) && (this->size() % clustsize))
-		{
-		  std::map<std::string, Variant*>	slackinfo;
-		  clusters = this->fs->fat->clusterChain(this->cluster);
-		  uint32_t	lastclust = clusters.back();
-		  uint64_t	ssize = (((uint64_t)clusters.size()) * clustsize) - this->size();
-		  uint64_t	soffset = this->fs->fat->clusterToOffset(lastclust);
-		  slackinfo["start offset"] = new Variant(soffset + clustsize - ssize);
-		  slackinfo["size"] = new Variant(ssize);
+      	{
+      	  uint64_t clustsize = (uint64_t)this->fs->bs->csize * this->fs->bs->ssize;
+      	  if (this->__clustrealloc)
+      	    attr["first cluster (!! reallocated to another existing entry)"] = new Variant(this->cluster);
+      	  else
+      	    {
+      	      if ((!this->isDeleted()) && (this->size()) && (this->size() % clustsize))
+      		{
+      		  std::map<std::string, Variant*>	slackinfo;
+      		  clusters = this->fs->fat->clusterChain(this->cluster);
+      		  uint32_t	lastclust = clusters.back();
+      		  uint64_t	ssize = (((uint64_t)clusters.size()) * clustsize) - this->size();
+      		  uint64_t	soffset = this->fs->fat->clusterToOffset(lastclust);
+      		  slackinfo["start offset"] = new Variant(soffset + clustsize - ssize);
+      		  slackinfo["size"] = new Variant(ssize);
 		  attr["slack space"] = new Variant(slackinfo);	      
-		}
-	      //for (i = 0; i != clusters.size(); i++)
-	      //clustlist.push_back(new Variant(clusters[i]));
-	      attr["first cluster"] = new Variant(this->cluster);
-	      //attr["allocated clusters"] = new Variant(clustlist);
-	    }
-	}
+      		}
+      	      //for (i = 0; i != clusters.size(); i++)
+      	      //clustlist.push_back(new Variant(clusters[i]));
+      	      attr["first cluster"] = new Variant(this->cluster);
+      	      //attr["allocated clusters"] = new Variant(clustlist);
+      	    }
+      	}
       catch(vfsError e)
-	{
-	  return attr;
-	}
+      	{
+      	}
+    }
+  if (vf != NULL)
+    {
+      vf->close();
+      delete vf;
     }
   return attr;
 }

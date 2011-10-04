@@ -16,7 +16,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from typeSelection import filetypes, wildcard
+from typeSelection import filetypes
 from process import CarvingProcess
 
 import string
@@ -157,7 +157,7 @@ class PredefinedTree(QTreeWidget):
                     if child.checkState(0) == Qt.Checked and not child.isDisabled():
                         child.setDisabled(True)
                         text = str(child.text(0))
-                        selected[text] = (filetypes[mimetype][text], wildcard, self.itemWidget(child, 1).isChecked())
+                        selected[text] = (filetypes[mimetype][text], self.itemWidget(child, 1).isChecked())
                         i += 1
                 if i > 0:
                     typeItem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)

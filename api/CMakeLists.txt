@@ -15,6 +15,7 @@
 
 
 # compiled
+
 add_subdirectory (exceptions)
 add_subdirectory (events)
 add_subdirectory (loader)
@@ -22,6 +23,7 @@ add_subdirectory (module)
 add_subdirectory (types)
 add_subdirectory (vfs)
 add_subdirectory (search)
+add_subdirectory (filters)
 if (ENABLE_INDEXER)
    add_subdirectory (index)
 endif (ENABLE_INDEXER)
@@ -33,6 +35,7 @@ add_subdirectory (manager)
 add_subdirectory (datatype)
 add_subdirectory (gui)
 add_subdirectory (devices)
+add_subdirectory (apswvfs)
 
 #### Deploying python __init__ script
 set(api_srcs

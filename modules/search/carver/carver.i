@@ -23,6 +23,7 @@
 %include "windows.i"
 
 %{
+#include "attributesindexer.hpp"
 #include "variant.hpp"
 #include "vtime.hpp"
 #include "fso.hpp"
@@ -151,5 +152,5 @@ class CARVER(Module):
 	self.conf.addArgument({"name": "start-offset",
 	                       "input": Argument.Single|Argument.Optional|typeId.UInt64,
                       	       "description": "offset where to start carving"})
-	self.tags = "Search"
+	self.tags = "builtins"
 %}

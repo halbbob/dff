@@ -20,6 +20,9 @@ INCLUDE(${SWIG_USE_FILE})
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
+include_directories(${PFF_INCLUDE_DIR})
+include_directories(${BFIO_INCLUDE_DIR})
+
 
 set(pff_srcs
     pff.cpp
@@ -43,11 +46,12 @@ SET_SOURCE_FILES_PROPERTIES(pff.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(PFF python pff.i ${pff_srcs})
 
 if(WIN32)
-  add_definitions(-DLIBPFF_HAVE_BFIO)
-  SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs libpff libbfio liberror)
-else(WIN32)
-  SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${PFF_MAIN_LIBRARY} ${PFF_BFIO_LIBRARY})
+  add_definitions(-DLIBPFF_HAVE_BFIO -D_LIBPFF_TYPES_H_INTEGERS -D_LIBBFIO_TYPES_H_INTEGERS)
+  FILE(COPY ${PFF_DYN_LIBRARIES} ${BFIO_DYN_LIBRARIES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+  message(STATUS "${BFIO_DYN_LIBRARIES}")
 endif(WIN32)
+
+SWIG_LINK_LIBRARIES(PFF ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs ${PFF_LIBRARY} ${BFIO_LIBRARY})
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_PFF_REAL_NAME} PROPERTIES
@@ -62,6 +66,7 @@ if(WIN32)
   set(pff_files
     PFF.py
     libpff.dll
+    libbfio.dll
   )
 else(WIN32)
   set(pff_files

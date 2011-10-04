@@ -38,6 +38,7 @@ class Processus(Script):
     self.vtreeprinter = VariantTreePrinter()
     self.timestart = 0
     self.timeend = 0
+    self.streamOut = None
 
   def launch(self, args):
     self.state = "exec"
@@ -68,7 +69,6 @@ class Processus(Script):
     if self.res and len(self.res):
       buff = self.vtreeprinter.fillMap(0, self.res)
       print buff
-
 
   def error(self, trace = None):
     if trace:

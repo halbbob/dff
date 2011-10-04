@@ -17,11 +17,7 @@
  */
 
 %module  EXTFS
-#ifndef WIN32
-%include "stdint.i"
-#else
-%include "wstdint.i"
-#endif
+
 %include "std_string.i"
 %include "std_list.i"
 %include "std_set.i"

@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <list>
-#include "search.hpp"
+#include "export.hpp"
 #include "pattern.hpp"
 
 #ifndef UCHAR_MAX
@@ -42,7 +42,7 @@ typedef struct	s_bmContext
   unsigned int	count;
 }		bmContext;
 
-class BoyerMoore: public algorithm
+class BoyerMoore
 {
  private:
   unsigned char		*needle;

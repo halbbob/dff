@@ -22,10 +22,63 @@
 #include "variant.hpp"
 #include "entries.hpp"
 #ifndef WIN32
-#include <stdint.h>
+	#include <stdint.h>
+#elif _MSC_VER >= 1600
+	#include <stdint.h>
 #else
-#include "wstdint.h"
+	#include "wstdint.h"
 #endif
+
+class FileSlack: public Node
+{
+private:
+  uint64_t	__offset;
+  class Fatfs*	__fs;
+public:
+  FileSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~FileSlack();
+  void			setContext(uint64_t offset);
+  virtual void		fileMapping(FileMapping* fm);
+  virtual Attributes	_attributes();
+};
+
+class UnallocatedSpace: public Node
+{
+private:
+  class Fatfs*	__fs;
+  uint32_t	__scluster;
+  uint32_t	__count;
+public:
+  UnallocatedSpace(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~UnallocatedSpace();
+  void				setContext(uint32_t scluster, uint32_t count);
+  virtual void			fileMapping(FileMapping* fm);
+  virtual Attributes		_attributes(void);
+};
+
+class ReservedSectors: public Node
+{
+private:
+  class Fatfs*	fs;
+public:
+  ReservedSectors(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~ReservedSectors();
+  virtual void			fileMapping(FileMapping* fm);
+  virtual Attributes		_attributes(void);
+  virtual Variant*		dataType();
+};
+
+class FileSystemSlack: public Node
+{
+private:
+  class Fatfs*	fs;
+public:
+  FileSystemSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
+  ~FileSystemSlack();
+  virtual void			fileMapping(FileMapping* fm);
+  virtual Attributes		_attributes(void);
+};
+
 
 class FatNode: public Node
 {

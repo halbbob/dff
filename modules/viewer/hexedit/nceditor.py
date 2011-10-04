@@ -64,7 +64,7 @@ class HexFF():
    def loop(stdscr):
       pass
 
-   def createPannel(self, h, w, x, y):
+   def createPanel(self, h, w, x, y):
       win = curses.newwin(h, w, x, y)
       pan = panel.new_panel(win)
       pan.show()
@@ -199,16 +199,16 @@ def main_loop(stdscr):
 
    hexff.seek(hexff.addrView)
 
-   toolbar_pan = hexff.createPannel(bottom_box_height, hexff.addrWidth + 68, w - bottom_box_height, 0)
+   toolbar_pan = hexff.createPanel(bottom_box_height, hexff.addrWidth + 68, w - bottom_box_height, 0)
    hexff.fillToolbar(toolbar_pan)
 
-   address_pan = hexff.createPannel(w - bottom_box_height, hexff.addrWidth + 2, 0, 0)
+   address_pan = hexff.createPanel(w - bottom_box_height, hexff.addrWidth + 2, 0, 0)
    hexff.fillAddress(address_pan, w - bottom_box_height - 1)
 
-   hex_pan = hexff.createPannel(w - bottom_box_height, 50, 0, hexff.addrWidth + 2)
+   hex_pan = hexff.createPanel(w - bottom_box_height, 50, 0, hexff.addrWidth + 2)
    hexff.fillHexPan(hex_pan)
 
-   ascii_pan = hexff.createPannel(w - bottom_box_height, 16, 0, hexff.addrWidth + 52)
+   ascii_pan = hexff.createPanel(w - bottom_box_height, 16, 0, hexff.addrWidth + 52)
    hexff.fillASCII(ascii_pan)
 
    while (1):

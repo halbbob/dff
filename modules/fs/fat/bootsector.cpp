@@ -193,7 +193,8 @@ void		BootSector::fillFatType()
 
 void	BootSector::fillExtended()
 {
-  this->totalsize = (uint64_t)this->totaldatasector * this->ssize;
+  this->totalsize = (uint64_t)this->totalsector * this->ssize;
+  this->totaldatasize = (uint64_t)this->totaldatasector * this->ssize;
   if (this->fattype == 32)
     {
       this->vol_id = *((uint32_t*)this->bs.a.f32.vol_id);
@@ -231,7 +232,7 @@ void	BootSector::fillCtx()
   this->prevsect = *((uint32_t*)this->bs.prevsect);
   if (this->err != 0)
     {
-      std::cout << "error: " << this->errlog << std::endl;
+      //std::cout << "error: " << this->errlog << std::endl;
       throw("bad bootsector");
     }
   else
@@ -239,9 +240,10 @@ void	BootSector::fillCtx()
       this->fatsize = this->sectperfat * this->ssize;
       this->fillFatType();
       this->fillExtended();
+      this->fs->res["fat type"] = new Variant(this->fattype);
       this->fs->res["oemname"] = new Variant(this->oemname);
       this->fs->res["sector size"] = new Variant(this->ssize);
-      this->fs->res["cluster size"] = new Variant(this->csize);
+      this->fs->res["sectors per cluster"] = new Variant(this->csize);
       this->fs->res["reserved cluster"] = new Variant(this->reserved);
       this->fs->res["number of fat"] = new Variant(this->numfat);
       this->fs->res["number of entries in root directory"] = new Variant(this->numroot);
@@ -250,7 +252,7 @@ void	BootSector::fillCtx()
       this->fs->res["volume label"] = new Variant(this->vol_lab);
       this->fs->res["FS type"] = new Variant(this->fs_type);
       this->fs->res["root cluster"] = new Variant(this->rootclust);
-      this->fs->res["total sectors for data"] = new Variant(this->datasector);
+      this->fs->res["total sectors for data"] = new Variant(this->totaldatasector);
       this->fs->res["total sectors"] = new Variant(this->totalsector);
       this->fs->res["sectors per fat"] = new Variant(this->sectperfat);
       this->fs->res["total clusters"] = new Variant(this->totalcluster);
@@ -262,6 +264,7 @@ void	BootSector::fillCtx()
       this->fs->res["first sector of data"] = new Variant(this->datasector);
       this->fs->res["size of fat"] = new Variant(this->fatsize);
       this->fs->res["total size"] = new Variant(this->totalsize);
+      this->fs->res["total data size"] = new Variant(this->totaldatasize);
     }
 }
 

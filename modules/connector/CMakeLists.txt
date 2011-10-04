@@ -12,13 +12,18 @@
 # Author(s):
 #  Solal Jacob <sja@digital-forensic.org>
 
+add_subdirectory(devices)
 
 add_subdirectory (local)
-add_subdirectory (libewf)
-add_subdirectory(devices)
-if(WIN32 OR AFF_LIBRARY)
-  add_subdirectory(aff)
-endif(WIN32 OR AFF_LIBRARY)
+IF (EWF_FOUND)
+   add_subdirectory (ewf)
+ENDIF (EWF_FOUND)
+
+if (AFF_FOUND)
+   add_subdirectory(aff)
+else (AFF_FOUND)
+    message(STATUS "AFF library not found. Connector module will not be built.")
+endif(AFF_FOUND)
 
 if(HAVE_FUSE)
   add_subdirectory (fuse)
