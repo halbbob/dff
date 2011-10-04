@@ -6,6 +6,28 @@ See the RELEASENOTES file for a summary of changes in each release.
 Version 1.2.0 (04 October 2011)
 ===============================
 
+Author: jmo <jmo@digital-forensic.org>
+Date:   Tue Oct 4 12:50:38 2011 +0200
+
+    * Module: hexviewer
+    ** QGraphicsView is now instantiate with arguments ! QGraphicsScene is setted to None and QWidget to provided parent. If not instantiated with parent, it leads to crashes with the preview which destroys each widget
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Oct 3 19:08:29 2011 +0000
+
+    Change ui/gui/gui.py to add version number dynamically in version 1.2
+
+Author: Frederic Baguelin <fba@digital-forensic.org>
+Date:   Mon Oct 3 19:14:14 2011 +0000
+
+    * GUI: search
+    ** disable quick search functions since model are totally desynchro with filtering results. Start SearchWidget when clicking the binoculars icon
+
+Author: sja <sja@digital-forensic.org>
+Date:   Mon Oct 3 18:27:57 2011 +0000
+
+    NTFS : boot change printf to DEBUG message
+
 Author: Frederic Baguelin <fba@digital-forensic.org>
 Date:   Thu Sep 29 17:31:08 2011 +0000
 
