@@ -462,6 +462,7 @@ IF(WIN32 AND NOT UNIX)
     message(STATUS "python installer: ${PYTHON_INSTALLER}")
     message(STATUS "pyqt installer: ${PYQT_INSTALLER}")
     message(STATUS "vcredist installer: ${VCREDIST_INSTALLER}")
+	message(STATUS "apsw installer: ${APSW_INSTALLER}")
     if (WIN32)
       SET(CPACK_SYSTEM_NAME "win32_all_in_one")
     else(WIN32)
@@ -477,7 +478,11 @@ IF(WIN32 AND NOT UNIX)
         ExecWait '\\\"Prerequisites\\\\${PYQT_INSTALLER}\\\"'
         Goto endPyQt
        endPyQt:
-       MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
+		MessageBox MB_YESNO \\\"Install ${APSW_INSTALLER}? \\\" /SD IDYES IDNO endAPSW
+		ExecWait '\\\"Prerequisites\\\\${APSW_INSTALLER}\\\"'
+		Goto endAPSW
+	   endAPSW:
+		MessageBox MB_YESNO \\\"Install Microsoft Visual Studio DLL dependencies ? \\\" /SD IDYES IDNO endVS
         ExecWait '\\\"Prerequisites\\\\${VCREDIST_INSTALLER}\\\" /q:a'
         Goto endVS
        endVS:
