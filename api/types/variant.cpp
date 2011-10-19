@@ -106,10 +106,12 @@ Variant::Variant()
   this->_type = typeId::Invalid;
 }
 
-Variant::Variant(class Variant* orig)
+Variant::Variant(class Variant* orig) throw (std::string)
 {
-  if (orig != NULL && orig->type() != typeId::Invalid)
+  if (orig != NULL)
     {
+      if (orig->type() != typeId::Invalid)
+	throw (std::string("provided Variant cannot be of type Invalid"));
       this->_type = orig->type();
       if ((this->_type == typeId::String) || (this->_type == typeId::CArray))
         this->__data.str = new std::string(orig->value<std::string>());
@@ -167,6 +169,8 @@ Variant::Variant(class Variant* orig)
       if (this->_type == typeId::VoidPtr)
 	this->__data.ptr = orig->value<void*>();
     }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
 Variant::~Variant()
@@ -223,10 +227,15 @@ Variant::Variant(std::string str)
   this->_type = typeId::String;
 }
 
-Variant::Variant(char *carray)
+Variant::Variant(char *carray) throw (std::string)
 {
-  this->__data.str = new std::string(carray);
-  this->_type = typeId::CArray;
+  if (carray != NULL)
+    {
+      this->__data.str = new std::string(carray);
+      this->_type = typeId::CArray;
+    }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
 Variant::Variant(char c)
@@ -277,28 +286,48 @@ Variant::Variant(bool b)
   this->_type = typeId::Bool;
 }
 
-Variant::Variant(vtime *vt)
+Variant::Variant(vtime *vt) throw (std::string)
 {
-  this->__data.ptr = (void*)vt;
-  this->_type = typeId::VTime;
+  if (vt != NULL)
+    {
+      this->__data.ptr = (void*)vt;
+      this->_type = typeId::VTime;
+    }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
-Variant::Variant(class Node *node)
+Variant::Variant(class Node *node) throw (std::string)
 {
-  this->__data.ptr = node;
-  this->_type = typeId::Node;
+  if (node != NULL)
+    {
+      this->__data.ptr = node;
+      this->_type = typeId::Node;
+    }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
-Variant::Variant(Path *path)
+Variant::Variant(Path *path) throw (std::string)
 {
-  this->__data.ptr = path;
-  this->_type = typeId::Path;
+  if (path != NULL)
+    {
+      this->__data.ptr = path;
+      this->_type = typeId::Path;
+    }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
-Variant::Variant(Argument *arg)
+Variant::Variant(Argument *arg) throw (std::string)
 {
-  this->__data.ptr = arg;
-  this->_type = typeId::Argument;
+  if (arg != NULL)
+    {
+      this->__data.ptr = arg;
+      this->_type = typeId::Argument;
+    }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
 Variant::Variant(std::list<Variant*> l)
@@ -313,10 +342,15 @@ Variant::Variant(std::map<std::string, Variant*> m)
   this->_type = typeId::Map;
 }
 
-Variant::Variant(void *user)
+Variant::Variant(void *user) throw (std::string)
 {
-  this->__data.ptr = (void*)user;
-  this->_type = typeId::VoidPtr;
+  if (user != NULL)
+    {
+      this->__data.ptr = (void*)user;
+      this->_type = typeId::VoidPtr;
+    }
+  else
+    throw (std::string("NULL Pointer provided"));
 }
 
 std::string	Variant::toString() throw (std::string)
