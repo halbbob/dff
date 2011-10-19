@@ -22,9 +22,19 @@
 %include "wstdint.i"
 #endif
 
+%nothreadallow Filter::process;
+%threadblock Filter::process;
 %include "std_string.i"
 %include "std_list.i"
 %include "windows.i"
+
+
+%exception Filter::process
+{
+  SWIG_PYTHON_THREAD_BEGIN_BLOCK;
+  $action
+  SWIG_PYTHON_THREAD_END_BLOCK;
+}
 
 %{
 #include "attributesindexer.hpp"
