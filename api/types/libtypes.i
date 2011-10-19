@@ -930,6 +930,9 @@
       if (obj == NULL)
         throw(std::string("Provided PyObject is NULL"));
 
+      if (obj == Py_None)
+        throw(std::string("Provided PyObject cannot be None"));
+
       //std::cout << "Variant::Variant(PyObject*, uint8_t) -- PyObject type " << obj->ob_type->tp_name << std::endl;
 
       SWIG_PYTHON_THREAD_BEGIN_BLOCK;

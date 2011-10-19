@@ -89,10 +89,10 @@ class Variant
 public:
 
   EXPORT Variant();
-  EXPORT Variant(class Variant* );
+  EXPORT Variant(class Variant* ) throw (std::string);
   EXPORT ~Variant();
   EXPORT Variant(std::string str);
-  EXPORT Variant(char *carray);
+  EXPORT Variant(char *carray) throw (std::string);
   EXPORT Variant(char c);
   EXPORT Variant(uint16_t us);
   EXPORT Variant(int16_t s);
@@ -101,13 +101,13 @@ public:
   EXPORT Variant(int64_t ull);
   EXPORT Variant(uint64_t ll);
   EXPORT Variant(bool b);
-  EXPORT Variant(vtime *vt);
-  EXPORT Variant(class Node *node);
-  EXPORT Variant(class Path *path);
-  EXPORT Variant(class Argument *argument);
+  EXPORT Variant(vtime *vt) throw (std::string);
+  EXPORT Variant(class Node *node) throw (std::string);
+  EXPORT Variant(class Path *path) throw (std::string);
+  EXPORT Variant(class Argument *argument) throw (std::string);
   EXPORT Variant(std::list<class Variant*> l);
   EXPORT Variant(std::map<std::string, class Variant*> m);
-  EXPORT Variant(void *user);
+  EXPORT Variant(void *user) throw (std::string);
 
   EXPORT bool	convert(uint8_t itype, void *res)
   {
