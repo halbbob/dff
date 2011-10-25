@@ -57,7 +57,8 @@ class vtime
 public:
   EXPORT		vtime();
   EXPORT 		vtime(int, int, int, int, int, int, int);
-  EXPORT		vtime(uint64_t value, uint32_t type);
+  EXPORT		vtime(uint16_t dos_time, uint16_t dos_date);//DOS 32 bits format 
+  EXPORT		vtime(uint64_t value, int type);
   EXPORT		vtime(std::string ts);
   EXPORT bool		operator==(vtime* v);
   EXPORT bool		operator!=(vtime* v);

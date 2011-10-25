@@ -157,31 +157,6 @@ FatNode::~FatNode()
 {
 }
 
-vtime*	FatNode::dosToVtime(uint16_t dos_time, uint16_t dos_date)
-{
-  vtime*	vt;
-
-  vt = new vtime();
-  vt->day = (dos_date & 31);
-  vt->month = ((dos_date >> 5) & 15);
-  vt->year = ((dos_date >> 9) + 1980);
-
-  if (dos_time != 0)
-    {
-      vt->second = (dos_time & 31) * 2;
-      vt->minute = ((dos_time >> 5) & 63);
-      vt->hour = (dos_time >> 11);
-    }
-  else
-    {
-      vt->second = 0;
-      vt->minute = 0;
-      vt->hour = 0;
-    }
-  return vt;
-}
-
-
 void		FatNode::setLfnMetaOffset(uint64_t lfnmetaoffset)
 {
   this->lfnmetaoffset = lfnmetaoffset;
@@ -255,9 +230,9 @@ Attributes	FatNode::_attributes()
       vf->read(entry, sizeof(dosentry));
       dos = em->toDos(entry);
       free(entry);
-      attr["modified"] = new Variant(this->dosToVtime(dos->mtime, dos->mdate));
-      attr["accessed"] = new Variant(this->dosToVtime(0, dos->adate));
-      attr["changed"] = new Variant(this->dosToVtime(dos->ctime, dos->cdate));
+      attr["modified"] = new Variant(new vtime(dos->mtime, dos->mdate));
+      attr["accessed"] = new Variant(new vtime(0, dos->adate));
+      attr["changed"] = new Variant(new vtime(dos->ctime, dos->cdate));
       attr["dos name (8+3)"] = new Variant(em->formatDosname(dos));
       delete em;
       attr["Read Only"] = new Variant(bool(dos->attributes & ATTR_READ_ONLY));

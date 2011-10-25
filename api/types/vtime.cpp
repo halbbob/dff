@@ -27,7 +27,28 @@ vtime::vtime(int y, int mo, int d, int h, int mi, int s, int us)
   usecond = us; 
 }
 
-vtime::vtime(uint64_t value, uint32_t type = 0) 
+
+vtime::vtime(uint16_t dos_time, uint16_t dos_date)
+{
+  this->day = (dos_date & 31);
+  this->month = ((dos_date >> 5) & 15);
+  this->year = ((dos_date >> 9) + 1980);
+
+  if (dos_time != 0)
+    {
+      this->second = (dos_time & 31) * 2;
+      this->minute = ((dos_time >> 5) & 63);
+      this->hour = (dos_time >> 11);
+    }
+  else
+    {
+      this->second = 0;
+      this->minute = 0;
+      this->hour = 0;
+    }
+}
+
+vtime::vtime(uint64_t value, int type = 0) 
 {
   if (value > 0)
     {
