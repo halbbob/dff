@@ -110,7 +110,7 @@ Variant::Variant(class Variant* orig) throw (std::string)
 {
   if (orig != NULL)
     {
-      if (orig->type() != typeId::Invalid)
+      if (orig->type() == typeId::Invalid)
 	throw (std::string("provided Variant cannot be of type Invalid"));
       this->_type = orig->type();
       if ((this->_type == typeId::String) || (this->_type == typeId::CArray))
