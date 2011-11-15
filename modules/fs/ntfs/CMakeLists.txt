@@ -20,6 +20,7 @@ include_directories(${PYTHON_INCLUDE_PATH})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
+include_directories(${ICU_INCLUDE_DIRS})
 
 #add_definitions(-Wall -Wunused -Wextra)
 
@@ -43,7 +44,7 @@ set(ntfs_srcs
 
 SET_SOURCE_FILES_PROPERTIES(ntfs.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(NTFS python ntfs.i ${ntfs_srcs})
-SWIG_LINK_LIBRARIES(NTFS ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs)
+SWIG_LINK_LIBRARIES(NTFS ${PYTHON_LIBRARIES} ${ICU_LIBRARIES} _libexceptions _libtypes _libvfs)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_NTFS_REAL_NAME} PROPERTIES

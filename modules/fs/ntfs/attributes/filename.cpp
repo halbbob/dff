@@ -18,11 +18,14 @@
 
 
 #include "filename.hpp"
+#include <unicode/unistr.h>
 
 AttributeFileName::AttributeFileName(Attribute &parent)
 {
   uint16_t	i = 0;
   uint8_t	*name;
+  UnicodeString	us;
+  
 
   _attributeHeader = new AttributeHeader(*(parent.attributeHeader()));
   _attributeResidentDataHeader = new AttributeResidentDataHeader(*(parent.residentDataHeader()));
@@ -36,22 +39,12 @@ AttributeFileName::AttributeFileName(Attribute &parent)
 
   _data = new AttributeFileName_t(*((AttributeFileName_t *)(_readBuffer + _bufferOffset +
 							    _attributeResidentDataHeader->contentOffset)));
-  
-  _filename.str("");
-
   name = (_readBuffer + _bufferOffset + ATTRIBUTE_FN_SIZE +
 	  _attributeResidentDataHeader->contentOffset);
 
-  for (i = 0; i < (_attributeResidentDataHeader->contentSize -
-		   ATTRIBUTE_FN_SIZE); i++) {
-    if (!(i % 2)) {
-      //      if (name[i] >= 0x20 && name[i] <= 0x7e) {
-	_filename << name[i];
-	//      }
-    }
-  }
-
-  DEBUG(INFO, "found filename: %s\n", _filename.str().c_str());
+  us = UnicodeString((char*)name, _attributeResidentDataHeader->contentSize - ATTRIBUTE_FN_SIZE, "UTF-16LE");
+  us.toUTF8String(_filename);
+  DEBUG(INFO, "found filename: %s\n", _filename.c_str());
   //  content();
 }
 
@@ -62,12 +55,7 @@ AttributeFileName::~AttributeFileName()
 
 std::string	AttributeFileName::getFileName()
 {
-  return _filename.str();
-}
-
-void	AttributeFileName::appendToFileName(std::string appendMe)
-{
-  _filename << appendMe;
+  return _filename;
 }
 
 void	AttributeFileName::content()
@@ -82,7 +70,7 @@ void	AttributeFileName::content()
   printf("\tParent directory fileref 0x%.16llx\n", _data->parentDirectoryFileReference);
   printf("\tReal size of file %lld bytes\n", _data->realSizeOfFile);
 #endif
-  printf("\tFilename data: %s\n", _filename.str().c_str());
+  printf("\tFilename data: %s\n", _filename.c_str());
   setDateToString(_data->fileCreationTime, &date, &dateString, true);
 #if __WORDSIZE == 64
   printf("\tFile creation time:\t%s\t(0x%.16lx)\n", dateString.c_str(), _data->fileCreationTime);

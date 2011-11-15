@@ -71,11 +71,10 @@ public:
   ~AttributeFileName();
   void		content();
   std::string	getFileName();
-  void		appendToFileName(std::string);
   AttributeFileName_t	*data() { return _data; };
 
 private:
-  std::ostringstream	_filename;
+  std::string		_filename;
   AttributeFileName_t	*_data;
 };
 
