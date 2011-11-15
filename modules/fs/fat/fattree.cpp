@@ -15,6 +15,7 @@
  */
 
 #include "fattree.hpp"
+#include <unicode/unistr.h>
 
 FatTree::FatTree()
 {
@@ -199,9 +200,15 @@ Node*	FatTree::allocNode(ctx* c, Node* parent)
 {
   FatNode*	node;
   uint32_t	lastcluster;
+  UnicodeString us;
+  std::string	utf8;
 
   if (!c->lfnname.empty())
-    node = new FatNode(c->lfnname, c->size, parent, this->fs);
+    {
+      us = UnicodeString(c->lfnname.data(), c->lfnname.size(), "UTF-16LE");
+      us.toUTF8String(utf8);
+      node = new FatNode(utf8, c->size, parent, this->fs);
+    }
   else
     node = new FatNode(c->dosname, c->size, parent, this->fs);
   if (c->dir)
@@ -543,6 +550,10 @@ void	FatTree::process(Node* origin, Fatfs* fs, Node* parent)
       this->fs->stateinfo = std::string("processing regular tree 100%");
       this->makeSlackNodes();
       this->processDeleted();
+      // int32_t	max = ucnv_countAvailable();
+      // for (int32_t i = 0; i != max; i++)
+      // 	printf("%04i -- %s\n", i, ucnv_getAvailableName(i));
+      // printf("current --> %s\n", ucnv_getDefaultName());
     }
   catch(...)
     {

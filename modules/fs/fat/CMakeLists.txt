@@ -21,7 +21,7 @@ include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_HOME_DIRECTORY}/api/include)
 include_directories(${CMAKE_HOME_DIRECTORY}/api/tree)
-
+include_directories(${ICU_INCLUDE_DIRS})
 
 set(fat_srcs
   fatfs.cpp
@@ -35,7 +35,7 @@ set(fat_srcs
 
 SET_SOURCE_FILES_PROPERTIES(fatfs.i PROPERTIES CPLUSPLUS ON)
 SWIG_ADD_MODULE(FATFS python fatfs.i ${fat_srcs})
-SWIG_LINK_LIBRARIES(FATFS ${PYTHON_LIBRARIES} _libexceptions _libtypes _libvfs _libtree)
+SWIG_LINK_LIBRARIES(FATFS ${PYTHON_LIBRARIES} ${ICU_LIBRARIES} _libexceptions _libtypes _libvfs _libtree)
 
 if ( CMAKE_GENERATOR MATCHES "Visual Studio")
 set_target_properties (${SWIG_MODULE_FATFS_REAL_NAME} PROPERTIES

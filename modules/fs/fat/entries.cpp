@@ -76,29 +76,41 @@ void	EntriesManager::updateLfnName(lfnentry* lfn)
 {
   int	i;
   std::string	name;
+  uint16_t	*ptr;
+  bool	stop;
 
   i = 0;
   name = "";
-  //while ((i != 10) && (lfn->first[i] != 0x20) && (lfn->first[i] != 0xFF) && (lfn->first[i] != 0x00))
-  while ((i != 10) && (lfn->first[i] != 0xFF) && (lfn->first[i] != 0x00))
-    {
-      name += lfn->first[i];
-      i += 2;
-    }
+  stop = false;
+
+  
+  ptr = (uint16_t*)lfn->first;
   i = 0;
-  //while ((i != 12) && (lfn->second[i] != 0x20) && (lfn->second[i] != 0xFF) && (lfn->second[i] != 0x00))
-  while ((i != 12) && (lfn->second[i] != 0xFF) && (lfn->second[i] != 0x00))
+  while (i != 5 && *ptr != 0 && *ptr != 0xFFFF)
     {
-      name += lfn->second[i];
-      i += 2;
+      ptr++;
+      i++;
     }
+  name.append((char*)lfn->first, i*2);
+
+  ptr = (uint16_t*)lfn->second;
   i = 0;
-  //while ((i != 4) && (lfn->third[i] != 0x20) && (lfn->third[i] != 0xFF) && (lfn->third[i] != 0x00))
-  while ((i != 4) && (lfn->third[i] != 0xFF) && (lfn->third[i] != 0x00))
+  while (i != 6 && *ptr != 0  && *ptr != 0xFFFF)
     {
-      name += lfn->third[i];
-      i += 2;
+      ptr++;
+      i++;
     }
+  name.append((char*)lfn->second, i*2);
+
+  ptr = (uint16_t*)lfn->third;
+  i = 0;
+  while (i != 2 && *ptr != 0  && *ptr != 0xFFFF)
+    {
+      ptr++;
+      i++;
+    }
+  name.append((char*)lfn->third, i*2);
+
   this->c->lfnname = name + this->c->lfnname;
 }
 
