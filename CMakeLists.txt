@@ -84,11 +84,13 @@ if (${SWIGOK})
 endif (${SWIGOK})
 
 
+find_package(ICU REQUIRED)
 find_package(AFF)
 find_package(BFIO)
 find_package(EWF)
 find_package(PFF)
 find_package(TRE)
+
 
 IF (TRE_FOUND)
    add_definitions(-DHAVE_TRE)
