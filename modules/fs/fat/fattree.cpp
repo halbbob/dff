@@ -200,14 +200,13 @@ Node*	FatTree::allocNode(ctx* c, Node* parent)
 {
   FatNode*	node;
   uint32_t	lastcluster;
-  UnicodeString us;
-  std::string	utf8;
 
   if (!c->lfnname.empty())
     {
-      us = UnicodeString(c->lfnname.data(), c->lfnname.size(), "UTF-16LE");
-      us.toUTF8String(utf8);
-      node = new FatNode(utf8, c->size, parent, this->fs);
+      UnicodeString	us(c->lfnname.data(), c->lfnname.size(), "UTF-16LE");
+      std::string	utf8 = "";
+      std::string ret = us.toUTF8String(utf8);
+      node = new FatNode(std::string(utf8.data(), utf8.size()), c->size, parent, this->fs);
     }
   else
     node = new FatNode(c->dosname, c->size, parent, this->fs);
