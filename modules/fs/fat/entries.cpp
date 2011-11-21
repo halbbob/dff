@@ -91,7 +91,8 @@ void	EntriesManager::updateLfnName(lfnentry* lfn)
       ptr++;
       i++;
     }
-  name.append((char*)lfn->first, i*2);
+  if (i != 0)
+    name.append((char*)lfn->first, i*2);
 
   ptr = (uint16_t*)lfn->second;
   i = 0;
@@ -100,7 +101,8 @@ void	EntriesManager::updateLfnName(lfnentry* lfn)
       ptr++;
       i++;
     }
-  name.append((char*)lfn->second, i*2);
+  if (i != 0)
+    name.append((char*)lfn->second, i*2);
 
   ptr = (uint16_t*)lfn->third;
   i = 0;
@@ -109,7 +111,8 @@ void	EntriesManager::updateLfnName(lfnentry* lfn)
       ptr++;
       i++;
     }
-  name.append((char*)lfn->third, i*2);
+  if (i != 0)
+    name.append((char*)lfn->third, i*2);
 
   this->c->lfnname = name + this->c->lfnname;
 }
