@@ -131,12 +131,13 @@ void fuse::start(std::map<std::string, Variant*> args)
   if (!tpath)
 	return ; 
   
-  argv = (char **)malloc(sizeof(char*) * 3); 
+  argv = (char **)malloc(sizeof(char*) * 4); 
   *argv = (char *)"dff-fuse";
   *(argv + 1) = (char *)tpath->path.c_str();
-  *(argv + 2) = (char *)"-d";
-//loop :(
-  fuse_main(3, argv, &f_opers, 0); 
+  *(argv + 2) = (char *)"-s";
+  *(argv + 3) = (char *)"-f";
+
+  fuse_main(4, argv, &f_opers, 0); 
   return ;
 }
 
