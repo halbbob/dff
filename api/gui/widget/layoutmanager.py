@@ -689,8 +689,11 @@ class addLocalPathButton(QPushButton):
                 if isinstance(self.container, QListWidget):
                     if sFileName:
                         item = QListWidgetItem(str(sFileName), self.container)
-                else:
+                elif isinstance(self.container, QComboBox):
+                    self.container.insertItem(0, sFileName)
+	        else:
                     self.container.insert(sFileName)
+	
         else:
             BrowseVFSDialog = DialogNodeBrowser(self)
             if isinstance(self.container, QListWidget) or isinstance(self.container, QComboBox):
