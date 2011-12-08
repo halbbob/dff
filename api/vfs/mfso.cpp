@@ -182,7 +182,7 @@ bool			mfso::verbose()
 int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 {
   VFile*	vfile;
-  chunck*	current;
+  chunk*	current;
   uint64_t	relativeoffset;
   uint32_t	currentread;
   uint32_t	totalread;
@@ -195,7 +195,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
     {
       try
 	{
-	  current = this->mapFile(fi->node)->chunckFromOffset(fi->offset);
+	  current = this->mapFile(fi->node)->chunkFromOffset(fi->offset);
 	  relativeoffset = current->originoffset + (fi->offset - current->offset);
 	  if ((size - totalread) < (current->offset + current->size - fi->offset))
 	    relativesize = size - totalread;
@@ -231,7 +231,7 @@ int32_t		mfso::readFromMapping(fdinfo* fi, void* buff, uint32_t size)
 	      totalread += relativesize;
 	    }
 	  else
-	    throw("chunck is not valid");
+	    throw("chunk is not valid");
 	}
       catch(...)
 	{
@@ -254,7 +254,7 @@ int32_t 	mfso::vread(int32_t fd, void *buff, uint32_t size)
       fi = this->__fdmanager->get(fd);
       if ((fi->node != NULL) && (this->mapFile(fi->node) != NULL))
 	{
-	  uint64_t fileSize = this->mapFile(fi->node)->mappedFileSize();
+	  uint64_t fileSize = this->mapFile(fi->node)->maxOffset();
 	  if (fi->node->size() <= fileSize)
 	    {
 	      if (size <= (fi->node->size() - fi->offset))
@@ -346,19 +346,19 @@ uint64_t	mfso::vseek(int32_t fd, uint64_t offset, int32_t whence)
       switch (whence)
 	{
 	case 0:
-	  if (offset > this->mapFile(fi->node)->mappedFileSize())
+	  if (offset > this->mapFile(fi->node)->maxOffset())
 	    return (uint64_t)-1;
 	  else
 	    fi->offset = offset;
 	  break;
 	case 1:
-	  if ((fi->offset + offset) > this->mapFile(fi->node)->mappedFileSize())
+	  if ((fi->offset + offset) > this->mapFile(fi->node)->maxOffset())
 	    return (uint64_t)-1;
 	  else
 	    fi->offset += offset;
 	  break;
 	case 2:
-	  fi->offset = this->mapFile(fi->node)->mappedFileSize();
+	  fi->offset = this->mapFile(fi->node)->maxOffset();
 	  break;
 	}
       return fi->offset;
