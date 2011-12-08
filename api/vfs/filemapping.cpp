@@ -20,16 +20,16 @@
 FileMapping::FileMapping(Node* node)
 {
   this->__node = node;
-  this->__mappedFileSize = 0;
-  this->__prevChunck = NULL;
+  this->__maxOffset = 0;
+  this->__prevChunk = NULL;
 }
 
 FileMapping::~FileMapping()
 {
   uint32_t	i;
 
-  for (i = 0; i != this->__chuncks.size(); i++)
-    delete this->__chuncks[i];
+  for (i = 0; i != this->__chunks.size(); i++)
+    delete this->__chunks[i];
 }
 
 Node*			FileMapping::node(void)
@@ -47,49 +47,49 @@ uint64_t		FileMapping::cacheHits(void)
   return (this->__cacheHits);
 }
 
-uint32_t		FileMapping::chunckCount()
+uint32_t		FileMapping::chunkCount()
 {
-  return this->__chuncks.size();
+  return this->__chunks.size();
 }
 
-chunck*			FileMapping::chunckFromIdx(uint32_t idx)
+chunk*			FileMapping::chunkFromIdx(uint32_t idx)
 {
-  if (idx < this->__chuncks.size())
-    return this->__chuncks[idx];
+  if (idx < this->__chunks.size())
+    return this->__chunks[idx];
   else
     return NULL;
 }
 
-std::vector<chunck *>	FileMapping::chuncksFromIdxRange(uint32_t begidx, uint32_t endidx)
+std::vector<chunk *>	FileMapping::chunksFromIdxRange(uint32_t begidx, uint32_t endidx)
 {
-  std::vector<chunck *>	v;
+  std::vector<chunk *>	v;
   uint32_t		vsize;
-  std::vector<chunck *>::iterator	begit;
-  std::vector<chunck *>::iterator	endit;
+  std::vector<chunk *>::iterator	begit;
+  std::vector<chunk *>::iterator	endit;
   
-  vsize = this->__chuncks.size();
+  vsize = this->__chunks.size();
   if ((begidx < endidx) && (begidx < vsize) && (endidx < vsize))
     {
-      begit = this->__chuncks.begin()+begidx;
-      endit = this->__chuncks.begin()+endidx;
+      begit = this->__chunks.begin()+begidx;
+      endit = this->__chunks.begin()+endidx;
       v.assign(begit, endit);
     }
   return v;
 }
 
-std::vector<chunck *>	FileMapping::chuncksFromOffsetRange(uint64_t begoffset, uint64_t endoffset)
+std::vector<chunk *>	FileMapping::chunksFromOffsetRange(uint64_t begoffset, uint64_t endoffset)
 {
-  std::vector<chunck *>	v;
+  std::vector<chunk *>	v;
   uint32_t		begidx;
   uint32_t		endidx;
 
-  if ((begoffset > endoffset) || (begoffset > this->__mappedFileSize) || (endoffset > this->__mappedFileSize))
+  if ((begoffset > endoffset) || (begoffset > this->__maxOffset) || (endoffset > this->__maxOffset))
     throw("provided offset too high");
   try
     {
-      begidx = this->chunckIdxFromOffset(begoffset);
-      endidx = this->chunckIdxFromOffset(endoffset);
-      v = this->chuncksFromIdxRange(begidx, endidx);
+      begidx = this->chunkIdxFromOffset(begoffset);
+      endidx = this->chunkIdxFromOffset(endoffset);
+      v = this->chunksFromIdxRange(begidx, endidx);
     }
   catch (...)
     {
@@ -97,111 +97,239 @@ std::vector<chunck *>	FileMapping::chuncksFromOffsetRange(uint64_t begoffset, ui
   return v;
 }
 
-chunck*			FileMapping::firstChunck()
+chunk*			FileMapping::firstChunk()
 {
-  if (this->__chuncks.size() > 0)
-    return this->__chuncks.front();
+  if (this->__chunks.size() > 0)
+    return this->__chunks.front();
   else
     return NULL;
 }
 
-chunck*			FileMapping::lastChunck()
+chunk*			FileMapping::lastChunk()
 {
-  if (this->__chuncks.size() > 0)
-    return this->__chuncks.back();
+  if (this->__chunks.size() > 0)
+    return this->__chunks.back();
   else
     return NULL;
 }
 
 
-std::vector<chunck *>	FileMapping::chuncks()
+std::vector<chunk *>	FileMapping::chunks()
 {
-  return this->__chuncks;
+  return this->__chunks;
 }
 
-chunck*			FileMapping::chunckFromOffset(uint64_t offset)
+uint32_t		FileMapping::__bsearch(uint64_t offset, uint32_t lbound, uint32_t rbound, bool* found)
 {
-  uint32_t		begidx;
-  uint32_t		mididx;
-  uint32_t		endidx;
-  
-  if (offset > this->__mappedFileSize)
-    throw("provided offset too high");
-  if (this->__chuncks.size() == 0)
-    throw("not found");
-  else if (this->__chuncks.size() == 1)
-    return this->__chuncks[0];
+  uint32_t		mbound;
+
+  if (rbound < lbound)
+    return rbound;
+  mbound = (rbound + lbound) / 2;
+  if (offset < this->__chunks[mbound]->offset)
+    {
+      if (mbound > 0)
+	return this->__bsearch(offset, lbound, mbound - 1, found);
+      else
+	return 0;
+    }
+  else if (offset > this->__chunks[mbound]->offset + this->__chunks[mbound]->size - 1)
+    return this->__bsearch(offset, mbound + 1, rbound, found);
   else
     {
-      begidx = 0;
-      mididx = this->__chuncks.size() / 2;
-      endidx = this->__chuncks.size();
-      while (true)
+      *found = true;
+      return mbound;
+    }
+}
+
+
+chunk*			FileMapping::chunkFromOffset(uint64_t offset)
+{
+  chunk*		chk;
+  uint32_t		idx;
+  bool			found;
+
+  found = false;
+  if (this->__chunks.size() == 0)
+    throw(std::string("file mapping is empty"));
+  if (offset > this->__maxOffset)
+    throw("provided offset too high");
+  if (this->__chunks.size() == 1)
+    {
+      //if there's only one chunk, there are two possibilities:
+      // - either file's mapping is represented by only one chunk starting from 0
+      // - or file's mapping is partial and only represents parts of the file. The stored chunk starts from an offset != 0
+      chk = this->__chunks[0];
+      //first, check if stored chunk contains the requested offset
+      if (offset >= chk->offset && offset <= chk->offset + chk->size - 1)
+	return chk;
+      // if not, it means the offset is lesser than the starting offset of the stored chunk
+      // if offset is greater than chk->offset + chk->size, an exception has been raised (offset > __maxOffset)
+      else
 	{
-	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
-	    return this->__chuncks[mididx];
-	  else if (offset < this->__chuncks[mididx]->offset)
-	    endidx = mididx;
+	  // a virtual chunk is created and is treated as a buffer full of 0 in mfso::readFromMapping
+	  chk = new chunk;
+	  chk->offset = 0;
+	  chk->size = this->__chunks[0]->offset;
+	  chk->origin = NULL;
+	  chk->originoffset = 0;
+	  this->__chunks.insert(this->__chunks.begin(), chk);
+	  return chk;
+	}
+    }
+  else
+    {
+      //otherwise, there are at least 2 chunks and two possibilities:
+      // - either the chunk containing the requested offset is found
+      // - or the chunk containing thes requested offset is NOT found
+      idx = this->__bsearch(offset, 0, this->__chunks.size() - 1, &found);
+      if (found)
+	return this->__chunks[idx];
+      else
+	{
+	  //__bsearch always provide the left-most chunk meaning provided offset
+	  //is greater than chunk[idx]->offset + chunk[idx]->size - 1.
+	  //We need to map the gap
+	  //If returned idx is the last chunk, check if size of node is greater than
+	  //chunks[idx]->offset + chunks[idx]->size ?
+	  //at the moment, we throw an exception
+	  if (idx == this->__chunks.size() - 1)
+	    throw(std::string("no more chunk available. file is not complete"));
+	  //if idx is the first chunk, it means first part of the mapping of the file is
+	  //missing. A virtual chunk is created to fill the gap.
+	  else if (idx == 0)
+	    {
+	      if (offset < this->__chunks[0]->offset)
+		{
+		  //std::cout << "offset < this->__chunks[0]->offset" << std::endl;
+		  chk = new chunk;
+		  chk->offset = 0;
+		  chk->size = this->__chunks[0]->offset;
+		  chk->origin = NULL;
+		  chk->originoffset = 0;
+		  this->__chunks.insert(this->__chunks.begin(), chk);
+		  return chk;
+		}
+	      else
+		{
+		  chk = new chunk;
+		  //std::cout << "offset > this->__chunks[0]->offset" <<  std::endl;
+		  chk->offset = this->__chunks[0]->offset + this->__chunks[0]->size;
+		  chk->size = this->__chunks[1]->offset - chk->offset;
+		  chk->origin = NULL;
+		  chk->originoffset = 0;
+		  this->__chunks.insert(this->__chunks.begin()+1, chk);
+		  return chk;
+		}
+	    }
+	  //requested offset is in the middle of two mapped chunks. A virtual chunk
+	  //is created which fill the gap.
 	  else
-	    begidx = mididx;
-	  mididx = begidx + ((endidx - begidx) / 2);
+	    {
+	      chk = new chunk;
+	      //std::cout << idx << " < offset < " << (idx + 1) << std::endl;
+	      chk->offset = this->__chunks[idx]->offset + this->__chunks[idx]->size;
+	      chk->size = this->__chunks[idx+1]->offset - chk->offset;
+	      chk->origin = NULL;
+	      chk->originoffset = 0;
+	      this->__chunks.insert(this->__chunks.begin()+idx+1, chk);
+	      return chk;
+	    }
 	}
     }
 }
 
-uint32_t	FileMapping::chunckIdxFromOffset(uint64_t offset, uint32_t providedidx)
+uint32_t	FileMapping::chunkIdxFromOffset(uint64_t offset, uint32_t sidx)
 {
-  uint32_t		begidx;
-  uint32_t		mididx;
-  uint32_t		endidx;
+  uint32_t	idx;
+  chunk*	chk;
+  bool		found;
   
-  if (offset > this->__mappedFileSize)
+  if (offset > this->__maxOffset)
     throw("provided offset too high");
-  if (this->__chuncks.size() == 0)
-    throw("not found");
-  else if (this->__chuncks.size() == 1)
-    return 0;
+  if (this->__chunks.size() == 0)
+    throw(std::string("provided offset is not mapped"));
+  if (sidx > this->__chunks.size() - 1)
+    throw(std::string("provided idx is too high"));
+  if (this->__chunks.size() == 1)
+    {
+      chk = this->__chunks[0];
+      if (offset >= chk->offset && offset <= chk->offset + chk->size - 1)
+	return 0;
+      else
+	throw(std::string("provided offset is not mapped"));
+    }
   else
     {
-      begidx = providedidx;
-      endidx = this->__chuncks.size();
-      mididx = begidx + ((endidx - begidx) / 2);
-      while (true)
-	{
-// 	  std::cout << "begidx: " << begidx << " mididx: " << mididx << " endidx: " << endidx
-// 		    << " offset: " << offset << " mididx->offset: " << this->__chuncks[mididx]->offset << std::endl;
-	  if ((offset >= this->__chuncks[mididx]->offset) && (offset < (this->__chuncks[mididx]->offset + this->__chuncks[mididx]->size)))
-	    return mididx;
-	  else if (offset < this->__chuncks[mididx]->offset)
-	    endidx = mididx;
-	  else
-	    begidx = mididx;
-	  mididx = begidx + ((endidx - begidx) / 2);
-	}
+      idx = this->__bsearch(offset, sidx, this->__chunks.size() - 1, &found);
+      if (found)
+	return idx;
+      else
+	throw(std::string("provided offset is not mapped"));
     }
 }
 
-void		FileMapping::allocChunck(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
+void				FileMapping::allocChunk(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
-  chunck	*c;
+  std::vector<chunk*>::iterator	it;
+  uint32_t			idx;
+  chunk				*c;
+  bool				found;
 
-  c = new chunck;
+  found = false;
+  if (this->__chunks.size() == 0)
+    it = this->__chunks.begin();
+  else if (this->__chunks.size() == 1)
+    {
+      if (offset < this->__chunks[0]->offset)
+	it = this->__chunks.begin();
+      else if (offset > (this->__chunks[0]->offset + this->__chunks[0]->size - 1))
+	it = this->__chunks.begin() + 1;
+      else
+	throw (std::string("provided offset is already mapped !"));
+    }
+  else
+    {
+      idx = this->__bsearch(offset, 0, this->__chunks.size() - 1, &found);
+      if (found)
+	throw (std::string("provided offset is already mapped !"));
+      if (idx >= 1)
+      	{
+      	  if (idx == this->__chunks.size() - 1)
+      	    {
+      	      if (offset >= (this->__chunks[idx-1]->offset + this->__chunks[idx-1]->size))
+      		it = this->__chunks.end();
+      	      else
+      		throw (std::string("provided offset is already mapped !"));
+      	    }
+      	  else if (offset >= (this->__chunks[idx-1]->offset + this->__chunks[idx-1]->size) && (offset + size) <= this->__chunks[idx+1]->offset)
+      	    it = this->__chunks.begin() + idx + 1;
+      	  else
+      	    throw (std::string("provided offset is already mapped !"));
+      	}
+      else if ((offset + size) <= this->__chunks[idx]->offset)
+	it = this->__chunks.begin();
+      else
+      	throw (std::string("provided offset is already mapped !"));
+    }
+  c = new chunk;
   c->offset = offset;
   c->size = size;
-  this->__mappedFileSize += size;
+  if (this->__maxOffset < offset + size)
+    this->__maxOffset = offset + size;
   c->origin = origin;
   c->originoffset = originoffset;
-  this->__chuncks.push_back(c);
-  this->__prevChunck = c;
+  this->__chunks.insert(it, c);
+  this->__prevChunk = c;
 }
 
 void			FileMapping::push(uint64_t offset, uint64_t size, class Node* origin, uint64_t originoffset)
 {
-    this->allocChunck(offset, size, origin, originoffset);
+    this->allocChunk(offset, size, origin, originoffset);
 }
 
 
-uint64_t	FileMapping::mappedFileSize()
+uint64_t	FileMapping::maxOffset()
 {
-  return this->__mappedFileSize;
+  return this->__maxOffset;
 }

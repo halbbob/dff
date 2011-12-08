@@ -32,67 +32,67 @@
 
     The FileMapping class is used to give this standard way to describe file content positions on the dump.
     So when the file is opened its content can be displayed in DFF interface using a viewer.
-    File content can be fragmented on the disk so generally there are several chuncks to describe the
+    File content can be fragmented on the disk so generally there are several chunks to describe the
     entire content of a file, especially on big files.
 
-    More precisely, the FileMapping class contains a list of chuncks giving the different offsets
-    of the file blocks on the vfile. Each chuncks are used to describe one of these different positions on the vfile
+    More precisely, the FileMapping class contains a list of chunks giving the different offsets
+    of the file blocks on the vfile. Each chunks are used to describe one of these different positions on the vfile
     by providing two informations :
         * the offset of the data on the vfile
         * the size it occupies
     
-    In other words, the chunck's list will, for each areas the file occupies, give its begining offset and its size.
+    In other words, the chunk's list will, for each areas the file occupies, give its begining offset and its size.
     We could say something like :
-     * The file `foo` first chunck start at offset 0x42 and occupies 10 bytes.
-     * The second chunck of `foo` file starts at offset 0x84 and occupies 20 bytes.
+     * The file `foo` first chunk start at offset 0x42 and occupies 10 bytes.
+     * The second chunk of `foo` file starts at offset 0x84 and occupies 20 bytes.
      * etc.
      
     For example, lets imagine we open a 100 bytes big node which is fragmented in
-    three parts. When mapping the file, three chuncks will be created and will look
+    three parts. When mapping the file, three chunks will be created and will look
     like this :
-        * chunck 1 => offset : x; size : s bytes
-        * chunck 1 => offset : y; size : t bytes
-        * chunck 1 => offset : z; size : u bytes
+        * chunk 1 => offset : x; size : s bytes
+        * chunk 1 => offset : y; size : t bytes
+        * chunk 1 => offset : z; size : u bytes
     
     The sum `s + t + u` should be equal to the file size (100 bytes in our example).
     The \"main\" method of FileMapping class is push, which must be called to
-    create the different chuncks. This method muts be called in the Node::fileMapping method,
+    create the different chunks. This method muts be called in the Node::fileMapping method,
     which is called by DFF when the node is opened.
 "
 
 %feature("docstring") FileMapping::mappedFileSize
 "
-        Return the total size of the different chuncks. Should be equal to the node
+        Return the total size of the different chunks. Should be equal to the node
         size.
 "
 
-%feature("docstring") FileMapping::chunckCount
+%feature("docstring") FileMapping::chunkCount
 "
-        Return the number of mapped chuncks.
-"
-
-%feature("docstring") FileMapping::firstChunck
-"
-        Return a pointer to the first chunck of the list.
+        Return the number of mapped chunks.
 "
 
-
-%feature("docstring") FileMapping::lastChunck
+%feature("docstring") FileMapping::firstChunk
 "
-        Return a pointer to the last chunck of the list.
-"
-
-%feature("docstring") FileMapping::chunckFromIdx
+        Return a pointer to the first chunk of the list.
 "
 
-        Return a pointer on the chunck structure corresponding to index `idx`
-        in the list of chunck.
+
+%feature("docstring") FileMapping::lastChunk
+"
+        Return a pointer to the last chunk of the list.
 "
 
-%feature("docstring") FileMapping::chunckFromOffset
+%feature("docstring") FileMapping::chunkFromIdx
 "
 
-        Return a pointer to the chunck in which offset `offset` is.
+        Return a pointer on the chunk structure corresponding to index `idx`
+        in the list of chunk.
+"
+
+%feature("docstring") FileMapping::chunkFromOffset
+"
+
+        Return a pointer to the chunk in which offset `offset` is.
 "
 
 
@@ -422,9 +422,9 @@ The fileMapping method takes a pointer to an instance of a FileMapping object
 as parameter. This method is called when a node is opened.
 
 The fileMapping method must \"filled up\" the FileMapping object which was passed
-to it by creating chuncks of the files. A chunck is a structure containing 2
+to it by creating chunks of the files. A chunk is a structure containing 2
 important informations :
- * The size (in bytes) of the chunck
+ * The size (in bytes) of the chunk
  * Its address on the vfile.
 
 In human speakable langugage it means that the FileMapping structure contains
@@ -857,7 +857,7 @@ namespace std
   %template(VecNode)		vector<Node*>;
   %template(ListNode)		list<Node*>;
   %template(SetNode)		set<Node *>;
-  %template(VectChunck)		vector<chunck *>;
+  %template(VectChunk)		vector<chunk *>;
   %template(Listui64)		list<uint64_t>;
   %template(ListString)		list<std::string>;
   %template(MapTime)		map<string, vtime*>;
