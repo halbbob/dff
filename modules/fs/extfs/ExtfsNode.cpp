@@ -160,8 +160,8 @@ void	ExtfsNode::fileMapping(FileMapping* fm)
 
 #ifdef FM_DEBUG
   std::cout << "------------ displaying chunks ----------" << std::endl;
-  std::vector<chunck *>	v = fm->chuncks();
-  std::vector<chunck *>::iterator it = v.begin();
+  std::vector<chunk *>	v = fm->chunks();
+  std::vector<chunk *>::iterator it = v.begin();
   while (it != v.end())
     {
       std::cout << "originoffset : " << (*it)->originoffset << std::endl;
