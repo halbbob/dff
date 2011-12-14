@@ -53,31 +53,47 @@ private:
   std::map<uint32_t, uint32_t>	__allocClustCount;
   std::map<uint32_t, uint32_t>	__badClustCount;
   void				__processClustersStatus();
+  bool				__isBadCluster(uint32_t clust);
 public:
   FileAllocationTable();
   ~FileAllocationTable();
-  uint64_t		clusterOffsetInFat(uint64_t cluster, uint8_t which);
+  void			setContext(Node* origin, class Fatfs* fatfs);
+
   uint32_t		ioCluster12(uint32_t current, uint8_t which);
   uint32_t		ioCluster16(uint32_t current, uint8_t which);
   uint32_t		ioCluster32(uint32_t current, uint8_t which);
   uint32_t		cluster12(uint32_t current, uint8_t which);
   uint32_t		cluster16(uint32_t current, uint8_t which);
   uint32_t		cluster32(uint32_t current, uint8_t which);
-  void			setContext(Node* origin, class Fatfs* fatfs);
-  uint32_t		nextCluster(uint32_t current, uint8_t which=0);
+
+
+  uint32_t		clusterEntry(uint32_t current, uint8_t which=0);
+
+  uint64_t		clusterOffsetInFat(uint64_t cluster, uint8_t which);
+
   std::vector<uint64_t>	clusterChainOffsets(uint32_t cluster, uint8_t which=0);
   std::vector<uint32_t>	clusterChain(uint32_t start, uint8_t which=0);
-  bool			isFreeCluster(uint32_t cluster, uint8_t which);
+
+  bool			isFreeCluster(uint32_t cluster);
+  bool			isBadCluster(uint32_t cluster);
+  bool			clusterEntryIsFree(uint32_t cluster, uint8_t which);
+  bool			clusterEntryIsBad(uint32_t cluster, uint8_t which);
+
   std::vector<uint64_t>	listFreeClustersOffset(uint8_t which=0);
   std::vector<uint32_t>	listFreeClusters(uint8_t which=0);
   uint32_t		freeClustersCount(uint8_t which=0);
+
   std::list<uint32_t>	listAllocatedClusters(uint8_t which=0);
   uint32_t		allocatedClustersCount(uint8_t which=0);
-  std::list<uint32_t>	listBadClusters(uint8_t which=0);
-  std::list<uint32_t>	listBadClustersCount(uint8_t which=0);
+
+  std::vector<uint32_t>	listBadClusters(uint8_t which=0);
+  uint32_t		badClustersCount(uint8_t which=0);
+
   uint64_t		clusterToOffset(uint32_t cluster);
   uint32_t		offsetToCluster(uint64_t offset);
+
   void			diffFats();
+
   void			makeNodes(Node* parent);
   void			fileMapping(FileMapping* fm, uint8_t which);
   Attributes		attributes(uint8_t which);

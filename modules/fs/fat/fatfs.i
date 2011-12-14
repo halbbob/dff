@@ -56,9 +56,9 @@ class FATFS(Module):
                            "description": "carve directory entries in unallocated clusters (more accurate but slower)",
                            "input": Argument.Empty})
     self.conf.addArgument({"name": "check_slack",
-                           "description": "This option enables to create slack space for regular files ONLY if not empty. If enabled, processing is slower (default: disable)",
+                           "description": "This option enables to create slack space for regular files ONLY if not empty.\nIf enabled, processing is slower (default: disable)",
                            "input": Argument.Empty})
-    self.conf.addConstant({"name": "mime-type", 
+    self.conf.addConstant({"name": "mime-type",
                            "type": typeId.String,
                            "description": "managed mime type",
                            "values": ["FAT"]})

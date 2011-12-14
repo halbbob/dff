@@ -45,7 +45,23 @@ void		Fatfs::process()
 	  if (this->bs->totalsize < this->parent->size())
 	    fss = new FileSystemSlack("file system slack", this->parent->size() - this->bs->totalsize, this->root, this);
 	  this->fat->makeNodes(this->root);
-	  this->tree->processUnallocated(this->root);
+	  std::vector<uint32_t>	clusters;
+	  if (this->fat->freeClustersCount())
+	    {
+	      Node* unalloc = new Node("unallocated space", 0, NULL, this);
+	      unalloc->setDir();
+	      clusters = this->fat->listFreeClusters();
+	      this->tree->processUnallocated(unalloc, clusters);
+	      this->registerTree(this->root, unalloc);
+	    }
+	  if (this->fat->badClustersCount())
+	    {
+	      Node* bad = new Node("bad clusters", 0, NULL, this);
+	      bad->setDir();
+	      clusters = this->fat->listBadClusters();
+	      this->tree->processUnallocated(bad, clusters);
+	      this->registerTree(this->root, bad);
+	    }
 	  this->registerTree(this->parent, this->root);
 	  if (this->carveunalloc)
 	    this->tree->walk_free(this->root);

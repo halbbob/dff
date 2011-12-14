@@ -32,12 +32,13 @@
 class FileSlack: public Node
 {
 private:
-  uint64_t	__offset;
+  uint64_t	__ocluster;
+  uint64_t	__originsize;
   class Fatfs*	__fs;
 public:
   FileSlack(std::string name, uint64_t size, Node* parent, class Fatfs* fs);
   ~FileSlack();
-  void			setContext(uint64_t offset);
+  void			setContext(uint32_t ocluster, uint64_t osize);
   virtual void		fileMapping(FileMapping* fm);
   virtual Attributes	_attributes();
 };
@@ -54,6 +55,7 @@ public:
   void				setContext(uint32_t scluster, uint32_t count);
   virtual void			fileMapping(FileMapping* fm);
   virtual Attributes		_attributes(void);
+  virtual Variant*		dataType();
 };
 
 class ReservedSectors: public Node
@@ -77,6 +79,7 @@ public:
   ~FileSystemSlack();
   virtual void			fileMapping(FileMapping* fm);
   virtual Attributes		_attributes(void);
+  virtual Variant*		dataType();
 };
 
 

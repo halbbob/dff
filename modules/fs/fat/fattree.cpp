@@ -83,7 +83,7 @@ void	FatTree::rootdir(Node* parent)
     {
       if (buff != NULL)
 	free(buff);
-    }  
+    }
 }
 
 void	hexlify(uint8_t *entry)
@@ -136,52 +136,54 @@ void	hexlify(uint8_t *entry)
 }
 
 
+// void	FatTree::CheckSlackNode()
+// {
+//   void*					zeroed;
+//   void*					buff;
+
+//   if ((zeroed = malloc(clustsize)) != NULL)
+//     memset(zeroed, 0, clustsize);
+//   else
+//     return;
+//   if ((buff = malloc(clustsize)) == NULL)
+//     {
+//       free(zeroed);
+//       return;
+//     }
+//   this->vfile->seek(offset);
+//   if ((uint64_t)this->vfile->read(buff, size) == size)
+//     if (memcmp(zeroed, buff, size) != 0)
+//       {
+// 	FileSlack* fslack = new FileSlack(mit->second->name() + ".SLACK", size, mit->second->parent(), this->fs);
+// 	fslack->setContext(mit->first, mit->second->size());
+//       }
+//   free(buff);
+//   free(zeroed);
+// }
+
+
 void	FatTree::makeSlackNodes()
 {
   std::map<uint32_t, Node*>::iterator	mit;
-  void*					zeroed;
-  void*					buff;
-  uint64_t				offset;
-  uint64_t				size;
-  uint32_t				slackcount;
-  std::stringstream			sstr;
+  uint64_t				clustsize, slackcount;
 
   slackcount = this->_slacknodes.size();
+  clustsize = (uint64_t)this->fs->bs->csize * this->fs->bs->ssize;
   if (slackcount != 0)
     {
-      uint64_t clustsize = (uint64_t)this->fs->bs->csize * this->fs->bs->ssize;
-      if ((zeroed = malloc(clustsize)) != NULL)
-	memset(zeroed, 0, clustsize);
-      else
-	return;
-      if ((buff = malloc(clustsize)) == NULL)
-	{
-	  free(zeroed);
-	  return;
-	}
-      uint32_t sprocessed, percent, prevpercent;
+      uint64_t			sprocessed, percent, prevpercent, size, clistsize;
+      std::stringstream		sstr;
+      std::vector<uint32_t>	clusters;
       sprocessed = percent = prevpercent = 0;
       for (mit = this->_slacknodes.begin(); mit != this->_slacknodes.end(); mit++)
 	{
-	  if (mit->second->size() % clustsize)
+	  clusters = this->fs->fat->clusterChain(mit->first);
+	  clistsize = clusters.size();
+	  if (mit->second->size() < clistsize * clustsize)
 	    {
-	      size = ((mit->second->size() / clustsize + 1) * clustsize) - mit->second->size();
-	      offset = this->fs->fat->clusterToOffset(mit->first) + clustsize - size;
-	      if (this->fs->checkslack)
-		{
-		  this->vfile->seek(offset);
-		  if ((uint64_t)this->vfile->read(buff, size) == size)
-		    if (memcmp(zeroed, buff, size) != 0)
-		      {
-			FileSlack* fslack = new FileSlack(mit->second->name() + ".SLACK", size, mit->second->parent(), this->fs);
-			fslack->setContext(offset);
-		      }
-		}
-	      else
-		{
-		  FileSlack* fslack = new FileSlack(mit->second->name() + ".SLACK", size, mit->second->parent(), this->fs);
-		  fslack->setContext(offset);
-		}
+	      size = clistsize * clustsize - mit->second->size();
+	      FileSlack* fslack = new FileSlack(mit->second->name() + ".SLACK", size, mit->second->parent(), this->fs);
+	      fslack->setContext(mit->first, mit->second->size());
 	    }
 	  percent = (sprocessed * 100) / slackcount;
 	  if (prevpercent < percent)
@@ -199,7 +201,8 @@ void	FatTree::makeSlackNodes()
 Node*	FatTree::allocNode(ctx* c, Node* parent)
 {
   FatNode*	node;
-  uint32_t	lastcluster;
+  uint32_t	allocluster;
+  
 
   if (!c->lfnname.empty())
     {
@@ -210,6 +213,12 @@ Node*	FatTree::allocNode(ctx* c, Node* parent)
     }
   else
     node = new FatNode(c->dosname, c->size, parent, this->fs);
+  if (this->allocatedClusters->find(c->cluster) == NULL)
+    node->setCluster(c->cluster);
+  else
+    node->setCluster(c->cluster, true);
+  if (c->deleted)
+    node->setDeleted();
   if (c->dir)
     node->setDir();
   else
@@ -217,27 +226,16 @@ Node*	FatTree::allocNode(ctx* c, Node* parent)
       node->setFile();
       if (!c->deleted)
 	{
-	  if ((lastcluster = this->updateAllocatedClusters(c->cluster)) != 0)
-	    this->_slacknodes[lastcluster] = node;
+	  this->updateAllocatedClusters(c->cluster);
+	  this->_slacknodes[c->cluster] = node;
 	}
     }
-  if (c->deleted)
-    {
-      node->setDeleted();
-      if (this->allocatedClusters->find(c->cluster) == NULL)
-	node->setCluster(c->cluster);
-      else
-	node->setCluster(c->cluster, true);
-    }
-  else
-    node->setCluster(c->cluster);
   node->setLfnMetaOffset(c->lfnmetaoffset);
   node->setDosMetaOffset(c->dosmetaoffset);
-
   return node;
 }
 
-uint32_t	FatTree::updateAllocatedClusters(uint32_t cluster)
+void	FatTree::updateAllocatedClusters(uint32_t cluster)
 {
   std::vector<uint32_t>		clusters;
   uint32_t			cidx;
@@ -253,9 +251,7 @@ uint32_t	FatTree::updateAllocatedClusters(uint32_t cluster)
       for (cidx = 0; cidx != clusters.size(); cidx++)
 	if (clusters[cidx] != 0)
 	  this->allocatedClusters->insert(clusters[cidx]);
-      return clusters.back();
     }
-  return 0;
 }
 
 void	FatTree::updateDeletedItems(ctx* c, Node* parent)
@@ -446,18 +442,14 @@ void	FatTree::walkDeleted(uint32_t cluster, Node* parent)
     }
 }
 
-void	FatTree::processUnallocated(Node* parent)
+void	FatTree::processUnallocated(Node* parent, std::vector<uint32_t> &clusters)
 {
-  std::vector<uint32_t>		clusters;
   uint32_t			cidx;
   uint32_t			start;
   uint32_t			count;
   UnallocatedSpace*		unode;
   std::stringstream		sstr;
-  Node*				runalloc;
 
-  runalloc = NULL;
-  clusters = this->fs->fat->listFreeClusters();
   start = count = (uint32_t)-1;
   for (cidx = 0; cidx != clusters.size(); cidx++)
     {
@@ -473,13 +465,8 @@ void	FatTree::processUnallocated(Node* parent)
 	      //current unallocated cluster starts another area. Push the current context and start another one
 	      if (clusters[cidx] != start+count)
 		{
-		  if (runalloc == NULL)
-		    {
-		      runalloc = new Node("unallocated space", 0, NULL, this->fs);
-		      runalloc->setDir();
-		    }
 		  sstr << start << "--" << start+count;
-		  unode = new UnallocatedSpace(sstr.str(), (uint64_t)count*this->fs->bs->ssize*this->fs->bs->csize, runalloc, this->fs);
+		  unode = new UnallocatedSpace(sstr.str(), (uint64_t)count*this->fs->bs->ssize*this->fs->bs->csize, parent, this->fs);
 		  sstr.str("");
 		  unode->setContext(start, count);
 		  start = clusters[cidx];
@@ -492,18 +479,11 @@ void	FatTree::processUnallocated(Node* parent)
     }
   if (start != (uint32_t)-1)
     {
-      if (runalloc == NULL)
-	{
-	  runalloc = new Node("unallocated space", 0, NULL, this->fs);
-	  runalloc->setDir();
-	}
       sstr << start << "--" << start+count;
-      unode = new UnallocatedSpace(sstr.str(), (uint64_t)count*this->fs->bs->ssize*this->fs->bs->csize, runalloc, this->fs);
+      unode = new UnallocatedSpace(sstr.str(), (uint64_t)count*this->fs->bs->ssize*this->fs->bs->csize, parent, this->fs);
       sstr.str("");
       unode->setContext(start, count);
     }
-  if (runalloc != NULL)
-    this->fs->registerTree(parent, runalloc);
 }
 
 

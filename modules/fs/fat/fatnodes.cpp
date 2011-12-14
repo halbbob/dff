@@ -25,21 +25,53 @@ FileSlack::~FileSlack()
 {
 }
 
-void		FileSlack::setContext(uint64_t offset)
+void		FileSlack::setContext(uint32_t ocluster, uint64_t originsize)
 {
-  this->__offset = offset;
+  this->__ocluster = ocluster;
+  this->__originsize = originsize;
 }
 
 void		FileSlack::fileMapping(FileMapping* fm)
 {
-  fm->push(0, this->size(), this->__fs->parent, this->__offset);
+  std::vector<uint64_t>	clusters;
+  uint64_t		idx;
+  uint64_t		remaining;
+  uint64_t		voffset;
+  uint64_t		clustsize;
+  uint64_t		rsize;
+
+  voffset = 0;
+  rsize = this->size();
+  clustsize = (uint64_t)this->__fs->bs->csize * this->__fs->bs->ssize;
+  clusters = this->__fs->fat->clusterChainOffsets(this->__ocluster);
+  idx = this->__originsize / clustsize;
+  remaining = this->__originsize % clustsize;
+  //first chunk can be truncated
+  fm->push(voffset, clustsize - remaining, this->__fs->parent, clusters[idx] + remaining);
+  voffset += (clustsize - remaining);
+  idx++;
+  while (idx != clusters.size())
+    {
+      fm->push(voffset, clustsize, this->__fs->parent, clusters[idx]);
+      voffset += clustsize;
+      idx++;
+    }
+  // for (i = (uint32_t)neededclust; i != clusters.size(); i++)
+  //   {
+  //     if (rsize < clustsize)
+  // 	fm->push(voffset, rsize, this->fs->parent, clusters[i]);
+  //     else
+  // 	fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+  //     rsize -= clustsize;
+  //     voffset += clustsize;
+  //   }
 }
 
 Attributes	FileSlack::_attributes()
 {
   Attributes	attrs;
 
-  attrs["starting offset"] = new Variant(this->__offset);
+  //attrs["starting offset"] = new Variant(this->__offset);
   return attrs;
 }
 
@@ -76,6 +108,15 @@ Attributes	UnallocatedSpace::_attributes(void)
   attrs["starting cluster"] = new Variant(this->__scluster);
   attrs["total clusters"] = new Variant(this->__count);
   return attrs;
+}
+
+
+Variant*	UnallocatedSpace::dataType()
+{
+  Attributes	dtype;
+
+  dtype["fatfs"] = new Variant(std::string("unallocated space"));
+  return new Variant(dtype);
 }
 
 
@@ -147,6 +188,14 @@ Attributes	FileSystemSlack::_attributes(void)
 }
 
 
+Variant*	FileSystemSlack::dataType()
+{
+  Attributes	dtype;
+
+  dtype["fatfs"] = new Variant(std::string("file system slack"));
+  return new Variant(dtype);
+}
+
 
 FatNode::FatNode(std::string name, uint64_t size, Node* parent, class Fatfs* fs): Node(name, size, parent, fs)
 {
@@ -183,17 +232,27 @@ void		FatNode::fileMapping(FileMapping* fm)
 
   voffset = 0;
   rsize = this->size();
-  clustsize = this->fs->bs->csize * this->fs->bs->ssize;
-  if (!this->__clustrealloc)
+  clustsize = (uint64_t)this->fs->bs->csize * this->fs->bs->ssize;
+  if (!this->__clustrealloc || (this->__clustrealloc && !this->isDeleted()))
     {
       clusters = this->fs->fat->clusterChainOffsets(this->cluster);
-      if ((clusters.size() * clustsize) < this->size())
+      uint64_t	clistsize = clusters.size();
+      //cluster chain is not complete
+      if ((clistsize*clustsize) < this->size())
 	{
-	  uint64_t	firstclustoff = this->fs->fat->clusterToOffset(this->cluster);
-	  fm->push(0, rsize, this->fs->parent, firstclustoff);
+	  for (i = 0; i != clistsize; i++)
+	    {
+	      fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+	      voffset += clustsize;
+	    }
+	  uint64_t	gap = this->size() - clistsize*clustsize;
+	  //last chunk corresponds to the last gap between last cluster and the size and is
+	  //based on the following blocks of the last cluster
+	  fm->push(voffset, gap, this->fs->parent, clusters[clistsize-1]+clustsize);
 	}
       else
 	{
+	  //manage the mapping based on cluster chain untill node->size() is reached
 	  for (i = 0; i != clusters.size(); i++)
 	    {
 	      if (rsize < clustsize)
@@ -211,14 +270,14 @@ void		FatNode::fileMapping(FileMapping* fm)
 
 
 
-Attributes	FatNode::_attributes()
+Attributes		FatNode::_attributes()
 {
-  Attributes	attr;
-  VFile*	vf;
+  Attributes		attr;
+  VFile*		vf;
   std::vector<uint32_t>	clusters;
-  uint8_t*			entry;
-  EntriesManager*		em;
-  dosentry*			dos;
+  uint8_t*		entry;
+  EntriesManager*	em;
+  dosentry*		dos;
 
   em = new EntriesManager(this->fs->bs->fattype);
   vf = this->fs->parent->open();
@@ -232,7 +291,7 @@ Attributes	FatNode::_attributes()
       free(entry);
       attr["modified"] = new Variant(new vtime(dos->mtime, dos->mdate));
       attr["accessed"] = new Variant(new vtime(0, dos->adate));
-      attr["changed"] = new Variant(new vtime(dos->ctime, dos->cdate));
+      attr["created"] = new Variant(new vtime(dos->ctime, dos->cdate));
       attr["dos name (8+3)"] = new Variant(em->formatDosname(dos));
       delete em;
       attr["Read Only"] = new Variant(bool(dos->attributes & ATTR_READ_ONLY));
@@ -248,17 +307,27 @@ Attributes	FatNode::_attributes()
       	    attr["first cluster (!! reallocated to another existing entry)"] = new Variant(this->cluster);
       	  else
       	    {
-      	      if ((!this->isDeleted()) && (this->size()) && (this->size() % clustsize))
+      	      if (!this->isDeleted() && this->size())
       		{
-      		  std::map<std::string, Variant*>	slackinfo;
       		  clusters = this->fs->fat->clusterChain(this->cluster);
-      		  uint32_t	lastclust = clusters.back();
-      		  uint64_t	ssize = (((uint64_t)clusters.size()) * clustsize) - this->size();
-      		  uint64_t	soffset = this->fs->fat->clusterToOffset(lastclust);
-      		  slackinfo["start offset"] = new Variant(soffset + clustsize - ssize);
-      		  slackinfo["size"] = new Variant(ssize);
-		  attr["slack space"] = new Variant(slackinfo);	      
-      		}
+		  uint64_t clistsize = clusters.size();
+		  attr["allocated clusters"] = new Variant(clistsize);
+		  if (this->size() < clistsize * clustsize)
+		    {
+		      uint64_t	ssize = clistsize * clustsize - this->size();
+		      attr["slack space size"] = new Variant(ssize);
+		    }
+		  else
+		    {
+		      uint32_t	missclust;
+		      uint64_t	gap;
+		      gap = this->size() - clistsize * clustsize;
+		      missclust = gap / clustsize;
+		      attr["file truncated"] = new Variant(true);
+		      attr["missing cluters"] = new Variant(missclust);
+		      attr["missing size"] = new Variant(gap);
+		    }
+		}
       	      //for (i = 0; i != clusters.size(); i++)
       	      //clustlist.push_back(new Variant(clusters[i]));
       	      attr["first cluster"] = new Variant(this->cluster);

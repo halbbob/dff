@@ -35,8 +35,8 @@ class FatTree
 {
 private:
   Node*				origin;
-  uint32_t			allocount;
-  uint32_t			processed;
+  uint64_t			allocount;
+  uint64_t			processed;
   VFile*			vfile;
   class Fatfs*			fs;
   std::vector<deletedItems*>	deleted;
@@ -48,7 +48,7 @@ private:
   void				processDeleted();
   void				walkDeleted(uint32_t cluster, Node* parent);
   void				updateDeletedItems(ctx* c, Node* parent);
-  uint32_t			updateAllocatedClusters(uint32_t cluster);
+  void				updateAllocatedClusters(uint32_t cluster);
   Node*				allocNode(ctx* c, Node* parent);
   void				walk(uint32_t cluster, Node* parent);
   void				rootdir(Node* parent);
@@ -58,7 +58,7 @@ public:
   EntriesManager*		emanager;
   FatTree();
   ~FatTree();
-  void		processUnallocated(Node* parent);
+  void		processUnallocated(Node* parent, std::vector<uint32_t> &clusters);
   void		walk_free(Node* parent);
   void		process(Node* origin, class Fatfs* fs, Node* parent);
   std::string	volname() {return __volname;}
