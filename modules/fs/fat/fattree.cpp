@@ -42,9 +42,14 @@ void	FatTree::rootdir(Node* parent)
   buff = NULL;
   try
     {
-      buff = (uint8_t*)malloc(this->fs->bs->rootdirsize);
+      if ((buff = (uint8_t*)malloc(this->fs->bs->rootdirsize)) == NULL)
+	return;
       this->vfile->seek(this->fs->bs->rootdiroffset);
-      this->vfile->read(buff, this->fs->bs->rootdirsize);
+      if (this->vfile->read(buff, this->fs->bs->rootdirsize) != this->fs->bs->rootdirsize)
+	{
+	  free(buff);
+	  return;
+	}
       for (bpos = 0; bpos != this->fs->bs->rootdirsize; bpos += 32)
 	{
 	  if (this->emanager->push(buff+bpos, this->fs->bs->rootdiroffset + bpos))
@@ -278,11 +283,16 @@ void	FatTree::walk(uint32_t cluster, Node* parent)
     {
       this->updateAllocatedClusters(cluster);
       clusters = this->fs->fat->clusterChainOffsets(cluster);
-      buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize);
+      if ((buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize)) == NULL)
+	return;
       for (cidx = 0; cidx != clusters.size(); cidx++)
 	{
 	  this->vfile->seek(clusters[cidx]);
-	  this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize);
+	  if (this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize) != (this->fs->bs->csize * this->fs->bs->ssize))
+	    {
+	      free(buff);
+	      return;
+	    }
 	  for (bpos = 0; bpos != this->fs->bs->csize * this->fs->bs->ssize; bpos += 32)
 	    {
 	      if (this->emanager->push(buff+bpos, clusters[cidx]+bpos))
@@ -339,7 +349,8 @@ void	FatTree::walk_free(Node* parent)
     {
       rootunalloc = NULL;
       clusters = this->fs->fat->listFreeClusters();
-      buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize);
+      if ((buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize)) == NULL)
+	return;
       fcsize = clusters.size();
       for (cidx = 0; cidx != fcsize; cidx++)
 	{
@@ -351,7 +362,11 @@ void	FatTree::walk_free(Node* parent)
 	      uint64_t	clustoff;
 	      clustoff = this->fs->fat->clusterToOffset(clusters[cidx]);
 	      this->vfile->seek(clustoff);
-	      this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize);
+	      if (this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize) != (this->fs->bs->csize * this->fs->bs->ssize))
+		{
+		  free(buff);
+		  return buff;
+		}
 	      for (bpos = 0; bpos != this->fs->bs->csize * this->fs->bs->ssize; bpos += 32)
 		{
 		  if (*(buff+bpos) == 0xE5)
@@ -403,14 +418,19 @@ void	FatTree::walkDeleted(uint32_t cluster, Node* parent)
       try
 	{
 	  clusters = this->fs->fat->clusterChain(cluster);
-	  buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize);
+	  if ((buff = (uint8_t*)malloc(this->fs->bs->csize * this->fs->bs->ssize)) == NULL)
+	    return;
 	  for (cidx = 0; cidx != clusters.size(); cidx++)
 	    {
 	      if ((this->allocatedClusters->find(clusters[cidx]) == NULL) && (clusters[cidx] != 0))
 		{
 		  coffset = this->fs->fat->clusterToOffset(clusters[cidx]);
 		  this->vfile->seek(coffset);
-		  this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize);
+		  if (this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize) != this->fs->bs->csize * this->fs->bs->ssize)
+		    {
+		      free(buff);
+		      return;
+		    }
 		  for (bpos = 0; bpos != this->fs->bs->csize * this->fs->bs->ssize; bpos += 32)
 		    {
 		      if (this->emanager->push(buff+bpos, coffset+bpos))

@@ -35,6 +35,8 @@ void	BootSector::process(Node *origin, class Fatfs* fs)
       this->vfile = this->origin->open();
       if (this->vfile->read(&(this->bs), sizeof(bootsector)) == 512)
 	this->fillCtx();
+      else
+	throw(std::string("cannot read boot sector"));
     }
   catch(...)
     {

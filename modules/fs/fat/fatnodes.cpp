@@ -286,7 +286,11 @@ Attributes		FatNode::_attributes()
   if ((entry = (uint8_t*)malloc(sizeof(dosentry))) != NULL)
     {
       vf->seek(this->dosmetaoffset);
-      vf->read(entry, sizeof(dosentry));
+      if (vf->read(entry, sizeof(dosentry)) != sizeof(dosentry))
+	{
+	  free(entry);
+	  return attr;
+	}
       dos = em->toDos(entry);
       free(entry);
       attr["modified"] = new Variant(new vtime(dos->mtime, dos->mdate));

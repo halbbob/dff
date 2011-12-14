@@ -40,6 +40,14 @@ Attributes		FileAllocationTableNode::_attributes(void)
   return this->__fat->attributes(this->__fatnum);
 }
 
+Variant*		FileAllocationTableNode::dataType(void)
+{
+  Attributes	dtype;
+
+  dtype["fatfs"] = new Variant(std::string("File allocation table"));
+  return new Variant(dtype);
+}
+
 
 FileAllocationTable::FileAllocationTable()
 {
@@ -82,7 +90,8 @@ void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 	{
 	  offset = this->bs->firstfatoffset;
 	  this->vfile->seek(offset);
-	  this->vfile->read(this->__fat, this->bs->fatsize);
+	  if (this->vfile->read(this->__fat, this->bs->fatsize) != this->bs->fatsize)
+	    throw (std::string("cannot read fat"));
 	}
       else
 	this->__fat = NULL;
@@ -143,8 +152,10 @@ uint32_t	FileAllocationTable::ioCluster12(uint32_t current, uint8_t which)
 
   offset = this->clusterOffsetInFat((uint64_t)current, which);
   this->vfile->seek(offset);
-  this->vfile->read(&next, 2);
-  return (uint32_t)next;
+  if (this->vfile->read(&next, 2) == 2)
+    return (uint32_t)next;
+  else
+    return 0;
 }
 
 uint32_t	FileAllocationTable::ioCluster16(uint32_t current, uint8_t which)
@@ -154,8 +165,10 @@ uint32_t	FileAllocationTable::ioCluster16(uint32_t current, uint8_t which)
 
   offset = this->clusterOffsetInFat((uint64_t)current, which);
   this->vfile->seek(offset);
-  this->vfile->read(&next, 2);
-  return (uint32_t)next;
+  if (this->vfile->read(&next, 2) == 2)
+    return (uint32_t)next;
+  else
+    return 0;
 }
 
 uint32_t	FileAllocationTable::ioCluster32(uint32_t current, uint8_t which)
@@ -165,8 +178,10 @@ uint32_t	FileAllocationTable::ioCluster32(uint32_t current, uint8_t which)
 
   offset = this->clusterOffsetInFat((uint64_t)current, which);
   this->vfile->seek(offset);
-  this->vfile->read(&next, 4);
-  return next;
+  if (this->vfile->read(&next, 4) == 4)
+    return next;
+  else
+    return 0;
 }
 
 uint32_t	FileAllocationTable::cluster12(uint32_t current, uint8_t which)
