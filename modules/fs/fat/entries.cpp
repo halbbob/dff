@@ -77,12 +77,9 @@ void	EntriesManager::updateLfnName(lfnentry* lfn)
   int	i;
   std::string	name;
   uint16_t	*ptr;
-  bool	stop;
 
   i = 0;
   name = "";
-  stop = false;
-
   
   ptr = (uint16_t*)lfn->first;
   i = 0;

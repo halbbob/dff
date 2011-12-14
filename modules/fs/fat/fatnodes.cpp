@@ -38,10 +38,8 @@ void		FileSlack::fileMapping(FileMapping* fm)
   uint64_t		remaining;
   uint64_t		voffset;
   uint64_t		clustsize;
-  uint64_t		rsize;
 
   voffset = 0;
-  rsize = this->size();
   clustsize = (uint64_t)this->__fs->bs->csize * this->__fs->bs->ssize;
   clusters = this->__fs->fat->clusterChainOffsets(this->__ocluster);
   idx = this->__originsize / clustsize;

@@ -90,7 +90,7 @@ void	FileAllocationTable::setContext(Node* origin, Fatfs* fatfs)
 	{
 	  offset = this->bs->firstfatoffset;
 	  this->vfile->seek(offset);
-	  if (this->vfile->read(this->__fat, this->bs->fatsize) != this->bs->fatsize)
+	  if (this->vfile->read(this->__fat, this->bs->fatsize) != (int32_t)this->bs->fatsize)
 	    throw (std::string("cannot read fat"));
 	}
       else

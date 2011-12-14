@@ -45,7 +45,7 @@ void	FatTree::rootdir(Node* parent)
       if ((buff = (uint8_t*)malloc(this->fs->bs->rootdirsize)) == NULL)
 	return;
       this->vfile->seek(this->fs->bs->rootdiroffset);
-      if (this->vfile->read(buff, this->fs->bs->rootdirsize) != this->fs->bs->rootdirsize)
+      if (this->vfile->read(buff, this->fs->bs->rootdirsize) != (int32_t)this->fs->bs->rootdirsize)
 	{
 	  free(buff);
 	  return;
@@ -206,9 +206,7 @@ void	FatTree::makeSlackNodes()
 Node*	FatTree::allocNode(ctx* c, Node* parent)
 {
   FatNode*	node;
-  uint32_t	allocluster;
   
-
   if (!c->lfnname.empty())
     {
       UnicodeString	us(c->lfnname.data(), c->lfnname.size(), "UTF-16LE");
@@ -365,7 +363,7 @@ void	FatTree::walk_free(Node* parent)
 	      if (this->vfile->read(buff, this->fs->bs->csize * this->fs->bs->ssize) != (this->fs->bs->csize * this->fs->bs->ssize))
 		{
 		  free(buff);
-		  return buff;
+		  return;
 		}
 	      for (bpos = 0; bpos != this->fs->bs->csize * this->fs->bs->ssize; bpos += 32)
 		{

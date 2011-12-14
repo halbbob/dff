@@ -39,6 +39,7 @@ public:
   void				setContext(FileAllocationTable* fat, uint8_t fatnum);
   virtual void			fileMapping(FileMapping* fm);
   virtual Attributes		_attributes(void);
+  virtual Variant*		dataType();
 };
 
 class FileAllocationTable

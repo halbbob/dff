@@ -96,14 +96,15 @@ void   BootSector::fillTotalSector()
 
 void	BootSector::fillTotalSize()
 {
-  uint32_t	missingsect;
+  // uint32_t	missingsect;
 
+  // missingsect = 0;
   if (((this->err & BADTOTALSECTOR) != BADTOTALSECTOR) && ((this->err & BADSSIZE) != BADSSIZE))
     {
       this->totalsize = (uint64_t)this->totalsector * (uint64_t)this->ssize;
       if (this->totalsize > this->origin->size())
 	{
-	  missingsect = (this->totalsize - this->origin->size()) / (uint64_t)this->ssize;
+	  //missingsect = (this->totalsize - this->origin->size()) / (uint64_t)this->ssize;
 	  this->errlog += "total size exceeds node size\n";
 	}
     }

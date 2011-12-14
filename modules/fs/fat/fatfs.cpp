@@ -20,8 +20,6 @@ void		Fatfs::process()
 {
   Node*			fsroot;
   std::string		volname;
-  ReservedSectors*	rs;
-  FileSystemSlack*	fss;
 
   try
     {
@@ -41,9 +39,9 @@ void		Fatfs::process()
 	  this->root->setDir();
 	  this->root->addChild(fsroot);
 	  if (this->bs->reserved != 0)
-	    rs = new ReservedSectors("reserved sectors", (uint64_t)(this->bs->reserved) * (uint64_t)this->bs->ssize, this->root, this);
+	    new ReservedSectors("reserved sectors", (uint64_t)(this->bs->reserved) * (uint64_t)this->bs->ssize, this->root, this);
 	  if (this->bs->totalsize < this->parent->size())
-	    fss = new FileSystemSlack("file system slack", this->parent->size() - this->bs->totalsize, this->root, this);
+	    new FileSystemSlack("file system slack", this->parent->size() - this->bs->totalsize, this->root, this);
 	  this->fat->makeNodes(this->root);
 	  std::vector<uint32_t>	clusters;
 	  if (this->fat->freeClustersCount())
