@@ -217,7 +217,7 @@ class NodeViewBox(QWidget, Ui_NodeViewBox):
 
     self.parent.parent.addSearchTab(adv)
     adv.setCurrentNode(self.parent.model.rootItem)
-    adv.path.setText(adv.search_in_node.absolute())
+    adv.path.setText(unicode(adv.search_in_node.absolute(), 'utf-8'))
 
 
   def rootpathchanged(self, node):

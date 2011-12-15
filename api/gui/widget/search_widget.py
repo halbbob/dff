@@ -357,7 +357,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     self.model.emit(SIGNAL("layoutChanged()"))
 
   def change_node_name(self, button, node):
-    self.node_name.setText(node.absolute())
+    self.node_name.setText(unicode(node.absolute(), 'utf-8'))
 
 
   def searchFinished(self):
@@ -410,7 +410,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
     data_type = self.typeName.itemData(idx)
     if not self.nameContain.text().isEmpty():
       search = str(data_type.toString())
-      search += ("(\"" + str(self.nameContain.text()) + "\"")
+      search += ("(\"" + str(unicode(self.nameContain.text()).encode('utf-8')) + "\"")
       if not self.caseSensitiveName.isChecked():
         search += ",i)"
       else:
@@ -418,7 +418,7 @@ class AdvSearch(QWidget, Ui_SearchTab, EventHandler):
       clause["name"] = search
 
     try:
-      self.filterThread.setContext(self.completeClause.text(), self.vfs.getnode(str(self.path.text())))
+      self.filterThread.setContext(str(unicode(self.completeClause.text()).encode('utf-8')), self.vfs.getnode(str(unicode(self.path.text()).encode('utf-8'))))
       self.filterThread.model = self.model
       self.searchBar.show()
       self.launchSearchButton.hide()
