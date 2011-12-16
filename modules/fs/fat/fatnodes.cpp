@@ -42,27 +42,21 @@ void		FileSlack::fileMapping(FileMapping* fm)
   voffset = 0;
   clustsize = (uint64_t)this->__fs->bs->csize * this->__fs->bs->ssize;
   clusters = this->__fs->fat->clusterChainOffsets(this->__ocluster);
-  idx = this->__originsize / clustsize;
-  remaining = this->__originsize % clustsize;
-  //first chunk can be truncated
-  fm->push(voffset, clustsize - remaining, this->__fs->parent, clusters[idx] + remaining);
-  voffset += (clustsize - remaining);
-  idx++;
-  while (idx != clusters.size())
+  if (clusters.size() > 0)
     {
-      fm->push(voffset, clustsize, this->__fs->parent, clusters[idx]);
-      voffset += clustsize;
+      idx = this->__originsize / clustsize;
+      remaining = this->__originsize % clustsize;
+      //first chunk can be truncated
+      fm->push(voffset, clustsize - remaining, this->__fs->parent, clusters[idx] + remaining);
+      voffset += (clustsize - remaining);
       idx++;
+      while (idx != clusters.size())
+	{
+	  fm->push(voffset, clustsize, this->__fs->parent, clusters[idx]);
+	  voffset += clustsize;
+	  idx++;
+	}
     }
-  // for (i = (uint32_t)neededclust; i != clusters.size(); i++)
-  //   {
-  //     if (rsize < clustsize)
-  // 	fm->push(voffset, rsize, this->fs->parent, clusters[i]);
-  //     else
-  // 	fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
-  //     rsize -= clustsize;
-  //     voffset += clustsize;
-  //   }
 }
 
 Attributes	FileSlack::_attributes()
@@ -228,6 +222,7 @@ void		FatNode::fileMapping(FileMapping* fm)
   uint64_t		clustsize;
   uint64_t		rsize;
 
+
   voffset = 0;
   rsize = this->size();
   clustsize = (uint64_t)this->fs->bs->csize * this->fs->bs->ssize;
@@ -236,34 +231,35 @@ void		FatNode::fileMapping(FileMapping* fm)
       clusters = this->fs->fat->clusterChainOffsets(this->cluster);
       uint64_t	clistsize = clusters.size();
       //cluster chain is not complete
-      if ((clistsize*clustsize) < this->size())
+      if (clistsize > 0)
 	{
-	  for (i = 0; i != clistsize; i++)
+	  if ((clistsize*clustsize) < this->size())
 	    {
-	      fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
-	      voffset += clustsize;
+	      for (i = 0; i != clistsize; i++)
+		{
+		  fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+		  voffset += clustsize;
+		}
+	      uint64_t	gap = this->size() - clistsize*clustsize;
+	      //last chunk corresponds to the last gap between last cluster and the size and is
+	      //based on the following blocks of the last cluster
+	      fm->push(voffset, gap, this->fs->parent, clusters[clistsize-1]+clustsize);
 	    }
-	  uint64_t	gap = this->size() - clistsize*clustsize;
-	  //last chunk corresponds to the last gap between last cluster and the size and is
-	  //based on the following blocks of the last cluster
-	  fm->push(voffset, gap, this->fs->parent, clusters[clistsize-1]+clustsize);
-	}
-      else
-	{
-	  //manage the mapping based on cluster chain untill node->size() is reached
-	  for (i = 0; i != clusters.size(); i++)
+	  else
 	    {
-	      if (rsize < clustsize)
-		fm->push(voffset, rsize, this->fs->parent, clusters[i]);
-	      else
-		fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
-	      rsize -= clustsize;
-	      voffset += clustsize;
+	      //manage the mapping based on cluster chain untill node->size() is reached
+	      for (i = 0; i != clusters.size(); i++)
+		{
+		  if (rsize < clustsize)
+		    fm->push(voffset, rsize, this->fs->parent, clusters[i]);
+		  else
+		    fm->push(voffset, clustsize, this->fs->parent, clusters[i]);
+		  rsize -= clustsize;
+		  voffset += clustsize;
+		}
 	    }
 	}
     }
-  else
-    fm->push(0, this->size());
 }
 
 
