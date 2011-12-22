@@ -33,8 +33,11 @@ public:
   void			compile(std::string query) throw (std::string);
   void			processFolder(Node* nodeptr) throw (std::string);
   void			process(Node* nodeptr, bool recursive=true) throw (std::string);
+  void			process(std::list<Node*> nodes) throw (std::string);
+  void			process(std::vector<Node*> nodes) throw (std::string);
   void			process(uint64_t nodeid, bool recursive=true) throw (std::string);
   void			process(uint16_t fsoid, bool recursive=true) throw (std::string);
+  //bool			match(Node* ptr); throw (std::string);
   std::vector<Node*>	matchedNodes();
   enum EventTypes
     {
@@ -42,10 +45,17 @@ public:
       ProcessedNodes = 0x201,
       NodeMatched = 0x202,
       StopProcessing = 0x204,
-      EndOfProcessing = 0x205
+      EndOfProcessing = 0x205,
+      AstReset = 0x4242
     };
 private:
-  void			__process(Node* nodeptr, uint64_t* processed, event* e);
+  void			__process(Node* nodeptr, uint64_t* processed);
+  void			__reset();
+  void			__notifyNodesToProcess(uint64_t nodescount);
+  void			__notifyMatch(Node* nodeptr);
+  void			__notifyProgress(uint64_t processed);
+  void			__notifyEndOfProcessing(uint64_t processed);
+  event*		__ev;
   std::vector<Node*>	__matchednodes;
   std::string		__fname;
   uint32_t		__uid;
