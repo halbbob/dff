@@ -17,9 +17,11 @@
 #include "ewf.hpp"
 #include "ewfnode.hpp"
 
+mutex_def(io_mutex);
 
 ewf::ewf() : fso("ewf")
 {
+  mutex_init(&io_mutex);
   this->__fdm = new FdManager();
   this->ewf_ghandle = NULL;
   this->__ewf_error = NULL;
@@ -204,40 +206,31 @@ void ewf::start(std::map<std::string, Variant* > args)
 
 int ewf::vopen(Node *node)
 {
-  libewf_handle_t* ewf_handle = NULL;
-
-  try
-    {
-      this->__initHandle(&ewf_handle, NULL);
-      this->__openHandle(ewf_handle, NULL);
-    }
-  catch (std::string err)
-    {
-      return -1;
-    }
   fdinfo* fi = new fdinfo();
   fi->node = node;
   fi->offset = 0;
-  fi->id = new Variant((void*)ewf_handle);
   return (this->__fdm->push(fi));
 }
 
 int ewf::vread(int fd, void *buff, unsigned int size)
 {
   fdinfo*		fi;
-  libewf_handle_t* 	ewf_handle; 
 
   try
   {
     fi = this->__fdm->get(fd);
-    ewf_handle = (libewf_handle_t*)fi->id->value<void *>();
   }
   catch (...)
   {
     return (0);
   }
   int res = 0;
-  res = libewf_handle_read_buffer(ewf_handle, buff, size, NULL);
+  mutex_lock(&io_mutex);
+  res = libewf_handle_read_random(this->ewf_ghandle, buff, size, fi->offset, NULL);
+  if (res > 0)
+    fi->offset += res;
+  mutex_unlock(&io_mutex);
+
   if (res < 0)
     return (0);
   return (res);
@@ -245,44 +238,48 @@ int ewf::vread(int fd, void *buff, unsigned int size)
 
 int ewf::vclose(int fd)
 {
-  fdinfo*		fi;
-  libewf_handle_t* 	ewf_handle; 
-
-  try 
-  {
-    fi = this->__fdm->get(fd);
-    ewf_handle = (libewf_handle_t*)fi->id->value<void *>();
-  }
-  catch (...)
-  {
-    return (-1);
-  }
-  if (ewf_handle != NULL)
-    {
-      libewf_handle_close(ewf_handle, NULL);
-      libewf_handle_free(&ewf_handle, NULL);
-    }
-  delete fi->id;
   this->__fdm->remove(fd);
   return 0;
 }
 
 uint64_t ewf::vseek(int fd, uint64_t offset, int whence)
 {
-  fdinfo*		fi;
-  libewf_handle_t* 	ewf_handle; 
+  Node*	node;
+  fdinfo* fi;
 
-  try 
+  try
   {
-    fi = this->__fdm->get(fd);
-    ewf_handle = (libewf_handle_t*)fi->id->value<void *>();
-    return (libewf_handle_seek_offset(ewf_handle, offset, whence, NULL));
+     fi = this->__fdm->get(fd);
+     node = fi->node;
+
+     if (whence == 0)
+     {
+        if (offset <= node->size())
+        {
+           fi->offset = offset;
+           return (fi->offset);
+        } 
+     }
+     else if (whence == 1)
+     {
+        if (fi->offset + offset <= node->size())
+        {
+           fi->offset += offset;
+	   return (fi->offset);
+        }
+     }
+     else if (whence == 2)
+     {
+        fi->offset = node->size();
+        return (fi->offset);
+     }
   }
   catch (...)
-    {
-      return (-1);
-    }
-  return (-1);
+  {
+     return ((uint64_t) -1);
+  }
+
+  return ((uint64_t) -1);
 }
 
 uint64_t	ewf::vtell(int32_t fd)
@@ -294,18 +291,12 @@ uint64_t	ewf::vtell(int32_t fd)
   try 
   {
     fi = this->__fdm->get(fd);
-    ewf_handle = (libewf_handle_t*)fi->id->value<void *>();
+    return fi->offset;
   }
   catch (...)
   {
     return (-1);
   }
-  if (libewf_handle_get_offset(ewf_handle, &offset, NULL) == -1)
-    return (uint64_t)-1;
-  else if (offset >= 0)
-    return (uint64_t)offset;
-  else
-    return (uint64_t)-1;
 }
 
 unsigned int ewf::status(void)

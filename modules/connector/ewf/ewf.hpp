@@ -35,8 +35,8 @@
 #include "vfs.hpp"
 #include "path.hpp"
 #include "fdmanager.hpp"
+#include "threading.hpp"
 #include <libewf.h>
-
 
 
 class ewf : public fso
