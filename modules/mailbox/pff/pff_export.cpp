@@ -114,9 +114,21 @@ int pff::export_message_default(libpff_item_t* item, int item_index, Node* paren
 
 int pff::export_note(libpff_item_t* note, int note_index, Node* parent, bool clone)
 {
-  std::ostringstream folderName;
+  std::ostringstream 	folderName;
+  size_t 		subject_string_size = 0;
+  int 			result;
 
-  folderName << "Note" << note_index + 1;
+  result = libpff_message_get_subject_size(note, &subject_string_size, &(this->pff_error));
+  if (result != 0 && result != -1 && subject_string_size > 0)
+  {
+    char*	subject = (char*)malloc(sizeof(char *) * subject_string_size);
+    libpff_message_get_subject(note, (uint8_t*)subject, subject_string_size, &(this->pff_error));
+    folderName << std::string(subject);
+    free(subject);
+  }    
+  else
+    folderName << "Note" << note_index + 1;
+
   PffNodeFolder* nodeFolder = new PffNodeFolder(folderName.str(), parent, this);
 
   new PffNodeNote("Note", nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
@@ -126,9 +138,21 @@ int pff::export_note(libpff_item_t* note, int note_index, Node* parent, bool clo
 
 int pff::export_meeting(libpff_item_t* note, int note_index, Node* parent, bool clone)
 {
-  std::ostringstream folderName;
+  std::ostringstream 	folderName;
+  size_t 		subject_string_size = 0;
+  int 			result;
 
-  folderName << "Meeting" << note_index + 1;
+  result = libpff_message_get_subject_size(note, &subject_string_size, &(this->pff_error));
+  if (result != 0 && result != -1 && subject_string_size > 0)
+  {
+    char*	subject = (char*)malloc(sizeof(char *) * subject_string_size);
+    libpff_message_get_subject(note, (uint8_t*)subject, subject_string_size, &(this->pff_error));
+    folderName << std::string(subject);
+    free(subject);
+  }    
+  else
+    folderName << "Meeting" << note_index + 1;
+
   PffNodeFolder* nodeFolder = new PffNodeFolder(folderName.str(), parent, this);
 
   new PffNodeMeeting("Meeting", nodeFolder, this, note, &(this->pff_error), &(this->pff_file), clone);
@@ -138,9 +162,21 @@ int pff::export_meeting(libpff_item_t* note, int note_index, Node* parent, bool 
 
 int pff::export_task(libpff_item_t* task, int task_index, Node* parent, bool clone)
 {
-  std::ostringstream taskName;
+  std::ostringstream 	taskName;
+  size_t 		subject_string_size = 0;
+  int 			result;
 
-  taskName << std::string("Task") << task_index + 1;
+  result = libpff_message_get_subject_size(task, &subject_string_size, &(this->pff_error));
+  if (result != 0 && result != -1 && subject_string_size > 0)
+  {
+    char*	subject = (char*)malloc(sizeof(char *) * subject_string_size);
+    libpff_message_get_subject(task, (uint8_t*)subject, subject_string_size, &(this->pff_error));
+    taskName << std::string(subject);
+    free(subject);
+  }    
+  else
+    taskName << std::string("Task") << task_index + 1;
+
   PffNodeFolder* nodeFolder = new PffNodeFolder(taskName.str(), parent, this);
 
   new PffNodeTask(std::string("Task"), nodeFolder, this, task, &(this->pff_error), &(this->pff_file), clone);
@@ -153,9 +189,21 @@ int pff::export_task(libpff_item_t* task, int task_index, Node* parent, bool clo
 
 int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent, bool clone)
 {
-  std::ostringstream contactName;
+  std::ostringstream 	contactName;
+  size_t 		subject_string_size = 0;
+  int 			result;
 
-  contactName << std::string("Contact") << contact_index + 1;
+  result = libpff_message_get_subject_size(contact, &subject_string_size, &(this->pff_error));
+  if (result != 0 && result != -1 && subject_string_size > 0)
+  {
+    char*	subject = (char*)malloc(sizeof(char *) * subject_string_size);
+    libpff_message_get_subject(contact, (uint8_t*)subject, subject_string_size, &(this->pff_error));
+    contactName << std::string(subject);
+    free(subject);
+  }    
+  else
+    contactName << std::string("Contact") << contact_index + 1;
+
   PffNodeFolder* nodeFolder = new PffNodeFolder(contactName.str(), parent, this);
 
   new PffNodeContact(std::string("Contact"), nodeFolder, this, contact, &(this->pff_error), &(this->pff_file), clone);
@@ -167,12 +215,24 @@ int pff::export_contact(libpff_item_t* contact, int contact_index, Node* parent,
 
 int pff::export_appointment(libpff_item_t* appointment, int appointment_index, Node* parent, bool clone)
 {
-   std::ostringstream messageName; 
+  std::ostringstream 	messageName; 
+  size_t 		subject_string_size = 0;
+  int 			result;
 
-   messageName << std::string("Appointment")  << appointment_index + 1;
-   PffNodeFolder* nodeFolder = new PffNodeFolder(messageName.str(), parent, this);
+  result = libpff_message_get_subject_size(appointment, &subject_string_size, &(this->pff_error));
+  if (result != 0 && result != -1 && subject_string_size > 0)
+  {
+    char*	subject = (char*)malloc(sizeof(char *) * subject_string_size);
+    libpff_message_get_subject(appointment, (uint8_t*)subject, subject_string_size, &(this->pff_error));
+    messageName << std::string(subject);
+    free(subject);
+  }    
+  else
+    messageName << std::string("Appointment")  << appointment_index + 1;
 
-   new PffNodeAppointment(std::string("Appointment"), nodeFolder, this, appointment, &(this->pff_error), &(this->pff_file), clone);
+  PffNodeFolder* nodeFolder = new PffNodeFolder(messageName.str(), parent, this);
+
+  new PffNodeAppointment(std::string("Appointment"), nodeFolder, this, appointment, &(this->pff_error), &(this->pff_file), clone);
 
   this->export_attachments(appointment, nodeFolder, clone);
 
@@ -221,12 +281,24 @@ int pff::export_email(libpff_item_t* email, int email_index, Node *parent, bool 
   size_t 	email_rtf_body_size = 0;
   size_t 	email_text_body_size = 0;
   size_t	transport_headers_size = 0;
+  size_t 	subject_string_size = 0;
+  int 		result;
   int 		has_html_body = 0;
   int 		has_rtf_body = 0;
   int 		has_text_body = 0;
 
   std::ostringstream messageName; 
-  messageName << std::string("Message")  << email_index + 1;
+
+  result = libpff_message_get_subject_size(email, &subject_string_size, &(this->pff_error));
+  if (result != 0 && result != -1 && subject_string_size > 0)
+  {
+    char*	subject = (char*)malloc(sizeof(char *) * subject_string_size);
+    libpff_message_get_subject(email, (uint8_t*)subject, subject_string_size, &(this->pff_error));
+    messageName << std::string(subject);
+    free(subject);
+  }    
+  else
+    messageName << std::string("Message")  << email_index + 1;
 
   has_html_body = libpff_message_get_html_body_size(email, &email_html_body_size, &(this->pff_error));
   has_rtf_body = libpff_message_get_rtf_body_size(email, &email_rtf_body_size, &(this->pff_error));
